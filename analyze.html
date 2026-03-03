@@ -1450,10 +1450,7 @@ function renderMain() {
         method:"POST", headers:{"Content-Type":"application/json"},
         body: JSON.stringify({ to_email: leadData.email, reportData: payload })
       }).catch(()=>{});
-      fetch("/api/send-report", {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ to_email: "nicholasallenfrench@gmail.com", is_internal: true, reportData: payload })
-      }).catch(()=>{});
+
     };
     // Save full report data to Supabase (non-blocking)
     if (leadData.lead_id) {
