@@ -2,8 +2,6 @@ export const config = {
   api: { bodyParser: { sizeLimit: "2mb" } }
 };
 
-const EMAILJS_SERVICE_ID = "service_td3o0fu";
-const EMAILJS_PUBLIC_KEY = "KsZrTLyDLTQFLvip8";
 
 function buildReportHTML(data) {
   const {
@@ -142,36 +140,30 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing to_email or reportData" });
   }
 
-  const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
-  if (!EMAILJS_PRIVATE_KEY) return res.status(500).json({ error: "EMAILJS_PRIVATE_KEY not set" });
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  if (!RESEND_API_KEY) return res.status(500).json({ error: "RESEND_API_KEY not set" });
 
   const htmlBody = buildReportHTML(reportData);
-
   const subject = `Your StackScan Report — ${reportData.company}`;
 
-  // Use EmailJS REST API with HTML template
   try {
-    const resp = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+    const resp = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        service_id: EMAILJS_SERVICE_ID,
-        template_id: "template_oe1gjqn",
-        user_id: EMAILJS_PUBLIC_KEY,
-        accessToken: EMAILJS_PRIVATE_KEY,
-        template_params: {
-          to_email,
-          subject,
-          name: is_internal ? "Nick" : reportData.email?.split("@")[0] || "there",
-          company: reportData.company,
-          html_body: htmlBody
-        }
+        from: "Nick @ StackSwap <onboarding@resend.dev>",
+        to: [to_email],
+        subject,
+        html: htmlBody
       })
     });
 
     if (!resp.ok) {
       const txt = await resp.text();
-      console.error("EmailJS error:", txt);
+      console.error("Resend error:", txt);
       return res.status(502).json({ error: "Email send failed", detail: txt });
     }
 
