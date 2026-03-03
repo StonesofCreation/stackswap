@@ -1,3 +1,10 @@
+console.log("ENV CHECK", {
+  hasUrl: !!process.env.SUPABASE_URL,
+  urlStart: (process.env.SUPABASE_URL || "").slice(0, 30),
+  hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  keyStart: (process.env.SUPABASE_SERVICE_ROLE_KEY || "").slice(0, 6),
+});
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
