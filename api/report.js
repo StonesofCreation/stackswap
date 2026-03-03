@@ -24,8 +24,8 @@ export default async function handler(req, res) {
   if (!SUPABASE_KEY) return res.status(500).json({ error: "SUPABASE_ANON_KEY not set" });
 
   try {
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/leads?id=eq.${lead_id}`, {
-      method: "PATCH",
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/reports`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         "apikey": SUPABASE_KEY,
@@ -33,6 +33,7 @@ export default async function handler(req, res) {
         "Prefer": "return=minimal"
       },
       body: JSON.stringify({
+        lead_id: lead_id,
         tools: tools || [],
         tool_count: tool_count || 0,
         industry: industry || null,
@@ -49,8 +50,8 @@ export default async function handler(req, res) {
 
     if (!resp.ok) {
       const err = await resp.text();
-      console.error("Supabase report update error:", resp.status, err);
-      return res.status(502).json({ error: "Database error" });
+      console.error("Supabase report insert error:", resp.status, err);
+      return res.status(502).json({ error: "Database error", detail: err });
     }
 
     return res.status(200).json({ success: true });
