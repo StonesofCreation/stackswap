@@ -159,6 +159,24 @@ h1 .accent{color:#ffc857}
 .unlock-btn:disabled{opacity:.4;cursor:not-allowed}
 
 @media(max-width:560px){.g2,.mgrid{grid-template-columns:1fr}}
+
+.upgrade-cta{margin-top:24px;background:rgba(57,255,133,0.04);border:1px solid rgba(57,255,133,0.2);border-radius:12px;padding:24px;text-align:center;position:relative;overflow:hidden}
+.upgrade-cta::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,133,0.5),transparent)}
+.upgrade-cta-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(57,255,133,0.7);font-weight:600;margin-bottom:8px;font-family:'DM Mono',monospace}
+.upgrade-cta-h{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:#f0ece4;margin-bottom:8px;letter-spacing:-.01em}
+.upgrade-cta-h span{color:#39ff85}
+.upgrade-cta-sub{font-size:13px;color:#9a9690;line-height:1.75;margin-bottom:20px;max-width:420px;margin-left:auto;margin-right:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.upgrade-cta-features{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.upgrade-cta-feat{font-size:12px;color:rgba(57,255,133,0.8);font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px}
+.upgrade-cta-feat::before{content:'✓';color:#39ff85}
+.upgrade-cta-form{display:flex;gap:8px;max-width:380px;margin:0 auto 12px}
+.upgrade-cta-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(57,255,133,0.25);border-radius:7px;padding:10px 14px;font-size:13px;color:#f0ece4;outline:none;font-family:-apple-system,sans-serif}
+.upgrade-cta-input::placeholder{color:#3a3830}
+.upgrade-cta-input:focus{border-color:rgba(57,255,133,0.5)}
+.upgrade-cta-btn{padding:10px 18px;border-radius:7px;background:#39ff85;color:#0f0e13;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.04em;transition:opacity .2s;white-space:nowrap}
+.upgrade-cta-btn:hover{opacity:.88}
+.upgrade-cta-note{font-size:11px;color:#3a3830;font-family:-apple-system,sans-serif}
+.upgrade-cta-success{display:none;font-size:13px;color:#39ff85;padding:8px 0;font-family:'DM Mono',monospace;letter-spacing:.02em}
 </style>
 <style>
 
@@ -947,7 +965,65 @@ function renderResult(r) {
   r.optimized.forEach(t=>ot.appendChild(span("opt-tag",t)));
   box.appendChild(ot);
 
+
+  // ── StackAudit upgrade CTA ─────────────────────────────────────────────
+  const upgradeCta = document.createElement('div');
+  upgradeCta.className = 'upgrade-cta';
+  const savingsStr = r.totalSave > 0 ? `$${r.totalSave.toLocaleString()}/mo` : 'real savings';
+  upgradeCta.innerHTML = `
+    <div class="upgrade-cta-eyebrow">Coming Soon — StackAudit</div>
+    <div class="upgrade-cta-h">Want the full <span>consultant-grade</span> breakdown?</div>
+    <p class="upgrade-cta-sub">This report flagged ${savingsStr} in potential savings. StackAudit delivers the full roadmap — tool-by-tool cost analysis, 30/60/90 implementation plan, risk flags, and a shareable executive summary. $99 per run, one-time.</p>
+    <div class="upgrade-cta-features">
+      <span class="upgrade-cta-feat">Tool-by-tool cost breakdown</span>
+      <span class="upgrade-cta-feat">30/60/90 implementation plan</span>
+      <span class="upgrade-cta-feat">Risk + migration flags</span>
+      <span class="upgrade-cta-feat">AI executive summary</span>
+      <span class="upgrade-cta-feat">PDF export</span>
+    </div>
+    <div class="upgrade-cta-form">
+      <input type="email" class="upgrade-cta-input" id="auditCtaEmail" placeholder="your@email.com"/>
+      <button class="upgrade-cta-btn" onclick="submitAuditWaitlist()">Notify Me →</button>
+    </div>
+    <div class="upgrade-cta-success" id="auditCtaSuccess">✓ You're on the list. We'll email you at launch.</div>
+    <div class="upgrade-cta-note">No spam. One email when StackAudit goes live.</div>
+  `;
+  box.appendChild(upgradeCta);
+
   box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+
+async function submitAuditWaitlist() {
+  const input = document.getElementById('auditCtaEmail');
+  const email = input?.value?.trim();
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = 'rgba(255,107,107,0.5)';
+    setTimeout(() => input.style.borderColor = '', 1500);
+    return;
+  }
+  const btn = document.querySelector('.upgrade-cta-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+  try {
+    await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        waitlist_type: 'stackaudit',
+        source_page: 'stackscan_report',
+        context: {
+          company: leadData.company || '',
+          role: leadData.role || '',
+          lead_id: leadData.lead_id || ''
+        }
+      })
+    });
+  } catch(e) {}
+  input.style.display = 'none';
+  if (btn) btn.style.display = 'none';
+  document.getElementById('auditCtaSuccess').style.display = 'block';
+  document.querySelector('.upgrade-cta-note').style.display = 'none';
 }
 
 
