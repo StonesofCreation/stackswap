@@ -1416,47 +1416,45 @@ function renderMain() {
         if (wrapper.firstChild) slot.replaceWith(wrapper.firstChild);
         else slot.remove();
       } else {
-        // Show subtle fallback so we know it ran but failed
         slot.innerHTML = `<div class="ai-narrative-label">AI Analysis</div><div style="font-size:13px;color:#5a5650;font-family:var(--prose)">Narrative unavailable — check console for details.</div>`;
         setTimeout(() => { const s = document.getElementById("ai-narrative-slot"); if(s) s.remove(); }, 4000);
       }
+      // Send email after AI resolves — includes narrative if available
+      sendUserEmail(aiData);
     });
-    // Build report summary for email
-    const overlapLines = result.overlaps.slice(0,3).map(o=>"• Cut "+o.b+" → Keep "+o.a+" (save $"+o.save+"/mo)").join("\n");
-    const upgradeLines = result.upgrades.slice(0,2).map(u=>"• Replace "+u.tool+" with "+u.r+" (save $"+u.save+"/mo)").join("\n");
-    const wrongLines = (result.consultantFindings||[]).filter(f=>f.type==="wrong"||f.type==="wrong_tool").slice(0,2).map(f=>"⚠️ "+f.title).join("\n");
-    const actionLines = result.actions.slice(0,3).map((a,i)=>(i+1)+". "+a.title+": "+a.text).join("\n\n");
-    const reportSummary = [
-      "STACK HEALTH SCORE: "+result.score+"/100",
-      "",
-      wrongLines ? "WRONG TOOLS FOR YOUR INDUSTRY:\n"+wrongLines : "",
-      overlapLines ? "OVERLAPS TO CUT:\n"+overlapLines : "",
-      upgradeLines ? "AI-NATIVE UPGRADES:\n"+upgradeLines : "",
-      "",
-      "ESTIMATED SAVINGS: $"+result.totalSave.toLocaleString()+"/mo · $"+(result.totalSave*12).toLocaleString()+"/yr",
-      "",
-      "PRIORITY ACTION PLAN:\n"+actionLines,
-      "",
-      "OPTIMIZED STACK: "+result.optimized.join(", "),
-      "",
-      "— StackSwap by DemandStack\nstackswap-pi.vercel.app"
-    ].filter(Boolean).join("\n");
-    // Send report to user
-    emailjs.send("service_td3o0fu","template_oe1gjqn",{
-      to_email: leadData.email,
-      subject: "Your StackSwap Report — "+leadData.company,
-      name: leadData.email.split("@")[0],
+    // ── Send HTML email reports via /api/send-report ──────────────────────
+    const reportPayload = {
       company: leadData.company,
-      report_summary: reportSummary
-    }).catch(()=>{});
-    // Send full lead + report to Nick
-    emailjs.send("service_td3o0fu","template_oe1gjqn",{
-      to_email: "nicholasallenfrench@gmail.com",
-      subject: "StackSwap Report Generated: "+leadData.company+" ("+leadData.role+")",
-      name: "Nick",
-      company: leadData.company,
-      report_summary: "Lead: "+leadData.email+"\nCompany: "+leadData.company+"\nRole: "+leadData.role+"\nTeam: "+leadData.teamSize+"\nLead ID: "+(leadData.lead_id||"n/a")+"\nTools: "+selectedTools.join(", ")+"\n\n"+reportSummary
-    }).catch(()=>{});
+      email: leadData.email,
+      role: leadData.role,
+      teamSize: leadData.teamSize,
+      industry: _industry || "",
+      score: result.score,
+      totalSave: result.totalSave,
+      tools: selectedTools,
+      overlaps: result.overlaps.slice(0,4).map(o=>({a:o.a,b:o.b,save:o.save})),
+      upgrades: result.upgrades.slice(0,3).map(u=>({tool:u.tool,r:u.r,save:u.save})),
+      wrongTools: (result.consultantFindings||[]).filter(f=>f.type==="wrong"||f.type==="wrong_tool").slice(0,2).map(f=>f.title),
+      actions: result.actions.slice(0,3).map(a=>({title:a.title,text:a.text})),
+      optimized: result.optimized
+    };
+    // Attach AI narrative once it resolves (fire after AI call completes)
+    const sendUserEmail = (aiData) => {
+      const payload = aiData ? {
+        ...reportPayload,
+        aiNarrative: aiData.narrative || null,
+        aiBiggestWin: aiData.biggest_win || null,
+        aiSpendAssessment: aiData.spend_assessment || null
+      } : reportPayload;
+      fetch("/api/send-report", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ to_email: leadData.email, reportData: payload })
+      }).catch(()=>{});
+      fetch("/api/send-report", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ to_email: "nicholasallenfrench@gmail.com", is_internal: true, reportData: payload })
+      }).catch(()=>{});
+    };
     // Save full report data to Supabase (non-blocking)
     if (leadData.lead_id) {
       fetch("/api/report", {
