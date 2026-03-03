@@ -1077,7 +1077,7 @@ function renderMain() {
   const cta = el("button","cta","Add your tools above to continue");
   cta.id="cta"; cta.disabled=true;
   cta.addEventListener("click", async ()=>{
-    if(selectedTools.length<2||!leadData.submitted)return;
+    if(selectedTools.length<1||!leadData.submitted)return;
     cta.disabled=true;
     cta.innerHTML='<span class="spinner"></span>Analyzing your stack...';
     await new Promise(r=>setTimeout(r,700));
@@ -1157,7 +1157,7 @@ function renderMain() {
 
 function updateCTA(){
   const b=document.getElementById("cta"); if(!b)return;
-  const hasTools=selectedTools.length>=2;
+  const hasTools=selectedTools.length>=1;
   const hasLead=leadData.submitted;
   const ok=hasTools&&hasLead;
   b.className="cta"+(ok?" ready":"");
