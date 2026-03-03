@@ -10,6 +10,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
+  // Parse body
   let prompt;
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
@@ -25,9 +26,6 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: "ANTHROPIC_API_KEY not set" });
 
-  // Truncate prompt to avoid token limits on the proxy side
-  const truncated = prompt.slice(0, 4000);
-
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -37,9 +35,9 @@ export default async function handler(req, res) {
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "claude-sonnet-4-20250514",
         max_tokens: 700,
-        messages: [{ role: "user", content: truncated }]
+        messages: [{ role: "user", content: prompt.slice(0, 4000) }]
       })
     });
 
@@ -47,32 +45,22 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error("Anthropic error:", response.status, rawText);
-      // Return the actual Anthropic error so we can see it
-      return res.status(502).json({ 
-        error: "Anthropic API error", 
+      return res.status(502).json({
+        error: "Anthropic API error",
         status: response.status,
         detail: rawText.slice(0, 500)
       });
     }
 
-    let data;
-    try { data = JSON.parse(rawText); } 
-    catch(e) { return res.status(500).json({ error: "Bad JSON from Anthropic", raw: rawText.slice(0,200) }); }
-
+    const data = JSON.parse(rawText);
     const text = data.content?.[0]?.text || "";
     const clean = text.replace(/```json\s*|```\s*/g, "").trim();
-
-    let parsed;
-    try { parsed = JSON.parse(clean); }
-    catch(e) {
-      console.error("JSON parse failed:", text);
-      return res.status(500).json({ error: "Could not parse AI response", raw: text.slice(0,200) });
-    }
+    const parsed = JSON.parse(clean);
 
     return res.status(200).json(parsed);
 
   } catch(e) {
-    console.error("Handler error:", e.message);
+    console.error("Proxy error:", e.message);
     return res.status(500).json({ error: e.message });
   }
 }
