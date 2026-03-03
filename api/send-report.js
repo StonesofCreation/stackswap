@@ -136,7 +136,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-  const { to_email, is_internal, reportData } = body || {};
+  const { to_email, reportData } = body || {};
 
   if (!to_email || !reportData) {
     return res.status(400).json({ error: "Missing to_email or reportData" });
@@ -147,9 +147,7 @@ export default async function handler(req, res) {
 
   const htmlBody = buildReportHTML(reportData);
 
-  const subject = is_internal
-    ? `StackSwap Lead: ${reportData.company} (${reportData.role}) — Score ${reportData.score}/100`
-    : `Your StackScan Report — ${reportData.company}`;
+  const subject = `Your StackScan Report — ${reportData.company}`;
 
   // Use EmailJS REST API with HTML template
   try {
