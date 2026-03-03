@@ -998,37 +998,74 @@ function renderMain() {
 
   const unlockBtn = el("button","unlock-btn","Get My Free Report →");
   unlockBtn.id="unlock-btn"; unlockBtn.disabled=true;
-  unlockBtn.addEventListener("click",()=>{
-    const email=document.getElementById("gate-email")?.value?.trim()||"";
-    const company=document.getElementById("gate-company")?.value?.trim()||"";
-    const role=document.getElementById("gate-role")?.value||"";
-    const teamSize=document.getElementById("gate-teamsize")?.value||"";
-    if(!email.includes("@")||!company||!role||!teamSize) return;
-    leadData={email,company,role,teamSize,submitted:true};
-    markDot(4,true);
-    gateForm.style.display="none";
-    const confirmed=div("gate-submitted");
-    confirmed.innerHTML=`<div class="gate-check">✓</div><span>${email} · ${company} · ${role}</span>`;
-    c4.appendChild(confirmed);
-    updateCTA();
-    // Notify Nick of new lead
-    emailjs.send("service_td3o0fu","template_oe1gjqn",{
-      to_email: "nicholasallenfrench@gmail.com",
-      subject: "New StackSwap Lead: "+company,
-      name: "Nick",
-      company: company,
-      report_summary: "New lead captured:\n\nEmail: "+email+"\nCompany: "+company+"\nRole: "+role+"\nTeam Size: "+teamSize+"\n\nThey are generating their report now."
-    }).catch(()=>{});
-    // Zapier → Google Sheets (lead captured)
-    pingZapier({
-      event: "lead_captured",
-      timestamp: new Date().toISOString(),
-      email, company, role, team_size: teamSize
+ unlockBtn.addEventListener("click", async () => {
+  const email = document.getElementById("gate-email")?.value?.trim() || "";
+  const company = document.getElementById("gate-company")?.value?.trim() || "";
+  const role = document.getElementById("gate-role")?.value || "";
+  const teamSize = document.getElementById("gate-teamsize")?.value || "";
+  if (!email.includes("@") || !company || !role || !teamSize) return;
+
+  // 1) Save lead to Supabase via your Vercel API
+  let lead_id = null;
+  try {
+    const resp = await fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        company,
+        role,
+        team_size: teamSize,
+        industry: document.getElementById("ind")?.value || ""
+      })
     });
+
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data?.error || "Lead API failed");
+    lead_id = data.lead_id || null;
+  } catch (err) {
+    console.error("Lead save failed:", err);
+    alert("Could not save your lead. Please try again in a moment.");
+    return; // stop here so we don't proceed without saving
+  }
+
+  // 2) Continue with your existing unlock flow
+  leadData = { email, company, role, teamSize, submitted: true, lead_id };
+  markDot(4, true);
+  gateForm.style.display = "none";
+
+  const confirmed = div("gate-submitted");
+  confirmed.innerHTML = `<div class="gate-check">✓</div><span>${email} · ${company} · ${role}</span>`;
+  c4.appendChild(confirmed);
+
+  updateCTA();
+
+  // Notify Nick of new lead
+  emailjs.send("service_td3o0fu", "template_oe1gjqn", {
+    to_email: "nicholasallenfrench@gmail.com",
+    subject: "New StackSwap Lead: " + company,
+    name: "Nick",
+    company: company,
+    report_summary:
+      "New lead captured:\n\nEmail: " + email +
+      "\nCompany: " + company +
+      "\nRole: " + role +
+      "\nTeam Size: " + teamSize +
+      "\nLead ID: " + (lead_id || "n/a") +
+      "\n\nThey are generating their report now."
+  }).catch(() => {});
+
+  // Zapier → Google Sheets (lead captured) (optional to keep)
+  pingZapier({
+    event: "lead_captured",
+    timestamp: new Date().toISOString(),
+    email,
+    company,
+    role,
+    team_size: teamSize,
+    lead_id
   });
-  gateForm.appendChild(unlockBtn);
-  c4.appendChild(gateForm);
-  wrap.appendChild(c4);
+});
 
   function updateGateBtn(){
     const email=document.getElementById("gate-email")?.value?.trim()||"";
