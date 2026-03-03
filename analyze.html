@@ -1261,12 +1261,7 @@ function renderMain() {
         "\n\nThey are generating their report now."
     }).catch(()=>{});
 
-    // Zapier → Google Sheets (lead captured) (optional)
-    pingZapier({
-      event: "lead_captured",
-      timestamp: new Date().toISOString(),
-      email, company, role, team_size: teamSize, lead_id
-    });
+    // Lead already saved to Supabase via /api/lead above
   });
   gateForm.appendChild(unlockBtn);
   c4.appendChild(gateForm);
@@ -1346,7 +1341,9 @@ function renderMain() {
         if (wrapper.firstChild) slot.replaceWith(wrapper.firstChild);
         else slot.remove();
       } else {
-        slot.remove(); // API failed — no visible change to user
+        // Show subtle fallback so we know it ran but failed
+        slot.innerHTML = `<div class="ai-narrative-label">AI Analysis</div><div style="font-size:13px;color:#5a5650;font-family:var(--prose)">Narrative unavailable — check console for details.</div>`;
+        setTimeout(() => { const s = document.getElementById("ai-narrative-slot"); if(s) s.remove(); }, 4000);
       }
     });
     // Build report summary for email
@@ -1385,25 +1382,27 @@ function renderMain() {
       company: leadData.company,
       report_summary: "Lead: "+leadData.email+"\nCompany: "+leadData.company+"\nRole: "+leadData.role+"\nTeam: "+leadData.teamSize+"\nLead ID: "+(leadData.lead_id||"n/a")+"\nTools: "+selectedTools.join(", ")+"\n\n"+reportSummary
     }).catch(()=>{});
-    // Zapier → Google Sheets (report generated — full row)
-    pingZapier({
-      event: "report_generated",
-      timestamp: new Date().toISOString(),
-      email: leadData.email,
-      company: leadData.company,
-      role: leadData.role,
-      team_size: leadData.teamSize,
-      industry: document.getElementById("ind")?.value||"",
-      tools: selectedTools.join(", "),
-      tool_count: selectedTools.length,
-      stack_score: result.score,
-      estimated_savings_monthly: result.totalSave,
-      estimated_savings_annual: result.totalSave * 12,
-      overlaps_found: result.overlaps.length,
-      tools_flagged: [...result.toRemove].join(", "),
-      top_recommendation: result.upgrades[0]?.r || result.actions[0]?.title || "",
-      lead_id: leadData.lead_id || ""
-    });
+    // Save full report data to Supabase (non-blocking)
+    if (leadData.lead_id) {
+      fetch("/api/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lead_id: leadData.lead_id,
+          tools: selectedTools,
+          tool_count: selectedTools.length,
+          industry: _industry,
+          monthly_spend: _budget || null,
+          goals: selectedGoals,
+          stack_score: result.score,
+          estimated_savings_monthly: result.totalSave,
+          estimated_savings_annual: result.totalSave * 12,
+          overlaps_found: result.overlaps.length,
+          tools_flagged: [...(result.toRemove||[])].join(", "),
+          top_recommendation: result.upgrades[0]?.r || result.actions[0]?.title || ""
+        })
+      }).catch(e => console.error("Report save failed:", e));
+    }
     } // end runAnalysisFlow
   });
   wrap.appendChild(cta);
