@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pro Stack Audit — $99 — StackSwap</title>
+<meta name="description" content="A full AI-powered SaaS stack audit. Overlap analysis, savings roadmap, tool-by-tool breakdown, and implementation timeline. One-time $99."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0e13;--surface:rgba(255,255,255,0.02);--border:rgba(255,255,255,0.07);
+  --amber:#ffc857;--teal:#4ecdc4;--red:#ff6b6b;
+  --text:#f0ece4;--muted:#7a7670;--dim:#3a3830;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(255,200,87,0.07) 0%,transparent 60%)}
+
+/* NAV */
+.page-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;background:rgba(15,14,19,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.page-nav-logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);text-decoration:none}
+.page-nav-logo span{color:var(--amber)}
+.page-nav-links{display:flex;align-items:center;gap:4px}
+.page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);
+  text-decoration:none;border:1px solid transparent;transition:all .2s;background:none;letter-spacing:.04em;cursor:pointer}
+.page-nav-link:hover{color:var(--text);background:rgba(255,255,255,0.04);border-color:var(--border)}
+.page-nav-link.active{color:var(--text);border-color:var(--border);background:rgba(255,255,255,0.04)}
+.page-nav-cta{padding:7px 14px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;font-weight:600;
+  color:#0f0e13;background:var(--amber);border:none;cursor:pointer;text-decoration:none;transition:opacity .2s;letter-spacing:.04em}
+.page-nav-cta:hover{opacity:.85}
+
+/* LAYOUT */
+section{position:relative;z-index:1}
+.container{max-width:840px;margin:0 auto;padding:0 24px}
+
+/* HERO */
+.hero{padding:120px 24px 80px;max-width:840px;margin:0 auto}
+.pro-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,200,87,0.08);border:1px solid rgba(255,200,87,0.2);
+  border-radius:20px;padding:5px 14px;margin-bottom:24px}
+.pro-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--amber)}
+.pro-badge-txt{font-size:11px;letter-spacing:.15em;color:var(--amber);text-transform:uppercase}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:800;
+  line-height:.95;letter-spacing:-.03em;color:var(--text);margin-bottom:20px}
+.hero h1 .accent{color:var(--amber)}
+.hero-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:520px;margin-bottom:36px}
+.hero-price-block{display:flex;align-items:baseline;gap:12px;margin-bottom:32px}
+.hero-price{font-family:'Syne',sans-serif;font-size:56px;font-weight:800;color:var(--amber);line-height:1}
+.hero-price sup{font-size:24px;vertical-align:top;margin-top:8px}
+.hero-price-note{font-size:13px;color:var(--muted)}
+.hero-price-note strong{color:var(--text);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--amber);color:#0f0e13;
+  padding:14px 28px;border-radius:8px;font-size:14px;font-weight:700;font-family:'DM Mono',monospace;
+  text-decoration:none;border:none;cursor:pointer;letter-spacing:.04em;transition:all .2s;
+  box-shadow:0 0 40px rgba(255,200,87,0.2)}
+.btn-primary:hover{opacity:.9;box-shadow:0 0 60px rgba(255,200,87,0.3)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--muted);
+  padding:14px 28px;border-radius:8px;font-size:14px;font-family:'DM Mono',monospace;text-decoration:none;
+  border:1px solid var(--border);cursor:pointer;letter-spacing:.04em;transition:all .2s}
+.btn-secondary:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+
+/* SECTION HEADERS */
+.section-label{font-size:10px;color:var(--amber);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:14px}
+.section-h2{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,38px);font-weight:800;
+  color:var(--text);line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}
+.section-sub{font-size:14px;color:var(--muted);line-height:1.7;max-width:480px}
+
+/* WHAT YOU GET */
+.what{padding:80px 0;border-top:1px solid var(--border)}
+.deliverables-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:48px}
+.deliverable{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;position:relative}
+.deliverable.featured{border-color:rgba(255,200,87,0.25);background:rgba(255,200,87,0.03)}
+.deliverable-icon{font-size:22px;margin-bottom:14px}
+.deliverable-title{font-size:14px;color:var(--text);font-weight:500;margin-bottom:6px}
+.deliverable-desc{font-size:12px;color:var(--muted);line-height:1.7}
+.deliverable-tag{position:absolute;top:14px;right:14px;font-size:9px;background:rgba(255,200,87,0.12);
+  border:1px solid rgba(255,200,87,0.3);color:var(--amber);padding:3px 8px;border-radius:4px;letter-spacing:.08em;text-transform:uppercase}
+
+/* VS FREE */
+.vs{padding:80px 0;border-top:1px solid var(--border)}
+.vs-table{width:100%;border-collapse:collapse;margin-top:40px}
+.vs-table th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.vs-table th:last-child,.vs-table th:nth-child(2){text-align:center}
+.vs-table td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;color:var(--muted)}
+.vs-table td:first-child{color:var(--text)}
+.vs-table td:last-child,.vs-table td:nth-child(2){text-align:center}
+.vs-table tbody tr:hover td{background:rgba(255,255,255,0.01)}
+.check{color:var(--teal)}
+.cross{color:var(--dim)}
+.pro-col{color:var(--amber);font-weight:600}
+
+/* WHO IT'S FOR */
+.for{padding:80px 0;border-top:1px solid var(--border)}
+.for-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px}
+.for-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px}
+.for-role{font-size:12px;color:var(--amber);font-weight:600;margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase}
+.for-desc{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* PROCESS */
+.process{padding:80px 0;border-top:1px solid var(--border)}
+.process-steps{display:flex;flex-direction:column;gap:0;margin-top:40px}
+.process-step{display:flex;gap:20px;align-items:flex-start;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.process-step:last-child{border-bottom:none}
+.process-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:rgba(255,200,87,0.15);line-height:1;flex-shrink:0;width:36px}
+.process-body h4{font-size:13px;color:var(--text);font-weight:500;margin-bottom:4px}
+.process-body p{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* FAQ */
+.faq{padding:80px 0;border-top:1px solid var(--border)}
+.faq-list{display:flex;flex-direction:column;gap:0;margin-top:40px}
+.faq-item{padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer}
+.faq-item:last-child{border-bottom:none}
+.faq-q{font-size:13px;color:var(--text);font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:16px;user-select:none}
+.faq-q span{color:var(--dim);font-size:16px;flex-shrink:0;transition:transform .2s}
+.faq-a{font-size:12px;color:var(--muted);line-height:1.8;max-height:0;overflow:hidden;transition:max-height .3s ease, padding .3s ease}
+.faq-item.open .faq-q span{transform:rotate(45deg)}
+.faq-item.open .faq-a{max-height:200px;padding-top:12px}
+
+/* BOTTOM CTA */
+.bottom-cta{padding:80px 0;text-align:center;border-top:1px solid var(--border)}
+.bottom-cta h2{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;
+  color:var(--text);letter-spacing:-.02em;margin-bottom:14px}
+.bottom-cta p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:32px;max-width:460px;margin-left:auto;margin-right:auto}
+.coming-soon-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:8px 16px;margin-top:16px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-index:1}
+.footer-inner{max-width:840px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text)}
+.footer-brand span{color:var(--amber)}
+.footer-links{display:flex;gap:20px}
+.footer-link{font-size:11px;color:var(--dim);text-decoration:none}
+.footer-link:hover{color:var(--muted)}
+.footer-note{font-size:11px;color:var(--dim);letter-spacing:.06em}
+
+@media(max-width:640px){
+  .page-nav{padding:12px 16px}
+  .page-nav-links .page-nav-link:not(.active):not(.page-nav-cta){display:none}
+  .deliverables-grid,.for-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="page-nav">
+  <a href="index.html" class="page-nav-logo">Stack<span>Swap</span></a>
+  <div class="page-nav-links">
+    <a href="index.html" class="page-nav-link">Home</a>
+    <a href="analyze.html" class="page-nav-link">Analyzer</a>
+    <a href="stacksignal.html" class="page-nav-link">StackSignal</a>
+    <a href="pricing.html" class="page-nav-link">Pricing</a>
+    <a href="analyze.html" class="page-nav-cta">Run Free Analysis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <div class="pro-badge"><div class="pro-badge-dot"></div><span class="pro-badge-txt">Pro Audit — One-Time</span></div>
+    <h1>Your stack,<br><span class="accent">fully diagnosed.</span></h1>
+    <p class="hero-sub">The free report tells you what to cut. The Pro Audit tells you exactly how — with a full savings roadmap, tool-by-tool breakdown, and a prioritized implementation plan.</p>
+    <div class="hero-price-block">
+      <div class="hero-price"><sup>$</sup>99</div>
+      <div class="hero-price-note"><strong>One-time</strong>No subscription. No recurring charge.</div>
+    </div>
+    <div class="hero-actions">
+      <a href="analyze.html" class="btn-primary">Start Your Audit →</a>
+      <a href="#compare" class="btn-secondary">Compare to Free</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<section class="what">
+  <div class="container">
+    <div class="section-label">What's Included</div>
+    <h2 class="section-h2">Not a report.<br>A decision document.</h2>
+    <p class="section-sub">Every Pro Audit is generated from your specific stack, industry, and goals — not a generic template.</p>
+
+    <div class="deliverables-grid">
+      <div class="deliverable featured">
+        <div class="deliverable-tag">Core</div>
+        <div class="deliverable-icon">🔍</div>
+        <div class="deliverable-title">Full Overlap Analysis</div>
+        <p class="deliverable-desc">Every redundant tool pair identified. Clear reasoning for each cut recommendation. No guesswork, no vague suggestions.</p>
+      </div>
+      <div class="deliverable featured">
+        <div class="deliverable-tag">Core</div>
+        <div class="deliverable-icon">💰</div>
+        <div class="deliverable-title">Savings Roadmap</div>
+        <p class="deliverable-desc">Line-by-line savings breakdown by tool. Monthly and annual projections. Based on current vendor list pricing.</p>
+      </div>
+      <div class="deliverable">
+        <div class="deliverable-icon">🔄</div>
+        <div class="deliverable-title">AI-Native Upgrade Map</div>
+        <p class="deliverable-desc">Legacy tools identified. Modern, AI-native replacements recommended with rationale for each swap.</p>
+      </div>
+      <div class="deliverable">
+        <div class="deliverable-icon">📋</div>
+        <div class="deliverable-title">Implementation Timeline</div>
+        <p class="deliverable-desc">Prioritized 30/60/90-day action plan. Sequenced by complexity and savings impact, not alphabetical order.</p>
+      </div>
+      <div class="deliverable">
+        <div class="deliverable-icon">🏆</div>
+        <div class="deliverable-title">Ideal Stack Blueprint</div>
+        <p class="deliverable-desc">Industry-specific recommended stack based on your team size and goals. Separate views for small, mid, and growth configurations.</p>
+      </div>
+      <div class="deliverable">
+        <div class="deliverable-icon">📄</div>
+        <div class="deliverable-title">PDF Export</div>
+        <p class="deliverable-desc">Full report exported as a clean, shareable PDF. Useful for presenting to leadership or an operations team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VS FREE -->
+<section class="vs" id="compare">
+  <div class="container">
+    <div class="section-label">Free vs Pro</div>
+    <h2 class="section-h2">What you get<br>at each tier.</h2>
+
+    <table class="vs-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Free</th>
+          <th class="pro-col">Pro — $99</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Stack health score</td><td class="check">✓</td><td class="check pro-col">✓</td></tr>
+        <tr><td>Overlap detection</td><td class="check">✓</td><td class="check pro-col">✓</td></tr>
+        <tr><td>AI-native upgrade suggestions</td><td class="check">✓</td><td class="check pro-col">✓</td></tr>
+        <tr><td>Basic savings estimate</td><td class="check">✓</td><td class="check pro-col">✓</td></tr>
+        <tr><td>Email delivery</td><td class="check">✓</td><td class="check pro-col">✓</td></tr>
+        <tr><td>Full tool-by-tool breakdown</td><td class="cross">—</td><td class="check pro-col">✓</td></tr>
+        <tr><td>Detailed savings roadmap</td><td class="cross">—</td><td class="check pro-col">✓</td></tr>
+        <tr><td>Implementation timeline</td><td class="cross">—</td><td class="check pro-col">✓</td></tr>
+        <tr><td>Ideal stack blueprint</td><td class="cross">—</td><td class="check pro-col">✓</td></tr>
+        <tr><td>PDF export</td><td class="cross">—</td><td class="check pro-col">✓</td></tr>
+        <tr><td>30/60/90 action plan</td><td class="cross">—</td><td class="check pro-col">✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="for">
+  <div class="container">
+    <div class="section-label">Who It's For</div>
+    <h2 class="section-h2">Three types of<br>operator who use this.</h2>
+
+    <div class="for-grid">
+      <div class="for-card">
+        <div class="for-role">Founder / CEO</div>
+        <p class="for-desc">You suspect you're overpaying on SaaS but don't have time to audit it yourself. The Pro Audit does it in minutes and gives you a clean decision document to act on.</p>
+      </div>
+      <div class="for-card">
+        <div class="for-role">Ops / RevOps</div>
+        <p class="for-desc">You're responsible for the tool budget and need to justify cuts or consolidations. The savings roadmap gives you the numbers to present with confidence.</p>
+      </div>
+      <div class="for-card">
+        <div class="for-role">Marketing / Growth</div>
+        <p class="for-desc">Your stack has grown organically over two years and nobody has ever audited it. The blueprint shows you what a purpose-built growth stack looks like.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-h2">Four steps.<br>Under ten minutes.</h2>
+
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="process-num">01</div>
+        <div class="process-body">
+          <h4>Enter your tools</h4>
+          <p>Add every tool your team currently pays for. StackSwap knows 150+ tools and autocompletes. Add anything not in the list.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-num">02</div>
+        <div class="process-body">
+          <h4>Set your context</h4>
+          <p>Select your industry, team size, monthly spend estimate, and goals. This activates industry-specific blueprint logic.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-num">03</div>
+        <div class="process-body">
+          <h4>Receive your audit</h4>
+          <p>The full Pro Audit is generated and delivered to your inbox — scored, broken down, and ready to act on.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="process-num">04</div>
+        <div class="process-body">
+          <h4>Execute the plan</h4>
+          <p>Follow the 30/60/90 timeline. Start with the highest-impact cuts and work through the implementation sequence.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="container">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-h2">Common questions.</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">What's the difference between the free report and the Pro Audit?<span>+</span></div>
+        <div class="faq-a">The free report flags overlaps and gives a summary. The Pro Audit is a decision document — full tool-by-tool breakdown, line-level savings projections, a prioritized action plan, and an industry-specific ideal stack blueprint. It's built to be shared with a team and acted on immediately.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How does StackSwap generate recommendations?<span>+</span></div>
+        <div class="faq-a">Recommendations are generated by pattern-matching your stack against 50+ overlap rules, an AI-native swap knowledge base, and industry-specific blueprint logic. No vendor pays for a recommendation. If a tool appears in the audit, it's because the data supports it.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Are the savings estimates accurate?<span>+</span></div>
+        <div class="faq-a">Savings figures are estimates based on current vendor list pricing. They do not account for negotiated enterprise rates, annual prepay discounts, or multi-seat tiers you may already have. Treat them as directional guidance, not exact figures.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is this a recurring subscription?<span>+</span></div>
+        <div class="faq-a">No. The Pro Audit is a one-time $99 purchase. You receive the report and own it. There is no renewal, no subscription, and no upsell call.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What industries does StackSwap support?<span>+</span></div>
+        <div class="faq-a">StackSwap has industry-specific blueprint logic for SaaS/Tech, Real Estate Brokerage, Real Estate Team, Marketing Agency, E-commerce, Finance/Fintech, Healthcare, Legal, and 11 additional categories. The analysis adapts based on the industry you select.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="bottom-cta">
+  <div class="container">
+    <h2>Know exactly what to<br>cut and why.</h2>
+    <p>Run the free analysis first. Upgrade to Pro if the report surfaces enough to warrant the deeper dive.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="analyze.html" class="btn-primary">Start Free Analysis →</a>
+    </div>
+    <div class="coming-soon-badge">
+      <span>🔒</span>
+      <span>Pro Audit payment via Stripe — coming soon. Free analysis available now.</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">Stack<span>Swap</span></div>
+    <div class="footer-links">
+      <a href="analyze.html" class="footer-link">Analyzer</a>
+      <a href="stacksignal.html" class="footer-link">StackSignal</a>
+      <a href="intelligence.html" class="footer-link">Intelligence</a>
+      <a href="pricing.html" class="footer-link">Pricing</a>
+    </div>
+    <div class="footer-note">POWERED BY DEMANDSTACK — NO VENDOR BIAS</div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
