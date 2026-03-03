@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StackSwap — SaaS Stack Intelligence</title>
+<meta name="description" content="Analyze your SaaS stack. Identify overlap, waste, and smarter alternatives. No vendor bias. No affiliate links. Just data."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0e13;--surface:rgba(255,255,255,0.02);--border:rgba(255,255,255,0.07);
+  --amber:#ffc857;--teal:#4ecdc4;--red:#ff6b6b;
+  --text:#f0ece4;--muted:#7a7670;--dim:#3a3830;
+}
+html{scroll-behavior:smooth}
+:root{--prose:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(255,200,87,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 60%,rgba(78,205,196,0.04) 0%,transparent 50%)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:16px 32px;background:rgba(15,14,19,0.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.nav-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:.01em}
+.nav-logo span{color:var(--amber)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-link{padding:7px 14px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);
+  text-decoration:none;border:1px solid transparent;transition:all .2s;cursor:pointer;background:none;letter-spacing:.04em}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,0.04);border-color:var(--border)}
+.nav-link.active{color:var(--text);border-color:var(--border);background:rgba(255,255,255,0.04)}
+.nav-cta{padding:8px 18px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;font-weight:600;
+  color:#0f0e13;background:var(--amber);border:none;cursor:pointer;text-decoration:none;transition:opacity .2s;letter-spacing:.04em}
+.nav-cta:hover{opacity:.85}
+
+section{position:relative;z-index:1}
+.container{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 24px 80px;max-width:1000px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,200,87,0.08);border:1px solid rgba(255,200,87,0.2);
+  border-radius:20px;padding:5px 14px;margin-bottom:28px}
+.bdot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s infinite}
+.btxt{font-size:11px;letter-spacing:.15em;color:var(--amber);text-transform:uppercase}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(36px,6vw,60px);font-weight:800;line-height:1.05;
+  letter-spacing:-.01em;color:var(--text);margin-bottom:28px}
+.hero h1 .accent{color:var(--amber)}
+.hero h1 .line2{display:block;color:var(--muted)}
+.hero-sub{font-size:16px;color:var(--muted);line-height:1.8;max-width:520px;margin-bottom:40px;font-family:var(--prose)}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:64px}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--amber);color:#0f0e13;
+  padding:14px 28px;border-radius:8px;font-size:14px;font-weight:700;font-family:'DM Mono',monospace;
+  text-decoration:none;border:none;cursor:pointer;letter-spacing:.04em;transition:all .2s;box-shadow:0 0 40px rgba(255,200,87,0.2)}
+.btn-primary:hover{opacity:.9;box-shadow:0 0 60px rgba(255,200,87,0.3)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--muted);
+  padding:14px 28px;border-radius:8px;font-size:14px;font-family:'DM Mono',monospace;text-decoration:none;
+  border:1px solid var(--border);cursor:pointer;letter-spacing:.04em;transition:all .2s}
+.btn-secondary:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+.hero-stats{display:flex;gap:40px;flex-wrap:wrap;padding-top:40px;border-top:1px solid var(--border)}
+.stat-val{font-family:'DM Mono',monospace;font-size:32px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.01em}
+.stat-val span{color:var(--amber)}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+
+/* SECTION HEADERS */
+.section-label{font-size:10px;color:var(--amber);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:16px}
+.section-h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,3.5vw,38px);font-weight:700;color:var(--text);
+  line-height:1.2;letter-spacing:-.015em;margin-bottom:16px}
+.section-sub{font-size:14px;color:var(--muted);line-height:1.8;max-width:480px;font-family:var(--prose)}
+
+/* POSITIONING */
+.positioning{padding:100px 0}
+.pos-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:64px}
+.pos-list{list-style:none;display:flex;flex-direction:column;gap:20px}
+.pos-item{display:flex;gap:16px;align-items:flex-start}
+.pos-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.pos-icon.red{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.2)}
+.pos-icon.teal{background:rgba(78,205,196,0.1);border:1px solid rgba(78,205,196,0.2)}
+.pos-icon.amber{background:rgba(255,200,87,0.1);border:1px solid rgba(255,200,87,0.2)}
+.pos-text h4{font-size:14px;color:var(--text);font-weight:600;margin-bottom:4px;font-family:var(--prose)}
+.pos-text p{font-size:13px;color:var(--muted);line-height:1.75;font-family:var(--prose)}
+.pos-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.pos-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,200,87,0.3),transparent)}
+.vs-row{display:flex;gap:12px;margin-bottom:12px}
+.vs-col{flex:1;border-radius:8px;padding:16px}
+.vs-col.bad{background:rgba(255,107,107,0.05);border:1px solid rgba(255,107,107,0.12)}
+.vs-col.good{background:rgba(78,205,196,0.05);border:1px solid rgba(78,205,196,0.12)}
+.vs-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;margin-bottom:10px}
+.vs-col.bad .vs-label{color:#ff9090}
+.vs-col.good .vs-label{color:var(--teal)}
+.vs-item{font-size:12px;color:var(--muted);padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.5;font-family:var(--prose)}
+.vs-item:last-child{border-bottom:none}
+.vs-item.strike{text-decoration:line-through;color:var(--dim)}
+
+/* HOW IT WORKS */
+.how{padding:100px 0;background:rgba(255,255,255,0.01);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:64px}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative}
+.step-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:48px;font-weight:800;color:rgba(255,200,87,0.12);line-height:1;margin-bottom:20px}
+.step-title{font-size:14px;color:var(--text);font-weight:600;margin-bottom:8px;font-family:var(--prose)}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.75;font-family:var(--prose)}
+.step-card::after{content:'→';position:absolute;right:-18px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:18px;z-index:2}
+.step-card:last-child::after{display:none}
+
+/* DATA / STACKSIGNAL PREVIEW */
+.data-section{padding:100px 0}
+.data-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:48px}
+.data-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.data-card-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:600}
+.data-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.data-bar-label{font-size:11px;color:var(--muted);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.data-bar-track{flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px}
+.data-bar-fill{height:100%;border-radius:2px}
+.data-bar-val{font-size:11px;font-weight:600;width:28px;text-align:right;flex-shrink:0}
+.data-note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.7;border-top:1px solid var(--border);padding-top:12px;font-family:var(--prose)}
+
+/* BLURRED DASHBOARD BG */
+.dashboard-bg-wrap{position:relative;overflow:hidden;border-radius:16px;margin-top:48px;
+  border:1px solid rgba(78,205,196,0.12);background:rgba(255,255,255,0.015)}
+.dashboard-bg-inner{padding:24px;filter:blur(3px);opacity:.42;pointer-events:none;user-select:none}
+.dashboard-bg-overlay{position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(15,14,19,0.0) 0%,rgba(15,14,19,0.0) 40%,rgba(15,14,19,0.94) 100%);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:28px}
+.dashboard-lock-note{text-align:center}
+.dashboard-lock-icon{font-size:18px;margin-bottom:6px}
+.dashboard-lock-txt{font-size:11px;color:var(--muted);letter-spacing:.05em}
+.dash-header-mock{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.dash-title-mock{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text)}
+.dash-filters-mock{display:flex;gap:6px;flex-wrap:wrap}
+.dash-filter-mock{padding:4px 10px;border-radius:14px;font-size:10px;
+  border:1px solid rgba(78,205,196,0.3);background:rgba(78,205,196,0.08);color:var(--teal)}
+.dash-filter-mock.off{border-color:var(--border);background:var(--surface);color:var(--dim)}
+.dash-stats-mock{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.dash-stat-mock{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:14px}
+.dash-stat-val-mock{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:3px}
+.dash-stat-lbl-mock{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.dash-charts-mock{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.dash-chart-mock{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:14px}
+.dash-chart-lbl-mock{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+.dash-bar-mock{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.dash-bar-name-mock{font-size:10px;color:var(--muted);width:72px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-bar-track-mock{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px}
+.dash-bar-fill-mock{height:100%;border-radius:2px}
+.dash-bar-val-mock{font-size:9px;font-weight:600;width:24px;text-align:right;flex-shrink:0}
+
+/* PRICING SECTION — WAITLIST */
+.pricing{padding:100px 0;border-top:1px solid var(--border)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:64px}
+.pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;display:flex;flex-direction:column}
+.pricing-card.featured{border-color:rgba(255,200,87,0.3);background:rgba(255,200,87,0.04);position:relative}
+.pricing-card.intel{border-color:rgba(78,205,196,0.25);background:rgba(78,205,196,0.02);position:relative}
+.pricing-card.featured::before{content:'Coming Soon';position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--amber);color:#0f0e13;font-size:10px;font-weight:700;padding:3px 12px;
+  border-radius:0 0 6px 6px;letter-spacing:.08em;text-transform:uppercase}
+.pricing-card.intel::before{content:'Coming Soon';position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--teal);color:#0f0e13;font-size:10px;font-weight:700;padding:3px 12px;
+  border-radius:0 0 6px 6px;letter-spacing:.08em;text-transform:uppercase}
+.pricing-tier{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;font-weight:600}
+.pricing-price{font-family:'DM Mono',monospace;font-size:36px;font-weight:800;color:var(--text);line-height:1;margin-bottom:6px}
+.pricing-price sup{font-size:18px;vertical-align:top;margin-top:6px;color:var(--muted)}
+.pricing-cadence{font-size:11px;color:var(--dim);margin-bottom:20px;letter-spacing:.03em}
+.pricing-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:24px;flex:1;font-family:var(--prose)}
+.pricing-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+.pricing-features li{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start;line-height:1.5;font-family:var(--prose)}
+.pricing-features li::before{content:'—';color:var(--dim);flex-shrink:0}
+.pricing-features li.on{color:var(--text)}
+.pricing-features li.on::before{content:'✓';color:var(--teal)}
+.pricing-btn{width:100%;padding:12px;border-radius:6px;font-size:13px;font-weight:700;
+  font-family:'DM Mono',monospace;cursor:pointer;text-decoration:none;text-align:center;letter-spacing:.04em;
+  transition:all .2s;border:1px solid var(--border);background:transparent;color:var(--muted);display:block}
+.pricing-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+
+/* WAITLIST IN CARD */
+.card-waitlist{margin-top:auto}
+.card-waitlist-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:8px;font-weight:600}
+.card-waitlist-label.teal{color:var(--teal)}
+.card-waitlist-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+  border-radius:6px;padding:9px 12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);
+  outline:none;transition:border-color .2s;letter-spacing:.02em;margin-bottom:8px}
+.card-waitlist-input::placeholder{color:var(--dim)}
+.card-waitlist-input.amber-focus:focus{border-color:rgba(255,200,87,0.4)}
+.card-waitlist-input.teal-focus:focus{border-color:rgba(78,205,196,0.4)}
+.card-waitlist-btn{width:100%;padding:10px;border-radius:6px;font-size:12px;font-weight:600;
+  font-family:'DM Mono',monospace;cursor:pointer;text-align:center;
+  letter-spacing:.04em;transition:all .2s;border:none}
+.card-waitlist-btn.amber{background:var(--amber);color:#0f0e13;box-shadow:0 0 20px rgba(255,200,87,0.15)}
+.card-waitlist-btn.teal{background:var(--teal);color:#0f0e13;box-shadow:0 0 20px rgba(78,205,196,0.12)}
+.card-waitlist-btn:hover{opacity:.88}
+.card-waitlist-success{display:none;font-size:11px;color:var(--teal);text-align:center;padding:8px 0;letter-spacing:.03em}
+
+/* FOOTER */
+footer{padding:48px 0 32px;border-top:1px solid var(--border)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+.footer-brand{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);letter-spacing:.01em}
+.footer-brand span{color:var(--amber)}
+.footer-note{font-size:11px;color:var(--dim);letter-spacing:.06em}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-link{font-size:11px;color:var(--dim);text-decoration:none;letter-spacing:.04em}
+.footer-link:hover{color:var(--muted)}
+
+@media(max-width:700px){
+  nav{padding:14px 20px}
+  .nav-links .nav-link:not(.nav-cta){display:none}
+  .pos-grid,.steps-grid,.data-grid,.pricing-grid{grid-template-columns:1fr}
+  .step-card::after{display:none}
+  .hero-stats{gap:24px}
+  .dash-stats-mock{grid-template-columns:repeat(2,1fr)}
+  .dash-charts-mock{grid-template-columns:1fr}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero>*{animation:fadeUp .6s ease both}
+.hero-badge{animation-delay:.1s}.hero h1{animation-delay:.2s}.hero-sub{animation-delay:.3s}
+.hero-actions{animation-delay:.4s}.hero-stats{animation-delay:.5s}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Stack<span>Swap</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link active">Home</a>
+    <a href="analyze.html" class="nav-link">Analyzer</a>
+    <a href="stacksignal.html" class="nav-link">StackSignal</a>
+    <a href="pro.html" class="nav-link">Pro</a>
+    <a href="intelligence.html" class="nav-link">Intelligence</a>
+    <a href="pricing.html" class="nav-link">Pricing</a>
+    <a href="analyze.html" class="nav-cta">Run Free Analysis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <div class="hero-badge"><div class="bdot"></div><span class="btxt">AI Tech Stack Intelligence</span></div>
+    <h1>Stop paying for<br><span class="accent">tools you don't need.</span><span class="line2">Start with data.</span></h1>
+    <p class="hero-sub">StackSwap analyzes your SaaS stack, identifies overlap and waste, and recommends leaner configurations — based on real submission data, not vendor payments.</p>
+    <div class="hero-actions">
+      <a href="analyze.html" class="btn-primary">Run Free Analysis →</a>
+      <a href="stacksignal.html" class="btn-secondary">View Stack Rankings</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-val">150<span>+</span></div><div class="stat-lbl">Tools in Database</div></div>
+      <div class="stat-item"><div class="stat-val" style="font-size:22px;padding-top:4px">Vendor<span style="display:block;color:var(--red)">Free</span></div><div class="stat-lbl">No paid placements. Ever.</div></div>
+      <div class="stat-item"><div class="stat-val">19<span>+</span></div><div class="stat-lbl">Industries Tracked</div></div>
+      <div class="stat-item"><div class="stat-val">60<span>s</span></div><div class="stat-lbl">Analysis Time</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIONING -->
+<section class="positioning">
+  <div class="container">
+    <div class="section-label">Why StackSwap</div>
+    <h2 class="section-h2">Not a review site.<br>Not a marketplace.<br>A data tool.</h2>
+    <p class="section-sub">G2 and Capterra charge vendors $50,000/year for a badge. Every recommendation you see there is paid for. StackSwap has no vendor relationships and no affiliate revenue.</p>
+    <div class="pos-grid">
+      <ul class="pos-list">
+        <li class="pos-item">
+          <div class="pos-icon red">✕</div>
+          <div class="pos-text"><h4>No vendor payments accepted</h4><p>No tool pays for placement, ranking, or recommendation in any StackSwap output.</p></div>
+        </li>
+        <li class="pos-item">
+          <div class="pos-icon teal">◎</div>
+          <div class="pos-text"><h4>Pattern-matched, not sponsored</h4><p>Recommendations come from overlap rules and usage patterns — not ad budgets.</p></div>
+        </li>
+        <li class="pos-item">
+          <div class="pos-icon amber">▲</div>
+          <div class="pos-text"><h4>Intelligence improves with scale</h4><p>Every submitted stack enriches the dataset. Rankings update in real time.</p></div>
+        </li>
+      </ul>
+      <div class="pos-card">
+        <div class="vs-row">
+          <div class="vs-col bad">
+            <div class="vs-label">G2 / Capterra</div>
+            <div class="vs-item strike">Pay-to-rank model</div>
+            <div class="vs-item strike">Vendor-written reviews</div>
+            <div class="vs-item strike">Sponsored placements</div>
+            <div class="vs-item strike">Category confusion</div>
+          </div>
+          <div class="vs-col good">
+            <div class="vs-label">StackSwap</div>
+            <div class="vs-item">Zero vendor revenue</div>
+            <div class="vs-item">Pattern-matched data</div>
+            <div class="vs-item">Anonymous submissions</div>
+            <div class="vs-item">Industry-specific logic</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-h2">Three steps.<br>Sixty seconds.</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title">Enter your stack</div>
+        <p class="step-desc">Type in every tool your team pays for. StackSwap knows 150+ tools and autocompletes as you type. Add anything not in the list.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title">Set your context</div>
+        <p class="step-desc">Select your industry, team size, and goals. This activates blueprint logic — a brokerage stack is analyzed differently than a SaaS stack.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title">Get your report</div>
+        <p class="step-desc">A scored health report with specific overlaps, AI-native upgrade recommendations, estimated savings, and a prioritized action plan — delivered to your inbox.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACKSIGNAL DATA PREVIEW -->
+<section class="data-section">
+  <div class="container">
+    <div class="section-label">Stack Rankings</div>
+    <h2 class="section-h2">The tools people are<br>leaving — and what<br>replaces them.</h2>
+    <p class="section-sub" style="margin-bottom:0">Updated in real time as stacks are analyzed. No vendor has influenced these rankings.</p>
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="data-card-label">Most Flagged for Removal</div>
+        <div class="data-bar-row"><span class="data-bar-label">ZoomInfo</span><div class="data-bar-track"><div class="data-bar-fill" style="width:92%;background:var(--red)"></div></div><span class="data-bar-val" style="color:var(--red)">92%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">Drift</span><div class="data-bar-track"><div class="data-bar-fill" style="width:78%;background:var(--red)"></div></div><span class="data-bar-val" style="color:var(--red)">78%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">Marketo</span><div class="data-bar-track"><div class="data-bar-fill" style="width:71%;background:var(--red)"></div></div><span class="data-bar-val" style="color:var(--red)">71%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">Hootsuite</span><div class="data-bar-track"><div class="data-bar-fill" style="width:65%;background:var(--red)"></div></div><span class="data-bar-val" style="color:var(--red)">65%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">Jasper</span><div class="data-bar-track"><div class="data-bar-fill" style="width:58%;background:var(--red)"></div></div><span class="data-bar-val" style="color:var(--red)">58%</span></div>
+        <div class="data-note">Based on AI analysis of anonymized stacks. No vendor has paid for or influenced these rankings.</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-label">Rising Replacements</div>
+        <div class="data-bar-row"><span class="data-bar-label">Apollo.io</span><div class="data-bar-track"><div class="data-bar-fill" style="width:88%;background:var(--teal)"></div></div><span class="data-bar-val" style="color:var(--teal)">88%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">HubSpot Chat</span><div class="data-bar-track"><div class="data-bar-fill" style="width:74%;background:var(--teal)"></div></div><span class="data-bar-val" style="color:var(--teal)">74%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">HubSpot Mktg</span><div class="data-bar-track"><div class="data-bar-fill" style="width:68%;background:var(--teal)"></div></div><span class="data-bar-val" style="color:var(--teal)">68%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">Buffer</span><div class="data-bar-track"><div class="data-bar-fill" style="width:62%;background:var(--teal)"></div></div><span class="data-bar-val" style="color:var(--teal)">62%</span></div>
+        <div class="data-bar-row"><span class="data-bar-label">MS Clarity</span><div class="data-bar-track"><div class="data-bar-fill" style="width:55%;background:var(--teal)"></div></div><span class="data-bar-val" style="color:var(--teal)">55%</span></div>
+        <div class="data-note">Recommendations generated by pattern-matching 50+ overlap rules and AI-native swap logic. Updated with each analysis.</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px">
+      <a href="stacksignal.html" class="btn-secondary">View Full Stack Rankings →</a>
+    </div>
+
+    <!-- BLURRED INTELLIGENCE DASHBOARD TEASER -->
+    <div style="margin-top:64px">
+      <div class="section-label" style="color:var(--teal)">StackSignal Intelligence</div>
+      <h2 class="section-h2" style="margin-bottom:12px">Live market data.<br>Locked until launch.</h2>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;max-width:480px;margin-bottom:0;letter-spacing:.01em">
+        Industry filtering, team size segmentation, switching velocity, and CSV export. Join the waitlist below.
+      </p>
+    </div>
+
+    <div class="dashboard-bg-wrap">
+      <div class="dashboard-bg-inner">
+        <div class="dash-header-mock">
+          <div class="dash-title-mock">Stack<span style="color:var(--teal)">Signal</span> Intelligence</div>
+          <div class="dash-filters-mock">
+            <div class="dash-filter-mock">SaaS / Tech ▾</div>
+            <div class="dash-filter-mock">6–20 employees ▾</div>
+            <div class="dash-filter-mock">Last 90 days ▾</div>
+            <div class="dash-filter-mock off">Export CSV</div>
+          </div>
+        </div>
+        <div class="dash-stats-mock">
+          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--amber)">247</div><div class="dash-stat-lbl-mock">Stacks Analyzed</div></div>
+          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--teal)">$612K</div><div class="dash-stat-lbl-mock">Savings Found</div></div>
+          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--red)">89</div><div class="dash-stat-lbl-mock">Tools Flagged</div></div>
+          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--text)">82</div><div class="dash-stat-lbl-mock">Avg Health Score</div></div>
+        </div>
+        <div class="dash-charts-mock">
+          <div class="dash-chart-mock">
+            <div class="dash-chart-lbl-mock" style="color:var(--amber)">Top Tools — SaaS/Tech</div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">HubSpot</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:90%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">90%</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Slack</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:84%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">84%</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Notion</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:76%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">76%</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Apollo.io</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:65%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">65%</div></div>
+          </div>
+          <div class="dash-chart-mock">
+            <div class="dash-chart-lbl-mock" style="color:var(--red)">Exit Velocity</div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">ZoomInfo</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:94%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">94%</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Outreach</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:82%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">82%</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Drift</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:71%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">71%</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Marketo</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:60%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">60%</div></div>
+          </div>
+          <div class="dash-chart-mock">
+            <div class="dash-chart-lbl-mock" style="color:var(--teal)">Switching Velocity</div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">CRM</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:88%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">HIGH</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Outbound</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:74%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">HIGH</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Docs/Wiki</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:48%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">MED</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Automation</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:36%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">LOW</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-bg-overlay">
+        <div class="dashboard-lock-note">
+          <div class="dashboard-lock-icon">🔒</div>
+          <div class="dashboard-lock-txt">Full dashboard unlocks at launch — <a href="intelligence.html" style="color:var(--teal);text-decoration:none">join the Intelligence waitlist →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING — WAITLIST FOR PAID TIERS -->
+<section class="pricing">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-h2">Start free.<br>Go deeper when<br>the data earns it.</h2>
+    <div class="pricing-grid">
+
+      <!-- FREE -->
+      <div class="pricing-card">
+        <div class="pricing-tier">Free</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-cadence">always free</div>
+        <p class="pricing-desc">Full stack analysis with overlap detection, AI-native swap recommendations, and a scored health report.</p>
+        <ul class="pricing-features">
+          <li class="on">Full analysis report</li>
+          <li class="on">Industry blueprint matching</li>
+          <li class="on">Savings estimate</li>
+          <li class="on">Email delivery</li>
+          <li>Aggregate metrics only</li>
+          <li>No filtering or segmentation</li>
+        </ul>
+        <a href="analyze.html" class="pricing-btn">Run Free Analysis</a>
+      </div>
+
+      <!-- PRO — WAITLIST -->
+      <div class="pricing-card featured">
+        <div class="pricing-tier" style="margin-top:12px">Pro Audit</div>
+        <p class="pricing-desc">Deeper analysis with full savings roadmap, tool-by-tool breakdown, and implementation priority guide. Launching soon.</p>
+        <ul class="pricing-features">
+          <li class="on">Everything in Free</li>
+          <li class="on">Full savings roadmap</li>
+          <li class="on">Tool-by-tool breakdown</li>
+          <li class="on">Implementation timeline</li>
+          <li class="on">PDF export</li>
+        </ul>
+        <div class="card-waitlist">
+          <div class="card-waitlist-label">Early Access</div>
+          <input type="email" class="card-waitlist-input amber-focus" placeholder="your@email.com" id="proEmail"/>
+          <button class="card-waitlist-btn amber" onclick="submitWaitlist('proEmail','proSuccess','pro')">Join Pro Waitlist →</button>
+          <div class="card-waitlist-success" id="proSuccess">✓ You're on the list.</div>
+        </div>
+      </div>
+
+      <!-- INTELLIGENCE — WAITLIST -->
+      <div class="pricing-card intel">
+        <div class="pricing-tier" style="margin-top:12px">Intelligence</div>
+        <p class="pricing-desc">Full access to the live intelligence dashboard with industry filtering, time slicing, and CSV export. Opens when the dataset is ready.</p>
+        <ul class="pricing-features">
+          <li class="on">Everything in Pro</li>
+          <li class="on">Live metrics dashboard</li>
+          <li class="on">Industry filtering</li>
+          <li class="on">Time slicing</li>
+          <li class="on">CSV export</li>
+          <li class="on">Switching trend data</li>
+        </ul>
+        <div class="card-waitlist">
+          <div class="card-waitlist-label teal">Intelligence Waitlist</div>
+          <input type="email" class="card-waitlist-input teal-focus" placeholder="your@email.com" id="intelEmail"/>
+          <button class="card-waitlist-btn teal" onclick="submitWaitlist('intelEmail','intelSuccess','intelligence')">Join Intelligence Waitlist →</button>
+          <div class="card-waitlist-success" id="intelSuccess">✓ You're on the list.</div>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <a href="pricing.html" style="font-size:12px;color:var(--dim);text-decoration:none;letter-spacing:.04em;border-bottom:1px solid var(--border)">View full pricing comparison →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">Stack<span>Swap</span></div>
+      <div class="footer-links">
+        <a href="analyze.html" class="footer-link">Analyzer</a>
+        <a href="stacksignal.html" class="footer-link">StackSignal</a>
+        <a href="pro.html" class="footer-link">Pro</a>
+        <a href="intelligence.html" class="footer-link">Intelligence</a>
+        <a href="pricing.html" class="footer-link">Pricing</a>
+      </div>
+      <div class="footer-note">POWERED BY DEMANDSTACK — NO VENDOR BIAS</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const ZAPIER_WEBHOOK = "";
+
+async function submitWaitlist(inputId, successId, page) {
+  const input = document.getElementById(inputId);
+  const success = document.getElementById(successId);
+  const email = input.value.trim();
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = 'rgba(255,107,107,0.5)';
+    setTimeout(() => input.style.borderColor = '', 1500);
+    return;
+  }
+  if (ZAPIER_WEBHOOK) {
+    try {
+      await fetch(ZAPIER_WEBHOOK, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, page, timestamp: new Date().toISOString() })
+      });
+    } catch(e) { /* silent fail */ }
+  }
+  input.style.display = 'none';
+  const btn = document.querySelector(`[onclick*="${inputId}"]`);
+  if (btn) btn.style.display = 'none';
+  success.style.display = 'block';
+}
+</script>
+</body>
+</html>
