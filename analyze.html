@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>StackSwap — Stack Analyzer</title>
+<title>StackScan — Free Stack Analysis</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>emailjs.init("KsZrTLyDLTQFLvip8");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -195,7 +195,7 @@ h1 .accent{color:#ffc857}
   backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,0.05);
 }
-.page-nav-logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#f0ece4;text-decoration:none;letter-spacing:.01em}
+.page-nav-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:#f0ece4;text-decoration:none;letter-spacing:.01em}
 .page-nav-logo span{color:#ffc857}
 .page-nav-links{display:flex;align-items:center;gap:4px}
 .page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;
@@ -424,11 +424,11 @@ function pingZapier(payload) {
   }).catch(()=>{}); // silent fail — never block the UI
 }
 const GOALS = ["Reduce monthly spend","Consolidate overlapping tools","Find AI-native replacements","Improve team adoption","Scale without adding tools","Eliminate redundant features"];
-const INDUSTRIES = ["","SaaS / Tech","Real Estate Brokerage","Real Estate Team","Marketing Agency","E-commerce","Finance / Fintech","Healthcare / MedTech","Legal","Insurance","Construction / Trades","Property Management","Logistics / Supply Chain","Higher Education","Non-Profit","Media / Publishing","Recruiting / Staffing","Consulting","Government / Public Sector","Other"];
+const INDUSTRIES = ["","SaaS / Tech","Real Estate","Marketing Agency","E-commerce","Finance / Fintech","Healthcare / MedTech","Legal","Insurance","Consulting","Recruiting / Staffing","Construction / Trades","Non-Profit","Other"];
 
 // In-memory metrics (persists within session)
 let sessionMetrics = { from:[], cuts:[], recs:[], count:0, totalSavings:0, byIndustry:{} };
-// byIndustry shape: { "Real Estate Brokerage": { tools:[], cuts:[], recs:[], count:0, savings:0 }, ... }
+// byIndustry shape: { "Real Estate": { tools:[], cuts:[], recs:[], count:0, savings:0 }, ... }
 
 function getAllTools() { return [...new Set([...TOOLS,...extraTools])].sort(); }
 
@@ -438,7 +438,7 @@ function getAllTools() { return [...new Set([...TOOLS,...extraTools])].sort(); }
 // generates prescriptive "you're missing this" / "you don't need that" advice.
 
 const BLUEPRINTS = {
-  "Real Estate Brokerage": {
+  "Real Estate": {
     description: "A lean brokerage runs on 4-5 tools max. The biggest mistake is paying for separate transaction management, back office, e-sign, and CRM when modern platforms bundle all four.",
     coreJobs: {
       "Transaction Management + Back Office + E-Sign": {
@@ -488,7 +488,7 @@ const BLUEPRINTS = {
     }
   },
 
-  "Real Estate Team": {
+  "Real Estate": {
     description: "A productive real estate team (1-10 agents under one roof) needs a CRM, a transaction tool, and communication. Everything else is noise.",
     coreJobs: {
       "CRM + Lead Management": {
@@ -1058,7 +1058,7 @@ function renderMain() {
 
   // Header
   const hdr = div("header");
-  hdr.innerHTML=`<div class="badge"><div class="bdot"></div><span class="btxt">Free AI Tech Stack Analyzer</span></div><h1>Stack<span class="accent">Swap</span></h1><p class="sub">Tell us what you use. We'll tell you what you don't need.</p>`;
+  hdr.innerHTML=`<div class="badge"><div class="bdot"></div><span class="btxt">Free Instant Stack Analysis</span></div><h1><span style="color:var(--text,#f0ece4)">Stack</span><span class="accent">Scan</span></h1><p class="sub">Tell us what you use. We'll tell you what you don't need.</p>`;
   wrap.appendChild(hdr);
 
   // Step 1 — Tools
@@ -1187,7 +1187,7 @@ function renderMain() {
   const g4row = div("g2");
   const roleW = div("field-wrap"); roleW.innerHTML='<label class="lbl">Your Role</label>';
   const roleSel = el("select","field"); roleSel.id="gate-role";
-  ["","Broker / Owner","Operations Manager","Agent","Sales / RevOps","Marketing","IT / Technology","Finance / Accounting","Founder / CEO","Other"]
+  ["","Founder / Owner","Executive (C-Suite / VP)","Operations","Sales / RevOps","Marketing","Finance","IT / Engineering","Other"]
     .forEach(v=>{const o=el("option",null,v||"Select your role...");o.value=v;roleSel.appendChild(o);});
   roleSel.addEventListener("change",updateGateBtn);
   roleW.appendChild(roleSel);
