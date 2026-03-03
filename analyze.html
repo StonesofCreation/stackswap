@@ -4,8 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>StackScan — Free Stack Analysis</title>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>emailjs.init("KsZrTLyDLTQFLvip8");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -1321,22 +1319,7 @@ function renderMain() {
     c4.appendChild(confirmed);
     updateCTA();
 
-    // Notify Nick of new lead
-    emailjs.send("service_td3o0fu","template_oe1gjqn",{
-      to_email: "nicholasallenfrench@gmail.com",
-      subject: "New StackSwap Lead: "+company,
-      name: "Nick",
-      company: company,
-      report_summary:
-        "New lead captured:\n\nEmail: "+email+
-        "\nCompany: "+company+
-        "\nRole: "+role+
-        "\nTeam Size: "+teamSize+
-        "\nLead ID: "+(lead_id||"n/a")+
-        "\n\nThey are generating their report now."
-    }).catch(()=>{});
-
-    // Lead already saved to Supabase via /api/lead above
+    // Lead saved to Supabase via /api/lead above
   });
   gateForm.appendChild(unlockBtn);
   c4.appendChild(gateForm);
