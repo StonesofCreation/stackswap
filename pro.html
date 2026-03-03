@@ -11,7 +11,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0f0e13;--surface:rgba(255,255,255,0.02);--border:rgba(255,255,255,0.07);
-  --amber:#ffc857;--teal:#4ecdc4;--red:#ff6b6b;
+  --amber:#ffc857;--teal:#4ecdc4;--red:#ff6b6b;--green:#39ff85;--green:#39ff85;
   --text:#f0ece4;--muted:#7a7670;--dim:#3a3830;
 }
 body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
@@ -22,7 +22,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 /* NAV */
 .page-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
   padding:14px 28px;background:rgba(15,14,19,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
-.page-nav-logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:.01em}
+.page-nav-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:.01em}
 .page-nav-logo span{color:var(--amber)}
 .page-nav-links{display:flex;align-items:center;gap:4px}
 .page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);
@@ -39,19 +39,19 @@ section{position:relative;z-index:1}
 
 /* HERO */
 .hero{padding:120px 24px 80px;max-width:840px;margin:0 auto}
-.pro-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,200,87,0.08);border:1px solid rgba(255,200,87,0.2);
+.pro-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(57,255,133,0.08);border:1px solid rgba(255,200,87,0.2);
   border-radius:20px;padding:5px 14px;margin-bottom:24px}
-.pro-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--amber)}
-.pro-badge-txt{font-size:11px;letter-spacing:.15em;color:var(--amber);text-transform:uppercase}
+.pro-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.pro-badge-txt{font-size:11px;letter-spacing:.15em;color:var(--green);text-transform:uppercase}
 .hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:800;
   line-height:1.05;letter-spacing:-.01em;color:var(--text);margin-bottom:20px}
-.hero h1 .accent{color:var(--amber)}
+.hero h1 .accent{color:var(--green)}
 .hero-sub{font-size:15px;color:var(--muted);line-height:1.8;max-width:520px;margin-bottom:40px;font-family:var(--prose)}
 
 /* WAITLIST — HERO */
-.hero-waitlist{background:rgba(255,200,87,0.04);border:1px solid rgba(255,200,87,0.15);
+.hero-waitlist{background:rgba(57,255,133,0.04);border:1px solid rgba(57,255,133,0.15);
   border-radius:12px;padding:28px;max-width:480px;margin-bottom:24px}
-.waitlist-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;font-weight:600}
+.waitlist-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);margin-bottom:10px;font-weight:600}
 .waitlist-headline{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);
   margin-bottom:6px;letter-spacing:-.01em;line-height:1.3}
 .waitlist-sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.75;font-family:var(--prose)}
@@ -60,8 +60,8 @@ section{position:relative;z-index:1}
   border-radius:7px;padding:11px 14px;font-family:'DM Mono',monospace;font-size:13px;color:var(--text);
   outline:none;transition:border-color .2s;letter-spacing:.02em}
 .waitlist-input::placeholder{color:var(--dim)}
-.waitlist-input:focus{border-color:rgba(255,200,87,0.4)}
-.waitlist-btn{background:var(--amber);color:#0f0e13;border:none;border-radius:7px;padding:11px 20px;
+.waitlist-input:focus{border-color:rgba(57,255,133,0.4)}
+.waitlist-btn{background:var(--green);color:#0f0e13;border:none;border-radius:7px;padding:11px 20px;
   font-family:'DM Mono',monospace;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;
   letter-spacing:.04em;transition:opacity .2s;box-shadow:0 0 24px rgba(255,200,87,0.2)}
 .waitlist-btn:hover{opacity:.88}
@@ -70,7 +70,7 @@ section{position:relative;z-index:1}
 
 /* BLURRED DASHBOARD BACKGROUND */
 .dashboard-bg-wrap{position:relative;overflow:hidden;border-radius:16px;margin-top:48px;
-  border:1px solid rgba(255,200,87,0.12);background:rgba(255,255,255,0.015)}
+  border:1px solid rgba(57,255,133,0.12);background:rgba(255,255,255,0.015)}
 .dashboard-bg-inner{padding:24px;filter:blur(3px);opacity:.45;pointer-events:none;user-select:none}
 .dashboard-bg-overlay{position:absolute;inset:0;
   background:linear-gradient(to bottom,rgba(15,14,19,0.1) 0%,rgba(15,14,19,0.0) 30%,rgba(15,14,19,0.0) 50%,rgba(15,14,19,0.92) 100%);
@@ -82,7 +82,7 @@ section{position:relative;z-index:1}
 .dash-title-mock{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text)}
 .dash-filters-mock{display:flex;gap:6px}
 .dash-filter-mock{padding:4px 10px;border-radius:14px;font-size:10px;
-  border:1px solid rgba(255,200,87,0.3);background:rgba(255,200,87,0.08);color:var(--amber)}
+  border:1px solid rgba(57,255,133,0.3);background:rgba(57,255,133,0.08);color:var(--green)}
 .dash-filter-mock.off{border-color:var(--border);background:var(--surface);color:var(--dim)}
 .dash-stats-mock{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
 .dash-stat-mock{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:14px}
@@ -100,7 +100,7 @@ section{position:relative;z-index:1}
 .dash-line-svg{width:100%;height:100%}
 
 /* SECTION HEADERS */
-.section-label{font-size:10px;color:var(--amber);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:14px}
+.section-label{font-size:10px;color:var(--green);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:14px}
 .section-h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,4vw,38px);font-weight:700;
   color:var(--text);line-height:1.2;letter-spacing:-.015em;margin-bottom:12px}
 .section-sub{font-size:14px;color:var(--muted);line-height:1.8;max-width:480px;font-family:var(--prose)}
@@ -109,12 +109,12 @@ section{position:relative;z-index:1}
 .what{padding:80px 0;border-top:1px solid var(--border)}
 .deliverables-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:48px}
 .deliverable{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;position:relative}
-.deliverable.featured{border-color:rgba(255,200,87,0.25);background:rgba(255,200,87,0.03)}
+.deliverable.featured{border-color:rgba(57,255,133,0.25);background:rgba(255,200,87,0.03)}
 .deliverable-icon{font-size:22px;margin-bottom:14px}
 .deliverable-title{font-size:14px;color:var(--text);font-weight:600;margin-bottom:6px;font-family:var(--prose)}
 .deliverable-desc{font-size:13px;color:var(--muted);line-height:1.75;font-family:var(--prose)}
-.deliverable-tag{position:absolute;top:14px;right:14px;font-size:9px;background:rgba(255,200,87,0.12);
-  border:1px solid rgba(255,200,87,0.3);color:var(--amber);padding:3px 8px;border-radius:4px;letter-spacing:.08em;text-transform:uppercase}
+.deliverable-tag{position:absolute;top:14px;right:14px;font-size:9px;background:rgba(57,255,133,0.12);
+  border:1px solid rgba(57,255,133,0.3);color:var(--green);padding:3px 8px;border-radius:4px;letter-spacing:.08em;text-transform:uppercase}
 
 /* VS FREE */
 .vs{padding:80px 0;border-top:1px solid var(--border)}
@@ -127,13 +127,13 @@ section{position:relative;z-index:1}
 .vs-table tbody tr:hover td{background:rgba(255,255,255,0.01)}
 .check{color:var(--teal)}
 .cross{color:var(--dim)}
-.pro-col{color:var(--amber);font-weight:600}
+.pro-col{color:var(--green);font-weight:600}
 
 /* WHO IT'S FOR */
 .for{padding:80px 0;border-top:1px solid var(--border)}
 .for-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px}
 .for-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px}
-.for-role{font-size:12px;color:var(--amber);font-weight:600;margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase}
+.for-role{font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase}
 .for-desc{font-size:13px;color:var(--muted);line-height:1.75;font-family:var(--prose)}
 
 /* PROCESS */
@@ -141,7 +141,7 @@ section{position:relative;z-index:1}
 .process-steps{display:flex;flex-direction:column;gap:0;margin-top:40px}
 .process-step{display:flex;gap:20px;align-items:flex-start;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
 .process-step:last-child{border-bottom:none}
-.process-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:rgba(255,200,87,0.15);line-height:1;flex-shrink:0;width:36px}
+.process-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:rgba(57,255,133,0.15);line-height:1;flex-shrink:0;width:36px}
 .process-body h4{font-size:14px;color:var(--text);font-weight:600;margin-bottom:4px;font-family:var(--prose)}
 .process-body p{font-size:13px;color:var(--muted);line-height:1.75;font-family:var(--prose)}
 
@@ -198,14 +198,14 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 <!-- HERO -->
 <section>
   <div class="hero">
-    <div class="pro-badge"><div class="pro-badge-dot"></div><span class="pro-badge-txt">Pro Audit — Coming Soon</span></div>
+    <div class="pro-badge"><div class="pro-badge-dot"></div><span class="pro-badge-txt">StackAudit — Coming Soon</span></div>
     <h1>Your stack,<br><span class="accent">fully diagnosed.</span></h1>
-    <p class="hero-sub">The free report tells you what to cut. The Pro Audit tells you exactly how — with a full savings roadmap, tool-by-tool breakdown, and a prioritized implementation plan.</p>
+    <p class="hero-sub">The free report tells you what to cut. The StackAudit tells you exactly how — with a full savings roadmap, tool-by-tool breakdown, and a prioritized implementation plan.</p>
 
     <div class="hero-waitlist" id="waitlist">
       <div class="waitlist-label">Early Access</div>
       <div class="waitlist-headline">Join the waitlist — be first in.</div>
-      <div class="waitlist-sub">Pro Audit launches soon. Drop your email to get notified first and lock in early pricing.</div>
+      <div class="waitlist-sub">StackAudit launches soon. Drop your email to get notified first and lock in early pricing.</div>
       <div class="waitlist-form">
         <input type="email" class="waitlist-input" placeholder="your@email.com" id="heroEmail"/>
         <button class="waitlist-btn" onclick="submitWaitlist('heroEmail','heroSuccess')">Notify Me</button>
@@ -223,13 +223,13 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
   <div class="container">
     <div class="section-label">What You'll Unlock</div>
     <h2 class="section-h2">A decision document.<br>Not a generic report.</h2>
-    <p class="section-sub">Every Pro Audit is generated from your specific stack, industry, and goals.</p>
+    <p class="section-sub">Every StackAudit is generated from your specific stack, industry, and goals.</p>
 
     <div class="dashboard-bg-wrap">
       <div class="dashboard-bg-inner">
-        <!-- Fake Pro Audit Dashboard -->
+        <!-- Fake StackAudit Dashboard -->
         <div class="dash-header-mock">
-          <div class="dash-title-mock">Pro Audit — <span style="color:var(--amber)">Acme Corp</span></div>
+          <div class="dash-title-mock">StackAudit — <span style="color:var(--green)">Acme Corp</span></div>
           <div class="dash-filters-mock">
             <div class="dash-filter-mock">SaaS / Tech</div>
             <div class="dash-filter-mock off">12 Tools</div>
@@ -237,19 +237,19 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
           </div>
         </div>
         <div class="dash-stats-mock">
-          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--amber)">$1,840</div><div class="dash-stat-lbl-mock">Est. Monthly Savings</div></div>
+          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--green)">$1,840</div><div class="dash-stat-lbl-mock">Est. Monthly Savings</div></div>
           <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--red)">4</div><div class="dash-stat-lbl-mock">Overlap Conflicts</div></div>
           <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--teal)">7</div><div class="dash-stat-lbl-mock">AI-Native Swaps</div></div>
           <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--text)">82</div><div class="dash-stat-lbl-mock">Stack Health Score</div></div>
         </div>
         <div class="dash-charts-mock">
           <div class="dash-chart-mock">
-            <div class="dash-chart-lbl-mock" style="color:var(--amber)">Savings by Tool</div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Salesforce</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:85%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">$620</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Intercom</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:60%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">$440</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Notion</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:40%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">$290</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Zapier</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:30%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">$220</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Clearbit</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:20%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">$150</div></div>
+            <div class="dash-chart-lbl-mock" style="color:var(--green)">Savings by Tool</div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Salesforce</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:85%;background:var(--green)"></div></div><div class="dash-bar-val-mock" style="color:var(--green)">$620</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Intercom</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:60%;background:var(--green)"></div></div><div class="dash-bar-val-mock" style="color:var(--green)">$440</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Notion</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:40%;background:var(--green)"></div></div><div class="dash-bar-val-mock" style="color:var(--green)">$290</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Zapier</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:30%;background:var(--green)"></div></div><div class="dash-bar-val-mock" style="color:var(--green)">$220</div></div>
+            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Clearbit</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:20%;background:var(--green)"></div></div><div class="dash-bar-val-mock" style="color:var(--green)">$150</div></div>
           </div>
           <div class="dash-chart-mock">
             <div class="dash-chart-lbl-mock" style="color:var(--red)">Overlap Pairs</div>
@@ -275,7 +275,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
   <div class="container">
     <div class="section-label">What's Included</div>
     <h2 class="section-h2">Not a report.<br>A decision document.</h2>
-    <p class="section-sub">Every Pro Audit is generated from your specific stack, industry, and goals — not a generic template.</p>
+    <p class="section-sub">Every StackAudit is generated from your specific stack, industry, and goals — not a generic template.</p>
 
     <div class="deliverables-grid">
       <div class="deliverable featured">
@@ -354,7 +354,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
     <div class="for-grid">
       <div class="for-card">
         <div class="for-role">Founder / CEO</div>
-        <p class="for-desc">You suspect you're overpaying on SaaS but don't have time to audit it yourself. The Pro Audit does it in minutes and gives you a clean decision document to act on.</p>
+        <p class="for-desc">You suspect you're overpaying on SaaS but don't have time to audit it yourself. The StackAudit does it in minutes and gives you a clean decision document to act on.</p>
       </div>
       <div class="for-card">
         <div class="for-role">Ops / RevOps</div>
@@ -393,7 +393,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
         <div class="process-num">03</div>
         <div class="process-body">
           <h4>Receive your audit</h4>
-          <p>The full Pro Audit is generated and delivered to your inbox — scored, broken down, and ready to act on.</p>
+          <p>The full StackAudit is generated and delivered to your inbox — scored, broken down, and ready to act on.</p>
         </div>
       </div>
       <div class="process-step">
@@ -415,8 +415,8 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 
     <div class="faq-list">
       <div class="faq-item">
-        <div class="faq-q">What's the difference between the free report and the Pro Audit?<span>+</span></div>
-        <div class="faq-a">The free report flags overlaps and gives a summary. The Pro Audit is a decision document — full tool-by-tool breakdown, line-level savings projections, a prioritized action plan, and an industry-specific ideal stack blueprint. It's built to be shared with a team and acted on immediately.</div>
+        <div class="faq-q">What's the difference between the free report and the StackAudit?<span>+</span></div>
+        <div class="faq-a">The free report flags overlaps and gives a summary. The StackAudit is a decision document — full tool-by-tool breakdown, line-level savings projections, a prioritized action plan, and an industry-specific ideal stack blueprint. It's built to be shared with a team and acted on immediately.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">How does StackSwap generate recommendations?<span>+</span></div>
@@ -428,7 +428,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
       </div>
       <div class="faq-item">
         <div class="faq-q">When does Pro launch?<span>+</span></div>
-        <div class="faq-a">Pro Audit is in final development. Join the waitlist to get notified the moment it goes live — waitlist members get first access and early pricing before public launch.</div>
+        <div class="faq-a">StackAudit is in final development. Join the waitlist to get notified the moment it goes live — waitlist members get first access and early pricing before public launch.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q">What industries does StackSwap support?<span>+</span></div>
