@@ -1,47 +1,57 @@
-console.log("ENV CHECK", {
-  hasUrl: !!process.env.SUPABASE_URL,
-  urlStart: (process.env.SUPABASE_URL || "").slice(0, 30),
-  hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-  keyStart: (process.env.SUPABASE_SERVICE_ROLE_KEY || "").slice(0, 6),
-});
+export const config = {
+  api: { bodyParser: { sizeLimit: "1mb" } }
+};
 
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const SUPABASE_URL = "https://sruapwyxvwehwfmafobh.supabase.co";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+
+  const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+  const { email, company, role, team_size, industry } = body || {};
+
+  if (!email || !company || !role || !team_size) {
+    return res.status(400).json({ error: "Missing required fields" });
   }
 
-  try {
-    const { email, company, role, team_size, industry } = req.body || {};
+  const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
+  if (!SUPABASE_KEY) return res.status(500).json({ error: "SUPABASE_ANON_KEY not set" });
 
-    if (!email || !company) {
-      return res.status(400).json({ error: "Missing email or company" });
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Prefer": "return=representation"
+      },
+      body: JSON.stringify({
+        email,
+        company,
+        role,
+        team_size,
+        industry: industry || null,
+        source_page: "analyze",
+        created_at: new Date().toISOString()
+      })
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) {
+      console.error("Supabase lead insert error:", data);
+      return res.status(502).json({ error: "Database error", detail: data });
     }
 
-    const clean = {
-      email: String(email).trim().toLowerCase(),
-      company: String(company).trim(),
-      role: role ? String(role).trim() : null,
-      team_size: team_size ? String(team_size).trim() : null,
-      industry: industry ? String(industry).trim() : null
-    };
+    const lead_id = Array.isArray(data) ? data[0]?.id : data?.id;
+    return res.status(200).json({ success: true, lead_id });
 
-    const { data, error } = await supabase
-      .from("leads")
-      .insert([clean])
-      .select("id")
-      .single();
-
-    if (error) return res.status(500).json({ error: error.message });
-
-    return res.status(200).json({ lead_id: data.id });
-  } catch (e) {
-    return res.status(500).json({ error: e?.message || "Unknown error" });
+  } catch(e) {
+    console.error("Lead handler error:", e.message);
+    return res.status(500).json({ error: e.message });
   }
 }
