@@ -3,490 +3,136 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Pricing — StackSwap</title>
-<meta name="description" content="Simple, transparent pricing. Free stack analysis, Pro Audit, and Intelligence dashboard. No vendor bias at any tier."/>
+<title>Pricing - StackSwap</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0f0e13;--surface:rgba(255,255,255,0.02);--border:rgba(255,255,255,0.07);
-  --amber:#ffc857;--teal:#4ecdc4;--red:#ff6b6b;
-  --text:#f0ece4;--muted:#7a7670;--dim:#3a3830;
-}
-body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
-:root{--prose:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(255,200,87,0.06) 0%,transparent 60%)}
-
-/* NAV */
-.page-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
-  padding:14px 28px;background:rgba(15,14,19,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
-.page-nav-logo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:.01em}
+:root{--bg:#0f0e13;--surface:rgba(255,255,255,0.02);--border:rgba(255,255,255,0.07);--amber:#ffc857;--teal:#4ecdc4;--red:#ff6b6b;--text:#f0ece4;--muted:#9a9690;--dim:#3a3830;--prose:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"DM Mono",monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(255,200,87,0.05) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 90% 60%,rgba(78,205,196,0.03) 0%,transparent 50%)}
+.page-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:rgba(15,14,19,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.page-nav-logo{font-family:"Syne",sans-serif;font-size:16px;font-weight:800;color:var(--text);text-decoration:none}
 .page-nav-logo span{color:var(--amber)}
 .page-nav-links{display:flex;align-items:center;gap:4px}
-.page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);
-  text-decoration:none;border:1px solid transparent;transition:all .2s;background:none;letter-spacing:.04em;cursor:pointer}
-.page-nav-link:hover{color:var(--text);background:rgba(255,255,255,0.04);border-color:var(--border)}
-.page-nav-link.active{color:var(--text);border-color:var(--border);background:rgba(255,255,255,0.04)}
-.page-nav-cta{padding:7px 14px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;font-weight:600;
-  color:#0f0e13;background:var(--amber);border:none;cursor:pointer;text-decoration:none;transition:opacity .2s;letter-spacing:.04em}
+.page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:"DM Mono",monospace;color:var(--muted);text-decoration:none;border:1px solid transparent;transition:all .2s;letter-spacing:.04em}
+.page-nav-link:hover,.page-nav-link.active{color:var(--text);background:rgba(255,255,255,0.04);border-color:var(--border)}
+.page-nav-cta{padding:7px 14px;border-radius:6px;font-size:12px;font-family:"DM Mono",monospace;font-weight:600;color:#0f0e13;background:var(--amber);border:none;cursor:pointer;text-decoration:none;transition:opacity .2s;letter-spacing:.04em}
 .page-nav-cta:hover{opacity:.85}
-
-section{position:relative;z-index:1}
-.container{max-width:960px;margin:0 auto;padding:0 24px}
-
-/* HERO */
-.hero{padding:120px 24px 64px;text-align:center;max-width:960px;margin:0 auto}
-.hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(36px,6vw,60px);font-weight:800;
-  line-height:1.05;letter-spacing:-.01em;color:var(--text);margin-bottom:16px}
-.hero-sub{font-size:15px;color:var(--muted);line-height:1.8;max-width:500px;margin:0 auto 12px;font-family:var(--prose)}
-.hero-note{font-size:13px;color:var(--muted);font-family:var(--prose)}
-
-/* PRICING CARDS */
-.pricing-section{padding:48px 0 80px}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .55s ease both}
+.hero{padding:120px 0 64px;text-align:center}
+.hero>*{animation:fadeUp .5s ease both}
+.hero-eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:20px;display:block;animation-delay:.05s}
+.hero h1{font-family:"Plus Jakarta Sans",sans-serif;font-size:clamp(36px,5.5vw,58px);font-weight:800;line-height:1.05;letter-spacing:-.02em;color:var(--text);margin-bottom:16px;animation-delay:.12s}
+.hero h1 span{color:var(--amber)}
+.hero-sub{font-size:15px;color:var(--muted);line-height:1.8;max-width:520px;margin:0 auto 16px;font-family:var(--prose);animation-delay:.2s}
+.hero-note{font-size:12px;color:var(--dim);font-family:var(--prose);animation-delay:.26s}
+.pricing-section{padding:16px 0 80px}
 .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  padding:28px;display:flex;flex-direction:column;position:relative}
-.pricing-card.featured{border-color:rgba(255,200,87,0.3);background:rgba(255,200,87,0.03)}
-.pricing-card.intel{border-color:rgba(78,205,196,0.25);background:rgba(78,205,196,0.02)}
-.featured-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);
-  background:var(--amber);color:#0f0e13;font-size:9px;font-weight:700;
-  padding:3px 12px;border-radius:0 0 6px 6px;letter-spacing:.1em;text-transform:uppercase}
-.intel-badge-tag{position:absolute;top:-1px;left:50%;transform:translateX(-50%);
-  background:var(--teal);color:#0f0e13;font-size:9px;font-weight:700;
-  padding:3px 12px;border-radius:0 0 6px 6px;letter-spacing:.1em;text-transform:uppercase}
-.pricing-tier{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;font-weight:600}
-.pricing-price-free{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
-.pricing-cadence{font-size:11px;color:var(--dim);margin-bottom:16px;letter-spacing:.03em}
-.pricing-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:20px;flex:1;min-height:64px;font-family:var(--prose)}
-.pricing-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
-.pricing-features li{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start;line-height:1.5;font-family:var(--prose)}
-.pricing-features li::before{content:'—';color:var(--dim);flex-shrink:0}
-.pricing-features li.on::before{content:'✓';color:var(--teal);flex-shrink:0}
-.pricing-features li.on{color:var(--text)}
-.pricing-btn{width:100%;padding:11px;border-radius:6px;font-size:12px;font-weight:700;
-  font-family:'DM Mono',monospace;cursor:pointer;text-decoration:none;text-align:center;
-  letter-spacing:.04em;transition:all .2s;border:1px solid var(--border);
-  background:transparent;color:var(--muted);display:block}
-.pricing-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
-
-/* WAITLIST IN CARD */
+.pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;display:flex;flex-direction:column;position:relative}
+.pricing-card.amber-card{border-color:rgba(255,200,87,0.25);background:rgba(255,200,87,0.025)}
+.pricing-card.teal-card{border-color:rgba(78,205,196,0.2);background:rgba(78,205,196,0.02)}
+.card-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;padding:3px 12px;border-radius:0 0 6px 6px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.badge-amber{background:var(--amber);color:#0f0e13}
+.badge-teal{background:var(--teal);color:#0f0e13}
+.card-tier{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:600}
+.card-name{font-family:"Plus Jakarta Sans",sans-serif;font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px}
+.card-price{font-family:"DM Mono",monospace;font-size:32px;font-weight:500;line-height:1;margin-bottom:4px}
+.card-cadence{font-size:11px;color:var(--dim);margin-bottom:16px;font-family:var(--prose)}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:20px;font-family:var(--prose)}
+.card-features{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:24px;flex:1}
+.card-features li{font-size:13px;display:flex;gap:9px;align-items:flex-start;line-height:1.5;font-family:var(--prose)}
+.card-features li.on{color:#c8c4bc}
+.card-features li.off{color:var(--dim)}
+.feat-check{flex-shrink:0;font-size:12px}
+.card-cta{display:block;width:100%;padding:11px;border-radius:7px;font-size:12px;font-weight:700;font-family:"DM Mono",monospace;cursor:pointer;text-align:center;letter-spacing:.05em;transition:all .2s;text-decoration:none;border:1px solid var(--border);background:transparent;color:var(--muted)}
+.card-cta:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
 .card-waitlist{margin-top:auto}
-.card-waitlist-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:8px;font-weight:600}
-.card-waitlist-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
-  border-radius:6px;padding:9px 12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);
-  outline:none;transition:border-color .2s;letter-spacing:.02em;margin-bottom:8px}
+.card-waitlist-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
+.card-waitlist-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:9px 12px;font-family:var(--prose);font-size:13px;color:var(--text);outline:none;margin-bottom:8px;display:block}
 .card-waitlist-input::placeholder{color:var(--dim)}
-.card-waitlist-input:focus{border-color:rgba(255,200,87,0.4)}
-.card-waitlist-input.teal-focus:focus{border-color:rgba(78,205,196,0.4)}
-.card-waitlist-btn{width:100%;padding:10px;border-radius:6px;font-size:12px;font-weight:600;
-  font-family:'DM Mono',monospace;cursor:pointer;text-align:center;
-  letter-spacing:.04em;transition:all .2s;border:none}
-.card-waitlist-btn.amber{background:var(--amber);color:#0f0e13;box-shadow:0 0 20px rgba(255,200,87,0.15)}
-.card-waitlist-btn.teal{background:var(--teal);color:#0f0e13;box-shadow:0 0 20px rgba(78,205,196,0.12)}
+.card-waitlist-input.amber-focus:focus{border-color:rgba(255,200,87,0.45)}
+.card-waitlist-input.teal-focus:focus{border-color:rgba(78,205,196,0.45)}
+.card-waitlist-btn{width:100%;padding:10px;border-radius:6px;font-size:12px;font-weight:700;font-family:"DM Mono",monospace;cursor:pointer;letter-spacing:.05em;border:none}
 .card-waitlist-btn:hover{opacity:.88}
-.card-waitlist-success{display:none;font-size:11px;color:var(--teal);text-align:center;padding:8px 0;letter-spacing:.03em}
-
-/* SECTION HEADERS */
-.section-label{font-size:10px;color:var(--amber);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:14px}
-.section-h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,4vw,38px);font-weight:700;
-  color:var(--text);line-height:1.2;letter-spacing:-.015em;margin-bottom:40px}
-
-/* BLURRED DASHBOARD PREVIEW */
-.preview-section{padding:80px 0;border-top:1px solid var(--border)}
-.dashboard-bg-wrap{position:relative;overflow:hidden;border-radius:16px;margin-top:40px;
-  border:1px solid rgba(255,200,87,0.1);background:rgba(255,255,255,0.015)}
-.dashboard-bg-inner{padding:24px;filter:blur(3px);opacity:.4;pointer-events:none;user-select:none}
-.dashboard-bg-overlay{position:absolute;inset:0;
-  background:linear-gradient(to bottom,rgba(15,14,19,0.0) 0%,rgba(15,14,19,0.0) 35%,rgba(15,14,19,0.94) 100%);
-  display:flex;align-items:flex-end;justify-content:center;padding-bottom:28px}
-.dashboard-lock-note{text-align:center}
-.dashboard-lock-icon{font-size:18px;margin-bottom:6px}
-.dashboard-lock-txt{font-size:12px;color:var(--muted);font-family:var(--prose)}
-.dash-header-mock{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.dash-title-mock{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text)}
-.dash-filters-mock{display:flex;gap:6px;flex-wrap:wrap}
-.dash-filter-mock{padding:4px 10px;border-radius:14px;font-size:10px;
-  border:1px solid rgba(255,200,87,0.3);background:rgba(255,200,87,0.08);color:var(--amber)}
-.dash-filter-mock.teal{border-color:rgba(78,205,196,0.3);background:rgba(78,205,196,0.08);color:var(--teal)}
-.dash-filter-mock.off{border-color:var(--border);background:var(--surface);color:var(--dim)}
-.dash-stats-mock{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.dash-stat-mock{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:14px}
-.dash-stat-val-mock{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:3px}
-.dash-stat-lbl-mock{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
-.dash-charts-mock{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.dash-chart-mock{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:14px}
-.dash-chart-lbl-mock{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
-.dash-bar-mock{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.dash-bar-name-mock{font-size:10px;color:var(--muted);width:72px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dash-bar-track-mock{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px}
-.dash-bar-fill-mock{height:100%;border-radius:2px}
-.dash-bar-val-mock{font-size:9px;font-weight:600;width:24px;text-align:right;flex-shrink:0}
-
-/* FULL COMPARISON */
+.btn-amber{background:var(--amber);color:#0f0e13}
+.btn-teal{background:var(--teal);color:#0f0e13}
+.card-waitlist-success{display:none;font-size:12px;color:var(--teal);text-align:center;padding:8px 0;font-family:var(--prose)}
+.sec-label{font-size:10px;color:var(--amber);letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:12px}
+.sec-h2{font-family:"Plus Jakarta Sans",sans-serif;font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--text);line-height:1.15;letter-spacing:-.015em}
 .comparison{padding:80px 0;border-top:1px solid var(--border)}
-.comp-table{width:100%;border-collapse:collapse}
-.comp-table .col-head{padding:14px 16px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--dim);border-bottom:1px solid var(--border);text-align:center}
-.comp-table .col-head:first-child{text-align:left}
-.comp-table .col-head.amber{color:var(--amber)}
-.comp-table .col-head.teal{color:var(--teal)}
-.comp-table .group-header td{padding:16px 16px 6px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--dim);font-weight:600;border-top:1px solid var(--border)}
-.comp-table tr td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;font-family:var(--prose)}
-.comp-table tr td:first-child{color:var(--muted)}
-.comp-table tr td:not(:first-child){text-align:center;color:var(--dim)}
-.comp-table tr:hover td{background:rgba(255,255,255,0.01)}
-.c-check{color:var(--teal)}
-.c-amber{color:var(--amber)}
-.c-teal{color:var(--teal);font-weight:600}
-.c-cross{color:var(--dim)}
-
-/* FAQ */
-.faq{padding:80px 0;border-top:1px solid var(--border)}
-.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
-.faq-item h4{font-size:14px;color:var(--text);font-weight:600;margin-bottom:8px;font-family:var(--prose)}
-.faq-item p{font-size:13px;color:var(--muted);line-height:1.8;font-family:var(--prose)}
-
-/* ENTERPRISE */
-.enterprise{padding:80px 0;border-top:1px solid var(--border)}
-.enterprise-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  padding:40px;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
-.enterprise-left h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:700;color:var(--text);
-  margin-bottom:10px;letter-spacing:-.015em;line-height:1.2}
-.enterprise-left p{font-size:13px;color:var(--muted);line-height:1.8;max-width:460px;font-family:var(--prose)}
-.enterprise-price{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--dim);
-  margin-top:16px;letter-spacing:-.01em}
-.enterprise-btn{padding:13px 28px;border-radius:8px;background:transparent;color:var(--text);
-  font-size:13px;font-weight:700;font-family:'DM Mono',monospace;text-decoration:none;
-  border:1px solid rgba(255,255,255,0.2);cursor:pointer;letter-spacing:.04em;transition:all .2s;white-space:nowrap}
-.enterprise-btn:hover{background:rgba(255,255,255,0.04)}
-
-/* FOOTER */
+.comp-wrap{overflow-x:auto;margin-top:36px}
+.comp-table{width:100%;border-collapse:collapse;min-width:600px}
+.comp-table th{padding:12px 16px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);text-align:center;font-weight:600;font-family:"DM Mono",monospace}
+.comp-table th:first-child{text-align:left;color:var(--dim)}
+.comp-group td{padding:14px 16px 4px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);font-weight:600;border-top:1px solid var(--border);font-family:"DM Mono",monospace}
+.comp-table td{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;font-family:var(--prose)}
+.comp-table td:first-child{color:var(--muted)}
+.comp-table td:not(:first-child){text-align:center}
+.comp-table tr:hover td{background:rgba(255,255,255,0.015)}
+.c-yes{color:var(--teal)}.c-amb{color:var(--amber)}.c-no{color:var(--dim)}
+.faq-section{padding:80px 0;border-top:1px solid var(--border)}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px 48px;margin-top:36px}
+.faq-item h4{font-size:14px;color:var(--text);font-weight:600;margin-bottom:8px;font-family:var(--prose);line-height:1.4}
+.faq-item p{font-size:13px;color:var(--muted);line-height:1.85;font-family:var(--prose)}
+.ent-strip{padding:60px 0;border-top:1px solid var(--border)}
+.ent-card{background:rgba(255,107,107,0.02);border:1px solid rgba(255,107,107,0.12);border-radius:14px;padding:40px;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap;position:relative;overflow:hidden}
+.ent-card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,107,0.4),transparent)}
+.ent-left h3{font-family:"Plus Jakarta Sans",sans-serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:8px}
+.ent-left p{font-size:14px;color:var(--muted);line-height:1.8;max-width:480px;font-family:var(--prose)}
+.ent-price{font-family:"DM Mono",monospace;font-size:13px;color:var(--red);margin-top:12px}
+.ent-btn{padding:12px 28px;border-radius:7px;background:transparent;color:var(--red);font-size:13px;font-weight:700;font-family:"DM Mono",monospace;text-decoration:none;border:1px solid rgba(255,107,107,0.4);cursor:pointer;letter-spacing:.04em;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.ent-btn:hover{background:rgba(255,107,107,0.08)}
 footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-index:1}
 .footer-inner{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.footer-brand{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text);letter-spacing:.01em}
+.footer-brand{font-family:"Syne",sans-serif;font-size:14px;font-weight:800;color:var(--text)}
 .footer-brand span{color:var(--amber)}
 .footer-links{display:flex;gap:20px}
-.footer-link{font-size:11px;color:var(--muted);text-decoration:none;font-family:var(--prose)}
+.footer-link{font-size:11px;color:var(--dim);text-decoration:none}
 .footer-link:hover{color:var(--muted)}
 .footer-note{font-size:11px;color:var(--muted);letter-spacing:.06em}
-
 @media(max-width:860px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){
-  .page-nav{padding:12px 16px}
-  .page-nav-links .page-nav-link:not(.active):not(.page-nav-cta){display:none}
-  .pricing-grid{grid-template-columns:1fr}
-  .faq-grid{grid-template-columns:1fr}
-  .dash-stats-mock{grid-template-columns:repeat(2,1fr)}
-  .dash-charts-mock{grid-template-columns:1fr}
-}
-</style>
-</head>
-<body>
-
-<nav class="page-nav">
+@media(max-width:560px){.page-nav{padding:12px 16px}.page-nav-links .page-nav-link:not(.active):not(.page-nav-cta){display:none}.pricing-grid,.faq-grid{grid-template-columns:1fr}}
+</style></head><body><nav class="page-nav">
   <a href="index.html" class="page-nav-logo">Stack<span>Swap</span></a>
-  <div class="page-nav-links">
+    <div class="page-nav-links">
     <a href="index.html" class="page-nav-link">Home</a>
-    <a href="analyze.html" class="page-nav-link">Analyzer</a>
+    <a href="analyze.html" class="page-nav-link">StackScan</a>
+    <a href="pro.html" class="page-nav-link">StackAudit</a>
     <a href="stacksignal.html" class="page-nav-link">StackSignal</a>
-    <a href="pro.html" class="page-nav-link">Pro</a>
-    <a href="intelligence.html" class="page-nav-link">Intelligence</a>
     <a href="pricing.html" class="page-nav-link active">Pricing</a>
-    <a href="analyze.html" class="page-nav-cta">Run Free Analysis</a>
+    <a href="analyze.html" class="page-nav-cta">Run Free StackScan</a>
   </div>
 </nav>
-
-<!-- HERO -->
-<section>
-  <div class="hero">
-    <h1>Simple pricing.<br>No vendor subsidies.</h1>
-    <p class="hero-sub">Every tier is funded by operators, not software vendors. No pay-to-rank. No affiliate revenue. The data is neutral because the business model requires it to be.</p>
-    <p class="hero-note">All prices in USD · No contracts on annual plans · Cancel any time</p>
-  </div>
-</section>
-
-<!-- PRICING CARDS -->
-<section class="pricing-section">
-  <div class="container">
-    <div class="pricing-grid">
-
-      <!-- FREE -->
-      <div class="pricing-card">
-        <div class="pricing-tier">Free</div>
-        <div class="pricing-price-free">$0</div>
-        <div class="pricing-cadence">always free</div>
-        <p class="pricing-desc">Full stack analysis with overlap detection and AI-native recommendations.</p>
-        <ul class="pricing-features">
-          <li class="on">Stack health score</li>
-          <li class="on">Overlap detection</li>
-          <li class="on">AI upgrade suggestions</li>
-          <li class="on">Basic savings estimate</li>
-          <li class="on">Email delivery</li>
-          <li>Tool-by-tool breakdown</li>
-          <li>PDF export</li>
-        </ul>
-        <a href="analyze.html" class="pricing-btn">Run Free Analysis</a>
-      </div>
-
-      <!-- PRO — WAITLIST -->
-      <div class="pricing-card featured">
-        <div class="featured-badge">Coming Soon</div>
-        <div class="pricing-tier">Pro Audit</div>
-        <p class="pricing-desc" style="margin-top:8px">Full audit with savings roadmap, implementation timeline, and industry-specific blueprint. Join to get early access.</p>
-        <ul class="pricing-features">
-          <li class="on">Everything in Free</li>
-          <li class="on">Full tool-by-tool breakdown</li>
-          <li class="on">Detailed savings roadmap</li>
-          <li class="on">Implementation timeline</li>
-          <li class="on">Ideal stack blueprint</li>
-          <li class="on">PDF export</li>
-          <li>Dashboard access</li>
-        </ul>
-        <div class="card-waitlist">
-          <div class="card-waitlist-label">Early Access Waitlist</div>
-          <input type="email" class="card-waitlist-input" placeholder="your@email.com" id="proEmail"/>
-          <button class="card-waitlist-btn amber" onclick="submitWaitlist('proEmail','proSuccess','pro')">Notify Me →</button>
-          <div class="card-waitlist-success" id="proSuccess">✓ You're on the list.</div>
-        </div>
-      </div>
-
-      <!-- INTELLIGENCE — WAITLIST -->
-      <div class="pricing-card intel">
-        <div class="intel-badge-tag">Coming Soon</div>
-        <div class="pricing-tier">Intelligence</div>
-        <p class="pricing-desc" style="margin-top:8px">Full StackSignal dashboard with industry filtering, time slicing, and CSV export. Opens when the dataset earns it.</p>
-        <ul class="pricing-features">
-          <li class="on">Everything in Pro</li>
-          <li class="on">Industry filtering</li>
-          <li class="on">Time slicing</li>
-          <li class="on">Team size segmentation</li>
-          <li class="on">Switching velocity data</li>
-          <li class="on">CSV export</li>
-          <li class="on">Category churn index</li>
-        </ul>
-        <div class="card-waitlist">
-          <div class="card-waitlist-label" style="color:var(--teal)">Intelligence Waitlist</div>
-          <input type="email" class="card-waitlist-input teal-focus" placeholder="your@email.com" id="intelEmail"/>
-          <button class="card-waitlist-btn teal" onclick="submitWaitlist('intelEmail','intelSuccess','intelligence')">Notify Me →</button>
-          <div class="card-waitlist-success" id="intelSuccess">✓ You're on the list.</div>
-        </div>
-      </div>
-
-      <!-- ENTERPRISE -->
-      <div class="pricing-card">
-        <div class="pricing-tier">Enterprise</div>
-        <div class="pricing-price-free" style="font-size:28px">Custom</div>
-        <div class="pricing-cadence">annual contract</div>
-        <p class="pricing-desc">Custom data licensing for investors, consultants, and enterprise ops teams.</p>
-        <ul class="pricing-features">
-          <li class="on">Full Intelligence access</li>
-          <li class="on">Custom data exports</li>
-          <li class="on">API access (roadmap)</li>
-          <li class="on">Dedicated support</li>
-          <li class="on">White-label reporting</li>
-          <li class="on">Custom integrations</li>
-        </ul>
-        <a href="analyze.html" class="pricing-btn">Contact Us</a>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- BLURRED DASHBOARD PREVIEW -->
-<section class="preview-section">
-  <div class="container">
-    <div class="section-label">What's Coming</div>
-    <h2 class="section-h2" style="margin-bottom:12px">A platform worth waiting for.</h2>
-    <p style="font-size:14px;color:var(--muted);line-height:1.8;max-width:500px;margin-bottom:0;font-family:var(--prose)">
-      Pro and Intelligence tiers are in development. Here's a preview of what unlocks.
-    </p>
-
-    <div class="dashboard-bg-wrap">
-      <div class="dashboard-bg-inner">
-        <div class="dash-header-mock">
-          <div class="dash-title-mock">Stack<span style="color:var(--amber)">Swap</span> — Pro Audit Dashboard</div>
-          <div class="dash-filters-mock">
-            <div class="dash-filter-mock">SaaS / Tech</div>
-            <div class="dash-filter-mock teal">Last 90 days</div>
-            <div class="dash-filter-mock off">Export CSV</div>
-          </div>
-        </div>
-        <div class="dash-stats-mock">
-          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--amber)">$1,840</div><div class="dash-stat-lbl-mock">Monthly Savings Found</div></div>
-          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--red)">4</div><div class="dash-stat-lbl-mock">Overlap Conflicts</div></div>
-          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--teal)">247</div><div class="dash-stat-lbl-mock">Stacks Analyzed</div></div>
-          <div class="dash-stat-mock"><div class="dash-stat-val-mock" style="color:var(--text)">82</div><div class="dash-stat-lbl-mock">Avg Health Score</div></div>
-        </div>
-        <div class="dash-charts-mock">
-          <div class="dash-chart-mock">
-            <div class="dash-chart-lbl-mock" style="color:var(--amber)">Top Tools — SaaS/Tech</div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">HubSpot</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:90%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">90%</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Slack</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:84%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">84%</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Notion</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:76%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">76%</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Apollo.io</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:65%;background:var(--amber)"></div></div><div class="dash-bar-val-mock" style="color:var(--amber)">65%</div></div>
-          </div>
-          <div class="dash-chart-mock">
-            <div class="dash-chart-lbl-mock" style="color:var(--red)">Exit Velocity</div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">ZoomInfo</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:94%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">94%</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Outreach</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:82%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">82%</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Drift</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:71%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">71%</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Marketo</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:60%;background:var(--red)"></div></div><div class="dash-bar-val-mock" style="color:var(--red)">60%</div></div>
-          </div>
-          <div class="dash-chart-mock">
-            <div class="dash-chart-lbl-mock" style="color:var(--teal)">Savings by Category</div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">CRM</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:88%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">$620</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Outbound</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:72%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">$440</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Docs/Wiki</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:50%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">$290</div></div>
-            <div class="dash-bar-mock"><div class="dash-bar-name-mock">Automation</div><div class="dash-bar-track-mock"><div class="dash-bar-fill-mock" style="width:36%;background:var(--teal)"></div></div><div class="dash-bar-val-mock" style="color:var(--teal)">$220</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="dashboard-bg-overlay">
-        <div class="dashboard-lock-note">
-          <div class="dashboard-lock-icon">🔒</div>
-          <div class="dashboard-lock-txt">Unlocks when Pro and Intelligence launch — join the waitlist above</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FULL COMPARISON -->
-<section class="comparison">
-  <div class="container">
-    <div class="section-label">Full Comparison</div>
-    <h2 class="section-h2">Everything, side by side.</h2>
-
-    <table class="comp-table">
-      <thead>
-        <tr>
-          <td class="col-head" style="text-align:left">Feature</td>
-          <td class="col-head">Free</td>
-          <td class="col-head amber">Pro</td>
-          <td class="col-head teal">Intelligence</td>
-          <td class="col-head">Enterprise</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="group-header"><td colspan="5">Analysis</td></tr>
-        <tr><td>Stack health score</td><td class="c-check">✓</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Overlap detection</td><td class="c-check">✓</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>AI upgrade recommendations</td><td class="c-check">✓</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Industry blueprint logic</td><td class="c-check">✓</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Tool-by-tool breakdown</td><td class="c-cross">—</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Detailed savings roadmap</td><td class="c-cross">—</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>30/60/90 implementation plan</td><td class="c-cross">—</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Ideal stack blueprint</td><td class="c-cross">—</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>PDF export</td><td class="c-cross">—</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-
-        <tr class="group-header"><td colspan="5">Intelligence Dashboard</td></tr>
-        <tr><td>Aggregate public trends</td><td class="c-check">✓</td><td class="c-amber">✓</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Industry filtering</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Time slicing</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Team size segmentation</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Switching velocity data</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>Category churn index</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>CSV export</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-teal">✓</td><td class="c-check">✓</td></tr>
-        <tr><td>API access</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-check">✓</td></tr>
-        <tr><td>White-label reporting</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-cross">—</td><td class="c-check">✓</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="faq">
-  <div class="container">
-    <div class="section-label">Common Questions</div>
-    <h2 class="section-h2" style="margin-bottom:0">Pricing FAQ.</h2>
-
-    <div class="faq-grid">
-      <div class="faq-item">
-        <h4>When do paid tiers launch?</h4>
-        <p>Pro Audit and Intelligence are in active development. Join the waitlists on this page to get notified the moment each tier goes live — waitlist members get first access.</p>
-      </div>
-      <div class="faq-item">
-        <h4>Is the Pro Audit a subscription?</h4>
-        <p>No. It's a one-time purchase. You receive the report, own it, and there is no renewal, no recurring charge, and no upsell call.</p>
-      </div>
-      <div class="faq-item">
-        <h4>Does any vendor pay to be recommended?</h4>
-        <p>No. No vendor pays for placement, recommendation, or ranking at any tier. The business model is operator subscriptions, not vendor advertising. This is structural, not a policy.</p>
-      </div>
-      <div class="faq-item">
-        <h4>When does Intelligence launch?</h4>
-        <p>Intelligence opens when the dataset volume justifies the product. We're collecting submissions now. Join the waitlist to be notified at launch.</p>
-      </div>
-      <div class="faq-item">
-        <h4>What is Enterprise pricing?</h4>
-        <p>Enterprise is custom — typically $7,000–$25,000/year depending on use case. It includes API access, white-label reporting, and custom data exports. Contact us to discuss.</p>
-      </div>
-      <div class="faq-item">
-        <h4>Can I run the free analysis before deciding?</h4>
-        <p>Yes. The free analysis is the first step regardless of which tier you end up on. Start there — it surfaces the data that makes the paid tiers worth it.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ENTERPRISE -->
-<section class="enterprise">
-  <div class="container">
-    <div class="enterprise-card">
-      <div class="enterprise-left">
-        <h3>Need custom data access?</h3>
-        <p>Enterprise licensing covers investors tracking portfolio adoption trends, consultants benchmarking client stacks, and ops teams needing white-label reporting. Custom contracts, API access, and dedicated support.</p>
-        <div class="enterprise-price">$7k–$25k / year</div>
-      </div>
-      <a href="analyze.html" class="enterprise-btn">Talk to Us →</a>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">Stack<span>Swap</span></div>
-    <div class="footer-links">
-      <a href="analyze.html" class="footer-link">Analyzer</a>
-      <a href="stacksignal.html" class="footer-link">StackSignal</a>
-      <a href="pro.html" class="footer-link">Pro</a>
-      <a href="intelligence.html" class="footer-link">Intelligence</a>
-      <a href="pricing.html" class="footer-link">Pricing</a>
-    </div>
-    <div class="footer-note">POWERED BY DEMANDSTACK — NO VENDOR BIAS</div>
-  </div>
-</footer>
-
-<script>
-const ZAPIER_WEBHOOK = "";
-
-async function submitWaitlist(inputId, successId, page) {
-  const input = document.getElementById(inputId);
-  const success = document.getElementById(successId);
-  const email = input.value.trim();
-  if (!email || !email.includes('@')) {
-    input.style.borderColor = 'rgba(255,107,107,0.5)';
-    setTimeout(() => input.style.borderColor = '', 1500);
-    return;
-  }
-  if (ZAPIER_WEBHOOK) {
-    try {
-      await fetch(ZAPIER_WEBHOOK, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ email, page, timestamp: new Date().toISOString() })
-      });
-    } catch(e) { /* silent fail */ }
-  }
-  input.style.display = 'none';
-  const btn = document.querySelector(`[onclick*="${inputId}"]`);
-  if (btn) btn.style.display = 'none';
-  success.style.display = 'block';
-}
-</script>
-</body>
-</html>
+<section><div class="wrap"><div class="hero">
+  <span class="hero-eyebrow">Transparent Pricing</span>
+  <h1>Built for operators.<br><span>Not vendors.</span></h1>
+  <p class="hero-sub">Every tier is funded by the people who use it — not the software companies being evaluated. No pay-to-rank. No affiliate revenue. Structurally neutral by design.</p>
+  <p class="hero-note">All prices in USD &middot; StackScan is always free &middot; No contracts required</p>
+</div></div></section><section class="pricing-section"><div class="wrap"><div class="pricing-grid"><div class="pricing-card fade-up"><div class="card-tier">Free &middot; Always</div><div class="card-name" style="color:var(--teal)">StackScan</div><div class="card-price" style="color:var(--teal)">/bin/sh</div><div class="card-cadence">no credit card, no expiry</div><p class="card-desc">Instant AI-powered stack analysis. Health score, overlaps, upgrade paths, and savings estimate in under 60 seconds.</p><ul class="card-features"><li class="on"><span class="feat-check" style="color:var(--teal)">&#10003;</span>Stack health score (0-100)</li><li class="on"><span class="feat-check" style="color:var(--teal)">&#10003;</span>Overlap detection</li><li class="on"><span class="feat-check" style="color:var(--teal)">&#10003;</span>AI upgrade recommendations</li><li class="on"><span class="feat-check" style="color:var(--teal)">&#10003;</span>Savings estimate</li><li class="on"><span class="feat-check" style="color:var(--teal)">&#10003;</span>AI executive narrative</li><li class="on"><span class="feat-check" style="color:var(--teal)">&#10003;</span>Email report delivery</li><li class="off"><span class="feat-check" style="color:var(--dim)">&#8212;</span>Tool-by-tool breakdown</li><li class="off"><span class="feat-check" style="color:var(--dim)">&#8212;</span>Implementation roadmap</li><li class="off"><span class="feat-check" style="color:var(--dim)">&#8212;</span>PDF export</li></ul><a href="analyze.html" class="card-cta">Run Free Scan &rarr;</a></div><div class="pricing-card amber-card fade-up" style="animation-delay:.08s"><div class="card-badge badge-amber">Coming Soon</div><div class="card-tier">One-time Report</div><div class="card-name" style="color:var(--amber)">StackAudit</div><div class="card-price" style="color:var(--amber);font-size:20px;padding-top:6px">Pricing TBD</div><div class="card-cadence">one-time &middot; no subscription</div><p class="card-desc">Consultant-grade report with tool-by-tool breakdown, cost analysis, implementation timeline, risk flags, and AI executive summary.</p><ul class="card-features"><li class="on"><span class="feat-check" style="color:var(--amber)">&#10003;</span>Everything in StackScan</li><li class="on"><span class="feat-check" style="color:var(--amber)">&#10003;</span>Tool-by-tool cost breakdown</li><li class="on"><span class="feat-check" style="color:var(--amber)">&#10003;</span>30/60/90 implementation plan</li><li class="on"><span class="feat-check" style="color:var(--amber)">&#10003;</span>Risk + migration flags</li><li class="on"><span class="feat-check" style="color:var(--amber)">&#10003;</span>Ideal stack blueprint</li><li class="on"><span class="feat-check" style="color:var(--amber)">&#10003;</span>AI consultant executive summary</li><li class="on"><span class="feat-check" style="color:var(--amber)">&#10003;</span>PDF export + shareable link</li><li class="off"><span class="feat-check" style="color:var(--dim)">&#8212;</span>Intelligence dashboard</li></ul><div class="card-waitlist"><div class="card-waitlist-label" style="color:var(--amber)">Early Access Waitlist</div><input type="email" class="card-waitlist-input amber-focus" placeholder="your@email.com" id="auditEmail"/><button class="card-waitlist-btn btn-amber" onclick="submitWaitlist('auditEmail','auditSuccess','stackaudit')">Notify Me &rarr;</button><div class="card-waitlist-success" id="auditSuccess">&#10003; You are on the list.</div></div></div><div class="pricing-card teal-card fade-up" style="animation-delay:.16s">
+<div class="card-badge badge-teal">Coming Soon</div>
+<div class="card-tier">Monthly · Annual</div>
+<div class="card-name" style="color:var(--teal)">StackSignal Pro</div>
+<div class="card-price" style="color:var(--teal)">$99<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+<div class="card-cadence">$599/yr — save 5 months</div>
+<p class="card-desc">Industry-filtered intelligence. Filter every StackSignal chart by industry, team size, and time. Track switching velocity. Export to CSV.</p>
+<ul class="card-features">
+<li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Full StackSignal access</li>
+<li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Industry-level filtering</li>
+<li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Time-series switching velocity</li>
+<li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Team size segmentation</li>
+<li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Stack score benchmarks</li>
+<li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>CSV export</li>
+<li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Monthly digest email</li>
+<li class="off"><span class="feat-check" style="color:var(--dim)">—</span>API access</li>
+</ul>
+<div class="card-waitlist">
+<div class="card-waitlist-label" style="color:var(--teal)">Intelligence Waitlist</div>
+<input type="email" class="card-waitlist-input teal-focus" placeholder="your@email.com" id="intelEmail"/>
+<button class="card-waitlist-btn btn-teal" onclick="submitWaitlist('intelEmail','intelSuccess','intelligence_pro')">Notify Me →</button>
+<div class="card-waitlist-success" id="intelSuccess">✓ You're on the list.</div>
+</div></div>
+<div class="pricing-card fade-up" style="animation-delay:.24s"><div class="card-tier">Annual Contract</div><div class="card-name" style="color:var(--red)">Enterprise</div><div class="card-price" style="color:var(--muted);font-size:26px">Custom</div><div class="card-cadence">scoped to your use case</div><p class="card-desc">Raw data access for investors, consultants, and enterprise ops teams. White-label ready. SLA-backed.</p><ul class="card-features"><li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Full StackSignal Pro access</li><li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>REST API dataset access</li><li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Custom industry slicing</li><li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>White-label reporting</li><li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Data pipeline integration</li><li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Dedicated support + SLA</li><li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Custom integrations</li></ul><a href="stacksignal.html" class="card-cta">Request Conversation →</a></div></div></div></section><section class="comparison"><div class="wrap"><div class="sec-label fade-up">Full Comparison</div><h2 class="sec-h2 fade-up" style="margin-bottom:36px">Everything, side by side.</h2><div class="comp-wrap fade-up"><table class="comp-table"><thead><tr><th style="text-align:left">Feature</th><th style="color:var(--teal)">StackScan</th><th style="color:var(--amber)">StackAudit</th><th style="color:var(--teal)">Signal Pro</th><th>Enterprise</th></tr></thead><tbody>
