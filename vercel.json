@@ -1,8 +1,11 @@
-{
-  "functions": {
-    "api/analyze-narrative.js": {
-      "memory": 256,
-      "maxDuration": 15
-    }
-  }
-}
+{}
+```
+Scroll down, click **Commit changes**.
+
+---
+
+**Step 2 — Create `api/analyze-narrative.js`**
+
+In your GitHub repo, click **Add file → Create new file**. In the filename box at the top, type:
+```
+api/analyze-narrative.js
