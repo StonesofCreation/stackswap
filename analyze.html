@@ -264,6 +264,7 @@ h1 .accent{color:#ffc857}
     <a href="pro.html" class="page-nav-link">StackAudit</a>
     <a href="stacksignal.html" class="page-nav-link">StackSignal</a>
     <a href="pricing.html" class="page-nav-link">Pricing</a>
+    <a href="/knowledge/index.html" class="page-nav-link">Knowledge</a>
     <a href="analyze.html" class="page-nav-cta">Run Free StackScan</a>
   </div>
 </nav>
@@ -2598,13 +2599,16 @@ function renderMain() {
           state: _geoData.state || null,
         })
       });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data?.error || "Lead API failed");
+      const rawText = await resp.text();
+      let data = {};
+      try { data = JSON.parse(rawText); } catch(e) {
+        console.warn("Lead API returned non-JSON — continuing anyway:", rawText.slice(0,120));
+      }
+      if (!resp.ok) console.warn("Lead save non-OK:", data?.error || resp.status);
       lead_id = data.lead_id || null;
     } catch (err) {
-      console.error("Lead save failed:", err);
-      alert("Could not save your info right now. Please try again in a moment.");
-      return; // do not proceed without saving
+      console.warn("Lead save failed (non-blocking):", err.message);
+      // Do not block the user — proceed without lead_id
     }
 
     // 2) Continue with your existing unlock flow
@@ -2660,6 +2664,7 @@ function renderMain() {
     async function runAnalysisFlow() {
     cta.disabled=true;
     cta.innerHTML='<span class="spinner"></span>Analyzing your stack...';
+    try {
     await new Promise(r=>setTimeout(r,400));
 
     const _industry = document.getElementById("ind")?.value||"";
@@ -2771,6 +2776,12 @@ function renderMain() {
           top_recommendation: result.upgrades[0]?.r || result.actions[0]?.title || ""
         })
       }).catch(e => console.error("Report save failed:", e));
+    }
+    } catch(err) {
+      console.error("Analysis flow error:", err);
+      cta.disabled=false;
+      cta.className="cta ready";
+      cta.textContent="Analyze "+selectedTools.length+" Tools";
     }
     } // end runAnalysisFlow
   });
