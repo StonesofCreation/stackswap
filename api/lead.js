@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-  const { email, company, role, team_size, industry } = body || {};
+  const { email, company, role, team_size, industry, timezone, language, country, country_name, region, state } = body || {};
 
   if (!email || !company || !role || !team_size) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -37,6 +37,12 @@ export default async function handler(req, res) {
         team_size,
         industry: industry || null,
         source_page: "analyze",
+        timezone: timezone || null,
+        language: language || null,
+        country: country || null,
+        country_name: country_name || null,
+        region: region || null,
+        state: state || null,
         created_at: new Date().toISOString()
       })
     });
