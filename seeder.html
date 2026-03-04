@@ -706,7 +706,12 @@ async function analyzePersona(persona) {
         estimated_savings_annual: savings * 12,
         overlaps_found: overlapsFound,
         tools_flagged: persona.tools.slice(0, 5).join(', '),
-        top_recommendation: overlapsFound > 0 ? `Remove ${overlapsFound} overlapping tools` : 'Stack is lean'
+        top_recommendation: (() => {
+          // Find the highest-cost overlapping tool and recommend its replacement
+          const repMap = { 'ZoomInfo':'Apollo.io','Salesforce':'HubSpot','Outreach':'Smartlead','Salesloft':'Smartlead','Marketo':'HubSpot','Pardot':'HubSpot','Gong':'Avoma','Chorus':'Avoma','Drift':'HubSpot Chat','Jasper':'ChatGPT','Tableau':'Looker Studio','FullStory':'Hotjar','Heap':'Hotjar','Intercom':'HubSpot Chat','Copy.ai':'ChatGPT','Writer':'ChatGPT','Hootsuite':'Buffer','Sprout Social':'Buffer','Instantly':'Smartlead','Reply.io':'Smartlead','Lemlist':'Smartlead','kvCORE':'Follow Up Boss','BoomTown':'Follow Up Boss','PandaDoc':'DocuSign','Dropbox':'Google Drive' };
+          const match = persona.tools.find(t => repMap[t]);
+          return match ? repMap[match] : (persona.tools[1] || persona.tools[0] || 'HubSpot');
+        })()
       })
     });
     const reportText = await reportResp.text();
