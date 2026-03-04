@@ -1833,22 +1833,34 @@ function renderMain() {
       tag.appendChild(x); tagsDiv.appendChild(tag);
     });
   }
-  function doAdd(name){
-    const n=name.trim(); if(!n||selectedTools.includes(n)){toolInput.value="";suggBox.classList.remove("show");return;}
-    selectedTools.push(n); toolInput.value=""; suggBox.classList.remove("show");
-    if(!TOOLS.includes(n)&&!extraTools.includes(n)){
-      extraTools.push(n);
-      // Save unknown tool to DB for future autocomplete improvement
-      fetch('/api/tools', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ tool_name: n, source: 'user_input' })
-      }).catch(()=>{});
-    }
-    renderTags(); updateCTA(); markDot(1,selectedTools.length>0);
+  function doAdd(raw){
+    // Support comma-separated input — split, trim, add each
+    const names = raw.split(",").map(n => n.trim()).filter(n => n.length > 0);
+    if (!names.length) return;
+    let added = 0;
+    names.forEach(n => {
+      if (selectedTools.includes(n)) return;
+      selectedTools.push(n);
+      if (!TOOLS.includes(n) && !extraTools.includes(n)) {
+        extraTools.push(n);
+        fetch('/api/tools', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ tool_name: n, source: 'user_input' })
+        }).catch(()=>{});
+      }
+      added++;
+    });
+    toolInput.value = "";
+    suggBox.classList.remove("show");
+    if (added > 0) { renderTags(); updateCTA(); markDot(1, selectedTools.length > 0); }
   }
-  toolInput.addEventListener("input",()=>showSugg(getSugg(toolInput.value)));
-  toolInput.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();doAdd(toolInput.value);}});
-  toolInput.addEventListener("blur",()=>setTimeout(()=>suggBox.classList.remove("show"),150));
+  toolInput.addEventListener("input", () => {
+    // Only show suggestions if no comma in input (single tool mode)
+    if (!toolInput.value.includes(",")) showSugg(getSugg(toolInput.value));
+    else suggBox.classList.remove("show");
+  });
+  toolInput.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); doAdd(toolInput.value); }});
+  toolInput.addEventListener("blur", () => setTimeout(() => suggBox.classList.remove("show"), 150));
   addBtn.addEventListener("mousedown",e=>{e.preventDefault();doAdd(toolInput.value);});
   toolWrap.appendChild(toolInput); toolWrap.appendChild(suggBox);
   toolRow.appendChild(toolWrap); toolRow.appendChild(addBtn);
