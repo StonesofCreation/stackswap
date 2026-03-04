@@ -425,13 +425,28 @@ const PRICING = {
   "Lone Wolf Back Office":200,"Broker Brain":150,"Profit Power":150,
   "Follow Up Boss":99,"kvCORE":499,"BoomTown":1000,"CINC":900,
   "LionDesk":25,"Wise Agent":32,"Top Producer":60,"Chime CRM":200,
-  "Smartlead":97,"Instantly":97,"AiSDR":900,"Lemlist":99,"Mailshake":59,"Reply.io":89,
+  "Smartlead":97,"Instantly":97,"AiSDR":900,"Aisdr":900,"Lemlist":99,"Mailshake":59,"Reply.io":89,
   "Clearbit":250,"Lusha":40,"Cognism":300,"Grammarly":12,"Writer":18,
+  "Trello":10,"Basecamp":99,"Wrike":25,"Teamwork":12,"Linear":8,
+  "Riverside":29,"Loom":12,"Descript":30,"Otter.ai":17,"Fireflies.ai":10,
+  "Avoma":40,"Chorus":80,"Gong Engage":120,
+  "MegaAI":50,"Clay":149,"n8n":20,"Pabbly":19,
+  "GitHub":21,"GitLab":29,"Vercel":20,"Netlify":19,
+  "Stripe":0,"Chargebee":299,"Recurly":249,"Paddle":0,
+  "Mixpanel":28,"Amplitude":0,"Heap":0,"Pendo":0,
+  "Datadog":15,"Sentry":26,"PagerDuty":21,
+  "Webflow":23,"Framer":15,"Squarespace":23,"Wix":17,
+  "Shopify":79,"WooCommerce":0,"BigCommerce":29,
+  "Typeform":50,"SurveyMonkey":99,"Jotform":39,
+  "Zoom":15,"Google Meet":0,"Webex":25,
+  "Intercom":74,"Help Scout":50,"Front":59,"Freshdesk":15,
+  "ChatGPT":20,"Claude":20,"Perplexity":20,
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let selectedTools = [], selectedGoals = [], extraTools = [];
 let leadData = { email:"", company:"", role:"", teamSize:"", submitted: false };
+let _pendingPricingSignal = null; // captures manual spend overrides for pricing intelligence
 
 // ── ZAPIER WEBHOOK ────────────────────────────────────────────────────────────
 // Paste your Zapier webhook URL here when ready. Leave as "" to disable.
@@ -554,16 +569,16 @@ async function loadTrendData() {
     const resp = await fetch('/api/metrics');
     if (!resp.ok) return;
     const data = await resp.json();
-    if (!data.count || data.count < 10) return; // need at least 10 reports for signal
+    if (!data.count || data.count < 10) return;
 
-    // Build exit rates from real data
     const totalReports = data.count;
+
+    // Build exit rates from real cut data
     if (data.cuts && data.cuts.length > 0) {
       data.cuts.forEach(([tool, exitCount]) => {
         const exitRate = Math.min(exitCount / totalReports, 1);
         const existing = LIVE_EXIT_DATA[tool];
         if (existing) {
-          // Blend live data with baseline (60% live, 40% baseline when enough signal)
           LIVE_EXIT_DATA[tool] = {
             ...existing,
             exitRate: totalReports >= 50
@@ -584,9 +599,26 @@ async function loadTrendData() {
         }
       });
     }
+
+    // Merge live pricing signals into PRICING
+    if (data.pricing && Object.keys(data.pricing).length > 0) {
+      Object.entries(data.pricing).forEach(([tool, priceData]) => {
+        if (!priceData.median || priceData.sample_count < 3) return; // need at least 3 signals
+        const existing = Object.keys(PRICING).find(k => k.toLowerCase() === tool.toLowerCase());
+        const livePrice = Math.round(priceData.median);
+        if (existing) {
+          // Blend: weight live data more as sample grows
+          const liveWeight = Math.min(priceData.sample_count / 20, 0.7); // max 70% live weight
+          PRICING[existing] = Math.round(PRICING[existing] * (1 - liveWeight) + livePrice * liveWeight);
+        } else {
+          PRICING[tool] = livePrice; // New tool we didn't know about
+        }
+      });
+    }
+
     trendDataLoaded = true;
   } catch(e) {
-    // Silent fail — baseline data still works
+    // Silent fail
   }
 }
 
@@ -1844,18 +1876,43 @@ function renderMain() {
   budEstBtn.type="button";
   budEstBtn.style.cssText="background:none;border:none;color:#4ecdc4;font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;padding:4px 0;letter-spacing:.03em;text-align:left";
   budEstBtn.textContent="→ Estimate from my tools";
+  let _lastEstimate = 0; // track what we calculated so we can compare to override
+  let _estimateBreakdown = {}; // per-tool estimates at time of click
+
   budEstBtn.addEventListener("click", () => {
     let est = 0;
+    const unpriced = [];
+    _estimateBreakdown = {};
     selectedTools.forEach(t => {
-      const k = Object.keys(PRICING).find(k => t.toLowerCase().includes(k.toLowerCase()));
-      if (k) est += PRICING[k];
+      const k = Object.keys(PRICING).find(k => t.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(t.toLowerCase()));
+      if (k) { est += PRICING[k]; _estimateBreakdown[t] = PRICING[k]; }
+      else unpriced.push(t);
     });
     if (est > 0) {
+      _lastEstimate = est;
       budIn.value = est;
-      budHint.textContent = "\u2713 Estimated from your tool list — adjust if you have negotiated rates";
+      const note = unpriced.length > 0
+        ? `✓ Estimated from known tools — couldn't price: ${unpriced.join(", ")}. Adjust to your actual spend.`
+        : "✓ Estimated from your tool list — adjust if you have negotiated rates";
+      budHint.textContent = note;
       budHint.style.color = "#4ecdc4";
     } else {
       budHint.textContent = "Couldn't estimate — try adding more tools first";
+    }
+  });
+
+  // Detect manual override — if user changes the value after an estimate was made
+  budIn.addEventListener("change", () => {
+    const actual = parseInt(budIn.value);
+    if (_lastEstimate > 0 && actual > 0 && Math.abs(actual - _lastEstimate) > 50) {
+      // User meaningfully overrode our estimate — record as a pricing signal
+      _pendingPricingSignal = {
+        tools: [...selectedTools],
+        estimated: _lastEstimate,
+        actual: actual,
+        breakdown: { ..._estimateBreakdown },
+        delta: actual - _lastEstimate
+      };
     }
   });
   budW.appendChild(budIn);
@@ -2091,6 +2148,21 @@ function renderMain() {
       }).catch(()=>{});
 
     };
+    // Fire pricing signal if user overrode our estimate
+    if (_pendingPricingSignal && leadData.lead_id) {
+      fetch("/api/pricing-signal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ..._pendingPricingSignal,
+          team_size: leadData.teamSize || null,
+          industry: _industry || null,
+          lead_id: leadData.lead_id
+        })
+      }).catch(() => {});
+      _pendingPricingSignal = null;
+    }
+
     // Save full report data to Supabase (non-blocking)
     if (leadData.lead_id) {
       fetch("/api/report", {
