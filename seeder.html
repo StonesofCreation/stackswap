@@ -478,6 +478,39 @@ function log(msg, type='info') {
   logEl.scrollTop = logEl.scrollHeight;
 }
 
+
+// ── GEO DATA PER PERSONA ─────────────────────────────────────────────────────
+const PERSONA_GEO = {
+  1: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  2: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  3: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  4: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
+  5: {country:'US',country_name:'United States',region:'Colorado',state:'CO'},
+  6: {country:'US',country_name:'United States',region:'Massachusetts',state:'MA'},
+  7: {country:'US',country_name:'United States',region:'Florida',state:'FL'},
+  8: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  9: {country:'GB',country_name:'United Kingdom',region:'England',state:null},
+  10: {country:'CA',country_name:'Canada',region:'Ontario',state:null},
+  11: {country:'US',country_name:'United States',region:'Washington',state:'WA'},
+  12: {country:'US',country_name:'United States',region:'Georgia',state:'GA'},
+  13: {country:'AU',country_name:'Australia',region:'New South Wales',state:null},
+  14: {country:'US',country_name:'United States',region:'Arizona',state:'AZ'},
+  15: {country:'US',country_name:'United States',region:'Oregon',state:'OR'},
+  16: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  17: {country:'DE',country_name:'Germany',region:'Bavaria',state:null},
+  18: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  19: {country:'US',country_name:'United States',region:'Tennessee',state:'TN'},
+  20: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  21: {country:'NL',country_name:'Netherlands',region:'Noord-Holland',state:null},
+  22: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
+  23: {country:'SG',country_name:'Singapore',region:'Central Region',state:null},
+  24: {country:'US',country_name:'United States',region:'Virginia',state:'VA'},
+  25: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  26: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  27: {country:'US',country_name:'United States',region:'Ohio',state:'OH'},
+  28: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+};
+
 // ── CORE: Run analysis via Anthropic API directly ─────────────────────────────
 async function analyzePersona(persona) {
   log(`Starting: ${persona.name}`, 'info');
@@ -642,8 +675,11 @@ async function analyzePersona(persona) {
         email: email.replace('@', `+${persona.id}@`).replace('+','').replace(/\+\d+@/,`+p${persona.id}@`),
         company: `${company} — ${persona.name}`,
         role: 'Founder',
-        teamSize: persona.teamSize,
+        team_size: persona.teamSize,
         industry: persona.industry,
+        timezone: 'America/Chicago',
+        language: 'en-US',
+        ...(PERSONA_GEO[persona.id] || {country:'US',country_name:'United States',region:'Texas',state:'TX'}),
       })
     });
     const leadText = await leadResp.text();
