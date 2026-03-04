@@ -158,23 +158,30 @@ h1 .accent{color:#ffc857}
 
 @media(max-width:560px){.g2,.mgrid{grid-template-columns:1fr}}
 
-.upgrade-cta{margin-top:24px;background:rgba(57,255,133,0.04);border:1px solid rgba(57,255,133,0.2);border-radius:12px;padding:24px;text-align:center;position:relative;overflow:hidden}
+.upgrade-cta{margin-top:32px;background:rgba(57,255,133,0.03);border:1px solid rgba(57,255,133,0.18);border-radius:14px;padding:28px;text-align:left;position:relative;overflow:hidden}
 .upgrade-cta::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,133,0.5),transparent)}
-.upgrade-cta-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(57,255,133,0.7);font-weight:600;margin-bottom:8px;font-family:'DM Mono',monospace}
-.upgrade-cta-h{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:#f0ece4;margin-bottom:8px;letter-spacing:-.01em}
+.upgrade-cta-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#39ff85;font-weight:600;margin-bottom:12px;font-family:'DM Mono',monospace}
+.upgrade-cta-h{font-family:'Plus Jakarta Sans',sans-serif;font-size:21px;font-weight:800;color:#f0ece4;margin-bottom:18px;letter-spacing:-.01em;line-height:1.25}
 .upgrade-cta-h span{color:#39ff85}
-.upgrade-cta-sub{font-size:13px;color:#9a9690;line-height:1.75;margin-bottom:20px;max-width:420px;margin-left:auto;margin-right:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.upgrade-cta-features{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:20px}
-.upgrade-cta-feat{font-size:12px;color:rgba(57,255,133,0.8);font-family:'DM Mono',monospace;display:flex;align-items:center;gap:5px}
-.upgrade-cta-feat::before{content:'✓';color:#39ff85}
-.upgrade-cta-form{display:flex;gap:8px;max-width:380px;margin:0 auto 12px}
-.upgrade-cta-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(57,255,133,0.25);border-radius:7px;padding:10px 14px;font-size:13px;color:#f0ece4;outline:none;font-family:-apple-system,sans-serif}
+/* audit hook cards */
+.audit-hooks{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.audit-hook{display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:11px 14px}
+.audit-hook-icon{font-size:17px;flex-shrink:0;line-height:1.3;margin-top:1px}
+.audit-hook-val{font-size:14px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:2px}
+.audit-hook-label{font-size:12px;color:#7a7670;line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+/* divider + unlocks */
+.audit-divider{font-size:11px;color:#5a5650;letter-spacing:.1em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:10px;padding-top:2px}
+.audit-unlocks{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.audit-unlock-item{font-size:14px;color:#c8c4bc;line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+/* form */
+.upgrade-cta-form{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.upgrade-cta-input{flex:1;min-width:180px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:7px;padding:11px 14px;color:#f0ece4;font-size:13px;font-family:'DM Mono',monospace;outline:none;transition:border-color .2s}
 .upgrade-cta-input::placeholder{color:#3a3830}
-.upgrade-cta-input:focus{border-color:rgba(57,255,133,0.5)}
-.upgrade-cta-btn{padding:10px 18px;border-radius:7px;background:#39ff85;color:#0f0e13;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.04em;transition:opacity .2s;white-space:nowrap}
+.upgrade-cta-input:focus{border-color:rgba(57,255,133,0.4)}
+.upgrade-cta-btn{background:linear-gradient(135deg,#39ff85,#22cc6a);color:#0f0e13;border:none;border-radius:7px;padding:11px 22px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:opacity .2s}
 .upgrade-cta-btn:hover{opacity:.88}
-.upgrade-cta-note{font-size:11px;color:#3a3830;font-family:-apple-system,sans-serif}
-.upgrade-cta-success{display:none;font-size:13px;color:#39ff85;padding:8px 0;font-family:'DM Mono',monospace;letter-spacing:.02em}
+.upgrade-cta-success{display:none;font-size:13px;color:#39ff85;margin-bottom:8px;font-family:'DM Mono',monospace}
+.upgrade-cta-note{font-size:11px;color:#3a3830;font-family:'DM Mono',monospace;letter-spacing:.03em}
 </style>
 <style>
 
@@ -1776,7 +1783,7 @@ function renderResult(r) {
     const step=div("step");
     const n=div("step-n",(i+1)+"");
     const t=div("step-t");
-    t.innerHTML=`<span class="step-title">\${a.title}</span>\${a.text}`;
+    t.innerHTML=`<span class="step-title">${a.title}</span>${a.text}`;
     step.appendChild(n); step.appendChild(t);
     box.appendChild(step);
   });
@@ -2340,49 +2347,51 @@ function renderMain() {
     cta.disabled=true;
     cta.innerHTML='<span class="spinner"></span>Analyzing your stack...';
     try {
-    await new Promise(r=>setTimeout(r,400));
 
     const _industry = document.getElementById("ind")?.value||"";
     const _budget   = document.getElementById("bud")?.value||"";
-
-    // Run deterministic engine (instant)
     const _teamSize = leadData.teamSize || document.getElementById("ctx-teamsize")?.value || "";
-    const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals);
 
-    // Render full report immediately
+    // ── Show big loading state in result box immediately ──────────
+    const _rb = document.getElementById("result-box");
+    _rb.style.display = "block";
+    _rb.innerHTML = `
+      <div class="res-hd">
+        <div class="res-glow"></div>
+        <span class="res-lbl">Stack Analysis Complete</span>
+      </div>
+      <div id="ai-loading-full" style="padding:48px 24px 56px;text-align:center">
+        <div class="ai-loading-dots" style="justify-content:center;margin-bottom:24px">
+          <div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>
+        </div>
+        <div class="ai-loading-title">Claude is analyzing your stack</div>
+        <div class="ai-loading-sub" style="margin:10px auto 0">Reading overlaps, pricing signals, and integration patterns across your ${selectedTools.length} tools...</div>
+      </div>`;
+    _rb.scrollIntoView({behavior:"smooth", block:"start"});
+
+    // Run deterministic engine + AI narrative in parallel
+    const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals);
+    const aiData  = await getAINarrative(result, selectedTools, _industry, _budget, selectedGoals, _teamSize);
+
+    // ── Now render the full report ────────────────────────────────
     renderResult(result);
     cta.disabled=false; cta.className="cta ready";
     cta.textContent="Re-analyze "+selectedTools.length+" Tools";
 
-    // Inject loading placeholder right after score ring
-    const _rb = document.getElementById("result-box");
-    const _ring = _rb?.querySelector(".score-ring");
-    const _loader = document.createElement("div");
-    _loader.id = "ai-narrative-slot";
-    _loader.className = "ai-narrative";
-    _loader.innerHTML = `<div class="ai-loading"><div class="ai-loading-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><div class="ai-loading-title">Claude is analyzing your stack</div><div class="ai-loading-sub">Reading overlaps, pricing signals, and integration patterns across your tools...</div></div>`;
-    if (_ring && _ring.nextSibling) {
-      _rb.insertBefore(_loader, _ring.nextSibling);
-    } else if (_rb) {
-      _rb.appendChild(_loader);
+    // Inject AI narrative right after score ring
+    if (aiData) {
+      const _rb2 = document.getElementById("result-box");
+      const _ring = _rb2?.querySelector(".score-ring");
+      const wrapper = document.createElement("div");
+      renderAINarrative(aiData, wrapper);
+      if (wrapper.firstChild) {
+        if (_ring && _ring.nextSibling) _rb2.insertBefore(wrapper.firstChild, _ring.nextSibling);
+        else _rb2.appendChild(wrapper.firstChild);
+      }
     }
 
-    // Fetch AI narrative async — non-blocking
-    getAINarrative(result, selectedTools, _industry, _budget, selectedGoals, leadData.teamSize).then(aiData => {
-      const slot = document.getElementById("ai-narrative-slot");
-      if (!slot) return;
-      if (aiData) {
-        const wrapper = document.createElement("div");
-        renderAINarrative(aiData, wrapper);
-        if (wrapper.firstChild) slot.replaceWith(wrapper.firstChild);
-        else slot.remove();
-      } else {
-        slot.innerHTML = `<div class="ai-narrative-label">AI Analysis</div><div style="font-size:13px;color:#5a5650;font-family:var(--prose)">Narrative unavailable — check console for details.</div>`;
-        setTimeout(() => { const s = document.getElementById("ai-narrative-slot"); if(s) s.remove(); }, 4000);
-      }
-      // Send email after AI resolves — includes narrative if available
-      sendUserEmail(aiData);
-    });
+    // Send email with narrative
+    sendUserEmail(aiData);
     // ── Send HTML email reports via /api/send-report ──────────────────────
     const reportPayload = {
       company: leadData.company,
