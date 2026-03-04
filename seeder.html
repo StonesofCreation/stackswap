@@ -413,6 +413,450 @@ const PERSONAS = [
     tools: ["Salesforce","HubSpot","Marketo","Pardot","Gong","Chorus","Clari","ZoomInfo","Cognism","Outreach","Salesloft","Groove","Tableau","Looker","Power BI","Domo","Zendesk","Intercom","Freshdesk","ServiceNow","Slack","Teams","Zoom","Webex","DocuSign","PandaDoc","Ironclad","Conga","Workday","BambooHR","Rippling","Jira","Asana","Monday.com","Confluence","Notion","Sharepoint"],
     note: "Maximum chaos test — 37 tools, everything duplicated"
   }
+,
+
+  // ── MORE BAD STACKS ──────────────────────────────────────────────
+  {
+    id: 29, name: "The VC-Backed B2B That Spent First", category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "9800",
+    tools: ["Salesforce","HubSpot","ZoomInfo","Cognism","Outreach","Salesloft","Gong","Clari","Tableau","Looker","Slack","Zoom","Notion","Confluence","Asana","Jira"],
+    note: "Dual CRM, dual data, dual sequencing, dual analytics, triple docs/PM"
+  },
+  {
+    id: 30, name: "The Law Firm That Discovered SaaS", category: "🔴 Bloated / Bad",
+    industry: "Legal / Professional Services", teamSize: "6-15", budget: "5200",
+    tools: ["Clio","MyCase","PracticePanther","DocuSign","Adobe Sign","Dropbox","Box","Microsoft 365","Google Workspace","Zoom","Microsoft Teams","Slack","QuickBooks","FreshBooks","Asana","Monday.com"],
+    note: "Triple practice mgmt, dual e-sign, dual storage, dual workspace, dual accounting"
+  },
+  {
+    id: 31, name: "The Insurance Brokerage Disaster", category: "🔴 Bloated / Bad",
+    industry: "Finance / Fintech", teamSize: "16-50", budget: "7400",
+    tools: ["Salesforce","HubSpot","Applied Epic","AgencyZoom","ZoomInfo","Apollo.io","Mailchimp","Constant Contact","DocuSign","PandaDoc","Slack","Microsoft Teams","Zoom","Webex","QuickBooks","Xero"],
+    note: "Dual CRM + 2 agency-specific tools, dual data, dual email, dual e-sign, dual comms, dual accounting"
+  },
+  {
+    id: 32, name: "The Dental Practice Group", category: "🔴 Bloated / Bad",
+    industry: "Healthcare / MedTech", teamSize: "16-50", budget: "4100",
+    tools: ["Dentrix","Eaglesoft","Carestream","Weave","Podium","Birdeye","Google Workspace","Microsoft 365","Zoom","Slack","QuickBooks","Stripe","Mailchimp","Constant Contact","Asana","Monday.com"],
+    note: "Dual practice mgmt, triple patient comms, dual workspace, dual accounting, dual email, dual PM"
+  },
+  {
+    id: 33, name: "The Content Agency Chaos", category: "🔴 Bloated / Bad",
+    industry: "Marketing Agency", teamSize: "6-15", budget: "5600",
+    tools: ["HubSpot","Salesforce","Notion","Confluence","ClickUp","Asana","Monday.com","Trello","Adobe Creative Cloud","Canva","Figma","Slack","Teams","Zoom","Loom","Jasper","Copy.ai","Writer","ChatGPT"],
+    note: "Dual CRM, quad PM, triple AI writing, dual comms, triple design"
+  },
+  {
+    id: 34, name: "The Remote-First Team That Over-Collaborated", category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "3800",
+    tools: ["Slack","Microsoft Teams","Discord","Zoom","Google Meet","Loom","Notion","Confluence","Google Docs","Asana","Jira","ClickUp","Miro","Figma","Calendly","Cal.com"],
+    note: "Triple chat, triple video, triple docs, triple PM, dual scheduling"
+  },
+  {
+    id: 35, name: "The Fintech Startup With Enterprise FOMO", category: "🔴 Bloated / Bad",
+    industry: "Finance / Fintech", teamSize: "6-15", budget: "11200",
+    tools: ["Salesforce","HubSpot","ZoomInfo","Gong","Outreach","Marketo","Tableau","Looker","Zendesk","Intercom","DocuSign","PandaDoc","Slack","Zoom","Stripe","Brex","Expensify","QuickBooks"],
+    note: "Every enterprise tool at 12 people, dual CRM, dual analytics, dual support, dual contracts"
+  },
+  {
+    id: 36, name: "The Healthcare SaaS Sales Team", category: "🔴 Bloated / Bad",
+    industry: "Healthcare / MedTech", teamSize: "16-50", budget: "13500",
+    tools: ["Salesforce","Veeva","HubSpot","ZoomInfo","Outreach","Gong","Marketo","Tableau","Zendesk","Intercom","DocuSign","Ironclad","Slack","Zoom","Microsoft Teams","Webex","Concur","Expensify"],
+    note: "Healthcare-specific + generic CRM stack, everything doubled, travel tools nobody uses"
+  },
+  {
+    id: 37, name: "The Recruiting Agency With No System", category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "6800",
+    tools: ["Bullhorn","Greenhouse","Lever","Workable","LinkedIn Recruiter","Indeed","ZipRecruiter","ZoomInfo","Apollo.io","Outreach","Slack","Zoom","Calendly","HubSpot","Salesforce","DocuSign","BambooHR","Rippling"],
+    note: "Triple ATS, triple sourcing, dual outbound, dual CRM, dual HR — classic recruiting stack debt"
+  },
+  {
+    id: 38, name: "The E-Commerce Brand That Got Acquired", category: "🔴 Bloated / Bad",
+    industry: "E-commerce", teamSize: "16-50", budget: "8900",
+    tools: ["Shopify","WooCommerce","Magento","Klaviyo","Mailchimp","Postscript","Attentive","Gorgias","Zendesk","Freshdesk","Yotpo","Okendo","Bazaarvoice","Recharge","Chargebee","Triple Whale","Northbeam","Google Analytics","Slack","Asana"],
+    note: "Triple platform, dual email, dual SMS, triple support, triple reviews — acquisition debt"
+  },
+  {
+    id: 39, name: "The Construction Company Going Digital", category: "🔴 Bloated / Bad",
+    industry: "Construction / Real Estate", teamSize: "16-50", budget: "4600",
+    tools: ["Procore","Buildertrend","CoConstruct","Autodesk Build","PlanGrid","Bluebeam","Sage 300","QuickBooks","Xero","Microsoft 365","Google Workspace","Zoom","Slack","Microsoft Teams","Asana","Monday.com"],
+    note: "Triple construction PM, triple accounting, dual workspace, dual comms, dual project tools"
+  },
+  {
+    id: 40, name: "The SaaS Company In a Death March", category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech", teamSize: "51-200", budget: "28000",
+    tools: ["Salesforce","HubSpot","Dynamics 365","Marketo","Pardot","Eloqua","ZoomInfo","Cognism","Lusha","Gong","Chorus","ExecVision","Outreach","Salesloft","Groove","Clari","Tableau","Looker","Domo","Zendesk","Intercom","Freshdesk","Slack","Teams","Zoom","Webex","DocuSign","PandaDoc","Conga","Workday","BambooHR","Rippling","Jira","Asana","Confluence","Notion"],
+    note: "36 tools, three of everything — result of 4 acquisitions with no integration strategy"
+  },
+
+  // ── MORE MEDIOCRE / FIXABLE ──────────────────────────────────────
+  {
+    id: 41, name: "The SDR Team Scaling Up", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "3900",
+    tools: ["Salesforce","ZoomInfo","Outreach","Gong","Slack","Google Workspace","Zoom","Calendly","Loom","Notion","DocuSign"],
+    note: "ZoomInfo expensive at this scale, Outreach overkill vs Smartlead"
+  },
+  {
+    id: 42, name: "The Mid-Market SaaS Plateauing", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "16-50", budget: "7200",
+    tools: ["Salesforce","Apollo.io","ZoomInfo","Gong","Marketo","Tableau","Zendesk","Slack","Google Workspace","Zoom","DocuSign","Stripe","Notion","Loom","Calendly"],
+    note: "Apollo + ZoomInfo overlap, Marketo overkill at this size"
+  },
+  {
+    id: 43, name: "The Agency That Outgrew Freelance Tools", category: "🟡 Mediocre / Fixable",
+    industry: "Marketing Agency", teamSize: "6-15", budget: "2400",
+    tools: ["HubSpot","Semrush","Adobe Creative Cloud","Asana","Slack","Google Workspace","Zoom","Loom","Stripe","QuickBooks","Calendly","ChatGPT"],
+    note: "Solid stack, QuickBooks redundant with Stripe for invoicing at this scale"
+  },
+  {
+    id: 44, name: "The Healthcare Practice Getting Modern", category: "🟡 Mediocre / Fixable",
+    industry: "Healthcare / MedTech", teamSize: "6-15", budget: "1900",
+    tools: ["Athenahealth","Weave","Google Workspace","Zoom","Slack","QuickBooks","Stripe","Calendly","Mailchimp","Loom"],
+    note: "Mostly sensible, Mailchimp redundant with Weave's messaging features"
+  },
+  {
+    id: 45, name: "The Nonprofit That Needs Help", category: "🟡 Mediocre / Fixable",
+    industry: "Nonprofit", teamSize: "6-15", budget: "1200",
+    tools: ["Salesforce Nonprofit","Mailchimp","Google Workspace","Zoom","Slack","Asana","Canva","Stripe","Calendly","Loom","Notion"],
+    note: "Good stack, Salesforce Nonprofit is feature-rich but steep learning curve for small team"
+  },
+  {
+    id: 46, name: "The Legal Tech Startup", category: "🟡 Mediocre / Fixable",
+    industry: "Legal / Professional Services", teamSize: "6-15", budget: "3100",
+    tools: ["Clio","HubSpot","DocuSign","Slack","Google Workspace","Zoom","Stripe","Notion","Asana","Calendly","ChatGPT","Loom"],
+    note: "Clean stack, HubSpot could be replaced by Clio's CRM features to reduce tool count"
+  },
+  {
+    id: 47, name: "The B2B Startup Finding PMF", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "1-5", budget: "1100",
+    tools: ["HubSpot","Apollo.io","Slack","Google Workspace","Zoom","Notion","Stripe","Calendly","Loom","ChatGPT","Zapier"],
+    note: "Zapier dependency is a red flag — signals missing native integrations"
+  },
+  {
+    id: 48, name: "The Real Estate Team Adding Tech", category: "🟡 Mediocre / Fixable",
+    industry: "Real Estate", teamSize: "6-15", budget: "2100",
+    tools: ["Follow Up Boss","Dotloop","DocuSign","Zapier","Google Workspace","Zoom","Mailchimp","Slack","BombBomb","Calendly","ChatGPT","Canva"],
+    note: "Zapier holding Dotloop→FUB together, Mailchimp overlap with FUB email"
+  },
+  {
+    id: 49, name: "The E-Commerce Brand Scaling", category: "🟡 Mediocre / Fixable",
+    industry: "E-commerce", teamSize: "6-15", budget: "3400",
+    tools: ["Shopify","Klaviyo","Gorgias","Postscript","Recharge","Yotpo","Google Analytics","Triple Whale","Slack","Notion","Asana","Canva"],
+    note: "Triple Whale redundant with GA for most brands under $5M revenue"
+  },
+  {
+    id: 50, name: "The Consulting Firm Going Digital", category: "🟡 Mediocre / Fixable",
+    industry: "Legal / Professional Services", teamSize: "6-15", budget: "2800",
+    tools: ["HubSpot","DocuSign","Slack","Google Workspace","Zoom","Notion","Asana","Stripe","QuickBooks","Calendly","ChatGPT","Loom","Miro"],
+    note: "QuickBooks + Stripe overlap in invoicing, Miro underused at this team size"
+  },
+  {
+    id: 51, name: "The SaaS Team With Zapier Spaghetti", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "4200",
+    tools: ["Salesforce","Mailchimp","Zapier","Typeform","Calendly","Slack","Google Workspace","Zoom","Stripe","Notion","Asana","Loom"],
+    note: "Salesforce + Mailchimp should be HubSpot. Zapier is a symptom of poor integration choices."
+  },
+  {
+    id: 52, name: "The Franchise Network", category: "🟡 Mediocre / Fixable",
+    industry: "E-commerce", teamSize: "51-200", budget: "9100",
+    tools: ["Salesforce","HubSpot","Mailchimp","Hootsuite","Google Analytics","QuickBooks","Slack","Zoom","DocuSign","Asana","Loom","Calendly","Canva","ChatGPT"],
+    note: "Salesforce + HubSpot overlap, Mailchimp redundant with HubSpot email, Hootsuite overpriced"
+  },
+
+  // ── MORE GOOD / LEAN ─────────────────────────────────────────────
+  {
+    id: 53, name: "The Indie Hacker Stack", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "1-5", budget: "180",
+    tools: ["HubSpot","Stripe","Notion","Slack","Google Workspace","ChatGPT","Loom"],
+    note: "7 tools, zero overlap, fully integrated, textbook lean"
+  },
+  {
+    id: 54, name: "The Modern RE Brokerage", category: "🟢 Good / Lean",
+    industry: "Real Estate", teamSize: "16-50", budget: "2800",
+    tools: ["Follow Up Boss","Paperless Pipeline","DocuSign","Google Workspace","Zoom","BombBomb","Slack","Calendly","ChatGPT","Canva"],
+    note: "Purpose-built stack with no redundancy, right tools for the job"
+  },
+  {
+    id: 55, name: "The Lean Healthcare Practice", category: "🟢 Good / Lean",
+    industry: "Healthcare / MedTech", teamSize: "6-15", budget: "1100",
+    tools: ["Athenahealth","Weave","Google Workspace","Stripe","Slack","Zoom","Calendly"],
+    note: "7 tools, all purpose-built, Weave handles comms natively"
+  },
+  {
+    id: 56, name: "The Revenue-First SaaS", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "16-50", budget: "4100",
+    tools: ["HubSpot","Clay","Smartlead","Gong","Slack","Google Workspace","Stripe","Notion","Calendly","ChatGPT","Loom","DocuSign"],
+    note: "12 tools, AI-native outbound, no overlap, all connected"
+  },
+  {
+    id: 57, name: "The Profitable Bootstrapped SaaS", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "1400",
+    tools: ["HubSpot","Slack","Google Workspace","Stripe","Notion","Calendly","ChatGPT","Loom","Intercom"],
+    note: "9 tools, profitable unit economics on tooling, everything integrated"
+  },
+  {
+    id: 58, name: "The Smart Law Firm", category: "🟢 Good / Lean",
+    industry: "Legal / Professional Services", teamSize: "6-15", budget: "1600",
+    tools: ["Clio","DocuSign","Google Workspace","Zoom","Slack","Stripe","Calendly","ChatGPT","Loom"],
+    note: "Clio handles practice mgmt natively, clean minimal stack"
+  },
+  {
+    id: 59, name: "The Efficient E-Commerce Brand", category: "🟢 Good / Lean",
+    industry: "E-commerce", teamSize: "6-15", budget: "1800",
+    tools: ["Shopify","Klaviyo","Gorgias","Recharge","Google Analytics","Slack","Notion","Canva","ChatGPT"],
+    note: "9 tools, each with a clear job, no attribution tool overlap"
+  },
+  {
+    id: 60, name: "The Lean Nonprofit", category: "🟢 Good / Lean",
+    industry: "Nonprofit", teamSize: "1-5", budget: "300",
+    tools: ["Google Workspace","Mailchimp","Slack","Zoom","Canva","Stripe","Notion"],
+    note: "7 tools, all free or near-free tiers, maximally efficient"
+  },
+  {
+    id: 61, name: "The AI-Native GTM Team", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "1-5", budget: "900",
+    tools: ["HubSpot","Clay","Smartlead","Slack","Google Workspace","Notion","ChatGPT","Calendly","Loom","Stripe"],
+    note: "Clay replaces ZoomInfo+Apollo, Smartlead replaces Outreach — 10 tools, $900/mo"
+  },
+  {
+    id: 62, name: "The Clean Construction Company", category: "🟢 Good / Lean",
+    industry: "Construction / Real Estate", teamSize: "16-50", budget: "2200",
+    tools: ["Procore","QuickBooks","Google Workspace","Zoom","Slack","DocuSign","Calendly","Notion"],
+    note: "Procore handles project mgmt natively, 8 clean tools"
+  },
+  {
+    id: 63, name: "The Modern Recruiting Firm", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "2600",
+    tools: ["Greenhouse","LinkedIn Recruiter","HubSpot","Slack","Google Workspace","Zoom","Calendly","DocuSign","Notion","Loom"],
+    note: "One ATS, one sourcing tool, clean communication stack"
+  },
+  {
+    id: 64, name: "The Boutique Marketing Agency", category: "🟢 Good / Lean",
+    industry: "Marketing Agency", teamSize: "1-5", budget: "750",
+    tools: ["HubSpot","Semrush","Adobe Creative Cloud","Slack","Google Workspace","Notion","Stripe","Calendly","ChatGPT"],
+    note: "9 tools, everything earns its seat, no redundancy"
+  },
+
+  // ── MORE EDGE CASES ──────────────────────────────────────────────
+  {
+    id: 65, name: "The Nonprofit With Salesforce", category: "⚪ Edge Cases",
+    industry: "Nonprofit", teamSize: "6-15", budget: "800",
+    tools: ["Salesforce Nonprofit","Mailchimp","Google Workspace","Zoom","Slack","Asana","Stripe","Canva","Loom"],
+    note: "Salesforce NPSP is powerful but overkill — tests nonprofit scoring"
+  },
+  {
+    id: 66, name: "The Solo Consultant", category: "⚪ Edge Cases",
+    industry: "Legal / Professional Services", teamSize: "1-5", budget: "150",
+    tools: ["HubSpot","Google Workspace","Calendly","Stripe","Notion","Zoom","ChatGPT"],
+    note: "Minimal 1-person stack — tests solo scoring"
+  },
+  {
+    id: 67, name: "The Education Tech Company", category: "⚪ Edge Cases",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "2900",
+    tools: ["Salesforce","Intercom","Stripe","Google Workspace","Slack","Zoom","Notion","Asana","Loom","Calendly","Mailchimp","ChatGPT"],
+    note: "EdTech B2C hybrid — Salesforce overkill, Intercom vs Mailchimp overlap"
+  },
+  {
+    id: 68, name: "The Physical Retail Brand", category: "⚪ Edge Cases",
+    industry: "E-commerce", teamSize: "6-15", budget: "1600",
+    tools: ["Shopify","Square","Klaviyo","Google Analytics","Slack","Canva","QuickBooks","Stripe","Calendly","Notion"],
+    note: "Shopify + Square dual POS — tests retail/online hybrid scoring"
+  },
+  {
+    id: 69, name: "The Crypto/Web3 Startup", category: "⚪ Edge Cases",
+    industry: "Finance / Fintech", teamSize: "6-15", budget: "3400",
+    tools: ["HubSpot","Notion","Slack","Discord","Telegram","Twitter/X","Google Workspace","Zoom","Loom","Calendly","ChatGPT","Canva","Linear"],
+    note: "Community-heavy stack, multiple chat platforms, tests web3 patterns"
+  },
+  {
+    id: 70, name: "The Fully Automated Outbound Machine", category: "⚪ Edge Cases",
+    industry: "SaaS / Tech", teamSize: "1-5", budget: "2100",
+    tools: ["Clay","Smartlead","Apollo.io","HubSpot","Slack","Google Workspace","Notion","Calendly","ChatGPT","Zapier","Make"],
+    note: "Dual automation (Zapier + Make), Clay+Apollo overlap — tests AI-native stack scoring"
+  },
+  {
+    id: 71, name: "The International SaaS", category: "⚪ Edge Cases",
+    industry: "SaaS / Tech", teamSize: "16-50", budget: "6800",
+    tools: ["Salesforce","HubSpot","ZoomInfo","Gong","Outreach","Marketo","Zendesk","Slack","Zoom","Google Workspace","DocuSign","Stripe","Notion","Loom","Calendly"],
+    note: "US-style stack run from Europe — tests international scoring patterns"
+  },
+  {
+    id: 72, name: "The Vertical SaaS for Restaurants", category: "⚪ Edge Cases",
+    industry: "E-commerce", teamSize: "6-15", budget: "1400",
+    tools: ["Toast","OpenTable","7shifts","Homebase","Stripe","Google Workspace","Slack","Mailchimp","Canva","Notion"],
+    note: "Restaurant-specific tools — tests vertical SaaS scoring"
+  },
+  {
+    id: 73, name: "The Private Equity Portfolio Co", category: "⚪ Edge Cases",
+    industry: "Finance / Fintech", teamSize: "51-200", budget: "19000",
+    tools: ["Salesforce","HubSpot","ZoomInfo","Gong","Outreach","Marketo","Tableau","Zendesk","Slack","Zoom","DocuSign","PandaDoc","Workday","BambooHR","Concur","Expensify","NetSuite","QuickBooks","Stripe","Brex"],
+    note: "PE-mandated tools plus legacy startup tools — tests integration conflict scoring"
+  },
+  {
+    id: 74, name: "The Bootstrapped SaaS at Scale", category: "⚪ Edge Cases",
+    industry: "SaaS / Tech", teamSize: "51-200", budget: "12000",
+    tools: ["HubSpot","Clay","Smartlead","Gong","Slack","Google Workspace","Stripe","Notion","Calendly","ChatGPT","Loom","Intercom","DocuSign","Linear","GitHub"],
+    note: "Efficient 15-tool stack at 200 people — tests high-score/high-headcount scenario"
+  },
+  {
+    id: 75, name: "The Hardware Startup", category: "⚪ Edge Cases",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "3200",
+    tools: ["Salesforce","HubSpot","Jira","GitHub","Google Workspace","Slack","Zoom","Notion","Stripe","Calendly","DocuSign","Asana","Monday.com"],
+    note: "Hardware+software hybrid, Salesforce+HubSpot overlap, Jira+Asana+Monday triple PM"
+  },
+
+  // ── INDUSTRY SPECIFIC EDGE CASES ────────────────────────────────
+  {
+    id: 76, name: "The Mortgage Broker", category: "🟡 Mediocre / Fixable",
+    industry: "Finance / Fintech", teamSize: "1-5", budget: "1800",
+    tools: ["Salesforce","Total Expert","Mailchimp","DocuSign","Zoom","Google Workspace","Calendly","Slack","Zapier"],
+    note: "Salesforce + Total Expert are both mortgage CRMs — classic overlap"
+  },
+  {
+    id: 77, name: "The Med Spa Chain", category: "🟡 Mediocre / Fixable",
+    industry: "Healthcare / MedTech", teamSize: "6-15", budget: "2200",
+    tools: ["Vagaro","Mindbody","Boulevard","Mailchimp","Google Workspace","Zoom","Slack","Square","Stripe","QuickBooks","Canva"],
+    note: "Triple booking/POS systems, dual payment processors"
+  },
+  {
+    id: 78, name: "The SaaS Customer Success Team", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "4800",
+    tools: ["Salesforce","Gainsight","ChurnZero","Intercom","Zendesk","Slack","Google Workspace","Zoom","Loom","Calendly","Notion","Asana"],
+    note: "Gainsight + ChurnZero dual CS platforms, Intercom + Zendesk dual support"
+  },
+  {
+    id: 79, name: "The DevOps Team", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "1900",
+    tools: ["GitHub","Linear","Slack","Google Workspace","Notion","Zoom","Datadog","PagerDuty","AWS","Calendly"],
+    note: "Engineering-centric stack, 10 tools, all earn their seat"
+  },
+  {
+    id: 80, name: "The Product-Led Growth SaaS", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "2600",
+    tools: ["HubSpot","Intercom","Stripe","Mixpanel","Slack","Google Workspace","Notion","Calendly","ChatGPT","Loom","Linear"],
+    note: "PLG-optimized, product analytics + CRM + support, no outbound bloat"
+  },
+  {
+    id: 81, name: "The VC Fund Operations", category: "⚪ Edge Cases",
+    industry: "Finance / Fintech", teamSize: "6-15", budget: "3800",
+    tools: ["Affinity","HubSpot","Google Workspace","Slack","Zoom","Notion","DocuSign","Stripe","Calendly","ChatGPT","Carta","AngelList"],
+    note: "VC-specific relationship tools — tests niche industry scoring"
+  },
+  {
+    id: 82, name: "The Media/Publishing Company", category: "🟡 Mediocre / Fixable",
+    industry: "Marketing Agency", teamSize: "6-15", budget: "2400",
+    tools: ["WordPress","HubSpot","Mailchimp","Semrush","Adobe Creative Cloud","Slack","Google Workspace","Zoom","Stripe","Notion","Asana","ChatGPT","Buffer"],
+    note: "Mailchimp redundant with HubSpot, Asana and Notion overlap in editorial workflow"
+  },
+  {
+    id: 83, name: "The Fitness Studio Chain", category: "🟡 Mediocre / Fixable",
+    industry: "Healthcare / MedTech", teamSize: "6-15", budget: "1700",
+    tools: ["Mindbody","Wodify","Pike13","Mailchimp","Google Workspace","Slack","Zoom","Square","Stripe","Canva","ChatGPT"],
+    note: "Triple booking/management platforms for fitness"
+  },
+  {
+    id: 84, name: "The SaaS Security Startup", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "3100",
+    tools: ["Salesforce","Apollo.io","Gong","Slack","Google Workspace","Zoom","Notion","Stripe","Calendly","DocuSign","ChatGPT","Loom"],
+    note: "Security-conscious stack, minimal tooling, Salesforce justified at enterprise sales motion"
+  },
+  {
+    id: 85, name: "The D2C Beauty Brand", category: "🟢 Good / Lean",
+    industry: "E-commerce", teamSize: "6-15", budget: "2100",
+    tools: ["Shopify","Klaviyo","Gorgias","Postscript","Recharge","Yotpo","Google Analytics","Slack","Canva","ChatGPT","Notion"],
+    note: "D2C-optimized stack, all tools purpose-built for the channel"
+  },
+  {
+    id: 86, name: "The Staffing Agency", category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech", teamSize: "16-50", budget: "7600",
+    tools: ["Bullhorn","Salesforce","HubSpot","LinkedIn Recruiter","ZoomInfo","Apollo.io","Outreach","Slack","Zoom","Google Workspace","Microsoft Teams","DocuSign","PandaDoc","QuickBooks","Stripe","Asana","Monday.com","Jira"],
+    note: "Triple CRM, dual data enrichment, triple communication, dual e-sign, dual PM"
+  },
+  {
+    id: 87, name: "The Series A SaaS Getting Lean", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "16-50", budget: "6100",
+    tools: ["HubSpot","Apollo.io","Gong","Slack","Google Workspace","Stripe","Notion","Calendly","ChatGPT","Loom","Intercom","DocuSign","Linear","GitHub","Zapier"],
+    note: "Zapier still used — signals 2-3 integrations that should be native"
+  },
+  {
+    id: 88, name: "The B2B Marketplace", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "16-50", budget: "5400",
+    tools: ["Salesforce","HubSpot","Intercom","Zendesk","Stripe","Google Workspace","Slack","Zoom","Notion","Asana","Loom","Calendly","ChatGPT","Mailchimp"],
+    note: "Salesforce + HubSpot redundancy, Intercom + Zendesk dual support, Mailchimp in HubSpot"
+  },
+  {
+    id: 89, name: "The Growth-Stage PropTech", category: "🔴 Bloated / Bad",
+    industry: "Real Estate", teamSize: "16-50", budget: "8200",
+    tools: ["Salesforce","HubSpot","Follow Up Boss","ZoomInfo","Outreach","Marketo","Tableau","Zendesk","Slack","Zoom","DocuSign","Dotloop","Paperless Pipeline","Zapier","Monday.com","Asana"],
+    note: "Three CRMs, enterprise outbound for RE, dual transaction mgmt, Zapier dependency"
+  },
+  {
+    id: 90, name: "The Fractional CFO Practice", category: "🟢 Good / Lean",
+    industry: "Finance / Fintech", teamSize: "1-5", budget: "600",
+    tools: ["QuickBooks","Stripe","Google Workspace","Zoom","Slack","Notion","Calendly","DocuSign","ChatGPT"],
+    note: "9 tools, all essential, no overlap — textbook services firm stack"
+  },
+  {
+    id: 91, name: "The International E-Commerce", category: "🟡 Mediocre / Fixable",
+    industry: "E-commerce", teamSize: "16-50", budget: "4900",
+    tools: ["Shopify","Klaviyo","Gorgias","Postscript","Attentive","Recharge","Triple Whale","Google Analytics","Slack","Notion","Asana","Canva","ChatGPT","Stripe"],
+    note: "Postscript + Attentive dual SMS, Triple Whale + GA dual attribution"
+  },
+  {
+    id: 92, name: "The PE-Backed Dental DSO", category: "🔴 Bloated / Bad",
+    industry: "Healthcare / MedTech", teamSize: "51-200", budget: "14000",
+    tools: ["Dentrix","Eaglesoft","Carestream","Open Dental","Weave","Podium","Birdeye","NexHealth","Salesforce","HubSpot","Mailchimp","Constant Contact","Google Workspace","Microsoft 365","Zoom","Teams","Slack","Discord","QuickBooks","Sage","Xero"],
+    note: "4 practice mgmt systems, 4 patient comms, dual CRM, quad email/comms, triple accounting"
+  },
+  {
+    id: 93, name: "The Climate Tech Startup", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "1900",
+    tools: ["HubSpot","Slack","Google Workspace","Notion","Zoom","Stripe","Calendly","ChatGPT","Loom","Linear","GitHub"],
+    note: "Mission-driven lean stack, 11 tools, nothing wasted"
+  },
+  {
+    id: 94, name: "The Marketplace Startup", category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "3300",
+    tools: ["HubSpot","Intercom","Stripe","Google Workspace","Slack","Zoom","Notion","Asana","Loom","Calendly","ChatGPT","Zapier","Mailchimp"],
+    note: "Mailchimp redundant with HubSpot, Zapier dependency, otherwise clean"
+  },
+  {
+    id: 95, name: "The Regional Bank Digital Team", category: "🔴 Bloated / Bad",
+    industry: "Finance / Fintech", teamSize: "51-200", budget: "22000",
+    tools: ["Salesforce","HubSpot","Marketo","ZoomInfo","Gong","Outreach","Tableau","Power BI","Zendesk","Intercom","Microsoft 365","Google Workspace","Teams","Slack","Zoom","Webex","DocuSign","Adobe Sign","Workday","BambooHR","ServiceNow","Jira"],
+    note: "Compliance-heavy org that added every tool without removing any"
+  },
+  {
+    id: 96, name: "The Ecom Agency", category: "🟡 Mediocre / Fixable",
+    industry: "Marketing Agency", teamSize: "6-15", budget: "3700",
+    tools: ["HubSpot","Semrush","Google Analytics","Adobe Creative Cloud","Slack","Google Workspace","Asana","Zoom","Stripe","Notion","ChatGPT","Canva","Loom","Klaviyo"],
+    note: "Adobe + Canva overlap for most tasks, Asana + Notion workflow overlap"
+  },
+  {
+    id: 97, name: "The Vertical AI Startup", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "1-5", budget: "420",
+    tools: ["HubSpot","Slack","Google Workspace","Notion","Stripe","Calendly","ChatGPT","Linear","GitHub"],
+    note: "9 developer-centric tools, maximally lean for early-stage AI company"
+  },
+  {
+    id: 98, name: "The Community-Led SaaS", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "2000",
+    tools: ["HubSpot","Circle","Slack","Google Workspace","Notion","Zoom","Stripe","Calendly","ChatGPT","Loom","Intercom"],
+    note: "Community + product-led, Circle handles community natively, clean 11-tool stack"
+  },
+  {
+    id: 99, name: "The Solopreneur Empire", category: "⚪ Edge Cases",
+    industry: "SaaS / Tech", teamSize: "1-5", budget: "890",
+    tools: ["HubSpot","Kajabi","Mailchimp","Stripe","Calendly","Zoom","Notion","ChatGPT","Canva","Buffer","Loom"],
+    note: "Kajabi + HubSpot + Mailchimp triple overlap for 1 person — classic solopreneur sprawl"
+  },
+  {
+    id: 100, name: "The Perfect Stack", category: "🟢 Good / Lean",
+    industry: "SaaS / Tech", teamSize: "6-15", budget: "2400",
+    tools: ["HubSpot","Clay","Smartlead","Gong","Slack","Google Workspace","Stripe","Notion","Calendly","ChatGPT","Loom","DocuSign"],
+    note: "12 tools, AI-native, zero overlap, all integrated natively — textbook 2025 stack"
+  }
+
 ];
 
 // Group by category
@@ -509,6 +953,78 @@ const PERSONA_GEO = {
   26: {country:'US',country_name:'United States',region:'New York',state:'NY'},
   27: {country:'US',country_name:'United States',region:'Ohio',state:'OH'},
   28: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  29: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  30: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  31: {country:'US',country_name:'United States',region:'Florida',state:'FL'},
+  32: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  33: {country:'GB',country_name:'United Kingdom',region:'England',state:null},
+  34: {country:'US',country_name:'United States',region:'Washington',state:'WA'},
+  35: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  36: {country:'US',country_name:'United States',region:'Massachusetts',state:'MA'},
+  37: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
+  38: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  39: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  40: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  41: {country:'CA',country_name:'Canada',region:'British Columbia',state:null},
+  42: {country:'US',country_name:'United States',region:'Georgia',state:'GA'},
+  43: {country:'AU',country_name:'United States',region:'Victoria',state:null},
+  44: {country:'US',country_name:'United States',region:'Arizona',state:'AZ'},
+  45: {country:'US',country_name:'United States',region:'Colorado',state:'CO'},
+  46: {country:'US',country_name:'United States',region:'Oregon',state:'OR'},
+  47: {country:'US',country_name:'United States',region:'North Carolina',state:'NC'},
+  48: {country:'US',country_name:'United States',region:'Tennessee',state:'TN'},
+  49: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  50: {country:'DE',country_name:'Germany',region:'Berlin',state:null},
+  51: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  52: {country:'US',country_name:'United States',region:'Ohio',state:'OH'},
+  53: {country:'NL',country_name:'Netherlands',region:'Noord-Holland',state:null},
+  54: {country:'US',country_name:'United States',region:'Florida',state:'FL'},
+  55: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  56: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  57: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  58: {country:'AU',country_name:'Australia',region:'New South Wales',state:null},
+  59: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
+  60: {country:'GB',country_name:'United Kingdom',region:'Scotland',state:null},
+  61: {country:'US',country_name:'United States',region:'Colorado',state:'CO'},
+  62: {country:'US',country_name:'United States',region:'Arizona',state:'AZ'},
+  63: {country:'US',country_name:'United States',region:'Massachusetts',state:'MA'},
+  64: {country:'FR',country_name:'France',region:'Île-de-France',state:null},
+  65: {country:'US',country_name:'United States',region:'Michigan',state:'MI'},
+  66: {country:'US',country_name:'United States',region:'Virginia',state:'VA'},
+  67: {country:'US',country_name:'United States',region:'Washington',state:'WA'},
+  68: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  69: {country:'SG',country_name:'Singapore',region:'Central Region',state:null},
+  70: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  71: {country:'SE',country_name:'Sweden',region:'Stockholm',state:null},
+  72: {country:'US',country_name:'United States',region:'Nevada',state:'NV'},
+  73: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  74: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  75: {country:'US',country_name:'United States',region:'Massachusetts',state:'MA'},
+  76: {country:'US',country_name:'United States',region:'Florida',state:'FL'},
+  77: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  78: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  79: {country:'US',country_name:'United States',region:'Washington',state:'WA'},
+  80: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  81: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  82: {country:'GB',country_name:'United Kingdom',region:'England',state:null},
+  83: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  84: {country:'US',country_name:'United States',region:'Virginia',state:'VA'},
+  85: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  86: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
+  87: {country:'US',country_name:'United States',region:'Colorado',state:'CO'},
+  88: {country:'CA',country_name:'Canada',region:'Ontario',state:null},
+  89: {country:'US',country_name:'United States',region:'Florida',state:'FL'},
+  90: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+  91: {country:'AU',country_name:'Australia',region:'Queensland',state:null},
+  92: {country:'US',country_name:'United States',region:'Georgia',state:'GA'},
+  93: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  94: {country:'US',country_name:'United States',region:'New York',state:'NY'},
+  95: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
+  96: {country:'NZ',country_name:'New Zealand',region:'Auckland',state:null},
+  97: {country:'US',country_name:'United States',region:'Washington',state:'WA'},
+  98: {country:'US',country_name:'United States',region:'Colorado',state:'CO'},
+  99: {country:'US',country_name:'United States',region:'California',state:'CA'},
+  100: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
 };
 
 // ── CORE: Run analysis via Anthropic API directly ─────────────────────────────
