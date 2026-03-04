@@ -94,19 +94,25 @@ h1 .accent{color:#ffc857}
 .bp-label{font-size:10px;color:#9a9690;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px;font-weight:600;font-family:'DM Mono',monospace}
 .bp-text{font-size:14px;color:#c8c4bc;line-height:1.8;font-family:var(--prose)}
 
-/* Finding rows — all use same card, color only via text/pill */
+/* Finding rows — unified dark card, no alternating colors */
 .finding{background:#16151c;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:0;margin-bottom:6px;overflow:hidden}
-.finding-wrong .finding-top{border-left:3px solid rgba(224,85,85,0.6)}
-.finding-opp   .finding-top{border-left:3px solid rgba(255,200,87,0.4)}
-.finding-missing .finding-top{border-left:3px solid rgba(78,205,196,0.4)}
-.finding-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:14px 18px 10px}
+.finding-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:14px 18px 10px;border-left:3px solid rgba(255,200,87,0.35)}
+.finding-wrong .finding-top{border-left-color:rgba(255,200,87,0.35)}
+.finding-opp   .finding-top{border-left-color:rgba(255,200,87,0.35)}
+.finding-missing .finding-top{border-left-color:rgba(78,205,196,0.4)}
 .finding-left{flex:1;min-width:0}
 .finding-title{font-size:14px;color:#e8e4dc;font-weight:600;line-height:1.45;word-break:break-word;font-family:var(--prose)}
-.finding-title .cut{color:#e05555}
-.finding-title .arrow{color:#4a4845;margin:0 4px}
-.finding-title .keep{color:#4ecdc4}
-.finding-pill{flex-shrink:0;font-size:12px;font-weight:600;color:#ffc857;background:rgba(255,200,87,0.1);border:1px solid rgba(255,200,87,0.25);border-radius:6px;padding:4px 10px;white-space:nowrap;font-family:'DM Mono',monospace;letter-spacing:.04em;align-self:flex-start}
-.finding-body{font-size:13px;color:#9a9690;line-height:1.75;font-family:var(--prose);padding:0 18px 14px;border-top:1px solid rgba(255,255,255,0.04);margin-top:0;padding-top:10px}
+.finding-title .cut{color:#9a9690;font-weight:400}
+.finding-title .arrow{color:#4a4845;margin:0 5px}
+.finding-title .keep{color:#f0ece4;font-weight:700}
+.finding-pill{flex-shrink:0;font-size:12px;font-weight:600;color:#ffc857;background:rgba(255,200,87,0.08);border:1px solid rgba(255,200,87,0.2);border-radius:6px;padding:4px 10px;white-space:nowrap;font-family:'DM Mono',monospace;letter-spacing:.04em;align-self:flex-start}
+.finding-body{font-size:13px;color:#9a9690;line-height:1.75;font-family:var(--prose);padding:10px 18px 14px;border-top:1px solid rgba(255,255,255,0.04)}
+/* Section summary cards (overlap analysis, upgrade summary, etc.) */
+.section-summary{background:#16151c;border:1px solid rgba(255,200,87,0.14);border-radius:12px;padding:16px 20px;margin-bottom:10px}
+.section-summary-label{font-size:10px;color:#ffc857;letter-spacing:.16em;text-transform:uppercase;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:8px}
+.section-summary-body{font-size:14px;color:#c8c4bc;line-height:1.8;font-family:var(--prose)}
+.section-summary-body strong{color:#f0ece4;font-weight:600}
+.section-summary-body .hl-amber{color:#ffc857;font-weight:600}
 
 /* Savings — email-style centered card */
 .sav-box{background:#16151c;border:1px solid rgba(255,200,87,0.18);border-radius:12px;padding:24px 20px;margin-bottom:8px;display:flex;gap:0}
@@ -2011,27 +2017,21 @@ function renderResult(r) {
   box.appendChild(ring);
   setTimeout(()=>hfill.style.width=r.score+"%",120);
 
-  // ── Consultant Take ──
-  if (r.blueprint && r.blueprint.description && r.blueprint !== BLUEPRINTS["default"]) {
-    const bp=div("bp-box");
-    bp.innerHTML=`<div class="bp-label">Consultant Take</div><div class="bp-text">${r.blueprint.description}</div>`;
-    box.appendChild(bp);
-  }
+  // Consultant Take is now rendered inside the AI Analysis box (renderAINarrative)
 
   // ── Helper: render a finding card ──
   function findingCard(type, titleHtml, body, save) {
-    const cls = type==="wrong"?"finding finding-wrong":type==="missing"?"finding finding-missing":"finding finding-opp";
-    const card=div(cls);
-    const top=div("finding-top");
-    const left=div("finding-left");
-    left.innerHTML=`<div class="finding-title">${titleHtml}</div>`;
+    const card = div("finding " + (type === "missing" ? "finding-missing" : "finding-opp"));
+    const top = div("finding-top");
+    const left = div("finding-left");
+    left.innerHTML = `<div class="finding-title">${titleHtml}</div>`;
     top.appendChild(left);
-    if(save>0){
-      const pill=div("finding-pill","$"+save+"/mo");
+    if (save > 0) {
+      const pill = div("finding-pill", "$" + save + "/mo");
       top.appendChild(pill);
     }
     card.appendChild(top);
-    if(body){const b=div("finding-body",body);card.appendChild(b);}
+    if (body) { const b = div("finding-body", body); card.appendChild(b); }
     return card;
   }
 
@@ -2053,11 +2053,11 @@ function renderResult(r) {
     const overlapCount = r.overlaps.length + (r.categoryOverlaps||[]).length + redundantFindings.length;
     const overlapSavePotential = [...r.overlaps, ...(r.categoryOverlaps||[])].reduce((s,o)=>s+(o.save||0),0);
     const sectionSummary1 = document.createElement('div');
-    sectionSummary1.style.cssText = 'background:rgba(229,85,85,0.05);border:1px solid rgba(229,85,85,0.15);border-left:3px solid #e05555;border-radius:8px;padding:13px 16px;margin-bottom:14px;font-size:14px;color:#c8c4bc;line-height:1.75;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
-    sectionSummary1.innerHTML = `<span style="color:#e05555;font-weight:700;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase">Overlap Analysis</span><br>${overlapCount > 2
-      ? `You have <strong style="color:#f0ece4">${overlapCount} overlap${overlapCount!==1?'s':''}</strong> — this is the biggest drag on your stack efficiency.${overlapSavePotential > 0 ? ` Cutting redundant tools here alone saves an estimated <strong style="color:#ffc857">$${overlapSavePotential.toLocaleString()}/mo</strong>.` : ''} Pick one tool per job and standardize.`
-      : `You have ${overlapCount} overlap${overlapCount!==1?'s':''}.${overlapSavePotential > 0 ? ` Resolving ${overlapCount===1?'it':'them'} saves ~$${overlapSavePotential.toLocaleString()}/mo.` : ''} These are quick wins.`
-    }`;
+    sectionSummary1.className = 'section-summary';
+    const _overlapMsg = overlapCount > 2
+      ? 'You have <strong>' + overlapCount + ' overlap' + (overlapCount!==1?'s':'') + '</strong> — this is the biggest drag on your stack efficiency.' + (overlapSavePotential > 0 ? ' Cutting redundant tools here alone saves an estimated <span class="hl-amber">$' + overlapSavePotential.toLocaleString() + '/mo</span>.' : '') + ' Pick one tool per job and standardize.'
+      : 'You have ' + overlapCount + ' overlap' + (overlapCount!==1?'s':'') + '.' + (overlapSavePotential > 0 ? ' Resolving ' + (overlapCount===1?'it':'them') + ' saves ~<span class="hl-amber">$' + overlapSavePotential.toLocaleString() + '/mo</span>.' : '') + ' These are quick wins.';
+    sectionSummary1.innerHTML = '<div class="section-summary-label">Overlap Analysis</div><div class="section-summary-body">' + _overlapMsg + '</div>';
     box.appendChild(sectionSummary1);
     // Category cluster overlaps first (higher signal)
     (r.categoryOverlaps||[]).forEach(o=>{
@@ -2082,10 +2082,10 @@ function renderResult(r) {
     box.appendChild(div("no-issues","Your stack already includes modern AI-native tools."));
   } else {
     const upgradeSummary = document.createElement('div');
-    upgradeSummary.style.cssText = 'background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.15);border-left:3px solid #4ecdc4;border-radius:8px;padding:13px 16px;margin-bottom:14px;font-size:14px;color:#c8c4bc;line-height:1.75;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+    upgradeSummary.className = 'section-summary';
     const upgradeNames = r.upgrades.slice(0,3).map(u=>u.tool).join(', ');
     const upgradeSave = r.upgrades.slice(0,3).reduce((s,u)=>s+u.save,0);
-    upgradeSummary.innerHTML = `<span style="color:#4ecdc4;font-weight:700;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase">Modernization Opportunities</span><br>You're running <strong style="color:#f0ece4">${r.upgrades.length} legacy tool${r.upgrades.length!==1?'s':''}</strong> (${upgradeNames}) where AI-native alternatives now deliver better results at lower cost. Swapping these saves an estimated <strong style="color:#ffc857">$${upgradeSave.toLocaleString()}/mo</strong> while reducing manual work.`;
+    upgradeSummary.innerHTML = '<div class="section-summary-label">Modernization Opportunities</div><div class="section-summary-body">Running <strong>' + r.upgrades.length + ' legacy tool' + (r.upgrades.length!==1?'s':'') + '</strong> (' + upgradeNames + ') where AI-native alternatives deliver better results at lower cost. Swapping these saves an estimated <span class="hl-amber">$' + upgradeSave.toLocaleString() + '/mo</span> while reducing manual work.</div>';
     box.appendChild(upgradeSummary);
     r.upgrades.slice(0,3).forEach(u=>{
       const trend = getTrendSignal(u.tool);
@@ -2110,12 +2110,12 @@ function renderResult(r) {
     const intConflictCount = (r.integrationConflicts||[]).length;
     const orphanCount = (r.orphanedTools||[]).length;
     const intSummary = document.createElement('div');
-    intSummary.style.cssText = 'background:rgba(255,180,50,0.05);border:1px solid rgba(255,180,50,0.15);border-left:3px solid #ffc857;border-radius:8px;padding:13px 16px;margin-bottom:14px;font-size:14px;color:#c8c4bc;line-height:1.75;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+    intSummary.className = 'section-summary';
     const intLines = [];
-    if (intConflictCount > 0) intLines.push(`<strong style="color:#f0ece4">${intConflictCount} integration conflict${intConflictCount!==1?'s':''}</strong> detected — these tools actively work against each other, creating data sync issues and split records.`);
-    if (orphanCount > 0) intLines.push(`<strong style="color:#f0ece4">${orphanCount} isolated tool${orphanCount!==1?'s':''}</strong> with no native connections — likely relying on Zapier or manual exports to function.`);
+    if (intConflictCount > 0) intLines.push('<strong>' + intConflictCount + ' integration conflict' + (intConflictCount!==1?'s':'') + '</strong> detected — these tools actively work against each other, creating data sync issues and split records.');
+    if (orphanCount > 0) intLines.push('<strong>' + orphanCount + ' isolated tool' + (orphanCount!==1?'s':'') + '</strong> with no native connections — likely relying on Zapier or manual exports to function.');
     if (r.glueNote) intLines.push('Automation dependency suggests your stack lacks native integration coverage.');
-    intSummary.innerHTML = `<span style="color:#ffc857;font-weight:700;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase">Integration Assessment</span><br>${intLines.join(' ')} A well-integrated stack passes data automatically — no Zapier, no manual exports, no lost context.`;
+    intSummary.innerHTML = '<div class="section-summary-label">Integration Assessment</div><div class="section-summary-body">' + intLines.join(' ') + ' A well-integrated stack passes data automatically — no Zapier, no manual exports, no lost context.</div>';
     box.appendChild(intSummary);
     (r.integrationConflicts||[]).forEach(ic=>{
       const toolBadges = ic.tools.map(t=>`<span class="cut">${t}</span>`).join('<span class="arrow"> + </span>');
@@ -2463,6 +2463,14 @@ function renderAINarrative(aiData, container) {
     box.appendChild(sa);
   }
 
+  // Consultant Take — folded into AI Analysis box
+  if (aiData._blueprint && aiData._blueprint.description) {
+    const ct = document.createElement("div");
+    ct.style.cssText = "margin-top:14px;padding-top:14px;border-top:1px solid rgba(78,205,196,0.1)";
+    ct.innerHTML = '<div class="ai-spend-label">Consultant Take</div><div style="font-size:14px;color:#c8c4bc;line-height:1.8;font-family:var(--prose)">' + aiData._blueprint.description + '</div>';
+    box.appendChild(ct);
+  }
+
   container.appendChild(box);
 }
 
@@ -2575,20 +2583,35 @@ function renderMain() {
   let _estimateBreakdown = {}; // per-tool estimates at time of click
 
   budEstBtn.addEventListener("click", () => {
+    if (selectedTools.length === 0) {
+      budHint.textContent = "Add your tools first, then click to estimate.";
+      budHint.style.color = "#9a9690";
+      return;
+    }
+    // Use calcToolCost directly — resolves via TOOL_CATALOG with proper team size
+    const teamSizeMap = {'1-5':3,'6-15':8,'16-50':25,'51-200':80,'200+':150};
+    const tSize = teamSizeMap[leadData.teamSize] || 8;
     let est = 0;
     const unpriced = [];
     _estimateBreakdown = {};
     selectedTools.forEach(t => {
-      const k = Object.keys(PRICING).find(k => t.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(t.toLowerCase()));
-      if (k) { est += PRICING[k]; _estimateBreakdown[t] = PRICING[k]; }
-      else unpriced.push(t);
+      const cost = calcToolCost(t, tSize);
+      if (cost > 0 && cost !== 45) { // 45 = unknown default fallback
+        est += cost;
+        _estimateBreakdown[t] = cost;
+      } else if (cost === 45) {
+        // still count it but flag as unpriced
+        est += cost;
+        _estimateBreakdown[t] = cost;
+        unpriced.push(t);
+      }
     });
     if (est > 0) {
       _lastEstimate = est;
       budIn.value = est;
       const note = unpriced.length > 0
-        ? `✓ Estimated from known tools — couldn't price: ${unpriced.join(", ")}. Adjust to your actual spend.`
-        : "✓ Estimated from your tool list — adjust if you have negotiated rates";
+        ? "✓ Estimated $" + est.toLocaleString() + "/mo — " + unpriced.length + " tool(s) used default pricing. Adjust to your actual spend."
+        : "✓ Estimated $" + est.toLocaleString() + "/mo from your tool list — adjust if you have negotiated rates";
       budHint.textContent = note;
       budHint.style.color = "#4ecdc4";
     } else {
@@ -2840,6 +2863,10 @@ function renderMain() {
 
     // Inject AI narrative right after score ring
     if (aiData) {
+      // Attach blueprint so consultant take renders inside the AI box
+      if (r.blueprint && r.blueprint.description && r.blueprint !== BLUEPRINTS["default"]) {
+        aiData._blueprint = r.blueprint;
+      }
       const _rb2 = document.getElementById("result-box");
       const _ring = _rb2?.querySelector(".score-ring");
       const wrapper = document.createElement("div");
