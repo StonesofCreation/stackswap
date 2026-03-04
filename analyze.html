@@ -448,6 +448,108 @@ let selectedTools = [], selectedGoals = [], extraTools = [];
 let leadData = { email:"", company:"", role:"", teamSize:"", submitted: false };
 let _pendingPricingSignal = null; // captures manual spend overrides for pricing intelligence
 
+// ── GEO DETECTION — passive, no prompts, no IP lookup ────────────────────────
+const TZ_TO_GEO = {
+  // US
+  "America/New_York":     { country:"US", country_name:"United States", region:"Northeast", state:"NY" },
+  "America/Chicago":      { country:"US", country_name:"United States", region:"Central",   state:"TX" },
+  "America/Denver":       { country:"US", country_name:"United States", region:"Mountain",  state:"CO" },
+  "America/Los_Angeles":  { country:"US", country_name:"United States", region:"West Coast",state:"CA" },
+  "America/Phoenix":      { country:"US", country_name:"United States", region:"Mountain",  state:"AZ" },
+  "America/Anchorage":    { country:"US", country_name:"United States", region:"Pacific",   state:"AK" },
+  "Pacific/Honolulu":     { country:"US", country_name:"United States", region:"Pacific",   state:"HI" },
+  "America/Detroit":      { country:"US", country_name:"United States", region:"Midwest",   state:"MI" },
+  "America/Indiana/Indianapolis": { country:"US", country_name:"United States", region:"Midwest", state:"IN" },
+  "America/Kentucky/Louisville":  { country:"US", country_name:"United States", region:"South",   state:"KY" },
+  "America/Boise":        { country:"US", country_name:"United States", region:"Mountain",  state:"ID" },
+  "America/Juneau":       { country:"US", country_name:"United States", region:"Pacific",   state:"AK" },
+  // Canada
+  "America/Toronto":      { country:"CA", country_name:"Canada", region:"Ontario",          state:"ON" },
+  "America/Vancouver":    { country:"CA", country_name:"Canada", region:"British Columbia", state:"BC" },
+  "America/Edmonton":     { country:"CA", country_name:"Canada", region:"Alberta",          state:"AB" },
+  "America/Winnipeg":     { country:"CA", country_name:"Canada", region:"Manitoba",         state:"MB" },
+  "America/Halifax":      { country:"CA", country_name:"Canada", region:"Nova Scotia",      state:"NS" },
+  "America/St_Johns":     { country:"CA", country_name:"Canada", region:"Newfoundland",     state:"NL" },
+  // UK/Europe
+  "Europe/London":        { country:"GB", country_name:"United Kingdom", region:"England",  state:"ENG" },
+  "Europe/Dublin":        { country:"IE", country_name:"Ireland",        region:"Leinster",  state:"D" },
+  "Europe/Paris":         { country:"FR", country_name:"France",         region:"Île-de-France", state:"IDF" },
+  "Europe/Berlin":        { country:"DE", country_name:"Germany",        region:"Berlin",    state:"BE" },
+  "Europe/Amsterdam":     { country:"NL", country_name:"Netherlands",    region:"North Holland", state:"NH" },
+  "Europe/Stockholm":     { country:"SE", country_name:"Sweden",         region:"Stockholm", state:"AB" },
+  "Europe/Oslo":          { country:"NO", country_name:"Norway",         region:"Oslo",      state:"03" },
+  "Europe/Copenhagen":    { country:"DK", country_name:"Denmark",        region:"Capital",   state:"84" },
+  "Europe/Helsinki":      { country:"FI", country_name:"Finland",        region:"Uusimaa",   state:"18" },
+  "Europe/Zurich":        { country:"CH", country_name:"Switzerland",    region:"Zurich",    state:"ZH" },
+  "Europe/Madrid":        { country:"ES", country_name:"Spain",          region:"Madrid",    state:"MD" },
+  "Europe/Rome":          { country:"IT", country_name:"Italy",          region:"Lazio",     state:"RM" },
+  "Europe/Warsaw":        { country:"PL", country_name:"Poland",         region:"Masovian",  state:"14" },
+  "Europe/Lisbon":        { country:"PT", country_name:"Portugal",       region:"Lisbon",    state:"11" },
+  "Europe/Brussels":      { country:"BE", country_name:"Belgium",        region:"Brussels",  state:"BRU" },
+  "Europe/Vienna":        { country:"AT", country_name:"Austria",        region:"Vienna",    state:"9" },
+  // Asia-Pacific
+  "Asia/Kolkata":         { country:"IN", country_name:"India",          region:"South Asia", state:"MH" },
+  "Asia/Singapore":       { country:"SG", country_name:"Singapore",      region:"Singapore", state:"SG" },
+  "Asia/Tokyo":           { country:"JP", country_name:"Japan",          region:"Kanto",     state:"13" },
+  "Asia/Seoul":           { country:"KR", country_name:"South Korea",    region:"Seoul",     state:"11" },
+  "Asia/Shanghai":        { country:"CN", country_name:"China",          region:"East China", state:"31" },
+  "Asia/Hong_Kong":       { country:"HK", country_name:"Hong Kong",      region:"Hong Kong", state:"HK" },
+  "Asia/Dubai":           { country:"AE", country_name:"UAE",            region:"Dubai",     state:"DU" },
+  "Asia/Riyadh":          { country:"SA", country_name:"Saudi Arabia",   region:"Riyadh",    state:"01" },
+  "Asia/Tel_Aviv":        { country:"IL", country_name:"Israel",         region:"Tel Aviv",  state:"TA" },
+  "Australia/Sydney":     { country:"AU", country_name:"Australia",      region:"New South Wales", state:"NSW" },
+  "Australia/Melbourne":  { country:"AU", country_name:"Australia",      region:"Victoria",  state:"VIC" },
+  "Australia/Brisbane":   { country:"AU", country_name:"Australia",      region:"Queensland", state:"QLD" },
+  "Australia/Perth":      { country:"AU", country_name:"Australia",      region:"Western Australia", state:"WA" },
+  "Pacific/Auckland":     { country:"NZ", country_name:"New Zealand",    region:"Auckland",  state:"AUK" },
+  // Latin America
+  "America/Sao_Paulo":    { country:"BR", country_name:"Brazil",         region:"São Paulo", state:"SP" },
+  "America/Buenos_Aires": { country:"AR", country_name:"Argentina",      region:"Buenos Aires", state:"B" },
+  "America/Mexico_City":  { country:"MX", country_name:"Mexico",         region:"CDMX",      state:"CMX" },
+  "America/Bogota":       { country:"CO", country_name:"Colombia",       region:"Bogotá",    state:"DC" },
+  "America/Lima":         { country:"PE", country_name:"Peru",           region:"Lima",      state:"LIM" },
+  "America/Santiago":     { country:"CL", country_name:"Chile",          region:"Santiago",  state:"RM" },
+  // Africa
+  "Africa/Johannesburg":  { country:"ZA", country_name:"South Africa",   region:"Gauteng",   state:"GP" },
+  "Africa/Lagos":         { country:"NG", country_name:"Nigeria",        region:"Lagos",     state:"LA" },
+  "Africa/Nairobi":       { country:"KE", country_name:"Kenya",          region:"Nairobi",   state:"110" },
+  "Africa/Cairo":         { country:"EG", country_name:"Egypt",          region:"Cairo",     state:"C" },
+};
+
+// TLD to country fallback
+const TLD_MAP = { ".uk":["GB","United Kingdom"], ".au":["AU","Australia"], ".ca":["CA","Canada"], ".de":["DE","Germany"], ".fr":["FR","France"], ".in":["IN","India"], ".sg":["SG","Singapore"], ".nz":["NZ","New Zealand"], ".ie":["IE","Ireland"], ".nl":["NL","Netherlands"], ".se":["SE","Sweden"], ".no":["NO","Norway"], ".dk":["DK","Denmark"], ".fi":["FI","Finland"], ".ch":["CH","Switzerland"], ".br":["BR","Brazil"], ".mx":["MX","Mexico"], ".co":["CO","Colombia"], ".za":["ZA","South Africa"] };
+
+function detectGeo() {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const lang = navigator.language || "";
+    const geo = TZ_TO_GEO[tz] || null;
+
+    // Try TLD from email domain if available
+    let tldCountry = null;
+    const emailEl = document.getElementById("email");
+    if (emailEl && emailEl.value) {
+      const domain = emailEl.value.split("@")[1] || "";
+      const tldMatch = Object.keys(TLD_MAP).find(t => domain.endsWith(t));
+      if (tldMatch) tldCountry = TLD_MAP[tldMatch];
+    }
+
+    return {
+      timezone: tz,
+      language: lang,
+      country: tldCountry ? tldCountry[0] : (geo?.country || null),
+      country_name: tldCountry ? tldCountry[1] : (geo?.country_name || null),
+      region: geo?.region || null,
+      state: geo?.state || null,
+    };
+  } catch(e) {
+    return { timezone: null, language: navigator.language || null, country: null, region: null, state: null };
+  }
+}
+
+const _geoData = detectGeo(); // detect once on load
+
+
 // ── ZAPIER WEBHOOK ────────────────────────────────────────────────────────────
 // Paste your Zapier webhook URL here when ready. Leave as "" to disable.
 const ZAPIER_WEBHOOK = "";
@@ -2023,7 +2125,13 @@ function renderMain() {
           company,
           role,
           team_size: teamSize,
-          industry: document.getElementById("ind")?.value || ""
+          industry: document.getElementById("ind")?.value || "",
+          timezone: _geoData.timezone || null,
+          language: _geoData.language || null,
+          country: _geoData.country || null,
+          country_name: _geoData.country_name || null,
+          region: _geoData.region || null,
+          state: _geoData.state || null,
         })
       });
       const data = await resp.json();
