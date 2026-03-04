@@ -189,6 +189,34 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 .signal-hero>*{animation:fadeUp .5s ease both}
 .signal-badge{animation-delay:.05s}.signal-title{animation-delay:.15s}
 .signal-sub{animation-delay:.22s}.signal-disclaimer{animation-delay:.28s}
+/* ── GEO HEATMAP ── */
+.geo-heatmap-wrap{margin-bottom:40px}
+.geo-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.geo-ctrl-group{display:flex;gap:6px}
+.geo-ctrl{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#7a7670;border-radius:6px;padding:6px 14px;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.05em;cursor:pointer;transition:all .2s}
+.geo-ctrl.active,.geo-ctrl:hover{background:rgba(78,205,196,0.1);border-color:rgba(78,205,196,0.3);color:#4ecdc4}
+.geo-legend-btn{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670;border-radius:6px;padding:6px 14px;font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.geo-legend-btn.active.red{background:rgba(255,77,77,0.08);border-color:rgba(255,77,77,0.25);color:#ff4d4d}
+.geo-legend-btn.active.blue{background:rgba(78,130,255,0.08);border-color:rgba(78,130,255,0.25);color:#4e82ff}
+.geo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.geo-dot.red{background:#ff4d4d;box-shadow:0 0 6px rgba(255,77,77,0.6)}
+.geo-dot.blue{background:#4e82ff;box-shadow:0 0 6px rgba(78,130,255,0.6)}
+.geo-map-container{position:relative;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;min-height:300px}
+#geo-canvas{display:block;width:100%;height:auto;cursor:crosshair}
+.geo-tooltip{position:absolute;background:#1a1920;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;font-size:12px;color:#f0ece4;pointer-events:none;opacity:0;transition:opacity .15s;max-width:200px;z-index:10;font-family:'DM Mono',monospace;line-height:1.6}
+.geo-tooltip.show{opacity:1}
+.geo-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px}
+.geo-loading-dot{width:8px;height:8px;border-radius:50%;background:#4ecdc4;animation:geopulse 1.2s ease infinite}
+.geo-loading-dot:nth-child(2){animation-delay:.2s;background:#ffc857}
+.geo-loading-dot:nth-child(3){animation-delay:.4s}
+@keyframes geoplus{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+@keyframes geoMapIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.geo-bottom{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.geo-region-card{flex:1;min-width:160px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px 14px}
+.geo-region-name{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9a9690;margin-bottom:8px;font-family:'DM Mono',monospace}
+.geo-region-tool{font-size:12px;color:#f0ece4;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.geo-region-tool .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+@keyframes geoMapIn{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -285,6 +313,45 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
   </div>
 
   <div class="sec-divider"></div>
+
+
+  <div class="sec-divider"></div>
+
+  <!-- GEOGRAPHIC HEATMAP -->
+  <div class="sec-head">
+    <div class="sec-head-title">Global Stack Activity</div>
+    <div class="sec-head-sub">Where teams are swapping tools — live from StackSwap submissions</div>
+  </div>
+
+  <div class="geo-heatmap-wrap" id="geo-heatmap-wrap">
+    <!-- Slice controls -->
+    <div class="geo-controls">
+      <div class="geo-ctrl-group">
+        <button class="geo-ctrl active" data-view="world" onclick="setGeoView('world',this)">World</button>
+        <button class="geo-ctrl" data-view="us" onclick="setGeoView('us',this)">United States</button>
+      </div>
+      <div class="geo-ctrl-group">
+        <button class="geo-legend-btn red active" onclick="setGeoMode('exits',this)">
+          <span class="geo-dot red"></span>Most Exited
+        </button>
+        <button class="geo-legend-btn blue" onclick="setGeoMode('adopted',this)">
+          <span class="geo-dot blue"></span>Most Adopted
+        </button>
+      </div>
+    </div>
+
+    <!-- Map canvas -->
+    <div class="geo-map-container" id="geo-map-container">
+      <canvas id="geo-canvas" width="900" height="460"></canvas>
+      <div class="geo-tooltip" id="geo-tooltip"></div>
+      <div class="geo-loading" id="geo-loading">
+        <div class="geo-loading-dot"></div><div class="geo-loading-dot"></div><div class="geo-loading-dot"></div>
+      </div>
+    </div>
+
+    <!-- Bottom: top tools by region -->
+    <div class="geo-bottom" id="geo-bottom"></div>
+  </div>
 
   <!-- BY INDUSTRY (preview cards — full drill-in is locked) -->
   <div class="sec-head">
@@ -515,6 +582,250 @@ function renderAll(data) {
   }
 }
 
+
+// ── GEO HEATMAP ENGINE ────────────────────────────────────────────────────────
+let _geoMode = 'exits';   // 'exits' | 'adopted'
+let _geoView = 'world';   // 'world' | 'us'
+let _geoRawData = {};
+let _geoAnimFrame = null;
+
+// Mercator projection helpers
+function mercatorX(lng, w) { return (lng + 180) / 360 * w; }
+function mercatorY(lat, h) {
+  const r = Math.log(Math.tan(Math.PI/4 + lat * Math.PI/360));
+  return h/2 - (r / (2*Math.PI)) * h * 2.2;
+}
+
+// Country centroids [lng, lat] for world dots
+const COUNTRY_CENTROIDS = {
+  "US":[  -98.58,  39.83], "CA":[ -96.82,  56.13], "GB":[  -3.44,  55.38],
+  "DE":[   10.45,  51.17], "FR":[    2.21,  46.23], "AU":[  133.78, -25.27],
+  "IN":[   78.96,  20.59], "SG":[  103.82,   1.35], "JP":[  138.25,  36.20],
+  "KR":[  127.77,  35.91], "CN":[  104.20,  35.86], "HK":[  114.17,  22.32],
+  "NL":[    5.29,  52.13], "SE":[   18.64,  60.13], "NO":[    8.47,  60.47],
+  "DK":[    9.50,  56.26], "FI":[   25.75,  61.92], "CH":[    8.23,  46.82],
+  "ES":[   -3.75,  40.46], "IT":[   12.57,  41.87], "PL":[   19.13,  51.92],
+  "PT":[   -8.22,  39.40], "BE":[    4.47,  50.50], "AT":[   14.55,  47.52],
+  "IE":[   -8.24,  53.41], "NZ":[  172.69, -40.90], "ZA":[   25.08, -29.00],
+  "NG":[    8.68,   9.08], "KE":[   37.91,  -0.02], "EG":[   30.80,  26.82],
+  "BR":[ -51.93, -14.24], "AR":[ -63.62, -38.42], "MX":[ -102.55,  23.63],
+  "CO":[ -74.30,   4.57], "PE":[ -75.02,  -9.19], "CL":[ -71.54, -35.68],
+  "AE":[   53.85,  23.42], "SA":[   45.08,  23.89], "IL":[   34.85,  31.05],
+};
+
+// US state centroids [lng, lat]
+const US_STATE_CENTROIDS = {
+  "AL":[ -86.8,  32.8], "AK":[-153.0,  64.2], "AZ":[-111.1,  34.3], "AR":[ -92.4,  34.9],
+  "CA":[-119.4,  36.8], "CO":[-105.5,  39.0], "CT":[  -72.7,  41.6], "DE":[  -75.5,  39.0],
+  "FL":[ -81.5,  27.8], "GA":[ -83.4,  32.7], "HI":[-157.5,  20.3], "ID":[-114.5,  44.2],
+  "IL":[ -89.2,  40.0], "IN":[ -86.1,  40.3], "IA":[ -93.1,  42.0], "KS":[ -98.4,  38.5],
+  "KY":[ -85.3,  37.5], "LA":[ -91.9,  31.2], "ME":[ -69.4,  45.4], "MD":[ -76.6,  39.1],
+  "MA":[ -71.5,  42.4], "MI":[ -84.5,  44.3], "MN":[ -94.3,  46.4], "MS":[ -89.7,  32.7],
+  "MO":[ -92.3,  38.5], "MT":[-110.5,  46.9], "NE":[ -99.9,  41.5], "NV":[-116.4,  38.5],
+  "NH":[ -71.6,  43.2], "NJ":[ -74.4,  40.1], "NM":[-106.1,  34.3], "NY":[ -75.5,  43.0],
+  "NC":[ -79.4,  35.6], "ND":[-100.5,  47.5], "OH":[ -82.8,  40.4], "OK":[ -97.1,  35.5],
+  "OR":[-120.6,  44.0], "PA":[ -77.2,  40.6], "RI":[ -71.5,  41.7], "SC":[ -80.9,  33.8],
+  "SD":[-100.2,  44.4], "TN":[ -86.7,  35.9], "TX":[ -99.3,  31.1], "UT":[-111.1,  39.3],
+  "VT":[ -72.7,  44.0], "VA":[ -78.7,  37.5], "WA":[-120.7,  47.4], "WV":[ -80.6,  38.6],
+  "WI":[ -89.6,  44.5], "WY":[-107.3,  43.1],
+};
+
+function setGeoView(view, btn) {
+  _geoView = view;
+  document.querySelectorAll('.geo-ctrl').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGeoMap();
+}
+function setGeoMode(mode, btn) {
+  _geoMode = mode;
+  document.querySelectorAll('.geo-legend-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGeoMap();
+}
+
+function renderGeoMap() {
+  const canvas = document.getElementById('geo-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = 'rgba(15,14,19,0)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid lines (subtle latitude/longitude)
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let lng = -180; lng <= 180; lng += 30) {
+    const x = mercatorX(lng, W);
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let lat = -60; lat <= 80; lat += 30) {
+    const y = mercatorY(lat, H);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  const isUS = _geoView === 'us';
+  const centroids = isUS ? US_STATE_CENTROIDS : COUNTRY_CENTROIDS;
+  const color = _geoMode === 'exits' ? '#ff4d4d' : '#4e82ff';
+  const glowColor = _geoMode === 'exits' ? 'rgba(255,77,77,' : 'rgba(78,130,255,';
+
+  // Projection bounds for US zoom
+  const USbounds = { lngMin:-130, lngMax:-65, latMin:23, latMax:50 };
+
+  function toCanvas(lng, lat) {
+    if (isUS) {
+      const x = (lng - USbounds.lngMin) / (USbounds.lngMax - USbounds.lngMin) * W;
+      const y = (1 - (lat - USbounds.latMin) / (USbounds.latMax - USbounds.latMin)) * H;
+      return [x, y];
+    }
+    return [mercatorX(lng, W), mercatorY(lat, H)];
+  }
+
+  // Build intensity map from geo data
+  const intensity = {};
+  let maxCount = 1;
+
+  if (isUS) {
+    // Use US state data from leads
+    Object.values(_geoRawData).forEach(country => {
+      if (country.country !== 'US') return;
+      Object.entries(country.regions || {}).forEach(([region, count]) => {
+        // Map region name to state code
+        const stateCode = Object.keys(US_STATE_CENTROIDS).find(s =>
+          region.includes(s) || s.includes(region.slice(0,2).toUpperCase())
+        );
+        if (stateCode) {
+          intensity[stateCode] = (intensity[stateCode] || 0) + count;
+          if (intensity[stateCode] > maxCount) maxCount = intensity[stateCode];
+        }
+      });
+    });
+    // Fallback: just show TX since that's our base
+    if (Object.keys(intensity).length === 0) {
+      intensity['TX'] = 1; intensity['CA'] = 1; intensity['NY'] = 1;
+    }
+  } else {
+    Object.values(_geoRawData).forEach(country => {
+      intensity[country.country] = country.count || 1;
+      if (country.count > maxCount) maxCount = country.count;
+    });
+  }
+
+  // Draw dots for each location
+  const dotData = [];
+  Object.entries(centroids).forEach(([code, [lng, lat]]) => {
+    const [x, y] = toCanvas(lng, lat);
+    if (x < -20 || x > W+20 || y < -20 || y > H+20) return;
+    const count = intensity[code] || 0;
+    const normalizedSize = count > 0
+      ? 4 + (count / maxCount) * (isUS ? 28 : 22)
+      : 2;
+    const alpha = count > 0 ? 0.15 + (count / maxCount) * 0.75 : 0.04;
+    dotData.push({ code, x, y, count, size: normalizedSize, alpha });
+  });
+
+  // Draw in two passes: glow then solid
+  // Pass 1: glow halos for active dots
+  dotData.filter(d => d.count > 0).forEach(({ x, y, size, alpha }) => {
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 3);
+    grad.addColorStop(0, glowColor + (alpha * 0.5) + ')');
+    grad.addColorStop(1, glowColor + '0)');
+    ctx.beginPath();
+    ctx.arc(x, y, size * 3, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  });
+
+  // Pass 2: solid dots
+  dotData.forEach(({ x, y, size, alpha, count }) => {
+    ctx.beginPath();
+    ctx.arc(x, y, count > 0 ? size : 2, 0, Math.PI * 2);
+    ctx.fillStyle = count > 0
+      ? color.replace(')', '') + '' // solid color
+      : 'rgba(255,255,255,0.06)';
+    ctx.globalAlpha = count > 0 ? alpha : 1;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+
+  // Labels for top active dots
+  const topDots = dotData.filter(d => d.count > 0).sort((a,b) => b.count - a.count).slice(0, 8);
+  ctx.font = '10px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  topDots.forEach(({ code, x, y, size, count }) => {
+    ctx.fillStyle = 'rgba(240,236,228,0.9)';
+    ctx.fillText(code, x, y + size + 12);
+  });
+
+  // Store dotData on canvas for tooltip
+  canvas._dotData = dotData;
+  canvas._isUS = isUS;
+
+  // Animate in
+  canvas.style.animation = 'geoMapIn .4s ease';
+  setTimeout(() => canvas.style.animation = '', 400);
+
+  renderGeoBottom(dotData);
+}
+
+function renderGeoBottom(dotData) {
+  const bottom = document.getElementById('geo-bottom');
+  if (!bottom) return;
+  const topRegions = dotData.filter(d => d.count > 0).sort((a,b) => b.count - a.count).slice(0, 5);
+  if (topRegions.length === 0) {
+    bottom.innerHTML = '<div style="font-size:12px;color:#5a5650;font-family:\'DM Mono\',monospace;padding:8px 0">Geographic data will populate as more scans come in from different regions.</div>';
+    return;
+  }
+  const color = _geoMode === 'exits' ? '#ff4d4d' : '#4e82ff';
+  bottom.innerHTML = topRegions.map(d => {
+    const regionData = _geoRawData[d.code];
+    const topIndustry = regionData ? Object.entries(regionData.industries||{}).sort((a,b)=>b[1]-a[1])[0] : null;
+    return `<div class="geo-region-card">
+      <div class="geo-region-name">${d.code}</div>
+      <div class="geo-region-tool"><span class="dot" style="background:${color}"></span>${d.count} submission${d.count !== 1 ? 's' : ''}</div>
+      ${topIndustry ? `<div style="font-size:10px;color:#7a7670;margin-top:4px;font-family:'DM Mono',monospace">${topIndustry[0]}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// Tooltip on hover
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('geo-canvas');
+  const tooltip = document.getElementById('geo-tooltip');
+  if (!canvas || !tooltip) return;
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top) * scaleY;
+    const dots = canvas._dotData || [];
+    const hit = dots.find(d => d.count > 0 && Math.hypot(mx - d.x, my - d.y) < d.size + 8);
+    if (hit) {
+      const regionData = _geoRawData[hit.code];
+      const topIndustry = regionData ? Object.entries(regionData.industries||{}).sort((a,b)=>b[1]-a[1])[0] : null;
+      tooltip.innerHTML = `<strong style="color:#f0ece4">${hit.code}</strong><br>${hit.count} scan${hit.count!==1?'s':''} recorded${topIndustry ? `<br><span style="color:#9a9690">${topIndustry[0]}</span>` : ''}`;
+      const tx = Math.min(e.clientX - rect.left + 14, rect.width - 160);
+      const ty = e.clientY - rect.top - 50;
+      tooltip.style.left = tx + 'px';
+      tooltip.style.top = ty + 'px';
+      tooltip.classList.add('show');
+    } else {
+      tooltip.classList.remove('show');
+    }
+  });
+  canvas.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+});
+
+function initGeoMap(metricsData) {
+  _geoRawData = metricsData.geo || {};
+  document.getElementById('geo-loading').style.display = 'none';
+  renderGeoMap();
+}
+
 // ── FETCH REAL DATA FROM /api/metrics ─────────────────────────────────────────
 async function loadMetrics() {
   try {
@@ -522,9 +833,11 @@ async function loadMetrics() {
     if (!resp.ok) throw new Error('fetch failed');
     const data = await resp.json();
     renderAll(data);
+    initGeoMap(data);
   } catch(e) {
     console.warn('Metrics fetch failed, using seed data:', e.message);
     renderAll({ count: 0, totalSavings: 0, cuts: [], recs: [], byIndustry: {} });
+    initGeoMap({ geo: {} });
   }
 }
 
