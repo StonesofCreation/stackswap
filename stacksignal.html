@@ -15,7 +15,7 @@
   --text:#f0ece4;--muted:#9a9690;--dim:#3a3830;
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:DM Mono,monospace;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 60% 35% at 50% 0%,rgba(78,205,196,0.06) 0%,transparent 60%),
     radial-gradient(ellipse 40% 25% at 85% 50%,rgba(255,200,87,0.04) 0%,transparent 50%)}
@@ -51,18 +51,18 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 /* HERO STATS */
 .signal-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
 .signal-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 16px;text-align:center}
-.signal-stat-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:800;line-height:1;margin-bottom:6px}
+.signal-stat-val{font-family:DM Mono,monospace;font-size:28px;font-weight:800;line-height:1;margin-bottom:6px}
 .signal-stat-lbl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
 
 /* INDUSTRY FILTER */
 .filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap}
 .filter-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-right:4px}
-.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-family:'DM Mono',monospace;
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-family:DM Mono,monospace;
   border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .2s}
 .filter-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
 .filter-btn.active{background:rgba(78,205,196,0.12);border-color:rgba(78,205,196,0.4);color:var(--teal)}
 .filter-select{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;
-  padding:8px 14px;color:var(--text);font-size:12px;font-family:'DM Mono',monospace;outline:none;cursor:pointer}
+  padding:8px 14px;color:var(--text);font-size:12px;font-family:DM Mono,monospace;outline:none;cursor:pointer}
 .filter-select option{background:#1a1a22}
 
 /* SECTION HEADERS */
@@ -130,14 +130,14 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .pro-headline span{color:var(--teal)}
 .pro-sub{font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:24px;max-width:400px}
 .pro-features{display:flex;flex-direction:column;gap:8px;margin-bottom:0}
-.pro-feat{font-size:12px;color:rgba(78,205,196,0.85);font-family:'DM Mono',monospace;
+.pro-feat{font-size:12px;color:rgba(78,205,196,0.85);font-family:DM Mono,monospace;
   display:flex;align-items:center;gap:8px}
 .pro-feat::before{content:'→';color:var(--teal);font-size:11px}
 .pro-right{flex-shrink:0;width:100%;max-width:340px}
 .pro-waitlist-box{background:rgba(15,14,19,0.7);backdrop-filter:blur(16px);
   border:1px solid rgba(78,205,196,0.2);border-radius:12px;padding:28px 28px 24px}
 .pro-waitlist-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--teal);margin-bottom:10px;font-weight:600;font-family:'DM Mono',monospace}
+  color:var(--teal);margin-bottom:10px;font-weight:600;font-family:DM Mono,monospace}
 .pro-waitlist-headline{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;
   color:var(--text);letter-spacing:-.01em;margin-bottom:6px}
 .pro-waitlist-sub{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.7}
@@ -148,11 +148,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .pro-waitlist-input::placeholder{color:var(--dim)}
 .pro-waitlist-input:focus{border-color:rgba(78,205,196,0.5)}
 .pro-waitlist-btn{width:100%;padding:12px;border-radius:7px;background:var(--teal);color:#0f0e13;
-  border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;
+  border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:DM Mono,monospace;
   letter-spacing:.05em;transition:opacity .2s}
 .pro-waitlist-btn:hover{opacity:.88}
 .pro-waitlist-success{display:none;font-size:13px;color:var(--teal);text-align:center;
-  padding:10px 0;font-family:'DM Mono',monospace;letter-spacing:.03em}
+  padding:10px 0;font-family:DM Mono,monospace;letter-spacing:.03em}
 .pro-waitlist-note{font-size:11px;color:var(--dim);margin-top:10px;text-align:center}
 
 /* FADE IN ANIMATION */
@@ -205,18 +205,18 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 .feed-item-title{font-size:13px;color:#c8c4bc;line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .feed-item-title strong{color:#f0ece4;font-weight:600}
 .feed-item-meta{display:flex;align-items:center;gap:10px;margin-top:4px;flex-wrap:wrap}
-.feed-item-tag{font-size:11px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:4px}
+.feed-item-tag{font-size:11px;font-family:DM Mono,monospace;padding:2px 7px;border-radius:4px}
 .feed-item-tag.savings{background:rgba(78,205,196,0.08);color:#4ecdc4;border:1px solid rgba(78,205,196,0.15)}
 .feed-item-tag.score{background:rgba(255,200,87,0.08);color:#ffc857;border:1px solid rgba(255,200,87,0.15)}
 .feed-item-tag.score.bad{background:rgba(224,85,85,0.08);color:var(--red);border:1px solid rgba(224,85,85,0.15)}
 .feed-item-tag.score.good{background:rgba(78,205,196,0.08);color:#4ecdc4;border:1px solid rgba(78,205,196,0.15)}
-.feed-item-time{font-size:11px;color:#3a3830;font-family:'DM Mono',monospace}
+.feed-item-time{font-size:11px;color:#3a3830;font-family:DM Mono,monospace}
 @keyframes feedPulse{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
 @keyframes feedIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes geoMapIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 .geo-bottom{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .geo-region-card{flex:1;min-width:160px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px 14px}
-.geo-region-name{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9a9690;margin-bottom:8px;font-family:'DM Mono',monospace}
+.geo-region-name{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9a9690;margin-bottom:8px;font-family:DM Mono,monospace}
 .geo-region-tool{font-size:12px;color:#f0ece4;margin-bottom:4px;display:flex;align-items:center;gap:6px}
 .geo-region-tool .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 @keyframes geoMapIn{from{opacity:0}to{opacity:1}}
@@ -239,15 +239,15 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 .cap-stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
   border-radius:12px;padding:20px 18px}
 .cap-stat-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-  font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:14px}
+  font-family:DM Mono,monospace;color:var(--muted);margin-bottom:14px}
 .cap-stat-list{display:flex;flex-direction:column;gap:8px}
 .cap-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.cap-name{font-size:13px;font-family:'DM Mono',monospace;color:var(--text);
+.cap-name{font-size:13px;font-family:DM Mono,monospace;color:var(--text);
   text-transform:capitalize;letter-spacing:.02em}
 .cap-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
 .cap-bar{height:100%;border-radius:2px;transition:width .6s ease}
-.cap-count{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);min-width:28px;text-align:right}
-.cap-loading{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.cap-count{font-size:11px;font-family:DM Mono,monospace;color:var(--muted);min-width:28px;text-align:right}
+.cap-loading{font-size:12px;color:var(--muted);font-family:DM Mono,monospace}
 
 
 /* ── NAV ── */
@@ -879,6 +879,40 @@ function startFeedInject() {
     setTimeout(injectNext, feedRandInt(4000, 8000));
   };
   setTimeout(injectNext, feedRandInt(4000, 8000));
+}
+
+// ── CAPABILITY STATS RENDERER ────────────────────────────────────────────────
+function renderCapStats(caps) {
+  function renderList(elId, items, color) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (!items || items.length === 0) {
+      el.innerHTML = '<div style="font-size:12px;color:var(--dim);padding:8px 0">No data yet</div>';
+      return;
+    }
+    const max = items[0][1] || 1;
+    el.innerHTML = items.slice(0, 8).map(([cap, count]) => {
+      const pct = Math.round((count / max) * 100);
+      const label = cap.replace(/_/g, ' ');
+      return '<div style="margin-bottom:8px">' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:4px">' +
+          '<span style="font-size:12px;color:var(--text);font-family:var(--prose);text-transform:capitalize">' + label + '</span>' +
+          '<span style="font-size:11px;color:var(--dim);font-family:DM Mono,monospace">' + count + '</span>' +
+        '</div>' +
+        '<div class="cap-bar-wrap"><div class="cap-bar" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+      '</div>';
+    }).join('');
+  }
+  if (!caps) {
+    ['cap-common','cap-redundant','cap-missing'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<div style="font-size:12px;color:var(--dim);padding:8px 0">No data yet — run more stack analyses to populate</div>';
+    });
+    return;
+  }
+  renderList('cap-common',    caps.common,    'var(--teal)');
+  renderList('cap-redundant', caps.redundant, 'var(--red)');
+  renderList('cap-missing',   caps.missing,   'var(--amber)');
 }
 
 // ── FETCH REAL DATA FROM /api/metrics ─────────────────────────────────────────
