@@ -4,10 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>StackSignal — SaaS Stack Intelligence by StackSwap</title>
-<meta name="description" content="Real-time aggregate data on SaaS stack trends. The most used, most cut, and most replaced tools by industry. No vendor bias. No paid placements."/>
+<meta name="description" content="Real-time aggregate data on SaaS stack trends. The most used, most cut, and most replaced tools by industry."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#0f0e13;--surface:rgba(255,255,255,0.02);--border:rgba(255,255,255,0.07);
@@ -242,51 +243,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 .cap-loading{font-size:12px;color:var(--muted);font-family:DM Mono,monospace}
 
 
-/* ── NAV ── */
-nav,
-.page-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 28px;
-  background: rgba(15,14,19,0.95); backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.nav-logo,
-.page-nav-logo {
-  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px;
-  font-weight: 800; color: var(--text, #f0ece4); text-decoration: none;
-  letter-spacing: -.01em; flex-shrink: 0;
-}
-.nav-logo span, .page-nav-logo span { color: #ffc857; }
-.nav-links,
-.page-nav-links {
-  display: flex; align-items: center; gap: 4px; flex: 1;
-  justify-content: flex-end; margin: 0 12px;
-}
-.nav-link,
-.page-nav-link {
-  padding: 6px 12px; border-radius: 6px; font-size: 12px;
-  font-family: 'DM Mono', monospace; color: #9a9690;
-  text-decoration: none; border: 1px solid transparent;
-  transition: all .2s; letter-spacing: .04em; white-space: nowrap;
-}
-.nav-link:hover, .page-nav-link:hover {
-  color: #f0ece4; background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.08);
-}
-.nav-link.active, .page-nav-link.active {
-  color: #f0ece4; border-color: rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
-}
-.nav-cta,
-.page-nav-cta {
-  padding: 7px 14px; border-radius: 6px; font-size: 12px;
-  font-family: 'DM Mono', monospace; font-weight: 600;
-  color: #0f0e13; background: #ffc857; border: none; cursor: pointer;
-  text-decoration: none; transition: opacity .2s; letter-spacing: .04em;
-  white-space: nowrap; flex-shrink: 0;
-}
-.nav-cta:hover, .page-nav-cta:hover { opacity: .85; }
+
 /* hamburger */
 .nav-hamburger {
   display: none; flex-direction: column; justify-content: center;
@@ -332,6 +289,80 @@ nav,
   .nav-cta, .page-nav-cta { display: none !important; }
   .nav-hamburger { display: flex !important; }
 }
+
+
+/* ── NAV ── */
+nav, .page-nav {
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 28px;
+  background:rgba(15,14,19,0.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.page-nav-logo {
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;
+  font-weight:800;color:#f0ece4;text-decoration:none;
+  letter-spacing:-.01em;flex-shrink:0;
+}
+.page-nav-logo span { color:#ffc857; }
+.page-nav-links {
+  display:flex;align-items:center;gap:4px;flex:1;
+  justify-content:flex-end;margin:0 12px;
+}
+.page-nav-link {
+  padding:6px 12px;border-radius:6px;font-size:12px;
+  font-family:'DM Mono',monospace;color:#9a9690;
+  text-decoration:none;border:1px solid transparent;
+  transition:all .2s;letter-spacing:.04em;white-space:nowrap;
+}
+.page-nav-link:hover { color:#f0ece4;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08); }
+.page-nav-link.active { color:#f0ece4;border-color:rgba(255,255,255,0.08);background:rgba(255,255,255,0.04); }
+.page-nav-cta {
+  padding:7px 14px;border-radius:6px;font-size:12px;
+  font-family:'DM Mono',monospace;font-weight:600;
+  color:#0f0e13;background:#ffc857;border:none;cursor:pointer;
+  text-decoration:none;transition:opacity .2s;letter-spacing:.04em;
+  white-space:nowrap;flex-shrink:0;
+}
+.page-nav-cta:hover { opacity:.85; }
+.nav-hamburger {
+  display:none;flex-direction:column;justify-content:center;
+  gap:5px;width:38px;height:38px;padding:7px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:7px;cursor:pointer;transition:background .2s;
+  flex-shrink:0;margin-left:8px;
+}
+.nav-hamburger:hover { background:rgba(255,255,255,0.09); }
+.nav-hamburger span { display:block;height:2px;background:#f0ece4;border-radius:2px; }
+.nav-hamburger span:nth-child(2) { width:70%; }
+.nav-drawer {
+  display:none;flex-direction:column;gap:4px;
+  position:fixed;top:57px;left:0;right:0;bottom:0;z-index:199;
+  background:rgba(12,11,16,0.98);backdrop-filter:blur(16px);
+  padding:20px 16px 48px;overflow-y:auto;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.nav-drawer-link {
+  display:block;padding:14px 16px;border-radius:8px;font-size:16px;
+  font-family:'DM Mono',monospace;color:#9a9690;text-decoration:none;
+  border:1px solid transparent;transition:all .15s;letter-spacing:.02em;
+}
+.nav-drawer-link.active { color:#f0ece4;background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.08); }
+.nav-drawer-divider { height:1px;background:rgba(255,255,255,0.06);margin:10px 0; }
+.nav-drawer-cta {
+  display:block;padding:15px 16px;border-radius:8px;font-size:15px;
+  font-family:'DM Mono',monospace;font-weight:700;color:#0f0e13;
+  background:#ffc857;text-decoration:none;text-align:center;
+  letter-spacing:.04em;transition:opacity .2s;margin-top:4px;
+}
+.nav-drawer-cta:hover { opacity:.88; }
+@media (max-width:768px) {
+  nav, .page-nav { padding:10px 16px !important; }
+  .page-nav-links { display:none !important; }
+  .page-nav-cta { display:none !important; }
+  .nav-hamburger { display:flex !important; }
+}
+
 </style>
 </head>
 <body>
@@ -357,6 +388,8 @@ nav,
   <a href="stacksignal.html" class="nav-drawer-link active">StackSignal</a>
   <a href="pricing.html" class="nav-drawer-link">Pricing</a>
   <div class="nav-drawer-divider"></div>
+  <a href="analyze.html" class="nav-drawer-cta">Run Free StackScan →</a>
+</div>
 
 <div class="wrap">
 
@@ -552,6 +585,64 @@ nav,
 <div id="signal-waitlist"></div>
 </section>
 
+<div class="pro-section" id="industry-lock">
+    <!-- animated background bars for visual texture -->
+    <div class="pro-charts-bg" aria-hidden="true">
+      <div class="pro-chart-bar" style="left:5%;width:32px;height:55%;animation:barPulse 3.2s ease-in-out infinite"></div>
+      <div class="pro-chart-bar" style="left:12%;width:28px;height:72%;animation:barPulse 2.8s ease-in-out infinite .4s"></div>
+      <div class="pro-chart-bar" style="left:18%;width:36px;height:41%;animation:barPulse 3.5s ease-in-out infinite .2s"></div>
+      <div class="pro-chart-bar" style="left:25%;width:30px;height:88%;animation:barPulse 2.6s ease-in-out infinite .6s"></div>
+      <div class="pro-chart-bar" style="left:32%;width:24px;height:60%;animation:barPulse 3.1s ease-in-out infinite .1s"></div>
+      <div class="pro-chart-bar" style="right:5%;width:32px;height:65%;animation:barPulse 2.9s ease-in-out infinite .3s"></div>
+      <div class="pro-chart-bar" style="right:12%;width:28px;height:48%;animation:barPulse 3.3s ease-in-out infinite .5s"></div>
+      <div class="pro-chart-bar" style="right:20%;width:36px;height:80%;animation:barPulse 2.7s ease-in-out infinite .2s"></div>
+      <div class="pro-chart-bar" style="right:28%;width:24px;height:55%;animation:barPulse 3.0s ease-in-out infinite .7s"></div>
+    </div>
+    <div class="pro-content">
+      <div class="pro-left">
+        <div class="pro-badge-row">
+          <div class="pro-badge-dot"></div>
+          <span class="pro-badge-txt">StackSignal Pro — Early Access</span>
+        </div>
+        <div class="pro-headline">The full picture,<br><span>by your industry.</span></div>
+        <p class="pro-sub">The free dashboard shows you what's trending across all submissions. Pro lets you slice every chart by industry, team size, and time period — so you see exactly what companies like yours are doing.</p>
+        <div class="pro-features">
+          <div class="pro-feat">Filter every chart by industry &amp; team size</div>
+          <div class="pro-feat">Switching velocity trends over time</div>
+          <div class="pro-feat">Track which categories are growing vs. contracting</div>
+          <div class="pro-feat">CSV export for any dataset</div>
+          <div class="pro-feat">Early access pricing locked in at signup</div>
+        </div>
+      </div>
+      <div class="pro-right">
+        <div class="pro-waitlist-box">
+          <div class="pro-waitlist-label">Get Early Access</div>
+          <div class="pro-waitlist-headline">Join the waitlist — be first in.</div>
+          <div class="pro-waitlist-sub">StackSignal Pro launches soon. Drop your email to get notified first.</div>
+          <div class="pro-waitlist-form" id="proWaitlistForm">
+            <input type="email" class="pro-waitlist-input" placeholder="your@email.com" id="proSignalEmail"/>
+            <button class="pro-waitlist-btn" onclick="submitProWaitlist()">Notify Me →</button>
+          </div>
+          <div class="pro-waitlist-success" id="proSignalSuccess">✓ You're on the list. We'll be in touch.</div>
+          <div class="pro-waitlist-note">No spam. One email when Pro launches.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="method-box">
+    <div class="method-label">Data Methodology</div>
+    <p class="method-text">Rankings are derived from AI analysis of anonymized stack submissions. No vendor has paid for placement. No sponsored results. Recommendations are generated purely by pattern-matching tool overlaps, pricing data, and industry-specific best practices. Dataset updates in real time with every new analysis. Savings figures are estimates based on current vendor list pricing and may not reflect negotiated rates.</p>
+  </div>
+
+</div>
+
+
+<!-- WAITLIST ANCHOR (kept for any external links) -->
+<div id="signal-waitlist"></div>
+</section>
+
 <script>
 async function submitProWaitlist() {
   const input = document.getElementById('proSignalEmail');
@@ -578,6 +669,8 @@ async function submitProWaitlist() {
 }
 </script>
 
+
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">Stack<span>Swap</span></div>
@@ -592,6 +685,7 @@ async function submitProWaitlist() {
 </footer>
 
 <script>
+
 // ── SEED DATA (shown while loading or when no real data exists) ───────────────
 const SEED_MOST_USED = [
   ["HubSpot", 88], ["Slack", 82], ["Notion", 74], ["Google Workspace", 68],
@@ -936,9 +1030,8 @@ function showLockModal() {
   el.style.boxShadow = '0 0 0 2px rgba(78,205,196,0.5)';
   setTimeout(() => { el.style.boxShadow = ''; }, 1200);
 }
+
 </script>
-
-
 <script>
 (function(){
   function toggleNav(){
@@ -948,11 +1041,9 @@ function showLockModal() {
     var open = drawer.style.display==='flex';
     drawer.style.display = open ? 'none' : 'flex';
     document.body.style.overflow = open ? '' : 'hidden';
-    // animate bars
     btn.classList.toggle('is-open', !open);
   }
   window.toggleNav = toggleNav;
-
   document.addEventListener('click', function(e){
     var drawer = document.getElementById('ss-nav-drawer');
     var btn    = document.getElementById('ss-hamburger');
@@ -963,8 +1054,6 @@ function showLockModal() {
       btn && btn.classList.remove('is-open');
     }
   });
-
-  // close drawer on any link tap
   document.addEventListener('DOMContentLoaded', function(){
     var links = document.querySelectorAll('.nav-drawer-link,.nav-drawer-cta');
     links.forEach(function(a){
