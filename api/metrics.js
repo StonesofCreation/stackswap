@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
       let all = [], offset = 0;
       while (true) {
         const resp = await fetch(
-          `${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count,capability_coverage,missing_capabilities,redundant_capabilities&limit=${PAGE}&offset=${offset}`,
+          `${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count&limit=${PAGE}&offset=${offset}`,
           { headers }
         );
         if (!resp.ok) { const e = await resp.text(); throw new Error(e); }
