@@ -3860,78 +3860,408 @@ async function analyzePersona(persona) {
     </div>
   `;
 
-  // ── Auto-price: sum known tool costs, fall back to persona budget ──
-  const TOOL_PRICES = {
-    // Data & Prospecting
-    'zoominfo':500,'apollo.io':79,'clay':149,'cognism':400,'lusha':99,
-    'linkedin sales navigator':99,'linkedin recruiter':825,
-    // CRM
-    'salesforce':150,'hubspot':113,'pipedrive':49,'dynamics 365':95,
-    'follow up boss':49,'kvcor':499,'boomtown':1500,'freshsales':35,
-    // Outbound / Sequencing
-    'outreach':150,'salesloft':125,'smartlead':94,'instantly':97,
-    'reply.io':70,'lemlist':59,'groove':50,'aisdr':250,
-    // Conversation Intel
-    'gong':200,'chorus':100,'avoma':70,
-    // Marketing Automation
-    'marketo':800,'pardot':1250,'activecampaign':79,'mailchimp':20,
-    'klaviyo':45,'hootsuite':249,'sprout social':249,'buffer':18,
-    // Analytics
-    'tableau':70,'looker':5000,'power bi':20,'domo':300,
-    'hotjar':39,'fullstory':200,'heap':50,'mixpanel':25,
-    'google analytics':0,'triple whale':199,'northbeam':99,
-    // AI Writing
-    'jasper':99,'copy.ai':36,'writer':18,'chatgpt':20,'claude':20,
-    // Support / Chat
-    'zendesk':150,'intercom':200,'freshdesk':50,'drift':400,
-    'servicenow':150,'gorgias':50,
-    // Project Management
-    'asana':25,'monday.com':20,'clickup':7,'jira':7,'notion':16,
-    'trello':5,'airtable':20,'confluence':5,'sharepoint':5,
-    // Communication
-    'slack':8,'microsoft teams':6,'zoom':15,'google meet':0,
-    'webex':25,'discord':0,'loom':12,
-    // Workspace / Storage
-    'google workspace':12,'microsoft 365':22,'dropbox':20,'box':25,
-    'onedrive':6,
-    // E-Sign / Contracts
-    'docusign':40,'hellosign':20,'pandadoc':49,'ironclad':500,'conga':100,
-    // Real Estate
-    'dotloop':89,'skyslope':80,'paperless pipeline':80,
-    'lone wolf back office':200,'brokermint':99,'skyslope':80,
-    // CRM – RE
-    'kvcor':499,'boomtown':1500,
-    // Finance / HR
-    'quickbooks':35,'stripe':0,'chargebee':299,'recurly':299,
-    'bamboohr':99,'workday':400,'rippling':8,
-    // Scheduling
-    'calendly':12,'hubspot meetings':0,
-    // Video / Recording
-    'bombbomb':50,'loom':12,
-    // Dev
-    'github':4,'gitlab':19,'azure devops':6,'jira':7,
-    // Misc
-    'zapier':49,'make':9,'adobe creative cloud':55,'semrush':119,'ahrefs':99,'moz':99,
-    'greenhouse':500,'lever':350,'workable':149,'hirevue':300,'indeed':0,
-    'yotpo':19,'okendo':29,'postscript':25,'attentive':400,'recharge':99,
-    'loop returns':99,'shopify':79,'appsheet':10,'looker studio':0,
-  };
 
-  function estimateSpend(tools) {
-    let total = 0;
-    let unpriced = 0;
-    tools.forEach(tool => {
-      const key = Object.keys(TOOL_PRICES).find(k =>
-        tool.toLowerCase().includes(k) || k.includes(tool.toLowerCase())
-      );
-      if (key !== undefined) total += TOOL_PRICES[key];
-      else { total += 45; unpriced++; } // default $45/mo for unknown tools
-    });
-    return total;
+  // ── Realistic pricing engine v2 ──────────────────────────────────────────
+  const _teamSizeMap = {'1-5':3,'6-15':8,'16-50':25,'51-200':80,'200+':200};
+  const _simTeamSize = _teamSizeMap[persona.teamSize] || 8;
+
+// ── REALISTIC PRICING ENGINE v2 ─────────────────────────────────────────────
+// Models: per_user | per_workspace | usage_based | enterprise_license | hybrid
+// Each tool: { model, seat, base, typical_seats, variance, category }
+
+const TOOL_CATALOG = {
+  // ── CRM ─────────────────────────────────────────────────────────
+  'hubspot':              {model:'hybrid',        seat:50,  base:800,  typical:5,  variance:0.4, cat:'crm'},
+  'salesforce':           {model:'per_user',      seat:150, base:0,    typical:8,  variance:0.35,cat:'crm'},
+  'pipedrive':            {model:'per_user',      seat:49,  base:0,    typical:5,  variance:0.2, cat:'crm'},
+  'zoho crm':             {model:'per_user',      seat:20,  base:0,    typical:6,  variance:0.2, cat:'crm'},
+  'freshsales':           {model:'per_user',      seat:35,  base:0,    typical:5,  variance:0.2, cat:'crm'},
+  'close':                {model:'per_user',      seat:59,  base:0,    typical:4,  variance:0.2, cat:'crm'},
+  'attio':                {model:'per_user',      seat:34,  base:0,    typical:5,  variance:0.2, cat:'crm'},
+  'pipedrive':            {model:'per_user',      seat:49,  base:0,    typical:5,  variance:0.2, cat:'crm'},
+  'dynamics 365':         {model:'per_user',      seat:95,  base:0,    typical:8,  variance:0.3, cat:'crm'},
+  'follow up boss':       {model:'per_user',      seat:49,  base:0,    typical:5,  variance:0.2, cat:'crm'},
+  'kvcor':                {model:'per_workspace', seat:0,   base:499,  typical:1,  variance:0.1, cat:'crm'},
+  'boomtown':             {model:'enterprise_license',seat:0,base:1500,typical:1,  variance:0.3, cat:'crm'},
+  'cinc':                 {model:'enterprise_license',seat:0,base:900, typical:1,  variance:0.3, cat:'crm'},
+  'liondesk':             {model:'per_user',      seat:25,  base:0,    typical:3,  variance:0.2, cat:'crm'},
+  'wise agent':           {model:'per_user',      seat:32,  base:0,    typical:3,  variance:0.2, cat:'crm'},
+  'top producer':         {model:'per_user',      seat:60,  base:0,    typical:3,  variance:0.2, cat:'crm'},
+  'chime crm':            {model:'per_workspace', seat:0,   base:500,  typical:1,  variance:0.2, cat:'crm'},
+
+  // ── SALES DATA / PROSPECTING ─────────────────────────────────────
+  'zoominfo':             {model:'enterprise_license',seat:0,base:2500,typical:4,  variance:0.35,cat:'data_provider'},
+  'apollo.io':            {model:'per_user',      seat:79,  base:0,    typical:4,  variance:0.25,cat:'data_provider'},
+  'clay':                 {model:'usage_based',   seat:0,   base:149,  typical:1,  variance:0.4, cat:'data_provider'},
+  'cognism':              {model:'enterprise_license',seat:0,base:1500,typical:3,  variance:0.35,cat:'data_provider'},
+  'lusha':                {model:'per_user',      seat:29,  base:0,    typical:3,  variance:0.25,cat:'data_provider'},
+  'clearbit':             {model:'usage_based',   seat:0,   base:500,  typical:1,  variance:0.5, cat:'data_provider'},
+  'linkedin sales navigator':{model:'per_user',  seat:99,  base:0,    typical:3,  variance:0.1, cat:'data_provider'},
+  'seamless.ai':          {model:'per_user',      seat:65,  base:0,    typical:3,  variance:0.25,cat:'data_provider'},
+  'leadiq':               {model:'per_user',      seat:45,  base:0,    typical:3,  variance:0.2, cat:'data_provider'},
+  '6sense':               {model:'enterprise_license',seat:0,base:3000,typical:1,  variance:0.4, cat:'data_provider'},
+  'demandbase':           {model:'enterprise_license',seat:0,base:2000,typical:1,  variance:0.4, cat:'data_provider'},
+
+  // ── SALES ENGAGEMENT / OUTBOUND ──────────────────────────────────
+  'outreach':             {model:'per_user',      seat:130, base:0,    typical:6,  variance:0.3, cat:'sales_engagement'},
+  'salesloft':            {model:'per_user',      seat:125, base:0,    typical:6,  variance:0.3, cat:'sales_engagement'},
+  'smartlead':            {model:'per_workspace', seat:0,   base:94,   typical:1,  variance:0.2, cat:'sales_engagement'},
+  'instantly':            {model:'per_workspace', seat:0,   base:97,   typical:1,  variance:0.2, cat:'sales_engagement'},
+  'lemlist':              {model:'per_user',      seat:59,  base:0,    typical:3,  variance:0.2, cat:'sales_engagement'},
+  'reply.io':             {model:'per_user',      seat:60,  base:0,    typical:3,  variance:0.2, cat:'sales_engagement'},
+  'mailshake':            {model:'per_user',      seat:59,  base:0,    typical:3,  variance:0.2, cat:'sales_engagement'},
+  'mixmax':               {model:'per_user',      seat:29,  base:0,    typical:4,  variance:0.2, cat:'sales_engagement'},
+  'yesware':              {model:'per_user',      seat:35,  base:0,    typical:4,  variance:0.2, cat:'sales_engagement'},
+  'groove':               {model:'per_user',      seat:50,  base:0,    typical:4,  variance:0.2, cat:'sales_engagement'},
+  'aisdr':                {model:'per_workspace', seat:0,   base:900,  typical:1,  variance:0.2, cat:'sales_engagement'},
+  'nooks':                {model:'per_user',      seat:89,  base:0,    typical:5,  variance:0.3, cat:'sales_engagement'},
+  'lavender':             {model:'per_user',      seat:29,  base:0,    typical:4,  variance:0.2, cat:'sales_engagement'},
+  'warmly':               {model:'per_workspace', seat:0,   base:500,  typical:1,  variance:0.3, cat:'sales_engagement'},
+  'chili piper':          {model:'per_user',      seat:30,  base:0,    typical:5,  variance:0.25,cat:'sales_engagement'},
+  'dock':                 {model:'per_user',      seat:49,  base:0,    typical:4,  variance:0.2, cat:'sales_engagement'},
+
+  // ── CONVERSATION INTELLIGENCE ─────────────────────────────────────
+  'gong':                 {model:'per_user',      seat:120, base:0,    typical:8,  variance:0.3, cat:'sales_intelligence'},
+  'chorus':               {model:'per_user',      seat:80,  base:0,    typical:6,  variance:0.3, cat:'sales_intelligence'},
+  'avoma':                {model:'per_user',      seat:40,  base:0,    typical:6,  variance:0.2, cat:'sales_intelligence'},
+  'otter.ai':             {model:'per_user',      seat:17,  base:0,    typical:6,  variance:0.2, cat:'sales_intelligence'},
+  'fireflies.ai':         {model:'per_user',      seat:18,  base:0,    typical:6,  variance:0.2, cat:'sales_intelligence'},
+  'clari':                {model:'enterprise_license',seat:0,base:1500,typical:1,  variance:0.35,cat:'sales_intelligence'},
+
+  // ── MARKETING AUTOMATION ─────────────────────────────────────────
+  'marketo':              {model:'enterprise_license',seat:0,base:2000,typical:1,  variance:0.4, cat:'marketing'},
+  'pardot':               {model:'enterprise_license',seat:0,base:1500,typical:1,  variance:0.4, cat:'marketing'},
+  'activecampaign':       {model:'per_workspace', seat:0,   base:149,  typical:1,  variance:0.3, cat:'marketing'},
+  'mailchimp':            {model:'usage_based',   seat:0,   base:50,   typical:1,  variance:0.5, cat:'marketing'},
+  'klaviyo':              {model:'usage_based',   seat:0,   base:100,  typical:1,  variance:0.5, cat:'marketing'},
+  'brevo':                {model:'usage_based',   seat:0,   base:65,   typical:1,  variance:0.3, cat:'marketing'},
+  'convertkit':           {model:'usage_based',   seat:0,   base:79,   typical:1,  variance:0.4, cat:'marketing'},
+  'customer.io':          {model:'usage_based',   seat:0,   base:150,  typical:1,  variance:0.4, cat:'marketing'},
+  'braze':                {model:'enterprise_license',seat:0,base:3000,typical:1,  variance:0.4, cat:'marketing'},
+  'iterable':             {model:'enterprise_license',seat:0,base:1500,typical:1,  variance:0.4, cat:'marketing'},
+  'beehiiv':              {model:'per_workspace', seat:0,   base:39,   typical:1,  variance:0.2, cat:'marketing'},
+
+  // ── SOCIAL / SEO ─────────────────────────────────────────────────
+  'hootsuite':            {model:'per_workspace', seat:0,   base:249,  typical:1,  variance:0.2, cat:'marketing'},
+  'sprout social':        {model:'per_user',      seat:249, base:0,    typical:3,  variance:0.2, cat:'marketing'},
+  'buffer':               {model:'per_workspace', seat:0,   base:18,   typical:1,  variance:0.1, cat:'marketing'},
+  'loomly':               {model:'per_workspace', seat:0,   base:32,   typical:1,  variance:0.2, cat:'marketing'},
+  'semrush':              {model:'per_workspace', seat:0,   base:129,  typical:1,  variance:0.2, cat:'marketing'},
+  'ahrefs':               {model:'per_workspace', seat:0,   base:99,   typical:1,  variance:0.2, cat:'marketing'},
+
+  // ── ANALYTICS / BI ────────────────────────────────────────────────
+  'google analytics':     {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'analytics'},
+  'mixpanel':             {model:'usage_based',   seat:0,   base:28,   typical:1,  variance:0.4, cat:'analytics'},
+  'amplitude':            {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'analytics'},
+  'heap':                 {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'analytics'},
+  'posthog':              {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'analytics'},
+  'hotjar':               {model:'per_workspace', seat:0,   base:39,   typical:1,  variance:0.2, cat:'analytics'},
+  'fullstory':            {model:'enterprise_license',seat:0,base:1000,typical:1,  variance:0.4, cat:'analytics'},
+  'logrocket':            {model:'per_workspace', seat:0,   base:99,   typical:1,  variance:0.3, cat:'analytics'},
+  'microsoft clarity':    {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'analytics'},
+  'tableau':              {model:'per_user',      seat:75,  base:0,    typical:5,  variance:0.3, cat:'analytics'},
+  'looker':               {model:'enterprise_license',seat:0,base:3000,typical:1,  variance:0.4, cat:'analytics'},
+  'power bi':             {model:'per_user',      seat:10,  base:0,    typical:8,  variance:0.2, cat:'analytics'},
+  'metabase':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'analytics'},
+  'sigma computing':      {model:'per_user',      seat:50,  base:0,    typical:5,  variance:0.3, cat:'analytics'},
+  'chartmogul':           {model:'usage_based',   seat:0,   base:99,   typical:1,  variance:0.3, cat:'analytics'},
+  'baremetrics':          {model:'usage_based',   seat:0,   base:108,  typical:1,  variance:0.3, cat:'analytics'},
+  'triple whale':         {model:'per_workspace', seat:0,   base:199,  typical:1,  variance:0.3, cat:'analytics'},
+
+  // ── CUSTOMER SUPPORT ─────────────────────────────────────────────
+  'zendesk':              {model:'per_user',      seat:55,  base:0,    typical:8,  variance:0.3, cat:'customer_support'},
+  'freshdesk':            {model:'per_user',      seat:18,  base:0,    typical:6,  variance:0.25,cat:'customer_support'},
+  'intercom':             {model:'hybrid',        seat:74,  base:39,   typical:5,  variance:0.4, cat:'customer_support'},
+  'drift':                {model:'enterprise_license',seat:0,base:2500,typical:1,  variance:0.3, cat:'customer_support'},
+  'help scout':           {model:'per_user',      seat:20,  base:0,    typical:5,  variance:0.2, cat:'customer_support'},
+  'gorgias':              {model:'usage_based',   seat:0,   base:50,   typical:1,  variance:0.4, cat:'customer_support'},
+  'front':                {model:'per_user',      seat:59,  base:0,    typical:5,  variance:0.25,cat:'customer_support'},
+  'kustomer':             {model:'per_user',      seat:89,  base:0,    typical:5,  variance:0.3, cat:'customer_support'},
+  'tidio':                {model:'per_workspace', seat:0,   base:29,   typical:1,  variance:0.2, cat:'customer_support'},
+  'crisp':                {model:'per_workspace', seat:0,   base:25,   typical:1,  variance:0.2, cat:'customer_support'},
+
+  // ── PROJECT MANAGEMENT ────────────────────────────────────────────
+  'asana':                {model:'per_user',      seat:25,  base:0,    typical:10, variance:0.25,cat:'project_management'},
+  'monday.com':           {model:'per_user',      seat:20,  base:0,    typical:10, variance:0.25,cat:'project_management'},
+  'clickup':              {model:'per_user',      seat:7,   base:0,    typical:12, variance:0.2, cat:'project_management'},
+  'jira':                 {model:'per_user',      seat:8,   base:0,    typical:15, variance:0.25,cat:'project_management'},
+  'notion':               {model:'per_user',      seat:16,  base:0,    typical:12, variance:0.2, cat:'project_management'},
+  'trello':               {model:'per_user',      seat:10,  base:0,    typical:8,  variance:0.2, cat:'project_management'},
+  'linear':               {model:'per_user',      seat:8,   base:0,    typical:10, variance:0.15,cat:'project_management'},
+  'airtable':             {model:'per_user',      seat:20,  base:0,    typical:8,  variance:0.25,cat:'project_management'},
+  'basecamp':             {model:'per_workspace', seat:0,   base:99,   typical:1,  variance:0.1, cat:'project_management'},
+  'wrike':                {model:'per_user',      seat:25,  base:0,    typical:8,  variance:0.25,cat:'project_management'},
+  'coda':                 {model:'per_user',      seat:10,  base:0,    typical:8,  variance:0.2, cat:'project_management'},
+  'smartsheet':           {model:'per_user',      seat:14,  base:0,    typical:10, variance:0.2, cat:'project_management'},
+
+  // ── COLLABORATION / COMMS ─────────────────────────────────────────
+  'slack':                {model:'per_user',      seat:8,   base:0,    typical:15, variance:0.3, cat:'collaboration'},
+  'microsoft teams':      {model:'per_user',      seat:6,   base:0,    typical:20, variance:0.2, cat:'collaboration'},
+  'zoom':                 {model:'per_user',      seat:15,  base:0,    typical:12, variance:0.25,cat:'collaboration'},
+  'google meet':          {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'collaboration'},
+  'loom':                 {model:'per_user',      seat:12,  base:0,    typical:8,  variance:0.2, cat:'collaboration'},
+  'discord':              {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'collaboration'},
+  'webex':                {model:'per_user',      seat:25,  base:0,    typical:10, variance:0.2, cat:'collaboration'},
+  'calendly':             {model:'per_user',      seat:12,  base:0,    typical:5,  variance:0.15,cat:'collaboration'},
+
+  // ── WORKSPACE / STORAGE ───────────────────────────────────────────
+  'google workspace':     {model:'per_user',      seat:12,  base:0,    typical:15, variance:0.15,cat:'collaboration'},
+  'microsoft 365':        {model:'per_user',      seat:22,  base:0,    typical:15, variance:0.15,cat:'collaboration'},
+  'dropbox':              {model:'per_user',      seat:15,  base:0,    typical:8,  variance:0.2, cat:'collaboration'},
+  'box':                  {model:'per_user',      seat:20,  base:0,    typical:8,  variance:0.2, cat:'collaboration'},
+  'confluence':           {model:'per_user',      seat:5,   base:0,    typical:15, variance:0.2, cat:'collaboration'},
+
+  // ── AUTOMATION ────────────────────────────────────────────────────
+  'zapier':               {model:'per_workspace', seat:0,   base:49,   typical:1,  variance:0.4, cat:'automation'},
+  'make':                 {model:'per_workspace', seat:0,   base:16,   typical:1,  variance:0.3, cat:'automation'},
+  'n8n':                  {model:'per_workspace', seat:0,   base:20,   typical:1,  variance:0.3, cat:'automation'},
+  'workato':              {model:'enterprise_license',seat:0,base:1500,typical:1,  variance:0.4, cat:'automation'},
+  'tray.io':              {model:'enterprise_license',seat:0,base:1000,typical:1,  variance:0.4, cat:'automation'},
+
+  // ── FINANCE / BILLING ─────────────────────────────────────────────
+  'stripe':               {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0,   cat:'finance'},
+  'chargebee':            {model:'usage_based',   seat:0,   base:299,  typical:1,  variance:0.3, cat:'finance'},
+  'recurly':              {model:'usage_based',   seat:0,   base:249,  typical:1,  variance:0.3, cat:'finance'},
+  'paddle':               {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.4, cat:'finance'},
+  'quickbooks':           {model:'per_workspace', seat:0,   base:85,   typical:1,  variance:0.3, cat:'finance'},
+  'xero':                 {model:'per_workspace', seat:0,   base:65,   typical:1,  variance:0.2, cat:'finance'},
+  'freshbooks':           {model:'per_workspace', seat:0,   base:55,   typical:1,  variance:0.2, cat:'finance'},
+  'wave':                 {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'finance'},
+  'sage intacct':         {model:'enterprise_license',seat:0,base:1200,typical:1,  variance:0.4, cat:'finance'},
+  'netsuite':             {model:'enterprise_license',seat:0,base:2000,typical:1,  variance:0.4, cat:'finance'},
+  'brex':                 {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'finance'},
+  'ramp':                 {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'finance'},
+  'expensify':            {model:'per_user',      seat:9,   base:0,    typical:8,  variance:0.3, cat:'finance'},
+  'airbase':              {model:'per_workspace', seat:0,   base:149,  typical:1,  variance:0.3, cat:'finance'},
+  'tipalti':              {model:'per_workspace', seat:0,   base:299,  typical:1,  variance:0.3, cat:'finance'},
+  'square':               {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'finance'},
+  'adyen':                {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'finance'},
+
+  // ── HR / PEOPLE ───────────────────────────────────────────────────
+  'gusto':                {model:'per_user',      seat:6,   base:40,   typical:12, variance:0.2, cat:'hr'},
+  'bamboohr':             {model:'per_user',      seat:6,   base:0,    typical:15, variance:0.25,cat:'hr'},
+  'rippling':             {model:'per_user',      seat:8,   base:0,    typical:15, variance:0.25,cat:'hr'},
+  'hibob':                {model:'per_user',      seat:5,   base:0,    typical:15, variance:0.25,cat:'hr'},
+  'deel':                 {model:'per_user',      seat:49,  base:0,    typical:5,  variance:0.3, cat:'hr'},
+  'remote':               {model:'per_user',      seat:29,  base:0,    typical:5,  variance:0.3, cat:'hr'},
+  'oyster':               {model:'per_user',      seat:29,  base:0,    typical:5,  variance:0.3, cat:'hr'},
+  'lattice':              {model:'per_user',      seat:11,  base:0,    typical:15, variance:0.25,cat:'hr'},
+  'cultureamp':           {model:'per_user',      seat:5,   base:0,    typical:15, variance:0.25,cat:'hr'},
+  '15five':               {model:'per_user',      seat:14,  base:0,    typical:12, variance:0.25,cat:'hr'},
+  'workday':              {model:'enterprise_license',seat:0,base:3000,typical:1,  variance:0.4, cat:'hr'},
+  'greenhouse':           {model:'enterprise_license',seat:0,base:500, typical:1,  variance:0.3, cat:'hr'},
+  'lever':                {model:'enterprise_license',seat:0,base:350, typical:1,  variance:0.3, cat:'hr'},
+  'ashby':                {model:'per_user',      seat:50,  base:0,    typical:5,  variance:0.25,cat:'hr'},
+  'workable':             {model:'per_workspace', seat:0,   base:149,  typical:1,  variance:0.2, cat:'hr'},
+
+  // ── E-SIGN / CONTRACTS ────────────────────────────────────────────
+  'docusign':             {model:'per_user',      seat:25,  base:0,    typical:5,  variance:0.25,cat:'legal'},
+  'pandadoc':             {model:'per_user',      seat:49,  base:0,    typical:4,  variance:0.2, cat:'legal'},
+  'hellosign':            {model:'per_user',      seat:20,  base:0,    typical:4,  variance:0.2, cat:'legal'},
+  'ironclad':             {model:'enterprise_license',seat:0,base:2000,typical:1,  variance:0.4, cat:'legal'},
+  'adobe sign':           {model:'per_user',      seat:30,  base:0,    typical:4,  variance:0.2, cat:'legal'},
+
+  // ── AI TOOLS ─────────────────────────────────────────────────────
+  'chatgpt':              {model:'per_user',      seat:20,  base:0,    typical:5,  variance:0.2, cat:'ai'},
+  'claude':               {model:'per_user',      seat:20,  base:0,    typical:5,  variance:0.2, cat:'ai'},
+  'jasper':               {model:'per_workspace', seat:0,   base:99,   typical:1,  variance:0.2, cat:'ai'},
+  'copy.ai':              {model:'per_workspace', seat:0,   base:49,   typical:1,  variance:0.2, cat:'ai'},
+  'writer':               {model:'per_user',      seat:18,  base:0,    typical:4,  variance:0.2, cat:'ai'},
+  'grammarly':            {model:'per_user',      seat:12,  base:0,    typical:8,  variance:0.2, cat:'ai'},
+  'midjourney':           {model:'per_user',      seat:30,  base:0,    typical:2,  variance:0.2, cat:'ai'},
+  'github copilot':       {model:'per_user',      seat:19,  base:0,    typical:8,  variance:0.15,cat:'ai'},
+  'cursor':               {model:'per_user',      seat:20,  base:0,    typical:5,  variance:0.2, cat:'ai'},
+
+  // ── DEV / INFRA ───────────────────────────────────────────────────
+  'github':               {model:'per_user',      seat:4,   base:0,    typical:8,  variance:0.2, cat:'devtools'},
+  'gitlab':               {model:'per_user',      seat:19,  base:0,    typical:8,  variance:0.25,cat:'devtools'},
+  'linear':               {model:'per_user',      seat:8,   base:0,    typical:10, variance:0.15,cat:'devtools'},
+  'sentry':               {model:'per_user',      seat:26,  base:0,    typical:6,  variance:0.25,cat:'devtools'},
+  'datadog':              {model:'usage_based',   seat:0,   base:200,  typical:1,  variance:0.6, cat:'devtools'},
+  'new relic':            {model:'usage_based',   seat:0,   base:100,  typical:1,  variance:0.5, cat:'devtools'},
+  'pagerduty':            {model:'per_user',      seat:21,  base:0,    typical:6,  variance:0.25,cat:'devtools'},
+  'vercel':               {model:'per_workspace', seat:0,   base:20,   typical:1,  variance:0.4, cat:'devtools'},
+  'netlify':              {model:'per_workspace', seat:0,   base:19,   typical:1,  variance:0.3, cat:'devtools'},
+  'supabase':             {model:'per_workspace', seat:0,   base:25,   typical:1,  variance:0.4, cat:'devtools'},
+  'firebase':             {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.6, cat:'devtools'},
+
+  // ── ENTERPRISE OUTLIERS ───────────────────────────────────────────
+  'snowflake':            {model:'usage_based',   seat:0,   base:2000, typical:1,  variance:0.6, cat:'data_warehouse'},
+  'segment':              {model:'usage_based',   seat:0,   base:120,  typical:1,  variance:0.5, cat:'data_warehouse'},
+  'fivetran':             {model:'usage_based',   seat:0,   base:500,  typical:1,  variance:0.5, cat:'data_warehouse'},
+  'servicenow':           {model:'enterprise_license',seat:0,base:5000,typical:1,  variance:0.4, cat:'enterprise'},
+  'workday':              {model:'enterprise_license',seat:0,base:3000,typical:1,  variance:0.4, cat:'hr'},
+  'mongodb atlas':        {model:'usage_based',   seat:0,   base:100,  typical:1,  variance:0.7, cat:'devtools'},
+  'adobe experience cloud':{model:'enterprise_license',seat:0,base:5000,typical:1, variance:0.4, cat:'marketing'},
+
+  // ── REAL ESTATE SPECIFIC ──────────────────────────────────────────
+  'paperless pipeline':   {model:'per_workspace', seat:0,   base:80,   typical:1,  variance:0.1, cat:'real_estate'},
+  'dotloop':              {model:'per_user',      seat:31,  base:0,    typical:5,  variance:0.2, cat:'real_estate'},
+  'skyslope':             {model:'per_workspace', seat:0,   base:149,  typical:1,  variance:0.15,cat:'real_estate'},
+  'brokermint':           {model:'per_workspace', seat:0,   base:199,  typical:1,  variance:0.15,cat:'real_estate'},
+  'lone wolf back office':{model:'enterprise_license',seat:0,base:500, typical:1,  variance:0.3, cat:'real_estate'},
+  'bombbomb':             {model:'per_user',      seat:45,  base:0,    typical:3,  variance:0.2, cat:'real_estate'},
+
+  // ── ECOMMERCE ─────────────────────────────────────────────────────
+  'shopify':              {model:'per_workspace', seat:0,   base:79,   typical:1,  variance:0.3, cat:'ecommerce'},
+  'bigcommerce':          {model:'per_workspace', seat:0,   base:29,   typical:1,  variance:0.3, cat:'ecommerce'},
+  'woocommerce':          {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'ecommerce'},
+  'recharge':             {model:'usage_based',   seat:0,   base:99,   typical:1,  variance:0.4, cat:'ecommerce'},
+  'attentive':            {model:'usage_based',   seat:0,   base:400,  typical:1,  variance:0.4, cat:'ecommerce'},
+  'postscript':           {model:'usage_based',   seat:0,   base:25,   typical:1,  variance:0.5, cat:'ecommerce'},
+  'yotpo':                {model:'usage_based',   seat:0,   base:19,   typical:1,  variance:0.4, cat:'ecommerce'},
+  'gorgias':              {model:'usage_based',   seat:0,   base:50,   typical:1,  variance:0.4, cat:'customer_support'},
+  'shipstation':          {model:'per_workspace', seat:0,   base:99,   typical:1,  variance:0.3, cat:'ecommerce'},
+  'triple whale':         {model:'per_workspace', seat:0,   base:199,  typical:1,  variance:0.3, cat:'analytics'},
+
+  // ── DESIGN ────────────────────────────────────────────────────────
+  'figma':                {model:'per_user',      seat:15,  base:0,    typical:5,  variance:0.2, cat:'design'},
+  'canva':                {model:'per_user',      seat:13,  base:0,    typical:5,  variance:0.2, cat:'design'},
+  'adobe creative cloud': {model:'per_user',      seat:55,  base:0,    typical:3,  variance:0.2, cat:'design'},
+  'miro':                 {model:'per_user',      seat:10,  base:0,    typical:8,  variance:0.25,cat:'design'},
+  'framer':               {model:'per_workspace', seat:0,   base:20,   typical:1,  variance:0.2, cat:'design'},
+  'webflow':              {model:'per_workspace', seat:0,   base:23,   typical:1,  variance:0.2, cat:'cms'},
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRICING ASSUMPTIONS — Top 50 tools (SMB baseline, per-month)
+// Model key: PU=per_user  PW=per_workspace  UB=usage_based  EL=enterprise_license  HY=hybrid
+// estimated_price = typical SMB plan cost  |  implied_price = estimated * (1.05–1.15)
+//
+// Tool                   Model  Seat   Base    Typical  Notes
+// ─────────────────────────────────────────────────────────────────────────────
+// HubSpot                HY     $50    $800    5u       Starter+CRM bundle baseline
+// Salesforce             PU     $150   —       8u       Professional plan
+// Pipedrive              PU     $49    —       5u       Professional
+// ZoomInfo               EL     —      $2,500  —        Lowest enterprise tier (NOT $500)
+// Apollo.io              PU     $79    —       4u       Basic plan
+// Clay                   UB     —      $149    —        Starter clay credits
+// Outreach               PU     $130   —       6u       Standard seat
+// Salesloft              PU     $125   —       6u       Rhythm plan
+// Smartlead              PW     —      $94     —        Basic plan (unlimited inboxes)
+// Instantly              PW     —      $97     —        Hypergrowth plan
+// Gong                   PU     $120   —       8u       Per recorded seat
+// Chorus                 PU     $80    —       6u       Standard
+// Avoma                  PU     $40    —       6u       Business plan
+// Clari                  EL     —      $1,500  —        Platform fee, not per-seat
+// Marketo                EL     —      $2,000  —        Spark tier minimum
+// Pardot / MCAE          EL     —      $1,500  —        Growth tier
+// ActiveCampaign         PW     —      $149    —        Professional 3-user
+// Mailchimp              UB     —      $50     —        Essentials 500 contacts
+// Klaviyo                UB     —      $100    —        ~5k contacts baseline
+// Braze                  EL     —      $3,000  —        Minimum platform fee
+// Zendesk                PU     $55    —       8u       Suite Team
+// Intercom               HY     $74    $39     5u       Starter + seats
+// Drift                  EL     —      $2,500  —        Premium tier minimum (not $400)
+// Help Scout             PU     $20    —       5u       Standard
+// Gorgias                UB     —      $50     —        Starter plan
+// Asana                  PU     $25    —       10u      Premium
+// Monday.com             PU     $20    —       10u      Basic
+// ClickUp                PU     $7     —       12u      Unlimited
+// Jira                   PU     $8     —       15u      Standard
+// Notion                 PU     $16    —       12u      Plus plan
+// Slack                  PU     $8     —       15u      Pro
+// Microsoft Teams        PU     $6     —       20u      Essentials
+// Zoom                   PU     $15    —       12u      Pro (NOT $500 — that's rooms)
+// Google Workspace       PU     $12    —       15u      Business Starter
+// Calendly               PU     $12    —       5u       Standard
+// Zapier                 PW     —      $49     —        Starter (750 tasks)
+// Make                   PW     —      $16     —        Core plan
+// Stripe                 UB     —      $0      —        % of revenue, not flat
+// Chargebee              UB     —      $299    —        Rise plan
+// QuickBooks             PW     —      $85     —        Plus plan
+// Gusto                  PU     $6     $40     12u      Simple plan
+// BambooHR               PU     $6     —       15u      Essentials
+// Rippling               PU     $8     —       15u      Core HR
+// Deel                   PU     $49    —       5u       Contractor plan
+// Figma                  PU     $15    —       5u       Professional
+// Canva                  PU     $13    —       5u       Pro
+// Adobe Creative Cloud   PU     $55    —       3u       Teams plan
+// Datadog                UB     —      $200    —        Infrastructure baseline
+// Sentry                 PU     $26    —       6u       Team plan
+// Shopify                PW     —      $79     —        Basic plan
+// ─────────────────────────────────────────────────────────────────────────────
+
+// GUARDRAILS
+// Non-enterprise tools are capped at $500/tool/month for SMB persona simulation.
+// Enterprise tools (EL model) are capped at $8,000/tool/month.
+// implied_price = estimated_price * rand(1.05, 1.15) — never same as estimated.
+const SMB_CAP         = 500;   // max monthly cost for non-enterprise tools
+const ENTERPRISE_CAP  = 8000;  // max monthly cost for enterprise tools
+const UNKNOWN_DEFAULT = 45;    // flat fallback for unrecognized tools
+
+/**
+ * Compute estimated_price for a tool (typical SMB monthly cost)
+ * @param {string} toolName
+ * @param {number} teamSize
+ * @returns {number}
+ */
+function calcToolCost(toolName, teamSize) {
+  const key = Object.keys(TOOL_CATALOG).find(k => {
+    const tl = toolName.toLowerCase();
+    return tl === k || tl.includes(k) || k.includes(tl);
+  });
+
+  if (!key) return UNKNOWN_DEFAULT;
+
+  const t = TOOL_CATALOG[key];
+  const jitter = () => 1 + (Math.random() * 2 - 1) * t.variance;
+  const seats = Math.max(1, Math.round(teamSize * 0.6));
+
+  let cost;
+  switch (t.model) {
+    case 'per_user':
+      cost = Math.round(t.seat * seats * jitter());
+      break;
+    case 'per_workspace':
+      cost = Math.round(t.base * jitter());
+      break;
+    case 'usage_based':
+      // Usage tools have higher real-world variance — simulate light/heavy usage
+      cost = Math.round(t.base * jitter() * (1 + Math.random() * 0.6));
+      break;
+    case 'enterprise_license':
+      // Enterprise: base * 1.0–1.5 (negotiated, always above floor)
+      cost = Math.round(t.base * (1 + Math.random() * 0.5));
+      break;
+    case 'hybrid':
+      cost = Math.round((t.base + t.seat * Math.min(seats, t.typical)) * jitter());
+      break;
+    default:
+      cost = t.base || t.seat * 5 || UNKNOWN_DEFAULT;
   }
 
-  // Auto-calculate spend from tool list, use persona budget as floor
-  const autoSpend = estimateSpend(persona.tools);
+  // Apply guardrails
+  const cap = t.model === 'enterprise_license' ? ENTERPRISE_CAP : SMB_CAP;
+  return Math.min(cost, cap);
+}
+
+/**
+ * Compute implied_price = estimated_price * rand(1.05, 1.15)
+ * Never identical to estimated — represents real-world contract vs list price delta
+ */
+function impliedPrice(estimated) {
+  const uplift = 1.05 + Math.random() * 0.10; // 5–15% uplift
+  return Math.round(estimated * uplift);
+}
+
+function estimateStackSpend(tools, teamSize) {
+  return tools.reduce((sum, tool) => sum + calcToolCost(tool, teamSize), 0);
+}
+
+/**
+ * Generate per-tool pricing breakdown for Supabase writes
+ * Returns array of { tool_name, estimated_price, implied_price }
+ */
+function buildToolPricing(tools, teamSize) {
+  return tools.map(tool => {
+    const est = calcToolCost(tool, teamSize);
+    return { tool_name: tool, estimated_price: est, implied_price: impliedPrice(est) };
+  });
+}
+
+  // Compute realistic spend
+  const autoSpend = estimateStackSpend(persona.tools, _simTeamSize);
   const finalSpend = Math.max(autoSpend, parseInt(persona.budget) || 0);
 
   // We call the report API directly with synthetic analysis data
