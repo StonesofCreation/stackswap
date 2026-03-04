@@ -212,7 +212,7 @@ nav.open .nav-hamburger span:nth-child(3){transform:translateY(-7px) rotate(-45d
   nav{padding:10px 16px}
 }
 @media(min-width:769px){
-  .nav-drawer{display:none!important}
+  .nav-drawer{display:none}
 }
 </style>
 </head>
@@ -542,6 +542,27 @@ document.querySelectorAll('.faq-item').forEach(item => {
     document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
     if (!isOpen) item.classList.add('open');
   });
+});
+</script>
+<script>
+function toggleNav() {
+  var nav = document.querySelector('nav');
+  var drawer = document.getElementById('nav-drawer');
+  if (!nav || !drawer) return;
+  var isOpen = nav.classList.contains('open');
+  nav.classList.toggle('open');
+  drawer.style.display = isOpen ? 'none' : 'flex';
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+document.addEventListener('click', function(e) {
+  var nav = document.querySelector('nav');
+  var drawer = document.getElementById('nav-drawer');
+  if (!nav || !drawer) return;
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !drawer.contains(e.target)) {
+    nav.classList.remove('open');
+    drawer.style.display = 'none';
+    document.body.style.overflow = '';
+  }
 });
 </script>
 </body>
