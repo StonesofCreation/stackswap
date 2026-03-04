@@ -1908,6 +1908,10 @@ function renderResult(r) {
   box.innerHTML = "";
   box.style.display = "block";
 
+  // Resolve context vars — use leadData if available, fall back to DOM
+  const teamSize = leadData.teamSize || document.getElementById("ctx-teamsize")?.value || "";
+  const industry = document.getElementById("ind")?.value || "";
+
   // Header
   const hd = div("res-hd");
   hd.appendChild(div("res-glow"));
@@ -1917,9 +1921,9 @@ function renderResult(r) {
   // ── Score — horizontal layout, number left, label+bar right ──
   const color = r.score>=75?"#4ecdc4":r.score>=55?"#ffc857":"#d96060";
   const label = r.score>=75?"Healthy Stack":r.score>=55?"Needs Attention":"Needs Work";
-  const desc  = r.score>=75?"Your tools are well-chosen with minimal overlap."
-               :r.score>=55?"There are real savings and consolidation opportunities here."
-               :"You're overpaying and have significant overlap — easy wins on the table.";
+  const desc  = r.score>=75?"Solid foundation — a few optimizations could save you money."
+               :r.score>=55?"You're leaving money on the table. Overlaps and legacy tools are costing you."
+               :"Your stack is working against you. Redundant tools, wasted spend, and integration debt — all fixable.";
   const ring = div("score-ring");
   const sn = div("score-num", r.score+""); sn.style.color=color;
   const sr = div("score-right");
@@ -2149,6 +2153,21 @@ function renderResult(r) {
   box.appendChild(div("sec","What to do first"));
   renderPriorityMatrix(box, r.actions, r);
 
+  // ── Mid-report curiosity teaser ──
+  if (r.totalSave > 0 || overlapCount > 0) {
+    const teaser = document.createElement('div');
+    teaser.className = 'curiosity-teaser';
+    const teaserItems = [];
+    if (overlapCount > 0) teaserItems.push(`<strong>${overlapCount} overlapping tool${overlapCount!==1?'s':''}</strong> flagged`);
+    if (legacyCount > 0)  teaserItems.push(`<strong>${legacyCount} legacy tool${legacyCount!==1?'s':''}</strong> with cheaper replacements`);
+    if (r.totalSave > 0)  teaserItems.push(`estimated <strong>$${r.totalSave.toLocaleString()}/mo</strong> recoverable`);
+    teaser.innerHTML = `
+      <div class="curiosity-teaser-text">${teaserItems.join(' · ')} — StackAudit shows you exactly which to cut and in what order.</div>
+      <div class="curiosity-teaser-link" onclick="document.querySelector('.upgrade-cta').scrollIntoView({behavior:'smooth'})">See what's included →</div>
+    `;
+    box.appendChild(teaser);
+  }
+
   // ── Before / After Counter ──
   renderBeforeAfter(box, r, r.spend);
 
@@ -2166,27 +2185,73 @@ function renderResult(r) {
   renderStackFlow(box, r.optimized, r.integrationConflicts || []);
 
 
-  // ── StackAudit upgrade CTA ─────────────────────────────────────────────
+  // ── Urgency data — used in teaser + CTA ─────────────────────────
+  const overlapCount  = r.overlaps.length + (r.categoryOverlaps||[]).length;
+  const legacyCount   = (r.legacyPenalties||[]).length;
+  const orphanCount   = (r.orphanedTools||[]).length;
+  const conflictCount = (r.integrationConflicts||[]).length;
+
+  // ── StackAudit upgrade CTA — urgency-first ──────────────────────
   const upgradeCta = document.createElement('div');
   upgradeCta.className = 'upgrade-cta';
-  const savingsStr = r.totalSave > 0 ? `$${r.totalSave.toLocaleString()}/mo` : 'real savings';
+
+  // Build specific urgency hooks from actual result data
+  const teamSizeNum  = parseInt(teamSize) || 0;
+  const benchmarkTools = teamSizeNum <= 5 ? 6 : teamSizeNum <= 15 ? 9 : teamSizeNum <= 50 ? 14 : 20;
+  const toolCount    = selectedTools.length;
+  const annualWaste  = r.totalSave > 0 ? r.totalSave * 12 : 0;
+
+  // Pick the 3 most alarming hooks for THIS specific stack
+  const hooks = [];
+  if (annualWaste > 0)
+    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">💸</span><div><div class="audit-hook-val">$${annualWaste.toLocaleString()}/yr</div><div class="audit-hook-label">estimated waste in your current stack</div></div></div>`);
+  if (overlapCount > 0)
+    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">⚠️</span><div><div class="audit-hook-val">${overlapCount} overlap${overlapCount!==1?'s':''} detected</div><div class="audit-hook-label">you're paying for the same capability ${overlapCount!==1?'multiple times':'twice'}</div></div></div>`);
+  if (legacyCount > 0)
+    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">🔄</span><div><div class="audit-hook-val">${legacyCount} legacy tool${legacyCount!==1?'s':''}</div><div class="audit-hook-label">AI-native replacements exist at a fraction of the cost</div></div></div>`);
+  if (toolCount > benchmarkTools && teamSizeNum > 0)
+    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">📊</span><div><div class="audit-hook-val">${toolCount} tools vs. ${benchmarkTools} average</div><div class="audit-hook-label">companies your size typically run ${benchmarkTools} tools</div></div></div>`);
+  if (conflictCount > 0)
+    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">🔗</span><div><div class="audit-hook-val">${conflictCount} integration conflict${conflictCount!==1?'s':''}</div><div class="audit-hook-label">your tools are creating data sync problems right now</div></div></div>`);
+  if (orphanCount > 0)
+    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">👻</span><div><div class="audit-hook-val">${orphanCount} isolated tool${orphanCount!==1?'s':''}</div><div class="audit-hook-label">no native connections — you're probably using Zapier to hold them together</div></div></div>`);
+
+  // Fallback if no specific data
+  if (!hooks.length)
+    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">🔍</span><div><div class="audit-hook-val">Full cost breakdown locked</div><div class="audit-hook-label">StackAudit shows exact per-tool cost vs. what you should be paying</div></div></div>`);
+
+  const hooksHtml = hooks.slice(0,3).join('');
+
+  // Headline varies by score severity
+  const urgencyLine = r.score < 40
+    ? `This stack has <span>serious problems</span> that are costing you every month.`
+    : r.score < 60
+    ? `This stack has <span>${overlapCount + legacyCount} fixable issues</span> bleeding money quietly.`
+    : `This stack is close — <span>a few targeted swaps</span> would make it efficient.`;
+
+  // What StackAudit unlocks — framed as answers to questions the report raised
+  const unlocks = [];
+  if (overlapCount > 0) unlocks.push("Which tools to cut first — and which to keep");
+  if (legacyCount > 0)  unlocks.push("Exact swap recommendations with pricing comparison");
+  unlocks.push("30/60/90 day implementation plan");
+  unlocks.push("Migration risk flags for each change");
+  if (annualWaste > 0)  unlocks.push(`Full breakdown of the $${annualWaste.toLocaleString()} savings`);
+  unlocks.push("Shareable executive summary PDF");
+
   upgradeCta.innerHTML = `
     <div class="upgrade-cta-eyebrow">StackAudit — Early Access</div>
-    <div class="upgrade-cta-h">Want the full <span>consultant-grade</span> breakdown?</div>
-    <p class="upgrade-cta-sub">This report flagged ${savingsStr} in potential savings. StackAudit delivers the full roadmap — tool-by-tool cost analysis, 30/60/90 implementation plan, risk flags, and a shareable executive summary.</p>
-    <div class="upgrade-cta-features">
-      <span class="upgrade-cta-feat">Tool-by-tool cost breakdown</span>
-      <span class="upgrade-cta-feat">30/60/90 implementation plan</span>
-      <span class="upgrade-cta-feat">Risk + migration flags</span>
-      <span class="upgrade-cta-feat">AI executive summary</span>
-      <span class="upgrade-cta-feat">PDF export</span>
+    <div class="upgrade-cta-h">${urgencyLine}</div>
+    <div class="audit-hooks">${hooksHtml}</div>
+    <div class="audit-divider">StackAudit answers what this report can't:</div>
+    <div class="audit-unlocks">
+      ${unlocks.map(u => `<div class="audit-unlock-item"><span style="color:#39ff85;margin-right:8px">→</span>${u}</div>`).join('')}
     </div>
     <div class="upgrade-cta-form">
       <input type="email" class="upgrade-cta-input" id="auditCtaEmail" placeholder="your@email.com"/>
-      <button class="upgrade-cta-btn" onclick="submitAuditWaitlist()">Notify Me →</button>
+      <button class="upgrade-cta-btn" onclick="submitAuditWaitlist()">Get Early Access →</button>
     </div>
-    <div class="upgrade-cta-success" id="auditCtaSuccess">✓ You're on the list. We'll email you at launch.</div>
-    <div class="upgrade-cta-note">No spam. One email when StackAudit goes live.</div>
+    <div class="upgrade-cta-success" id="auditCtaSuccess">✓ You're on the list. We'll email you when StackAudit launches.</div>
+    <div class="upgrade-cta-note">No spam. One email at launch. Early access pricing locked in at signup.</div>
   `;
   box.appendChild(upgradeCta);
 
@@ -2473,7 +2538,20 @@ function renderMain() {
   budW.appendChild(budHint);
   g2.appendChild(budW);
   c2.appendChild(g2);
-  indSel.addEventListener("change",()=>markDot(2,!!(indSel.value)));
+
+  // Team size — moved up from gate into context
+  const tsRow = div("g2");
+  const tsW = div("field-wrap"); tsW.innerHTML='<label class="lbl">Team Size</label>';
+  const tsSel = el("select","field"); tsSel.id="ctx-teamsize";
+  ["","1-5","6-15","16-50","51-200","200+"]
+    .forEach(v=>{const o=el("option",null,v||"Select range...");o.value=v;tsSel.appendChild(o);});
+  tsSel.addEventListener("change",()=>markDot(2,!!(indSel.value||tsSel.value)));
+  tsW.appendChild(tsSel);
+  tsW.appendChild(div("field-hint","benchmarks your stack against similar-sized teams"));
+  tsRow.appendChild(tsW);
+  c2.appendChild(tsRow);
+
+  indSel.addEventListener("change",()=>markDot(2,!!(indSel.value||tsSel.value)));
   wrap.appendChild(c2);
 
   // Step 3 — Goals
@@ -2546,17 +2624,6 @@ function renderMain() {
   roleW.appendChild(div("field-hint","tailors recommendations to your decision-making context"));
   g4row.appendChild(roleW);
 
-  const tsW2 = div("field-wrap"); tsW2.innerHTML='<label class="lbl">Team Size <span style="color:#e05555;font-size:11px">*</span></label>';
-  const tsSel2 = el("select","field"); tsSel2.id="gate-teamsize";
-  ["","1-5","6-15","16-50","51-200","200+"]
-    .forEach(v=>{const o=el("option",null,v||"Select range...");o.value=v;tsSel2.appendChild(o);});
-  tsSel2.addEventListener("change", () => {
-    tsSel2.style.borderColor = tsSel2.value ? "rgba(255,255,255,0.1)" : "rgba(224,85,85,0.6)";
-    updateGateBtn();
-  });
-  tsW2.appendChild(tsSel2);
-  tsW2.appendChild(div("field-hint","helps benchmark your stack against similar-sized teams"));
-  g4row.appendChild(tsW2);
   gateForm.appendChild(g4row);
 
   const unlockBtn = el("button","unlock-btn","Get My Free Report →");
@@ -2565,17 +2632,15 @@ function renderMain() {
     const email=document.getElementById("gate-email")?.value?.trim()||"";
     const company=document.getElementById("gate-company")?.value?.trim()||"";
     const role=document.getElementById("gate-role")?.value||"";
-    const teamSize=document.getElementById("gate-teamsize")?.value||"";
-    if(!email.includes("@")||!company||!role||!teamSize) {
+    const teamSize=document.getElementById("ctx-teamsize")?.value||"";
+    if(!email.includes("@")||!company||!role) {
       // Flash empty fields red
       const ef = document.getElementById("gate-email");
       const cf = document.getElementById("gate-company");
       const rf = document.getElementById("gate-role");
-      const tf = document.getElementById("gate-teamsize");
       if (!email.includes("@")) ef.style.borderColor = "rgba(224,85,85,0.6)";
       if (!company) cf.style.borderColor = "rgba(224,85,85,0.6)";
       if (!role) rf.style.borderColor = "rgba(224,85,85,0.6)";
-      if (!teamSize) tf.style.borderColor = "rgba(224,85,85,0.6)";
       return;
     }
 
@@ -2631,7 +2696,7 @@ function renderMain() {
     const company=document.getElementById("gate-company")?.value?.trim()||"";
     const role=document.getElementById("gate-role")?.value||"";
     const teamSize=document.getElementById("gate-teamsize")?.value||"";
-    const valid=email.includes("@")&&email.includes(".")&&company.length>1&&role&&teamSize;
+    const valid=email.includes("@")&&email.includes(".")&&company.length>1&&role;
     const btn=document.getElementById("unlock-btn");
     if(btn){btn.disabled=!valid;btn.style.opacity=valid?"1":"0.4";}
   }
@@ -2671,7 +2736,8 @@ function renderMain() {
     const _budget   = document.getElementById("bud")?.value||"";
 
     // Run deterministic engine (instant)
-    const result = runAnalysis(selectedTools, leadData.teamSize, _industry, _budget, selectedGoals);
+    const _teamSize = leadData.teamSize || document.getElementById("ctx-teamsize")?.value || "";
+    const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals);
 
     // Render full report immediately
     renderResult(result);
