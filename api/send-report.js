@@ -109,15 +109,15 @@ function buildReportHTML(data) {
 
   <!-- StackAudit CTA -->
   <div style="background:rgba(57,255,133,0.04);border:1px solid rgba(57,255,133,0.2);border-radius:14px;padding:24px;margin-bottom:28px;text-align:center;">
-    <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(57,255,133,0.7);font-weight:600;margin-bottom:8px;">Coming Soon</div>
+    <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(57,255,133,0.7);font-weight:600;margin-bottom:8px;">Early Access</div>
     <div style="font-size:18px;font-weight:800;color:#f0ece4;margin-bottom:8px;">Want the full consultant-grade breakdown?</div>
-    <p style="font-size:13px;color:#9a9690;line-height:1.7;margin:0 0 16px;">StackAudit delivers a tool-by-tool cost breakdown, 30/60/90 implementation plan, risk flags, and a shareable PDF. $99, one-time.</p>
-    <a href="https://stackswap-pi.vercel.app/pro.html" style="display:inline-block;background:#39ff85;color:#0f0e13;border-radius:7px;padding:12px 24px;font-size:13px;font-weight:700;text-decoration:none;letter-spacing:.04em;">Join the StackAudit Waitlist →</a>
+    <p style="font-size:13px;color:#9a9690;line-height:1.7;margin:0 0 16px;">StackAudit delivers a tool-by-tool cost breakdown, 30/60/90 implementation plan, risk flags, and a shareable executive summary.</p>
+    <a href="https://stackswap.ai/pro.html" style="display:inline-block;background:#39ff85;color:#0f0e13;border-radius:7px;padding:12px 24px;font-size:13px;font-weight:700;text-decoration:none;letter-spacing:.04em;">Get Early Access →</a>
   </div>
 
   <!-- Footer -->
   <div style="text-align:center;padding-top:8px;border-top:1px solid rgba(255,255,255,0.05);">
-    <div style="font-size:12px;color:#3a3830;margin-bottom:6px;">StackSwap by DemandStack · stackswap-pi.vercel.app</div>
+    <div style="font-size:12px;color:#3a3830;margin-bottom:6px;">StackSwap by DemandStack · stackswap.ai</div>
     <div style="font-size:11px;color:#3a3830;">No vendor bias · No sponsored results · AI-generated analysis</div>
   </div>
 
@@ -154,7 +154,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "Nick @ StackSwap <onboarding@resend.dev>",
+        from: "Nick @ StackSwap <reports@stackswap.ai>",
         to: [to_email],
         subject,
         html: htmlBody
