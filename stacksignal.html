@@ -285,11 +285,30 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   background:var(--amber);text-decoration:none;text-align:center;
   letter-spacing:.04em;transition:opacity .2s;margin-top:4px}
 .nav-drawer-cta:hover{opacity:.88}
+
 @media(max-width:768px){
-  nav{padding:10px 16px}
-  .nav-links{display:none}
-  .nav-hamburger{display:flex}
+  nav,.page-nav{padding:10px 16px !important}
+  .nav-links,.page-nav-links{display:none !important}
+  .nav-hamburger{display:flex !important}
+  .nav-cta{display:none !important}
 }
+
+/* ── CAPABILITY STATS ── */
+.cap-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+.cap-stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+  border-radius:12px;padding:20px 18px}
+.cap-stat-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:14px}
+.cap-stat-list{display:flex;flex-direction:column;gap:8px}
+.cap-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cap-name{font-size:13px;font-family:'DM Mono',monospace;color:var(--text);
+  text-transform:capitalize;letter-spacing:.02em}
+.cap-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.cap-bar{height:100%;border-radius:2px;transition:width .6s ease}
+.cap-count{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);min-width:28px;text-align:right}
+.cap-loading{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+@media(max-width:768px){.cap-stats-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -326,8 +345,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
     <h1 class="signal-title">Stack<span>Signal</span></h1>
     <p class="signal-sub">Aggregate trends from anonymized stack submissions. The tools companies are actually using, leaving, and replacing — by industry. Updated as new analyses are submitted.</p>
     <div class="signal-disclaimer">
-      <span>🔒</span>
-      <span><strong>Free tier:</strong> Aggregate data only. Industry filtering, time slicing, and segmentation available with StackSignal Pro — <a href="#industry-lock" style="color:var(--teal);text-decoration:none">join the waitlist</a>.</span>
+      <span style="font-size:14px">🔒</span>
+      <span><strong>Free tier:</strong> Aggregate data only. <a href="#industry-lock" style="color:var(--teal);text-decoration:none;font-weight:600">Join the waitlist</a> for industry filtering, time slicing, and per-company segmentation.</span>
     </div>
   </div>
 
@@ -355,8 +374,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <div class="filter-bar">
     <span class="filter-label">View</span>
     <button class="filter-btn active" id="btn-all">All Industries</button>
-    <button class="filter-btn lock-trigger" id="btn-filter" onclick="showLockModal()">
-      🔒 Filter by Industry
+    <button class="filter-btn lock-trigger" id="btn-filter" onclick="showLockModal()" title="Industry filtering is a paid feature — join the waitlist">
+      <span style="opacity:.7;font-size:11px;margin-right:2px">🔒</span> Filter by Industry
     </button>
   </div>
 
@@ -430,6 +449,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   <!-- BLURRED INDUSTRY PREVIEW -->
   <div class="industry-preview-wrap">
     <div class="industry-grid industry-grid-blur" id="industry-grid"></div>
+  </div>
+
+
+  <!-- CAPABILITY COVERAGE STATS (free — aggregate only) -->
+  <div class="sec-head" style="margin-top:48px">
+    <div class="sec-head-title">Capability Coverage</div>
+    <div class="sec-head-sub">Which capabilities are most common, most redundant, and most missing across analyzed stacks</div>
+  </div>
+  <div class="cap-stats-grid" id="cap-stats-grid">
+    <div class="cap-stat-card">
+      <div class="cap-stat-label">Most Common</div>
+      <div class="cap-stat-list" id="cap-common"><div class="cap-loading">Loading…</div></div>
+    </div>
+    <div class="cap-stat-card">
+      <div class="cap-stat-label">Most Redundant <span style="font-size:10px;color:var(--red);opacity:.8">(covered by 2+ tools)</span></div>
+      <div class="cap-stat-list" id="cap-redundant"><div class="cap-loading">Loading…</div></div>
+    </div>
+    <div class="cap-stat-card">
+      <div class="cap-stat-label">Most Missing <span style="font-size:10px;color:var(--amber);opacity:.8">(gap in stack)</span></div>
+      <div class="cap-stat-list" id="cap-missing"><div class="cap-loading">Loading…</div></div>
+    </div>
   </div>
 
   <!-- STACKSIGNAL PRO SECTION -->
@@ -819,6 +859,7 @@ async function loadMetrics() {
     if (!resp.ok) throw new Error('fetch failed');
     const data = await resp.json();
     renderAll(data);
+    renderCapStats(data.capabilities);
     initActivityFeed(data);
   } catch(e) {
     console.warn('Metrics fetch failed, using seed data:', e.message);
@@ -831,7 +872,13 @@ loadMetrics();
 
 // ── LOCK MODAL ────────────────────────────────────────────────────────────────
 function showLockModal() {
-  document.getElementById('industry-lock').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const el = document.getElementById('industry-lock');
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Brief highlight pulse so user sees what they're scrolling to
+  el.style.transition = 'box-shadow .15s';
+  el.style.boxShadow = '0 0 0 2px rgba(78,205,196,0.5)';
+  setTimeout(() => { el.style.boxShadow = ''; }, 1200);
 }
 </script>
 
