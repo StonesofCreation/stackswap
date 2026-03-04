@@ -182,6 +182,41 @@ h1 .accent{color:#ffc857}
 .upgrade-cta-btn:hover{opacity:.88}
 .upgrade-cta-success{display:none;font-size:13px;color:#39ff85;margin-bottom:8px;font-family:'DM Mono',monospace}
 .upgrade-cta-note{font-size:11px;color:#3a3830;font-family:'DM Mono',monospace;letter-spacing:.03em}
+/* ── HAMBURGER / MOBILE NAV ── */
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;
+  padding:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:7px;cursor:pointer;transition:background .2s;flex-shrink:0}
+.nav-hamburger:hover{background:rgba(255,255,255,0.08)}
+.nav-hamburger span{display:block;height:2px;background:var(--text);border-radius:2px;
+  transition:transform .25s ease,opacity .25s ease,width .25s ease}
+.nav-hamburger span:nth-child(2){width:70%}
+nav.open .nav-hamburger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+nav.open .nav-hamburger span:nth-child(2){opacity:0;width:0}
+nav.open .nav-hamburger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-drawer{display:none;position:fixed;top:57px;left:0;right:0;bottom:0;z-index:99;
+  background:rgba(15,14,19,0.97);backdrop-filter:blur(16px);
+  flex-direction:column;padding:24px 20px 40px;gap:6px;
+  border-top:1px solid rgba(255,255,255,0.06);overflow-y:auto}
+.nav-drawer.open{display:flex}
+.nav-drawer-link{display:block;padding:13px 16px;border-radius:8px;font-size:15px;
+  font-family:'DM Mono',monospace;color:var(--muted);text-decoration:none;
+  border:1px solid transparent;transition:all .15s;letter-spacing:.03em}
+.nav-drawer-link:hover,.nav-drawer-link.active{color:var(--text);
+  background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08)}
+.nav-drawer-cta{display:block;margin-top:12px;padding:14px 16px;border-radius:8px;
+  font-size:14px;font-family:'DM Mono',monospace;font-weight:700;
+  color:#0f0e13;background:var(--amber);text-decoration:none;
+  text-align:center;letter-spacing:.04em;transition:opacity .2s}
+.nav-drawer-cta:hover{opacity:.88}
+.nav-drawer-divider{height:1px;background:rgba(255,255,255,0.06);margin:8px 0}
+@media(max-width:768px){
+  .nav-hamburger{display:flex}
+  .nav-links{display:none}
+  nav{padding:10px 16px}
+}
+@media(min-width:769px){
+  .nav-drawer{display:none!important}
+}
 </style>
 <style>
 
@@ -274,6 +309,9 @@ h1 .accent{color:#ffc857}
     <a href="/knowledge/index.html" class="page-nav-link">Knowledge</a>
     <a href="analyze.html" class="page-nav-cta">Run Free StackScan</a>
   </div>
+  <button class="nav-hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <div id="app"></div>
@@ -297,35 +335,94 @@ h1 .accent{color:#ffc857}
 <script>
 // ── KNOWLEDGE BASE ────────────────────────────────────────────────────────────
 const TOOLS = [
-  "HubSpot","Salesforce","Pipedrive","Zoho CRM","Freshsales","Close.io","Monday CRM","Insightly","Copper","Streak","Keap","Nutshell",
-  "Outreach","Salesloft","Apollo.io","Instantly","Smartlead","Lemlist","Reply.io","Mailshake","Woodpecker","Klenty","Mixmax","Groove",
-  "ZoomInfo","Clay","LinkedIn Sales Navigator","Lusha","Clearbit","Hunter.io","Seamless.ai","Cognism","LeadIQ","Uplead","Bombora","6sense","Demandbase",
-  "Mailchimp","ActiveCampaign","Klaviyo","Marketo","Pardot","Brevo","Drip","ConvertKit","GetResponse","Campaign Monitor","Constant Contact",
-  "Zendesk","Freshdesk","Help Scout","Intercom","Drift","Gorgias","Re:amaze","Tidio","LiveChat","Zoho Desk","Front","Crisp",
-  "Asana","Monday.com","ClickUp","Notion","Trello","Jira","Linear","Basecamp","Smartsheet","Airtable","Wrike","Coda",
-  "Slack","Microsoft Teams","Zoom","Google Meet","Loom","Calendly","Webex","Discord","Telegram",
-  "Gong","Chorus","Avoma","Otter.ai","Fireflies.ai","Wingman",
-  "Zapier","Make","n8n","Workato","Tray.io","Automate.io",
-  "Figma","Canva","Adobe Creative Cloud","Miro","Lucidchart","Sketch","Framer","InVision","Whimsical",
-  "Google Analytics","Mixpanel","Amplitude","Hotjar","Heap","FullStory","Looker","Tableau","Power BI","Databox","Klipfolio","Microsoft Clarity",
-  "Google Workspace","Microsoft 365","Dropbox","Box","SharePoint","Confluence","Coda",
-  "GitHub","GitLab","Linear","Sentry","Datadog","PagerDuty","Postman","Vercel","Netlify","AWS","GCP","Azure",
-  "QuickBooks","Xero","Stripe","Brex","Ramp","Expensify","Bill.com","FreshBooks","Gusto","BambooHR","Rippling","Workday","ADP","Lattice","15Five","Deel",
-  "Webflow","WordPress","Squarespace","Wix","Contentful","Framer",
-  "ChatGPT","Claude","Jasper","Copy.ai","Writer","Grammarly","Midjourney","Runway","ElevenLabs","Synthesia",
-  "Docusign","PandaDoc","HelloSign","Adobe Sign","Ironclad","Juro",
-  "Vidyard","Wistia","Vimeo","Riverside","StreamYard","Demio","Hopin",
-  "Semrush","Ahrefs","Moz","Surfer SEO","Clearscope","MarketMuse",
-  "Google Ads","Facebook Ads","LinkedIn Ads","Metadata.io",
-  "Buffer","Hootsuite","Sprout Social","Later","Loomly","Publer",
-  "Clari","Boostup","Revenue.io","People.ai","Scratchpad","Ebsta",
-  "Paperless Pipeline","Dotloop","SkySlope","Brokermint","Transactdesk","AgentLoop",
-  "Lone Wolf Back Office","Lone Wolf Transactions","Broker Brain","Profit Power","Emphasys Elite","Brokersumo",
-  "Follow Up Boss","kvCORE","BoomTown","CINC","Chime CRM","Real Geeks","Sierra Interactive","LionDesk","Wise Agent","Contactually","Top Producer","Market Leader","Moxi Works",
-  "Qualia","Back At You","Propertybase","Command (Keller Williams)","Showing Suite",
-  "Stripe","Chargebee","Recurly","Paddle","Zuora",
-  "Segment","RudderStack","mParticle","Census","Hightouch",
-  "Snowflake","BigQuery","Redshift","dbt","Fivetran","Stitch"
+  "HubSpot","Salesforce","Pipedrive","Zoho CRM","Freshsales","Close.io","Monday CRM","Insightly",
+  "Copper","Streak","Keap","Nutshell","Outreach","Salesloft","Apollo.io","Instantly",
+  "Smartlead","Lemlist","Reply.io","Mailshake","Woodpecker","Klenty","Mixmax","Groove",
+  "ZoomInfo","Clay","LinkedIn Sales Navigator","Lusha","Clearbit","Hunter.io","Seamless.ai","Cognism",
+  "LeadIQ","Uplead","Bombora","6sense","Demandbase","Mailchimp","ActiveCampaign","Klaviyo",
+  "Marketo","Pardot","Brevo","Drip","ConvertKit","GetResponse","Campaign Monitor","Constant Contact",
+  "Zendesk","Freshdesk","Help Scout","Intercom","Drift","Gorgias","Re:amaze","Tidio",
+  "LiveChat","Zoho Desk","Front","Crisp","Asana","Monday.com","ClickUp","Notion",
+  "Trello","Jira","Linear","Basecamp","Smartsheet","Airtable","Wrike","Coda",
+  "Slack","Microsoft Teams","Zoom","Google Meet","Loom","Calendly","Webex","Discord",
+  "Telegram","Gong","Chorus","Avoma","Otter.ai","Fireflies.ai","Wingman","Zapier",
+  "Make","n8n","Workato","Tray.io","Automate.io","Figma","Canva","Adobe Creative Cloud",
+  "Miro","Lucidchart","Sketch","Framer","InVision","Whimsical","Google Analytics","Mixpanel",
+  "Amplitude","Hotjar","Heap","FullStory","Looker","Tableau","Power BI","Databox",
+  "Klipfolio","Microsoft Clarity","Google Workspace","Microsoft 365","Dropbox","Box","SharePoint","Confluence",
+  "GitHub","GitLab","Sentry","Datadog","PagerDuty","Postman","Vercel","Netlify",
+  "AWS","GCP","Azure","QuickBooks","Xero","Stripe","Brex","Ramp",
+  "Expensify","Bill.com","FreshBooks","Gusto","BambooHR","Rippling","Workday","ADP",
+  "Lattice","15Five","Deel","Webflow","WordPress","Squarespace","Wix","Contentful",
+  "ChatGPT","Claude","Jasper","Copy.ai","Writer","Grammarly","Midjourney","Runway",
+  "ElevenLabs","Synthesia","Docusign","PandaDoc","HelloSign","Adobe Sign","Ironclad","Juro",
+  "Vidyard","Wistia","Vimeo","Riverside","StreamYard","Demio","Hopin","Semrush",
+  "Ahrefs","Moz","Surfer SEO","Clearscope","MarketMuse","Google Ads","Facebook Ads","LinkedIn Ads",
+  "Metadata.io","Buffer","Hootsuite","Sprout Social","Later","Loomly","Publer","Clari",
+  "Boostup","Revenue.io","People.ai","Scratchpad","Ebsta","Paperless Pipeline","Dotloop","SkySlope",
+  "Brokermint","Transactdesk","AgentLoop","Lone Wolf Back Office","Lone Wolf Transactions","Broker Brain","Profit Power","Emphasys Elite",
+  "Brokersumo","Follow Up Boss","kvCORE","BoomTown","CINC","Chime CRM","Real Geeks","Sierra Interactive",
+  "LionDesk","Wise Agent","Contactually","Top Producer","Market Leader","Moxi Works","Qualia","Back At You",
+  "Propertybase","Command (Keller Williams)","Showing Suite","Chargebee","Recurly","Paddle","Zuora","Segment",
+  "RudderStack","mParticle","Census","Hightouch","Snowflake","BigQuery","Redshift","dbt",
+  "Fivetran","Stitch","Zoho Bigin","Salesmate","Agile CRM","Vtiger","Podio","Netsuite",
+  "Pipeliner CRM","Creatio","Sugar CRM","Maximizer","Efficy","Dynamics 365 Sales","Freshworks CRM","Kommo",
+  "Monday Sales CRM","folk","EvaluAgent","Gong Engage","LinkedIn Sales Insights","Kaspr","Findymail","Datagma",
+  "Phantombuster","Hunter","Snov.io","RocketReach","ContactOut","Adapt.io","Lead411","SalesIntel",
+  "Bookyourdata","Wiza","Surfe","Leadfeeder","Albacross","Visitor Queue","Factors.ai","Salesloft Rhythm",
+  "Outplay","Quickmail","Waalaxy","LaGrowthMachine","Expandi","Skylead","Dux-Soup","MeetAlfred",
+  "We-Connect","Zopto","Amplemarket","Nooks","Lavender","Regie.ai","Exceed.ai","Conversica",
+  "11x.ai","Artisan","Jazon by Lyzr","Jiminny","Refract","Convin","Salesken","Modjo",
+  "Abstrakt","Nooks Dialer","Orum","ConnectAndSell","Kixie","JustCall","CloudTalk","Vonage",
+  "Twilio","Telnyx","Bandwidth","Aviso","Troops","Collective[i]","Endgame","Pocus",
+  "Laudable","Trumpet","Consensus","Omnisend","Moosend","Sendlane","EmailOctopus","Benchmark Email",
+  "MailerLite","Loops","Encharge","Ortto","Userlist","Vero","Autopilot","Sailthru",
+  "Responsys","Acoustic","Terminus","Rollworks","Triblio","Madison Logic","Demandscience","Jabmo",
+  "Foundry ABM","LinkedIn Campaign Manager","Meta Ads Manager","TikTok Ads","Twitter/X Ads","Snapchat Ads","Pinterest Ads","Reddit Ads",
+  "Northbeam","Triple Whale","Rockerbox","Wicked Reports","Frase","NeuronWriter","Scalenut","Writesonic",
+  "Rank Math","Screaming Frog","Sitebulb","SE Ranking","SpyFu","Majestic","Mangools","LinkWhisper",
+  "SocialBee","Sendible","CoSchedule","Planable","Mention","Brand24","Brandwatch","Sprinklr",
+  "Khoros","Emplifi","Circle","Tribe","Mighty Networks","Bettermode","Discourse","Vanilla Forums",
+  "Descript","Squadcast","Zencastr","Alitu","Buzzsprout","Transistor","Captivate","Podbean",
+  "Livestorm","BigMarker","HeySummit","Run The World","Planhat","Catalyst","EverAfter","Rocketlane",
+  "Arrows","UserLane","WalkMe","Chameleon","Userflow","Stonly","Intercom Product Tours","Contentsquare",
+  "Crazy Egg","Lucky Orange","SessionCam","Clicktale","MouseFlow","UserTesting","Maze","Lookback",
+  "UserZoom","dscout","Sprig","Apache Superset","Omni","Lightdash","Cube.dev","Preset",
+  "Holistics","Hex","Observable","Count","Deepnote","Databricks","Starburst","Airbyte",
+  "Meltano","Portable","Rivery","Hevo Data","Matillion","Heroku","DigitalOcean","Linode",
+  "Vultr","Cloudflare","Fastly","Akamai","Bunny.net","KeyCDN","CircleCI","Jenkins",
+  "Travis CI","BuildKite","Codefresh","ArgoCD","Flux","Pulumi","Terraform","Ansible",
+  "Chef","Puppet","Dynatrace","AppDynamics","Elastic APM","Jaeger","Zipkin","OpenTelemetry",
+  "Coralogix","Splunk","Sumo Logic","Loggly","StatusCake","Freshping","Checkly","Auth0",
+  "Clerk","WorkOS","Magic","Okta","OneLogin","Ping Identity","Ory","Stytch",
+  "FusionAuth","Amazon SES","SparkPost","Mandrill","Twilio Sendgrid","Plunk","Zoho Books","Odoo",
+  "Kashoo","ZipBooks","Bench","Pilot","Fondo","Maxio","SaaSOptics","RevenueCat",
+  "Stigg","Papaya Global","Multiplier","Velocity Global","Engagedly","Betterworks","Reflektive","Peakon",
+  "Glint","TinyPulse","Officevibe","Bonusly","Kudos","Humaans","Factorial","Personio",
+  "Kenjo","JazzHR","Breezy HR","Pinpoint","Manatal","Loxo","Gem","Tettra",
+  "Guru","Document360","Archbee","Helpjuice","Nuclino","Slite","Quip","Bit.ai",
+  "Almanac","Appsmith","Budibase","DronaHQ","Coefficient","Rows","Equals","Grist",
+  "NocoDB","Baserow","Teable","SeaTable","Glide","Softr","Adalo","Bubble",
+  "WeWeb","FlutterFlow","Bravo Studio","Thunkable","Draftbit","Magento","PrestaShop","OpenCart",
+  "Volusion","ShipBob","ShipHero","Gooten","SPOD","Gelato","Reamaze","eDesk",
+  "Richpanel","Yotpo","Okendo","Bazaarvoice","Stamped","Judge.me","Loox","Recharge",
+  "Ordergroove","Loop Returns","AfterShip","Narvar","Attentive","Postscript","SMSBump","Emotive",
+  "BeProfit","Lifetimely","Shogun","PageFly","GemPages","Zipify","ReConvert","Elasticsearch",
+  "OpenSearch","Swiftype","Constructor.io","Searchspring","Boost Commerce","1Password","Bitwarden","Dashlane",
+  "LastPass","Keeper","Vanta","Drata","Secureframe","Sprinto","Tugboat Logic","Lacework",
+  "Wiz","Orca Security","Snyk","Aqua Security","Crowdstrike","SentinelOne","Carbon Black","Cylance",
+  "Malwarebytes","Substack","Buttondown","Revue","Sanity","Storyblok","DatoCMS","Prismic",
+  "Strapi","Directus","WordPress.com","Drupal","Joomla","Craft CMS","Statamic","Kirby",
+  "HubSpot CMS","Webflow CMS","HeyGen","Colossyan","Captions","Wondershare Filmora","CapCut","Canva Video",
+  "Adobe Premiere Rush","Murf.ai","Play.ht","LOVO","Speechify","Podcastle","DALL-E","Stable Diffusion",
+  "Ideogram","Adobe Firefly","Pika","Kling","Sora","Gemini","Phind","Cody",
+  "GitHub Copilot","Cursor","Windsurf","Continue","Tabnine","Codeium","Replit","v0",
+  "Bolt.new","Lovable","Crew AI","LangChain","LlamaIndex","Flowise","Dify","n8n AI",
+  "Make AI","Zapier AI","Tealium","BlueConic","ActionIQ","Simon Data","Lytics","Treasure Data",
+  "Amperity","Cal.com","Doodle","When2meet","Tally","Fillout","Paperform","Google Forms",
+  "Notion Forms","Airtable Forms","Coda Forms","Hotjar Surveys","Delighted","Medallia","Qualtrics","AskNicely",
+  "Productboard","Aha!","Roadmunk","Craft.io","Airfocus","Zeda.io","UserVoice","Canny",
+  "Frill","Hellonext","Sleekplan","Cachet"
 ];
 
 const OVERLAPS = [
