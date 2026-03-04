@@ -574,56 +574,56 @@ const GOLD_STACKS = [
     tools: ["HubSpot","Apollo.io","Slack","Google Workspace","Notion","Loom","Stripe","Intercom"],
     integrationScore: 95,
     why: "Every tool in this stack has a native HubSpot connector. One CRM owns all contact data. Apollo feeds leads in, Stripe ties revenue to contacts, Intercom surfaces support history. Zero Zapier needed.",
-    monthlyEstimate: "$600-900/mo for 10 people"
+    baseCostLow: 600, baseCostHigh: 900, baseTeamSize: 10, perSeatLow: 20, perSeatHigh: 35
   },
   {
     name: "Lean Outbound SaaS",
     tools: ["HubSpot","Apollo.io","Smartlead","Slack","Google Workspace","Loom","Calendly"],
     integrationScore: 92,
     why: "Apollo enriches and sequences, Smartlead handles deliverability, HubSpot owns the CRM record. All three sync natively. Calendly books meetings directly into HubSpot deals.",
-    monthlyEstimate: "$400-600/mo for 10 people"
+    baseCostLow: 400, baseCostHigh: 600, baseTeamSize: 10, perSeatLow: 15, perSeatHigh: 25
   },
   {
     name: "Real Estate Team (≤20 agents)",
     tools: ["Follow Up Boss","Paperless Pipeline","Google Workspace","Calendly"],
     integrationScore: 98,
-    why: "Follow Up Boss and Paperless Pipeline have a native, two-way integration — the only RE stack pairing with true embedded sync. Google Workspace covers everything else. $230/mo total.",
-    monthlyEstimate: "$220-250/mo"
+    why: "Follow Up Boss and Paperless Pipeline have a native, two-way integration — the only RE stack pairing with true embedded sync. Google Workspace covers everything else.",
+    baseCostLow: 220, baseCostHigh: 250, baseTeamSize: 10, perSeatLow: 10, perSeatHigh: 15
   },
   {
     name: "Real Estate Brokerage (20+ agents)",
     tools: ["Follow Up Boss","Brokermint","Google Workspace","Slack"],
     integrationScore: 94,
     why: "Brokermint handles back office, commissions, and transactions. Follow Up Boss handles the CRM and lead routing. Both integrate with Google Workspace. Slack for team comms.",
-    monthlyEstimate: "$500-800/mo"
+    baseCostLow: 500, baseCostHigh: 800, baseTeamSize: 25, perSeatLow: 15, perSeatHigh: 25
   },
   {
     name: "Marketing Agency",
     tools: ["ClickUp","HubSpot","Google Workspace","Figma","Canva","Slack","Loom"],
     integrationScore: 90,
     why: "ClickUp manages projects, HubSpot handles client CRM and proposals, Slack for comms, Figma+Canva for creative. Everything connects through Google identity.",
-    monthlyEstimate: "$300-500/mo for 10 people"
+    baseCostLow: 300, baseCostHigh: 500, baseTeamSize: 10, perSeatLow: 18, perSeatHigh: 30
   },
   {
     name: "Enterprise GTM",
     tools: ["Salesforce","Outreach","ZoomInfo","Gong","Slack","Google Workspace","Tableau"],
     integrationScore: 88,
     why: "The classic enterprise sales stack. Expensive but fully integrated natively — Gong syncs calls to Salesforce, Outreach syncs sequences, ZoomInfo enriches on contact creation.",
-    monthlyEstimate: "$8,000-15,000/mo for 50 people"
+    baseCostLow: 8000, baseCostHigh: 15000, baseTeamSize: 50, perSeatLow: 150, perSeatHigh: 280
   },
   {
     name: "AI-Native GTM (2025)",
     tools: ["HubSpot","Clay","Smartlead","Slack","Google Workspace","Apollo.io","ChatGPT"],
     integrationScore: 91,
     why: "Clay enriches and builds lists, Smartlead sends at scale with AI warm-up, HubSpot owns the record. This is the modern replacement for the ZoomInfo + Outreach + Salesforce stack at 20% of the cost.",
-    monthlyEstimate: "$400-700/mo for 10 people"
+    baseCostLow: 400, baseCostHigh: 700, baseTeamSize: 10, perSeatLow: 18, perSeatHigh: 30
   },
   {
     name: "Bootstrapped SaaS",
     tools: ["HubSpot","Google Workspace","Slack","Notion","Stripe","Intercom","Linear"],
     integrationScore: 93,
-    why: "Tight, cheap, and fully integrated. HubSpot free tier for CRM, Stripe for billing (native HubSpot sync), Intercom for support, Linear for engineering. Under $300/mo for a 5-person team.",
-    monthlyEstimate: "$200-350/mo for 5 people"
+    why: "Tight, cheap, and fully integrated. HubSpot free tier for CRM, Stripe for billing (native HubSpot sync), Intercom for support, Linear for engineering.",
+    baseCostLow: 200, baseCostHigh: 350, baseTeamSize: 5, perSeatLow: 25, perSeatHigh: 45
   }
 ];
 
@@ -1461,7 +1461,7 @@ function renderStackFlow(container, tools, conflicts) {
     renderedNodes.add(tool);
     const node = document.createElement("div");
     const conflict = isConflict(tool);
-    node.style.cssText = `display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap;background:${conflict?'rgba(255,77,77,0.08)':'rgba(78,205,196,0.06)'};border:1px solid ${conflict?'rgba(255,77,77,0.25)':'rgba(78,205,196,0.2)'};color:${conflict?'#ff4d4d':'#4ecdc4'}`;
+    node.style.cssText = `display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap;background:${conflict?'rgba(255,200,87,0.08)':'rgba(78,205,196,0.06)'};border:1px solid ${conflict?'rgba(255,200,87,0.3)':'rgba(78,205,196,0.2)'};color:${conflict?'#ffc857':'#4ecdc4'}`;
     if (conflict) node.title = "Integration conflict detected";
     node.textContent = tool;
     return node;
@@ -1517,9 +1517,387 @@ function renderStackFlow(container, tools, conflicts) {
   // Legend
   const legend = document.createElement("div");
   legend.style.cssText = "margin-top:14px;font-size:12px;color:#7a7670;font-family:'DM Mono',monospace;letter-spacing:.02em";
-  legend.innerHTML = "<span style='color:rgba(78,205,196,0.5)'>teal</span> = native integration · <span style='color:rgba(255,77,77,0.6)'>red</span> = integration conflict · gray = unconnected · → = data flow direction";
+  legend.innerHTML = "<span style='color:rgba(78,205,196,0.5)'>teal</span> = native integration · <span style='color:rgba(255,200,87,0.6)'>amber</span> = integration conflict · gray = unconnected · → = data flow direction";
   wrap.appendChild(legend);
 
+  container.appendChild(wrap);
+}
+
+
+// ══════════════════════════════════════════════════════════════════
+// SWAPSTORY VISUALIZATIONS
+// ══════════════════════════════════════════════════════════════════
+
+// ── 1. Spend Efficiency Gauge ─────────────────────────────────────
+function renderSpendGauge(container, spend, teamSize, industry) {
+  if (!spend || spend < 1) return;
+  const size = parseInt(teamSize) || 10;
+  const perSeat = Math.round(spend / size);
+
+  // Industry benchmarks (per seat per month)
+  const benchmarks = {
+    "SaaS / Tech": { low: 80, high: 200, label: "SaaS teams" },
+    "Real Estate": { low: 30, high: 100, label: "real estate teams" },
+    "Marketing Agency": { low: 60, high: 150, label: "agencies" },
+    "E-commerce": { low: 50, high: 130, label: "e-commerce teams" },
+    "default": { low: 60, high: 180, label: "similar teams" }
+  };
+  const bench = benchmarks[industry] || benchmarks["default"];
+  const midpoint = (bench.low + bench.high) / 2;
+
+  // How far over/under are they?
+  let statusText, statusColor, fillPct, fillColor;
+  if (perSeat <= bench.low) {
+    statusText = `You're spending less per person than most ${bench.label}. Lean stack.`;
+    statusColor = "#4ecdc4"; fillColor = "#4ecdc4";
+    fillPct = Math.round((perSeat / bench.high) * 60);
+  } else if (perSeat <= bench.high) {
+    statusText = `Right in the normal range for ${bench.label}. Room to tighten.`;
+    statusColor = "#ffc857"; fillColor = "#ffc857";
+    fillPct = Math.round(40 + ((perSeat - bench.low) / (bench.high - bench.low)) * 40);
+  } else {
+    const over = Math.round((perSeat / bench.high - 1) * 100);
+    statusText = `${over}% above what most ${bench.label} spend per person. Worth a hard look.`;
+    statusColor = "#e05555"; fillColor = "#e05555";
+    fillPct = Math.min(95, Math.round(80 + (perSeat - bench.high) / bench.high * 20));
+  }
+
+  const wrap = document.createElement("div");
+  wrap.className = "gauge-wrap";
+  wrap.innerHTML = `
+    <div class="gauge-callout" style="color:${statusColor}">$${perSeat.toLocaleString()}<span style="font-size:14px;font-weight:400;color:#7a7670"> /person/mo</span></div>
+    <div class="gauge-sub">${statusText}</div>
+    <div class="gauge-track"><div class="gauge-fill" id="gfill" style="width:0%;background:${fillColor}"></div></div>
+    <div class="gauge-labels"><span>Lean</span><span>Normal range</span><span>Overspending</span></div>
+  `;
+  container.appendChild(wrap);
+  setTimeout(() => {
+    const f = wrap.querySelector("#gfill");
+    if (f) f.style.width = fillPct + "%";
+  }, 200);
+}
+
+// ── 2. Stack Health Radar ─────────────────────────────────────────
+function renderRadar(container, r, spend, teamSize) {
+  const size = parseInt(teamSize) || 10;
+  const perSeat = spend > 0 ? spend / size : 0;
+
+  // Score each axis 0-100
+  const overlapPenalty = (r.overlaps.length + (r.categoryOverlaps||[]).length) * 14;
+  const axes = [
+    {
+      label: "Cost Fit",
+      score: Math.max(0, 100 - (perSeat > 300 ? 40 : perSeat > 200 ? 20 : perSeat > 100 ? 5 : 0)),
+      color: "#ffc857"
+    },
+    {
+      label: "Integration",
+      score: Math.max(0, 100 - ((r.integrationConflicts||[]).length * 20) - ((r.orphanedTools||[]).length * 8)),
+      color: "#4ecdc4"
+    },
+    {
+      label: "AI Maturity",
+      score: Math.max(0, 100 - (r.legacyPenalties||[]).length * 18),
+      color: "#4e82ff"
+    },
+    {
+      label: "No Overlap",
+      score: Math.max(0, 100 - overlapPenalty),
+      color: "#39ff85"
+    },
+    {
+      label: "Coverage",
+      score: Math.min(100, Math.max(0, 60 + (r.optimized||[]).length * 3 - (r.consultantFindings||[]).filter(f=>f.type==="missing").length * 10)),
+      color: "#c084fc"
+    }
+  ];
+
+  const W = 180, H = 180, cx = W/2, cy = H/2, R = 68;
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  canvas.style.cssText = "display:block";
+
+  const wrap = document.createElement("div");
+  wrap.className = "radar-wrap";
+  const canvasWrap = document.createElement("div");
+  canvasWrap.className = "radar-canvas-wrap";
+  canvasWrap.appendChild(canvas);
+
+  const legend = document.createElement("div");
+  legend.className = "radar-legend";
+  axes.forEach(a => {
+    const row = document.createElement("div");
+    row.className = "radar-leg-row";
+    row.innerHTML = `
+      <div class="radar-leg-dot" style="background:${a.color}"></div>
+      <span class="radar-leg-label">${a.label}</span>
+      <span class="radar-leg-val" style="color:${a.color}">${a.score}</span>
+    `;
+    legend.appendChild(row);
+  });
+
+  wrap.appendChild(canvasWrap);
+  wrap.appendChild(legend);
+  container.appendChild(wrap);
+
+  // Draw on next frame so canvas is in DOM
+  requestAnimationFrame(() => {
+    const ctx = canvas.getContext("2d");
+    const pts = (vals) => axes.map((_, i) => {
+      const angle = (i / axes.length) * Math.PI * 2 - Math.PI / 2;
+      return [cx + Math.cos(angle) * R * vals[i], cy + Math.sin(angle) * R * vals[i]];
+    });
+
+    // Grid rings
+    [0.25, 0.5, 0.75, 1].forEach(v => {
+      const p = pts(axes.map(() => v));
+      ctx.beginPath();
+      p.forEach(([x,y], i) => i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(255,255,255,${v === 1 ? 0.08 : 0.04})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Axis lines
+    axes.forEach((_, i) => {
+      const angle = (i / axes.length) * Math.PI * 2 - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(angle) * R, cy + Math.sin(angle) * R);
+      ctx.strokeStyle = "rgba(255,255,255,0.05)";
+      ctx.stroke();
+
+      // Labels
+      const lx = cx + Math.cos(angle) * (R + 16);
+      const ly = cy + Math.sin(angle) * (R + 16);
+      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.font = "9px 'DM Mono', monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(axes[i].label, lx, ly);
+    });
+
+    // Data polygon — animate in
+    let progress = 0;
+    const draw = () => {
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const scores = axes.map(a => (a.score / 100) * eased);
+      const p = pts(scores);
+      ctx.clearRect(0, 0, W, H);
+
+      // Redraw grid first
+      [0.25, 0.5, 0.75, 1].forEach(v => {
+        const gp = pts(axes.map(() => v));
+        ctx.beginPath();
+        gp.forEach(([x,y], i) => i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+        ctx.closePath();
+        ctx.strokeStyle = `rgba(255,255,255,${v === 1 ? 0.08 : 0.04})`;
+        ctx.lineWidth = 1; ctx.stroke();
+      });
+      axes.forEach((_, i) => {
+        const angle = (i / axes.length) * Math.PI * 2 - Math.PI / 2;
+        ctx.beginPath(); ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(angle) * R, cy + Math.sin(angle) * R);
+        ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.stroke();
+        const lx = cx + Math.cos(angle) * (R + 16);
+        const ly = cy + Math.sin(angle) * (R + 16);
+        ctx.fillStyle = "rgba(255,255,255,0.35)";
+        ctx.font = "9px 'DM Mono', monospace";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(axes[i].label, lx, ly);
+      });
+
+      // Fill
+      ctx.beginPath();
+      p.forEach(([x,y], i) => i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+      ctx.closePath();
+      ctx.fillStyle = "rgba(78,205,196,0.12)";
+      ctx.fill();
+      ctx.strokeStyle = "#4ecdc4";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Dots
+      p.forEach(([x,y], i) => {
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2);
+        ctx.fillStyle = axes[i].color; ctx.fill();
+      });
+
+      if (progress < 1) { progress = Math.min(1, progress + 0.04); requestAnimationFrame(draw); }
+    };
+    setTimeout(draw, 300);
+  });
+}
+
+// ── 3. Savings Waterfall ──────────────────────────────────────────
+function renderWaterfall(container, r) {
+  if (!r.totalSave || r.totalSave < 1) return;
+
+  // Build breakdown sources
+  const sources = [];
+  const overlapSave = [...(r.overlaps||[]), ...(r.categoryOverlaps||[])].reduce((s,o) => s+(o.save||0), 0);
+  if (overlapSave > 0) sources.push({ label: "Cutting overlaps", amount: overlapSave, color: "#ffc857" });
+
+  const legacySave = (r.legacyPenalties||[]).reduce((s,p) => {
+    // Estimate savings from switching away from legacy tool
+    const legacyCost = PRICING[Object.keys(PRICING).find(k => p.tool?.toLowerCase().includes(k.toLowerCase()))] || 100;
+    return s + Math.round(legacyCost * 0.6);
+  }, 0);
+  if (legacySave > 0) sources.push({ label: "Swapping legacy tools", amount: legacySave, color: "#4e82ff" });
+
+  const consolidationSave = (r.allInOneOpps||[]).reduce((s,o) => s+(o.save||0), 0);
+  if (consolidationSave > 0) sources.push({ label: "Consolidating tools", amount: consolidationSave, color: "#39ff85" });
+
+  // Remainder goes to "other"
+  const accounted = sources.reduce((s,x) => s+x.amount, 0);
+  const other = r.totalSave - accounted;
+  if (other > 50) sources.push({ label: "Other optimizations", amount: other, color: "#c084fc" });
+
+  if (!sources.length) return;
+  const maxAmt = Math.max(...sources.map(s => s.amount));
+
+  const wrap = document.createElement("div");
+  wrap.className = "waterfall-wrap";
+
+  sources.forEach(s => {
+    const pct = Math.round((s.amount / maxAmt) * 100);
+    const row = document.createElement("div");
+    row.className = "waterfall-row";
+    row.innerHTML = `
+      <div class="waterfall-label">${s.label}</div>
+      <div class="waterfall-bar-wrap">
+        <div class="waterfall-bar" style="width:0%;background:${s.color}" data-pct="${pct}">
+          <span class="waterfall-amt" style="color:${s.color === '#ffc857' || s.color === '#39ff85' ? '#0f0e13' : '#f0ece4'}">$${s.amount.toLocaleString()}/mo</span>
+        </div>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+
+  const total = document.createElement("div");
+  total.className = "waterfall-total";
+  total.innerHTML = `
+    <span class="waterfall-total-label">Total potential savings</span>
+    <span class="waterfall-total-val">$${r.totalSave.toLocaleString()}/mo · $${(r.totalSave*12).toLocaleString()}/yr</span>
+  `;
+  wrap.appendChild(total);
+  container.appendChild(wrap);
+
+  // Animate bars in
+  setTimeout(() => {
+    wrap.querySelectorAll(".waterfall-bar").forEach((bar, i) => {
+      setTimeout(() => { bar.style.width = bar.dataset.pct + "%"; }, i * 120);
+    });
+  }, 200);
+}
+
+// ── 4. Priority Matrix ────────────────────────────────────────────
+function renderPriorityMatrix(container, actions, r) {
+  if (!actions || actions.length < 2) return;
+
+  // Categorize each action by effort + impact
+  const classify = (action) => {
+    const titleLow = action.title.toLowerCase();
+    // High savings = high impact
+    const highImpact = action.save > 100 || titleLow.includes("zoominfo") || titleLow.includes("marketo") || titleLow.includes("drift") || titleLow.includes("salesforce") || titleLow.includes("outreach");
+    // Hard = requires migration, contract change, or is a primary tool
+    const hard = titleLow.includes("salesforce") || titleLow.includes("migrate") || titleLow.includes("replace crm") || titleLow.includes("marketo") || titleLow.includes("pardot") || titleLow.includes("zoominfo");
+    return { highImpact, hard };
+  };
+
+  const cells = {
+    "do-first":   { label: "Do first", desc: "Big win, easy to do", items: [], bg: "rgba(57,255,133,0.05)", border: "rgba(57,255,133,0.15)", labelColor: "#39ff85" },
+    "plan-it":    { label: "Plan it", desc: "Big win, takes work", items: [], bg: "rgba(78,130,255,0.05)", border: "rgba(78,130,255,0.15)", labelColor: "#4e82ff" },
+    "quick-win":  { label: "Quick win", desc: "Easy, saves something", items: [], bg: "rgba(255,200,87,0.05)", border: "rgba(255,200,87,0.15)", labelColor: "#ffc857" },
+    "maybe-later":{ label: "Maybe later", desc: "Low return, not urgent", items: [], bg: "rgba(255,255,255,0.02)", border: "rgba(255,255,255,0.07)", labelColor: "#7a7670" }
+  };
+
+  actions.slice(0, 6).forEach(action => {
+    const { highImpact, hard } = classify(action);
+    const key = highImpact && !hard ? "do-first" : highImpact && hard ? "plan-it" : !highImpact && !hard ? "quick-win" : "maybe-later";
+    cells[key].items.push(action.title.replace(/^Swap /i,"").replace(/^Cut /i,"").replace(/^Add /i,""));
+  });
+
+  // Fallback: distribute if all ended up in same bucket
+  const allInOne = Object.values(cells).filter(c => c.items.length > 0).length === 1;
+  if (allInOne) {
+    const flat = actions.slice(0,4);
+    cells["do-first"].items = [flat[0]?.title||""];
+    cells["plan-it"].items = [flat[1]?.title||""];
+    cells["quick-win"].items = [flat[2]?.title||""];
+    cells["maybe-later"].items = [flat[3]?.title||""];
+  }
+
+  const wrap = document.createElement("div");
+  wrap.className = "matrix-wrap";
+
+  // Axis labels
+  const axisTop = document.createElement("div");
+  axisTop.style.cssText = "display:flex;justify-content:space-between;font-size:10px;color:#5a5650;font-family:'DM Mono',monospace;margin-bottom:4px";
+  axisTop.innerHTML = '<span>← Easy</span><span>Hard →</span>';
+  wrap.appendChild(axisTop);
+
+  const grid = document.createElement("div");
+  grid.className = "matrix-grid";
+
+  // Order: do-first (easy+high), plan-it (hard+high), quick-win (easy+low), maybe-later (hard+low)
+  ["do-first","plan-it","quick-win","maybe-later"].forEach((key, i) => {
+    const cell = cells[key];
+    const div = document.createElement("div");
+    div.className = "matrix-cell";
+    div.style.cssText = `background:${cell.bg};border-color:${cell.border}`;
+    div.innerHTML = `<div class="matrix-cell-label" style="color:${cell.labelColor}">${cell.label}</div>
+      ${cell.items.map(item => `<div class="matrix-item" style="color:#c8c4bc">${item || "—"}</div>`).join("")}`;
+    grid.appendChild(div);
+  });
+  wrap.appendChild(grid);
+
+  // Y axis labels
+  const axisY = document.createElement("div");
+  axisY.style.cssText = "display:flex;justify-content:space-between;font-size:10px;color:#5a5650;font-family:'DM Mono',monospace;margin-top:4px";
+  axisY.innerHTML = "<span>↑ High impact</span><span>Low impact ↓</span>";
+  wrap.appendChild(axisY);
+
+  container.appendChild(wrap);
+}
+
+// ── 5. Before / After Counter ────────────────────────────────────
+function renderBeforeAfter(container, r, spend) {
+  if (!r.toRemove || r.toRemove.length < 1) return;
+
+  const currentCount = (r.optimized||[]).length + (r.toRemove||[]).length;
+  const optimizedCount = (r.optimized||[]).length;
+  const optimizedSpend = spend > 0 ? Math.max(0, spend - r.totalSave) : 0;
+
+  const wrap = document.createElement("div");
+  wrap.className = "beforeafter-wrap";
+
+  const before = document.createElement("div");
+  before.className = "ba-card";
+  before.style.cssText = "background:rgba(224,85,85,0.05);border-color:rgba(224,85,85,0.2)";
+  before.innerHTML = `
+    <div class="ba-num" style="color:#e05555">${currentCount}</div>
+    <div class="ba-label" style="color:#e05555">Tools now</div>
+    ${spend > 0 ? `<div class="ba-sub" style="color:#9a9690">$${spend.toLocaleString()}/mo</div>` : ""}
+  `;
+
+  const arrow = document.createElement("div");
+  arrow.className = "ba-arrow";
+  arrow.innerHTML = "→";
+
+  const after = document.createElement("div");
+  after.className = "ba-card";
+  after.style.cssText = "background:rgba(78,205,196,0.05);border-color:rgba(78,205,196,0.2)";
+  after.innerHTML = `
+    <div class="ba-num" style="color:#4ecdc4">${optimizedCount}</div>
+    <div class="ba-label" style="color:#4ecdc4">After swaps</div>
+    ${optimizedSpend > 0 ? `<div class="ba-sub" style="color:#9a9690">$${optimizedSpend.toLocaleString()}/mo</div>` : ""}
+  `;
+
+  wrap.appendChild(before);
+  wrap.appendChild(arrow);
+  wrap.appendChild(after);
   container.appendChild(wrap);
 }
 
@@ -1550,6 +1928,9 @@ function renderResult(r) {
   ring.appendChild(sn); ring.appendChild(sr);
   box.appendChild(ring);
   setTimeout(()=>hfill.style.width=r.score+"%",120);
+
+  // ── Spend Efficiency Gauge ──
+  renderSpendGauge(box, r.spend, teamSize, industry);
 
   // ── Consultant Take ──
   if (r.blueprint && r.blueprint.description && r.blueprint !== BLUEPRINTS["default"]) {
@@ -1585,6 +1966,9 @@ function renderResult(r) {
   // ── Tool overlaps (pairwise + category clusters) ──
   const redundantFindings=(r.consultantFindings||[]).filter(f=>f.type==="redundant");
   const hasOverlaps = r.overlaps.length || redundantFindings.length || (r.categoryOverlaps&&r.categoryOverlaps.length);
+  // ── Stack Health Radar ──
+  renderRadar(box, r, r.spend, teamSize);
+
   box.appendChild(div("sec","Tool overlaps"));
   if(!hasOverlaps){
     box.appendChild(div("no-issues","No major overlaps detected — your tools serve distinct functions."));
@@ -1689,6 +2073,20 @@ function renderResult(r) {
     const missingTools = gs.tools.filter(t => !selectedTools.some(u => u.toLowerCase().includes(t.toLowerCase())));
     const matchColor = matchPct >= 80 ? '#4ecdc4' : matchPct >= 60 ? '#ffc857' : '#e05555';
 
+    // Dynamic cost estimate based on user's actual team size
+    const userSize = parseInt(teamSize) || null;
+    let estimateStr;
+    if (userSize && gs.perSeatLow && gs.perSeatHigh) {
+      const low  = Math.round((gs.baseCostLow  + (Math.max(0, userSize - gs.baseTeamSize) * gs.perSeatLow))  / 50) * 50;
+      const high = Math.round((gs.baseCostHigh + (Math.max(0, userSize - gs.baseTeamSize) * gs.perSeatHigh)) / 50) * 50;
+      estimateStr = low === high
+        ? `~$${low.toLocaleString()}/mo for your ${userSize}-person team`
+        : `~$${low.toLocaleString()}–$${high.toLocaleString()}/mo for your ${userSize}-person team`;
+    } else {
+      // Fallback: compute from base
+      estimateStr = `$${gs.baseCostLow.toLocaleString()}–$${gs.baseCostHigh.toLocaleString()}/mo`;
+    }
+
     const gs_section = div("sec");
     gs_section.innerHTML = `<span style="color:${matchColor};font-family:'DM Mono',monospace;font-size:22px;font-weight:700;letter-spacing:-.02em">${matchPct}%</span>&nbsp;StackMatch`;
     box.appendChild(gs_section);
@@ -1700,7 +2098,7 @@ function renderResult(r) {
         <div style="font-size:32px;font-weight:800;color:${matchColor};font-family:'DM Mono',monospace;letter-spacing:-.02em;line-height:1">${matchPct}%</div>
         <div>
           <div style="font-size:14px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif">StackMatch — ${gs.name}</div>
-          <div style="font-size:12px;color:#7a7670;font-family:'DM Mono',monospace;margin-top:2px">Estimated: ${gs.monthlyEstimate}</div>
+          <div style="font-size:12px;color:#7a7670;font-family:'DM Mono',monospace;margin-top:2px">${estimateStr}</div>
         </div>
       </div>
       <div style="font-size:14px;color:#c8c4bc;line-height:1.75;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${gs.why}</div>
@@ -1730,14 +2128,10 @@ function renderResult(r) {
       `<span class="keep">${f.title}</span>`,f.msg,0)));
   }
 
-  // ── Savings ──
+  // ── Savings Waterfall ──
   if(r.totalSave>0){
-    box.appendChild(div("sec","Estimated savings"));
-    const sb=div("sav-box");
-    sb.innerHTML=`
-      <div class="sav-item"><div class="sav-val">$${r.totalSave.toLocaleString()}</div><div class="sav-lbl">Per Month</div></div>
-      <div class="sav-item"><div class="sav-val">$${(r.totalSave*12).toLocaleString()}</div><div class="sav-lbl">Per Year</div></div>`;
-    box.appendChild(sb);
+    box.appendChild(div("sec","Where the savings come from"));
+    renderWaterfall(box, r);
   }
 
   // ── Ideal stack ──
@@ -1750,16 +2144,12 @@ function renderResult(r) {
     box.appendChild(ds);
   }
 
-  // ── Action plan ──
-  box.appendChild(div("sec","Priority actions"));
-  r.actions.slice(0,3).forEach((a,i)=>{
-    const step=div("step");
-    const n=div("step-n",(i+1)+"");
-    const t=div("step-t");
-    t.innerHTML=`<span class="step-title">${a.title}</span>${a.text}`;
-    step.appendChild(n); step.appendChild(t);
-    box.appendChild(step);
-  });
+  // ── Priority Matrix ──
+  box.appendChild(div("sec","What to do first"));
+  renderPriorityMatrix(box, r.actions, r);
+
+  // ── Before / After Counter ──
+  renderBeforeAfter(box, r, r.spend);
 
   // ── Optimized stack ──
   const optSecLabel = div("sec");
@@ -1769,7 +2159,7 @@ function renderResult(r) {
   // Context note above the flow
   const optNote = document.createElement('div');
   optNote.style.cssText = 'font-size:14px;color:#9a9690;line-height:1.7;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
-  optNote.innerHTML = `<strong style="color:#e0dcd4">${r.optimized.length} tools</strong> — arrows show native data flow direction. <span style="color:#4ecdc4">Teal</span> = natively connected. <span style="color:#e05555">Red</span> = integration conflict. Gray = unconnected.`;
+  optNote.innerHTML = `<strong style="color:#e0dcd4">${r.optimized.length} tools</strong> — arrows show native data flow direction. <span style="color:#4ecdc4">Teal</span> = natively connected. <span style="color:#ffc857">Amber</span> = integration conflict. Gray = unconnected.`;
   box.appendChild(optNote);
 
   renderStackFlow(box, r.optimized, r.integrationConflicts || []);
@@ -2112,7 +2502,7 @@ function renderMain() {
 
   function makeGateField(labelTxt, hint, inputId, inputType, placeholder, isSelect, options) {
     const w = div("field-wrap");
-    w.innerHTML=`<label class="lbl">${labelTxt}</label>`;
+    w.innerHTML=`<label class="lbl">${labelTxt} <span style="color:#e05555;font-size:11px">*</span></label>`;
     let input;
     if (isSelect) {
       input = el("select","field"); input.id=inputId;
@@ -2123,8 +2513,17 @@ function renderMain() {
       if(inputType==="email") input.autocomplete="email";
       if(inputId==="gate-name") input.autocomplete="name";
     }
-    input.addEventListener("input",updateGateBtn);
-    input.addEventListener("change",updateGateBtn);
+    // Inline validation: red border on blur if empty
+    input.addEventListener("blur", () => {
+      const val = input.value?.trim();
+      const empty = !val || (inputType === "email" && (!val.includes("@") || !val.includes(".")));
+      input.style.borderColor = empty ? "rgba(224,85,85,0.6)" : "rgba(255,255,255,0.1)";
+    });
+    input.addEventListener("input", () => {
+      input.style.borderColor = "rgba(255,255,255,0.1)"; // reset on type
+      updateGateBtn();
+    });
+    input.addEventListener("change", updateGateBtn);
     w.appendChild(input);
     w.appendChild(div("field-hint",hint));
     return w;
@@ -2134,20 +2533,26 @@ function renderMain() {
   gateForm.appendChild(makeGateField("Company Name","helps AI understand your business context","gate-company","text","Acme Realty Group",false,null));
 
   const g4row = div("g2");
-  const roleW = div("field-wrap"); roleW.innerHTML='<label class="lbl">Your Role</label>';
+  const roleW = div("field-wrap"); roleW.innerHTML='<label class="lbl">Your Role <span style="color:#e05555;font-size:11px">*</span></label>';
   const roleSel = el("select","field"); roleSel.id="gate-role";
   ["","Founder / Owner","Executive (C-Suite / VP)","Operations","Sales / RevOps","Marketing","Finance","IT / Engineering","Other"]
     .forEach(v=>{const o=el("option",null,v||"Select your role...");o.value=v;roleSel.appendChild(o);});
-  roleSel.addEventListener("change",updateGateBtn);
+  roleSel.addEventListener("change", () => {
+    roleSel.style.borderColor = roleSel.value ? "rgba(255,255,255,0.1)" : "rgba(224,85,85,0.6)";
+    updateGateBtn();
+  });
   roleW.appendChild(roleSel);
   roleW.appendChild(div("field-hint","tailors recommendations to your decision-making context"));
   g4row.appendChild(roleW);
 
-  const tsW2 = div("field-wrap"); tsW2.innerHTML='<label class="lbl">Team Size</label>';
+  const tsW2 = div("field-wrap"); tsW2.innerHTML='<label class="lbl">Team Size <span style="color:#e05555;font-size:11px">*</span></label>';
   const tsSel2 = el("select","field"); tsSel2.id="gate-teamsize";
   ["","1-5","6-15","16-50","51-200","200+"]
     .forEach(v=>{const o=el("option",null,v||"Select range...");o.value=v;tsSel2.appendChild(o);});
-  tsSel2.addEventListener("change",updateGateBtn);
+  tsSel2.addEventListener("change", () => {
+    tsSel2.style.borderColor = tsSel2.value ? "rgba(255,255,255,0.1)" : "rgba(224,85,85,0.6)";
+    updateGateBtn();
+  });
   tsW2.appendChild(tsSel2);
   tsW2.appendChild(div("field-hint","helps benchmark your stack against similar-sized teams"));
   g4row.appendChild(tsW2);
@@ -2160,7 +2565,18 @@ function renderMain() {
     const company=document.getElementById("gate-company")?.value?.trim()||"";
     const role=document.getElementById("gate-role")?.value||"";
     const teamSize=document.getElementById("gate-teamsize")?.value||"";
-    if(!email.includes("@")||!company||!role||!teamSize) return;
+    if(!email.includes("@")||!company||!role||!teamSize) {
+      // Flash empty fields red
+      const ef = document.getElementById("gate-email");
+      const cf = document.getElementById("gate-company");
+      const rf = document.getElementById("gate-role");
+      const tf = document.getElementById("gate-teamsize");
+      if (!email.includes("@")) ef.style.borderColor = "rgba(224,85,85,0.6)";
+      if (!company) cf.style.borderColor = "rgba(224,85,85,0.6)";
+      if (!role) rf.style.borderColor = "rgba(224,85,85,0.6)";
+      if (!teamSize) tf.style.borderColor = "rgba(224,85,85,0.6)";
+      return;
+    }
 
     // 1) Save lead to Supabase via your Vercel API
     let lead_id = null;
