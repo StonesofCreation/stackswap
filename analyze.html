@@ -9,9 +9,9 @@
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f0e13;color:#f0ece4;font-family:'DM Mono',monospace;min-height:100vh;
+body{background:#0f0e13;color:#f0ece4;font-family:DM Mono,monospace;min-height:100vh;
   background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(255,200,87,0.07) 0%,transparent 60%)}
-input,select,button{font-family:'DM Mono',monospace}
+input,select,button{font-family:DM Mono,monospace}
 :root{--prose:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 
 
@@ -76,7 +76,7 @@ h1 .accent{color:#ffc857}
 
 /* Score */
 .score-ring{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:rgba(255,255,255,0.02);border-radius:10px}
-.score-num{font-family:'DM Mono',monospace;font-size:48px;font-weight:500;line-height:1.1;flex-shrink:0;letter-spacing:.01em}
+.score-num{font-family:DM Mono,monospace;font-size:48px;font-weight:500;line-height:1.1;flex-shrink:0;letter-spacing:.01em}
 .score-right{flex:1}
 .score-sub{font-size:16px;color:#f0ece4;font-weight:600;margin-bottom:8px;font-family:var(--prose)}
 .score-desc{font-size:15px;color:#9a9690;line-height:1.75;font-family:var(--prose)}
@@ -91,7 +91,7 @@ h1 .accent{color:#ffc857}
 
 /* Section headers */
 .bp-box{background:#16151c;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 20px;margin-bottom:8px}
-.bp-label{font-size:10px;color:#9a9690;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px;font-weight:600;font-family:'DM Mono',monospace}
+.bp-label{font-size:10px;color:#9a9690;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px;font-weight:600;font-family:DM Mono,monospace}
 .bp-text{font-size:14px;color:#c8c4bc;line-height:1.8;font-family:var(--prose)}
 
 /* Finding rows — unified dark card, no alternating colors */
@@ -105,11 +105,11 @@ h1 .accent{color:#ffc857}
 .finding-title .cut{color:#9a9690;font-weight:400}
 .finding-title .arrow{color:#4a4845;margin:0 5px}
 .finding-title .keep{color:#f0ece4;font-weight:700}
-.finding-pill{flex-shrink:0;font-size:12px;font-weight:600;color:#ffc857;background:rgba(255,200,87,0.08);border:1px solid rgba(255,200,87,0.2);border-radius:6px;padding:4px 10px;white-space:nowrap;font-family:'DM Mono',monospace;letter-spacing:.04em;align-self:flex-start}
+.finding-pill{flex-shrink:0;font-size:12px;font-weight:600;color:#ffc857;background:rgba(255,200,87,0.08);border:1px solid rgba(255,200,87,0.2);border-radius:6px;padding:4px 10px;white-space:nowrap;font-family:DM Mono,monospace;letter-spacing:.04em;align-self:flex-start}
 .finding-body{font-size:13px;color:#9a9690;line-height:1.75;font-family:var(--prose);padding:10px 18px 14px;border-top:1px solid rgba(255,255,255,0.04)}
 /* Section summary cards (overlap analysis, upgrade summary, etc.) */
 .section-summary{background:#16151c;border:1px solid rgba(255,200,87,0.14);border-radius:12px;padding:16px 20px;margin-bottom:10px}
-.section-summary-label{font-size:10px;color:#ffc857;letter-spacing:.16em;text-transform:uppercase;font-weight:600;font-family:'DM Mono',monospace;margin-bottom:8px}
+.section-summary-label{font-size:10px;color:#ffc857;letter-spacing:.16em;text-transform:uppercase;font-weight:600;font-family:DM Mono,monospace;margin-bottom:8px}
 .section-summary-body{font-size:14px;color:#c8c4bc;line-height:1.8;font-family:var(--prose)}
 .section-summary-body strong{color:#f0ece4;font-weight:600}
 .section-summary-body .hl-amber{color:#ffc857;font-weight:600}
@@ -118,13 +118,13 @@ h1 .accent{color:#ffc857}
 .sav-box{background:#16151c;border:1px solid rgba(255,200,87,0.18);border-radius:12px;padding:24px 20px;margin-bottom:8px;display:flex;gap:0}
 .sav-item{flex:1;text-align:center;padding:4px 12px}
 .sav-item+.sav-item{border-left:1px solid rgba(255,255,255,0.06)}
-.sav-val{font-family:'DM Mono',monospace;font-size:36px;font-weight:700;color:#ffc857;line-height:1.1;letter-spacing:-.01em}
-.sav-lbl{font-size:10px;color:#9a9690;margin-top:8px;text-transform:uppercase;letter-spacing:.14em;font-family:'DM Mono',monospace}
+.sav-val{font-family:DM Mono,monospace;font-size:36px;font-weight:700;color:#ffc857;line-height:1.1;letter-spacing:-.01em}
+.sav-lbl{font-size:10px;color:#9a9690;margin-top:8px;text-transform:uppercase;letter-spacing:.14em;font-family:DM Mono,monospace}
 .sav-insight{font-size:12px;color:#6a6660;text-align:center;margin-top:6px;line-height:1.6;font-family:var(--prose);padding:0 8px}
 
 /* Action steps */
 .step{display:flex;gap:14px;margin-bottom:6px;align-items:flex-start;background:#16151c;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 18px}
-.step-n{width:22px;height:22px;border-radius:50%;background:rgba(255,200,87,0.12);border:1px solid rgba(255,200,87,0.35);color:#ffc857;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:'DM Mono',monospace}
+.step-n{width:22px;height:22px;border-radius:50%;background:rgba(255,200,87,0.12);border:1px solid rgba(255,200,87,0.35);color:#ffc857;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:DM Mono,monospace}
 .step-t{font-size:14px;color:#9a9690;line-height:1.75;font-family:var(--prose)}
 .step-title{color:#e8e4dc;font-weight:600;display:block;margin-bottom:4px;font-size:15px;font-family:var(--prose)}
 
@@ -132,12 +132,12 @@ h1 .accent{color:#ffc857}
 .dream-box{background:#16151c;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 20px}
 .dream-row{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04)}
 .dream-row:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
-.dream-size{font-size:10px;color:#ffc857;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;font-weight:600;font-family:'DM Mono',monospace}
+.dream-size{font-size:10px;color:#ffc857;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;font-weight:600;font-family:DM Mono,monospace}
 .dream-text{font-size:14px;color:#c8c4bc;line-height:1.8;font-family:var(--prose)}
 
 /* Optimized stack */
 .opt-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.opt-tag{background:rgba(78,205,196,.07);border:1px solid rgba(78,205,196,.18);color:#4ecdc4;border-radius:6px;padding:4px 10px;font-size:12px;font-family:'DM Mono',monospace;letter-spacing:.02em}
+.opt-tag{background:rgba(78,205,196,.07);border:1px solid rgba(78,205,196,.18);color:#4ecdc4;border-radius:6px;padding:4px 10px;font-size:12px;font-family:DM Mono,monospace;letter-spacing:.02em}
 
 .no-issues{font-size:14px;color:#6a6660;line-height:1.8;padding:10px 0;font-family:var(--prose)}
 .red{color:#e05555;font-weight:600}
@@ -146,7 +146,7 @@ h1 .accent{color:#ffc857}
 .gray{color:#5a5650}
 
 .mwrap{max-width:900px;margin:0 auto;padding:40px 20px 80px}
-.back-btn{background:none;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#7a7670;padding:8px 16px;cursor:pointer;font-size:12px;margin-bottom:28px;font-family:'DM Mono',monospace}
+.back-btn{background:none;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:#7a7670;padding:8px 16px;cursor:pointer;font-size:12px;margin-bottom:28px;font-family:DM Mono,monospace}
 .mh2{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:#f0ece4;margin-bottom:4px}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
 .bar-row{margin-bottom:10px}
@@ -169,7 +169,7 @@ h1 .accent{color:#ffc857}
 
 .upgrade-cta{margin-top:32px;background:rgba(57,255,133,0.03);border:1px solid rgba(57,255,133,0.18);border-radius:14px;padding:28px;text-align:left;position:relative;overflow:hidden}
 .upgrade-cta::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(57,255,133,0.5),transparent)}
-.upgrade-cta-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#39ff85;font-weight:600;margin-bottom:12px;font-family:'DM Mono',monospace}
+.upgrade-cta-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#39ff85;font-weight:600;margin-bottom:12px;font-family:DM Mono,monospace}
 .upgrade-cta-h{font-family:'Plus Jakarta Sans',sans-serif;font-size:21px;font-weight:800;color:#f0ece4;margin-bottom:18px;letter-spacing:-.01em;line-height:1.25}
 .upgrade-cta-h span{color:#39ff85}
 /* audit hook cards */
@@ -179,18 +179,18 @@ h1 .accent{color:#ffc857}
 .audit-hook-val{font-size:14px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:2px}
 .audit-hook-label{font-size:12px;color:#7a7670;line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 /* divider + unlocks */
-.audit-divider{font-size:11px;color:#5a5650;letter-spacing:.1em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:10px;padding-top:2px}
+.audit-divider{font-size:11px;color:#5a5650;letter-spacing:.1em;text-transform:uppercase;font-family:DM Mono,monospace;margin-bottom:10px;padding-top:2px}
 .audit-unlocks{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
 .audit-unlock-item{font-size:14px;color:#c8c4bc;line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 /* form */
 .upgrade-cta-form{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.upgrade-cta-input{flex:1;min-width:180px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:7px;padding:11px 14px;color:#f0ece4;font-size:13px;font-family:'DM Mono',monospace;outline:none;transition:border-color .2s}
+.upgrade-cta-input{flex:1;min-width:180px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:7px;padding:11px 14px;color:#f0ece4;font-size:13px;font-family:DM Mono,monospace;outline:none;transition:border-color .2s}
 .upgrade-cta-input::placeholder{color:#3a3830}
 .upgrade-cta-input:focus{border-color:rgba(57,255,133,0.4)}
-.upgrade-cta-btn{background:linear-gradient(135deg,#39ff85,#22cc6a);color:#0f0e13;border:none;border-radius:7px;padding:11px 22px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.upgrade-cta-btn{background:linear-gradient(135deg,#39ff85,#22cc6a);color:#0f0e13;border:none;border-radius:7px;padding:11px 22px;font-size:13px;font-weight:700;font-family:DM Mono,monospace;letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:opacity .2s}
 .upgrade-cta-btn:hover{opacity:.88}
-.upgrade-cta-success{display:none;font-size:13px;color:#39ff85;margin-bottom:8px;font-family:'DM Mono',monospace}
-.upgrade-cta-note{font-size:11px;color:#3a3830;font-family:'DM Mono',monospace;letter-spacing:.03em}
+.upgrade-cta-success{display:none;font-size:13px;color:#39ff85;margin-bottom:8px;font-family:DM Mono,monospace}
+.upgrade-cta-note{font-size:11px;color:#3a3830;font-family:DM Mono,monospace;letter-spacing:.03em}
 
 
 
@@ -315,6 +315,10 @@ nav,
 .ai-spend-note{font-size:13px;color:#7a7670;font-family:var(--prose);line-height:1.7;
   margin-top:12px;padding-top:12px;border-top:1px solid rgba(78,205,196,0.08)}
 .ai-spend-label{font-size:10px;color:#4ecdc4;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:4px}
+.ai-subsection{margin-top:16px;padding-top:16px;border-top:1px solid rgba(78,205,196,0.1)}
+.ai-sub-label{font-size:10px;color:#4ecdc4;letter-spacing:.16em;text-transform:uppercase;font-weight:600;font-family:DM Mono,monospace;margin-bottom:10px}
+.ai-verdict-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+@media(max-width:600px){.ai-verdict-grid{grid-template-columns:1fr 1fr}}
 .ai-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px 24px;text-align:center}
 .ai-loading-dots{display:flex;align-items:center;gap:10px}
 .ai-dot{width:10px;height:10px;border-radius:50%;background:#4ecdc4;animation:aiPulse 1.3s ease infinite}
@@ -336,7 +340,7 @@ nav,
 .page-nav-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:-.01em}
 .page-nav-logo span{color:#ffc857}
 .page-nav-links{display:flex;align-items:center;gap:4px}
-.page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;
+.page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:DM Mono,monospace;
   color:#7a7670;text-decoration:none;border:1px solid transparent;transition:all .2s;background:none;letter-spacing:.04em;cursor:pointer}
 .page-nav-link:hover{color:#f0ece4;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.07)}
 .page-nav-link.active{color:#f0ece4;border-color:rgba(255,255,255,0.07);background:rgba(255,255,255,0.04)}
@@ -360,11 +364,11 @@ nav,
 .ss-modal-body strong{color:#f0ece4;font-weight:500}
 .ss-modal-actions{display:flex;gap:10px;flex-direction:column}
 .ss-modal-continue{background:rgba(255,200,87,0.1);border:1px solid rgba(255,200,87,0.35);
-  color:#ffc857;border-radius:7px;padding:11px 20px;font-family:'DM Mono',monospace;
+  color:#ffc857;border-radius:7px;padding:11px 20px;font-family:DM Mono,monospace;
   font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;text-align:center}
 .ss-modal-continue:hover{background:rgba(255,200,87,0.18)}
 .ss-modal-back{background:transparent;border:1px solid rgba(255,255,255,0.08);
-  color:#7a7670;border-radius:7px;padding:11px 20px;font-family:'DM Mono',monospace;
+  color:#7a7670;border-radius:7px;padding:11px 20px;font-family:DM Mono,monospace;
   font-size:13px;cursor:pointer;letter-spacing:.04em;transition:all .2s;text-align:center}
 .ss-modal-back:hover{color:#f0ece4;border-color:rgba(255,255,255,0.2)}
 
@@ -1922,7 +1926,7 @@ function renderStackFlow(container, tools, conflicts) {
     renderedNodes.add(tool);
     const node = document.createElement("div");
     const conflict = isConflict(tool);
-    node.style.cssText = `display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap;background:${conflict?'rgba(255,200,87,0.08)':'rgba(78,205,196,0.06)'};border:1px solid ${conflict?'rgba(255,200,87,0.3)':'rgba(78,205,196,0.2)'};color:${conflict?'#ffc857':'#4ecdc4'}`;
+    node.style.cssText = `display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;font-family:DM Mono,monospace;white-space:nowrap;background:${conflict?'rgba(255,200,87,0.08)':'rgba(78,205,196,0.06)'};border:1px solid ${conflict?'rgba(255,200,87,0.3)':'rgba(78,205,196,0.2)'};color:${conflict?'#ffc857':'#4ecdc4'}`;
     if (conflict) node.title = "Integration conflict detected";
     node.textContent = tool;
     return node;
@@ -1950,7 +1954,7 @@ function renderStackFlow(container, tools, conflicts) {
     const nextTool = orderedTools[i+1];
     if (nextTool && connections.some(([a,b]) => a === tool && b === nextTool)) {
       const arrow = document.createElement("span");
-      arrow.style.cssText = "color:#3a3830;font-size:14px;font-family:'DM Mono',monospace;flex-shrink:0";
+      arrow.style.cssText = "color:#3a3830;font-size:14px;font-family:DM Mono,monospace;flex-shrink:0";
       arrow.innerHTML = "→";
       flowDiv.appendChild(arrow);
     }
@@ -1961,14 +1965,14 @@ function renderStackFlow(container, tools, conflicts) {
   // Isolated tools (no connections in this stack)
   if (isolated.length > 0) {
     const isoLabel = document.createElement("div");
-    isoLabel.style.cssText = "font-size:12px;color:#7a7670;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;font-family:'DM Mono',monospace";
+    isoLabel.style.cssText = "font-size:12px;color:#7a7670;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;font-family:DM Mono,monospace";
     isoLabel.textContent = "No detected integrations";
     wrap.appendChild(isoLabel);
     const isoRow = document.createElement("div");
     isoRow.style.cssText = "display:flex;flex-wrap:wrap;gap:6px";
     isolated.forEach(tool => {
       const tag = document.createElement("div");
-      tag.style.cssText = "padding:7px 13px;border-radius:6px;font-size:14px;font-family:'DM Mono',monospace;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670";
+      tag.style.cssText = "padding:7px 13px;border-radius:6px;font-size:14px;font-family:DM Mono,monospace;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670";
       tag.textContent = tool;
       isoRow.appendChild(tag);
     });
@@ -1977,7 +1981,7 @@ function renderStackFlow(container, tools, conflicts) {
 
   // Legend
   const legend = document.createElement("div");
-  legend.style.cssText = "margin-top:14px;font-size:12px;color:#7a7670;font-family:'DM Mono',monospace;letter-spacing:.02em";
+  legend.style.cssText = "margin-top:14px;font-size:12px;color:#7a7670;font-family:DM Mono,monospace;letter-spacing:.02em";
   legend.innerHTML = "<span style='color:rgba(78,205,196,0.5)'>teal</span> = native integration · <span style='color:rgba(255,200,87,0.6)'>amber</span> = integration conflict · gray = unconnected · → = data flow direction";
   wrap.appendChild(legend);
 
@@ -2092,9 +2096,9 @@ function renderResult(r) {
       let trendNote = "";
       if (trend && trend.signal === "high") {
         const liveStr = trend.liveCount ? ` (${trend.liveCount} of ${trend.liveTotal} StackSwap analyses flagged this)` : "";
-        trendNote = ` <span style="color:#d96060;font-size:11px;font-family:'DM Mono',monospace">&#9650; High exit rate${liveStr} — ${trend.reason}</span>`;
+        trendNote = ` <span style="color:#d96060;font-size:11px;font-family:DM Mono,monospace">&#9650; High exit rate${liveStr} — ${trend.reason}</span>`;
       } else if (trend && trend.signal === "medium") {
-        trendNote = ` <span style="color:#ffc857;font-size:11px;font-family:'DM Mono',monospace">&#9654; Trending out — ${trend.reason}</span>`;
+        trendNote = ` <span style="color:#ffc857;font-size:11px;font-family:DM Mono,monospace">&#9654; Trending out — ${trend.reason}</span>`;
       }
       box.appendChild(findingCard("opp",
         `Swap <span class="cut">${u.tool}</span><span class="arrow">→</span><span class="keep">${u.r}</span>${trendNote}`,
@@ -2164,17 +2168,17 @@ function renderResult(r) {
     }
 
     const gs_section = div("sec");
-    gs_section.innerHTML = `<span style="color:${matchColor};font-family:'DM Mono',monospace;font-size:22px;font-weight:700;letter-spacing:-.02em">${matchPct}%</span>&nbsp;StackMatch`;
+    gs_section.innerHTML = `<span style="color:${matchColor};font-family:DM Mono,monospace;font-size:22px;font-weight:700;letter-spacing:-.02em">${matchPct}%</span>&nbsp;StackMatch`;
     box.appendChild(gs_section);
 
     const gsCard = document.createElement("div");
     gsCard.style.cssText = `background:rgba(78,205,196,0.03);border:1px solid rgba(78,205,196,0.14);border-radius:12px;padding:20px 22px;margin-bottom:12px`;
     gsCard.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div style="font-size:32px;font-weight:800;color:${matchColor};font-family:'DM Mono',monospace;letter-spacing:-.02em;line-height:1">${matchPct}%</div>
+        <div style="font-size:32px;font-weight:800;color:${matchColor};font-family:DM Mono,monospace;letter-spacing:-.02em;line-height:1">${matchPct}%</div>
         <div>
           <div style="font-size:14px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif">StackMatch — ${gs.name}</div>
-          <div style="font-size:12px;color:#7a7670;font-family:'DM Mono',monospace;margin-top:2px">${estimateStr}</div>
+          <div style="font-size:12px;color:#7a7670;font-family:DM Mono,monospace;margin-top:2px">${estimateStr}</div>
         </div>
       </div>
       <div style="font-size:14px;color:#c8c4bc;line-height:1.75;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${gs.why}</div>
@@ -2191,7 +2195,7 @@ function renderResult(r) {
   // ── Trend intelligence note ──
   if(trendDataLoaded) {
     const trendNote = div("");
-    trendNote.style.cssText = "font-size:10px;color:var(--dim);margin-bottom:16px;font-family:'DM Mono',monospace;letter-spacing:.03em";
+    trendNote.style.cssText = "font-size:10px;color:var(--dim);margin-bottom:16px;font-family:DM Mono,monospace;letter-spacing:.03em";
     trendNote.textContent = "\u25b2 Exit rates informed by real StackSwap submission data";
     box.appendChild(trendNote);
   }
@@ -2402,8 +2406,13 @@ Write a sharp, consultant-grade narrative for the top of their report. Return ON
   "narrative": "2-3 sentences. What did you find and why does it matter for THIS company specifically? Mention their industry and actual tool names. Not generic.",
   "biggest_win": "Single sentence. The #1 highest-impact action with specific tool names and dollar amount. Make it feel urgent.",
   "spend_assessment": "Single sentence on whether their spend level is appropriate for their size and industry. Return null if budget was not provided.",
-  "priority_note": "Single sentence explaining why you ordered the recommendations this way based on their stated goals. Keep it tight."
-}`;
+  "priority_note": "Single sentence explaining why you ordered the recommendations this way based on their stated goals. Keep it tight.",
+  "tool_verdicts": [
+    { "tool": "ToolName", "verdict": "keep" | "cut" | "replace" | "evaluate", "reason": "One tight sentence why." }
+  ]
+}
+
+For tool_verdicts: include EVERY tool submitted. verdict must be exactly one of: keep, cut, replace, evaluate. Be opinionated and specific.`;
 
   try {
     const resp = await fetch("/api/analyze-narrative", {
@@ -2425,13 +2434,13 @@ function renderAINarrative(aiData, container) {
   const box = document.createElement("div");
   box.className = "ai-narrative";
 
-  // Label
+  // ── Header label ──
   const lbl = document.createElement("div");
   lbl.className = "ai-narrative-label";
   lbl.textContent = "AI Analysis";
   box.appendChild(lbl);
 
-  // Narrative paragraph
+  // ── Narrative ──
   if (aiData.narrative) {
     const p = document.createElement("div");
     p.className = "ai-narrative-body";
@@ -2439,7 +2448,55 @@ function renderAINarrative(aiData, container) {
     box.appendChild(p);
   }
 
-  // Priority note
+  // ── Biggest win callout (amber) ──
+  if (aiData.biggest_win) {
+    const bw = document.createElement("div");
+    bw.className = "ai-biggest-win";
+    bw.innerHTML = '<div class="ai-biggest-win-icon">⚡</div><div class="ai-biggest-win-text"><strong style="color:#ffc857;font-weight:600">Biggest win: </strong>' + aiData.biggest_win + '</div>';
+    box.appendChild(bw);
+  }
+
+  // ── Tool Verdicts grid ──
+  if (aiData.tool_verdicts && aiData.tool_verdicts.length) {
+    const tvSec = document.createElement("div");
+    tvSec.className = "ai-subsection";
+    tvSec.innerHTML = '<div class="ai-sub-label">Tool-by-Tool Verdict</div>';
+    const grid = document.createElement("div");
+    grid.className = "ai-verdict-grid";
+    const VERDICT_META = {
+      keep:     { color: "#4ecdc4", bg: "rgba(78,205,196,0.08)",  border: "rgba(78,205,196,0.2)",  icon: "✓" },
+      cut:      { color: "#e05555", bg: "rgba(224,85,85,0.07)",   border: "rgba(224,85,85,0.2)",   icon: "✕" },
+      replace:  { color: "#ffc857", bg: "rgba(255,200,87,0.07)",  border: "rgba(255,200,87,0.2)",  icon: "⟳" },
+      evaluate: { color: "#9a9690", bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.1)", icon: "?" },
+    };
+    aiData.tool_verdicts.forEach(tv => {
+      const m = VERDICT_META[tv.verdict] || VERDICT_META.evaluate;
+      const card = document.createElement("div");
+      card.className = "ai-verdict-card";
+      card.style.cssText = "background:" + m.bg + ";border:1px solid " + m.border + ";border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px";
+      card.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+          '<div style="font-size:14px;font-weight:700;color:#f0ece4;font-family:var(--prose);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + tv.tool + '</div>' +
+          '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;background:' + m.bg + ';border:1px solid ' + m.border + ';border-radius:4px;padding:2px 7px">' +
+            '<span style="font-size:11px;color:' + m.color + ';font-family:DM Mono,monospace;font-weight:700;letter-spacing:.04em;text-transform:uppercase">' + m.icon + ' ' + tv.verdict + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:12px;color:#9a9690;line-height:1.6;font-family:var(--prose)">' + (tv.reason || '') + '</div>';
+      grid.appendChild(card);
+    });
+    tvSec.appendChild(grid);
+    box.appendChild(tvSec);
+  }
+
+  // ── Spend assessment ──
+  if (aiData.spend_assessment) {
+    const sa = document.createElement("div");
+    sa.className = "ai-spend-note";
+    sa.innerHTML = '<div class="ai-spend-label">Spend Assessment</div>' + aiData.spend_assessment;
+    box.appendChild(sa);
+  }
+
+  // ── Priority note ──
   if (aiData.priority_note) {
     const pn = document.createElement("div");
     pn.className = "ai-priority-note";
@@ -2447,23 +2504,7 @@ function renderAINarrative(aiData, container) {
     box.appendChild(pn);
   }
 
-  // Biggest win callout
-  if (aiData.biggest_win) {
-    const bw = document.createElement("div");
-    bw.className = "ai-biggest-win";
-    bw.innerHTML = `<div class="ai-biggest-win-icon">⚡</div><div class="ai-biggest-win-text"><strong style="color:#ffc857;font-weight:600">Biggest win: </strong>${aiData.biggest_win}</div>`;
-    box.appendChild(bw);
-  }
-
-  // Spend assessment
-  if (aiData.spend_assessment) {
-    const sa = document.createElement("div");
-    sa.className = "ai-spend-note";
-    sa.innerHTML = `<div class="ai-spend-label">Spend Assessment</div>${aiData.spend_assessment}`;
-    box.appendChild(sa);
-  }
-
-  // Consultant Take — folded into AI Analysis box
+  // ── Consultant Take ──
   if (aiData._blueprint && aiData._blueprint.description) {
     const ct = document.createElement("div");
     ct.style.cssText = "margin-top:14px;padding-top:14px;border-top:1px solid rgba(78,205,196,0.1)";
@@ -2577,7 +2618,7 @@ function renderMain() {
   const budHint = div("field-hint","used to calculate your actual savings potential");
   const budEstBtn = document.createElement("button");
   budEstBtn.type="button";
-  budEstBtn.style.cssText="display:block;width:100%;background:none;border:none;color:#4ecdc4;font-size:12px;font-family:'DM Mono',monospace;cursor:pointer;padding:10px 0;letter-spacing:.03em;text-align:left;-webkit-tap-highlight-color:rgba(78,205,196,0.15);touch-action:manipulation;min-height:44px;line-height:1";
+  budEstBtn.style.cssText="display:block;width:100%;background:none;border:none;color:#4ecdc4;font-size:12px;font-family:DM Mono,monospace;cursor:pointer;padding:10px 0;letter-spacing:.03em;text-align:left;-webkit-tap-highlight-color:rgba(78,205,196,0.15);touch-action:manipulation;min-height:44px;line-height:1";
   budEstBtn.textContent="→ Estimate from my tools";
   let _lastEstimate = 0; // track what we calculated so we can compare to override
   let _estimateBreakdown = {}; // per-tool estimates at time of click
@@ -2864,8 +2905,8 @@ function renderMain() {
     // Inject AI narrative right after score ring
     if (aiData) {
       // Attach blueprint so consultant take renders inside the AI box
-      if (r.blueprint && r.blueprint.description && r.blueprint !== BLUEPRINTS["default"]) {
-        aiData._blueprint = r.blueprint;
+      if (result.blueprint && result.blueprint.description && result.blueprint !== BLUEPRINTS["default"]) {
+        aiData._blueprint = result.blueprint;
       }
       const _rb2 = document.getElementById("result-box");
       const _ring = _rb2?.querySelector(".score-ring");
@@ -2991,26 +3032,26 @@ function renderMetrics(filterIndustry) {
   const hero=div(null);
   hero.innerHTML=`
     <div style="margin-bottom:6px">
-      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:700;color:#f0ece4">Stack</span><span style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:#ffc857;letter-spacing:.02em">Rankings</span>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:700;color:#f0ece4">Stack</span><span style="font-family:DM Mono,monospace;font-size:28px;font-weight:500;color:#ffc857;letter-spacing:.02em">Rankings</span>
     </div>
     <p style="color:#7a7670;font-size:13px;line-height:1.7;max-width:540px;margin-bottom:6px">
       Real data from real stacks. No vendor payments. No fake reviews. Just AI-analyzed patterns from every stack submitted to StackSwap.
     </p>
     <div style="display:flex;gap:20px;margin-top:16px;flex-wrap:wrap">
       <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#ffc857;letter-spacing:.02em">${sessionMetrics.count}</div>
+        <div style="font-family:DM Mono,monospace;font-size:26px;font-weight:500;color:#ffc857;letter-spacing:.02em">${sessionMetrics.count}</div>
         <div style="font-size:10px;color:#5a5650;text-transform:uppercase;letter-spacing:.1em">Stacks Analyzed</div>
       </div>
       <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#4ecdc4;letter-spacing:.02em">$${sessionMetrics.totalSavings.toLocaleString()}</div>
+        <div style="font-family:DM Mono,monospace;font-size:26px;font-weight:500;color:#4ecdc4;letter-spacing:.02em">$${sessionMetrics.totalSavings.toLocaleString()}</div>
         <div style="font-size:10px;color:#5a5650;text-transform:uppercase;letter-spacing:.1em">Savings Identified</div>
       </div>
       <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#ff9090;letter-spacing:.02em">${sessionMetrics.cuts.length}</div>
+        <div style="font-family:DM Mono,monospace;font-size:26px;font-weight:500;color:#ff9090;letter-spacing:.02em">${sessionMetrics.cuts.length}</div>
         <div style="font-size:10px;color:#5a5650;text-transform:uppercase;letter-spacing:.1em">Tools Flagged</div>
       </div>
       <div style="text-align:center">
-        <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#c8c4bc;letter-spacing:.02em">${Object.keys(sessionMetrics.byIndustry).length}</div>
+        <div style="font-family:DM Mono,monospace;font-size:26px;font-weight:500;color:#c8c4bc;letter-spacing:.02em">${Object.keys(sessionMetrics.byIndustry).length}</div>
         <div style="font-size:10px;color:#5a5650;text-transform:uppercase;letter-spacing:.1em">Industries</div>
       </div>
     </div>`;
@@ -3069,7 +3110,7 @@ function renderMetrics(filterIndustry) {
   industries.forEach(ind=>{
     const t=el("button",null,ind);
     const isActive=ind===active;
-    t.style.cssText=`background:${isActive?"rgba(255,200,87,0.15)":"rgba(255,255,255,0.04)"};border:1px solid ${isActive?"rgba(255,200,87,0.5)":"rgba(255,255,255,0.1)"};border-radius:20px;padding:6px 14px;font-size:12px;color:${isActive?"#ffc857":"#7a7670"};cursor:pointer;font-family:'DM Mono',monospace`;
+    t.style.cssText=`background:${isActive?"rgba(255,200,87,0.15)":"rgba(255,255,255,0.04)"};border:1px solid ${isActive?"rgba(255,200,87,0.5)":"rgba(255,255,255,0.1)"};border-radius:20px;padding:6px 14px;font-size:12px;color:${isActive?"#ffc857":"#7a7670"};cursor:pointer;font-family:DM Mono,monospace`;
     t.addEventListener("click",()=>renderMetrics(ind==="All"?null:ind));
     tabWrap.appendChild(t);
   });
