@@ -106,44 +106,66 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .industry-card-val{font-size:12px;font-weight:600}
 
 /* LOCK GATE */
-.lock-overlay{position:relative}
-.lock-blur{filter:blur(4px);pointer-events:none;user-select:none;opacity:.4}
-.lock-gate{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10}
-.lock-card{background:rgba(15,14,19,0.95);border:1px solid rgba(78,205,196,0.2);border-radius:12px;
-  padding:28px 32px;text-align:center;max-width:340px;backdrop-filter:blur(8px)}
-.lock-icon{font-size:28px;margin-bottom:12px}
-.lock-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
-.lock-desc{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px}
-.lock-tier{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--teal);
-  background:rgba(78,205,196,0.08);border:1px solid rgba(78,205,196,0.2);border-radius:20px;
-  padding:4px 12px;margin-bottom:16px;letter-spacing:.1em;text-transform:uppercase}
-.lock-btn{display:block;width:100%;padding:11px;border-radius:6px;font-size:13px;font-weight:700;
-  font-family:'DM Mono',monospace;cursor:pointer;text-decoration:none;text-align:center;
-  letter-spacing:.04em;transition:all .2s;background:var(--teal);color:#0f0e13;border:none}
-.lock-btn:hover{opacity:.9}
-.lock-free-note{font-size:11px;color:var(--dim);margin-top:10px}
+/* INDUSTRY PREVIEW (blurred, no lock card) */
+.industry-preview-wrap{position:relative;overflow:hidden;border-radius:12px;margin-bottom:0}
+.industry-grid-blur{filter:blur(5px);pointer-events:none;user-select:none;opacity:.35;transform:scale(1.02)}
+
+/* PRO SECTION */
+.pro-section{position:relative;margin:0 0 40px;overflow:hidden;border-radius:16px;
+  background:rgba(78,205,196,0.03);border:1px solid rgba(78,205,196,0.18)}
+.pro-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(78,205,196,0.6),transparent)}
+.pro-section::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(78,205,196,0.07) 0%,transparent 70%)}
+.pro-charts-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.pro-chart-bar{position:absolute;bottom:0;border-radius:3px 3px 0 0;opacity:.06;background:var(--teal)}
+.pro-content{position:relative;z-index:1;padding:52px 40px 48px;display:flex;align-items:center;
+  gap:48px;flex-wrap:wrap}
+.pro-left{flex:1;min-width:260px}
+.pro-badge-row{display:inline-flex;align-items:center;gap:8px;background:rgba(78,205,196,0.08);
+  border:1px solid rgba(78,205,196,0.22);border-radius:20px;padding:5px 14px;margin-bottom:20px}
+.pro-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+.pro-badge-txt{font-size:10px;letter-spacing:.18em;color:var(--teal);text-transform:uppercase;font-weight:600}
+.pro-headline{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(22px,3.5vw,32px);font-weight:800;
+  color:var(--text);letter-spacing:-.02em;line-height:1.1;margin-bottom:12px}
+.pro-headline span{color:var(--teal)}
+.pro-sub{font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:24px;max-width:400px}
+.pro-features{display:flex;flex-direction:column;gap:8px;margin-bottom:0}
+.pro-feat{font-size:12px;color:rgba(78,205,196,0.85);font-family:'DM Mono',monospace;
+  display:flex;align-items:center;gap:8px}
+.pro-feat::before{content:'→';color:var(--teal);font-size:11px}
+.pro-right{flex-shrink:0;width:100%;max-width:340px}
+.pro-waitlist-box{background:rgba(15,14,19,0.7);backdrop-filter:blur(16px);
+  border:1px solid rgba(78,205,196,0.2);border-radius:12px;padding:28px 28px 24px}
+.pro-waitlist-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:10px;font-weight:600;font-family:'DM Mono',monospace}
+.pro-waitlist-headline{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;
+  color:var(--text);letter-spacing:-.01em;margin-bottom:6px}
+.pro-waitlist-sub{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.7}
+.pro-waitlist-form{display:flex;flex-direction:column;gap:8px}
+.pro-waitlist-input{width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(78,205,196,0.2);border-radius:7px;padding:11px 14px;
+  font-size:13px;color:var(--text);outline:none;font-family:-apple-system,sans-serif;transition:border-color .2s}
+.pro-waitlist-input::placeholder{color:var(--dim)}
+.pro-waitlist-input:focus{border-color:rgba(78,205,196,0.5)}
+.pro-waitlist-btn{width:100%;padding:12px;border-radius:7px;background:var(--teal);color:#0f0e13;
+  border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;
+  letter-spacing:.05em;transition:opacity .2s}
+.pro-waitlist-btn:hover{opacity:.88}
+.pro-waitlist-success{display:none;font-size:13px;color:var(--teal);text-align:center;
+  padding:10px 0;font-family:'DM Mono',monospace;letter-spacing:.03em}
+.pro-waitlist-note{font-size:11px;color:var(--dim);margin-top:10px;text-align:center}
+
+/* FADE IN ANIMATION */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes barPulse{0%,100%{opacity:.06}50%{opacity:.13}}
+.pro-section{animation:fadeUp .7s ease both;animation-delay:.2s}
 
 /* METHODOLOGY */
 .method-box{background:rgba(255,255,255,0.015);border:1px solid var(--border);border-radius:8px;
   padding:20px 24px;margin-top:40px}
 .method-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;font-weight:600}
 .method-text{font-size:11px;color:var(--dim);line-height:1.8}
-
-/* UPGRADE CTA BANNER */
-.upgrade-banner{background:rgba(78,205,196,0.05);border:1px solid rgba(78,205,196,0.15);
-  border-radius:12px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;
-  gap:20px;flex-wrap:wrap;margin:40px 0}
-.upgrade-banner-left h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px}
-.upgrade-banner-left p{font-size:12px;color:var(--muted);line-height:1.6;max-width:480px}
-.upgrade-banner-right{display:flex;flex-direction:column;gap:8px;flex-shrink:0}
-.upgrade-btn-primary{padding:11px 22px;border-radius:6px;background:var(--teal);color:#0f0e13;
-  font-size:13px;font-weight:700;font-family:'DM Mono',monospace;text-decoration:none;
-  border:none;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;white-space:nowrap}
-.upgrade-btn-primary:hover{opacity:.9}
-.upgrade-btn-sec{padding:10px 22px;border-radius:6px;background:transparent;color:var(--muted);
-  font-size:12px;font-family:'DM Mono',monospace;text-decoration:none;
-  border:1px solid var(--border);cursor:pointer;letter-spacing:.04em;transition:all .2s;text-align:center}
-.upgrade-btn-sec:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
 
 /* FOOTER */
 footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-index:1}
@@ -191,7 +213,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
     <p class="signal-sub">Aggregate trends from anonymized stack submissions. The tools companies are actually using, leaving, and replacing — by industry. Updated as new analyses are submitted.</p>
     <div class="signal-disclaimer">
       <span>🔒</span>
-      <span><strong>Free tier:</strong> Aggregate data only. Industry filtering, time slicing, and segmentation require <a href="intelligence.html" style="color:var(--teal);text-decoration:none">Intelligence access</a>.</span>
+      <span><strong>Free tier:</strong> Aggregate data only. Industry filtering, time slicing, and segmentation available with StackSignal Pro — <a href="#industry-lock" style="color:var(--teal);text-decoration:none">join the waitlist</a>.</span>
     </div>
   </div>
 
@@ -270,29 +292,54 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
     <div class="sec-head-sub">Aggregate snapshot per industry · Full filtering available with Intelligence access</div>
   </div>
 
-  <div class="lock-overlay">
-    <div class="industry-grid lock-blur" id="industry-grid"></div>
-    <div class="lock-gate" id="industry-lock">
-      <div class="lock-card">
-        <div class="lock-icon">📊</div>
-        <div class="lock-title">StackSignal Pro</div>
-        <div class="lock-desc">Filter by industry, team size, and time period. See which tools are winning and losing in your specific market.</div>
-        <div class="lock-tier">Early Access — Coming Soon</div>
-        <a href="#signal-waitlist" class="lock-btn">Get Early Access →</a>
-        <div class="lock-free-note">Or <a href="analyze.html" style="color:var(--teal);text-decoration:none">run a free analysis</a> to contribute to the dataset</div>
-      </div>
-    </div>
+  <!-- BLURRED INDUSTRY PREVIEW -->
+  <div class="industry-preview-wrap">
+    <div class="industry-grid industry-grid-blur" id="industry-grid"></div>
   </div>
 
-  <!-- UPGRADE BANNER -->
-  <div class="upgrade-banner">
-    <div class="upgrade-banner-left">
-      <h3>Go deeper with StackSignal Pro</h3>
-      <p>Filter every chart by industry, team size, and time period. Export to CSV. See switching velocity trends. Track which categories are growing vs. contracting.</p>
+  <!-- STACKSIGNAL PRO SECTION -->
+  <div class="pro-section" id="industry-lock">
+    <!-- animated background bars for visual texture -->
+    <div class="pro-charts-bg" aria-hidden="true">
+      <div class="pro-chart-bar" style="left:5%;width:32px;height:55%;animation:barPulse 3.2s ease-in-out infinite"></div>
+      <div class="pro-chart-bar" style="left:12%;width:28px;height:72%;animation:barPulse 2.8s ease-in-out infinite .4s"></div>
+      <div class="pro-chart-bar" style="left:18%;width:36px;height:41%;animation:barPulse 3.5s ease-in-out infinite .2s"></div>
+      <div class="pro-chart-bar" style="left:25%;width:30px;height:88%;animation:barPulse 2.6s ease-in-out infinite .6s"></div>
+      <div class="pro-chart-bar" style="left:32%;width:24px;height:60%;animation:barPulse 3.1s ease-in-out infinite .1s"></div>
+      <div class="pro-chart-bar" style="right:5%;width:32px;height:65%;animation:barPulse 2.9s ease-in-out infinite .3s"></div>
+      <div class="pro-chart-bar" style="right:12%;width:28px;height:48%;animation:barPulse 3.3s ease-in-out infinite .5s"></div>
+      <div class="pro-chart-bar" style="right:20%;width:36px;height:80%;animation:barPulse 2.7s ease-in-out infinite .2s"></div>
+      <div class="pro-chart-bar" style="right:28%;width:24px;height:55%;animation:barPulse 3.0s ease-in-out infinite .7s"></div>
     </div>
-    <div class="upgrade-banner-right">
-      <a href="#signal-waitlist" class="upgrade-btn-primary">Get Early Access →</a>
-      <a href="analyze.html" class="upgrade-btn-sec">Run Free Analysis</a>
+    <div class="pro-content">
+      <div class="pro-left">
+        <div class="pro-badge-row">
+          <div class="pro-badge-dot"></div>
+          <span class="pro-badge-txt">StackSignal Pro — Early Access</span>
+        </div>
+        <div class="pro-headline">The full picture,<br><span>by your industry.</span></div>
+        <p class="pro-sub">The free dashboard shows you what's trending across all submissions. Pro lets you slice every chart by industry, team size, and time period — so you see exactly what companies like yours are doing.</p>
+        <div class="pro-features">
+          <div class="pro-feat">Filter every chart by industry &amp; team size</div>
+          <div class="pro-feat">Switching velocity trends over time</div>
+          <div class="pro-feat">Track which categories are growing vs. contracting</div>
+          <div class="pro-feat">CSV export for any dataset</div>
+          <div class="pro-feat">Early access pricing locked in at signup</div>
+        </div>
+      </div>
+      <div class="pro-right">
+        <div class="pro-waitlist-box">
+          <div class="pro-waitlist-label">Get Early Access</div>
+          <div class="pro-waitlist-headline">Join the waitlist — be first in.</div>
+          <div class="pro-waitlist-sub">StackSignal Pro launches soon. Drop your email to get notified first.</div>
+          <div class="pro-waitlist-form" id="proWaitlistForm">
+            <input type="email" class="pro-waitlist-input" placeholder="your@email.com" id="proSignalEmail"/>
+            <button class="pro-waitlist-btn" onclick="submitProWaitlist()">Notify Me →</button>
+          </div>
+          <div class="pro-waitlist-success" id="proSignalSuccess">✓ You're on the list. We'll be in touch.</div>
+          <div class="pro-waitlist-note">No spam. One email when Pro launches.</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -305,28 +352,17 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 </div>
 
 
-<!-- WAITLIST SECTION -->
-<section id="signal-waitlist" style="padding:80px 0;border-top:1px solid rgba(255,255,255,0.07);position:relative;z-index:1">
-  <div style="max-width:500px;margin:0 auto;padding:0 24px;text-align:center">
-    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:16px;font-family:'DM Mono',monospace">StackSignal Pro</div>
-    <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:12px">Get early access.</h2>
-    <p style="font-size:15px;color:var(--muted);line-height:1.75;margin-bottom:32px">Industry filtering, switching velocity, team size segmentation, and CSV export. We'll notify you the moment it launches.</p>
-    <div style="display:flex;gap:8px;max-width:420px;margin:0 auto 12px" id="signal-waitlist-form">
-      <input type="email" id="signalEmail" placeholder="your@email.com" style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(78,205,196,0.25);border-radius:7px;padding:11px 14px;font-size:14px;color:var(--text);outline:none;font-family:var(--prose)" />
-      <button onclick="submitSignalWaitlist()" style="padding:11px 20px;border-radius:7px;background:var(--teal);color:#0f0e13;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.04em;white-space:nowrap;transition:opacity .2s">Notify Me →</button>
-    </div>
-    <div id="signalWaitlistSuccess" style="display:none;font-size:14px;color:var(--teal);padding:8px 0;font-family:'DM Mono',monospace">✓ You're on the list.</div>
-    <div style="font-size:12px;color:var(--dim)">No spam. One email when StackSignal Pro launches.</div>
-  </div>
+<!-- WAITLIST ANCHOR (kept for any external links) -->
+<div id="signal-waitlist"></div>
 </section>
 
 <script>
-async function submitSignalWaitlist() {
-  const input = document.getElementById('signalEmail');
+async function submitProWaitlist() {
+  const input = document.getElementById('proSignalEmail');
   const email = input.value.trim();
   if (!email || !email.includes('@')) {
     input.style.borderColor = 'rgba(255,107,107,0.5)';
-    setTimeout(() => input.style.borderColor = 'rgba(78,205,196,0.25)', 1500);
+    setTimeout(() => input.style.borderColor = 'rgba(78,205,196,0.2)', 1500);
     return;
   }
   try {
@@ -341,8 +377,8 @@ async function submitSignalWaitlist() {
       })
     });
   } catch(e) {}
-  document.getElementById('signal-waitlist-form').style.display = 'none';
-  document.getElementById('signalWaitlistSuccess').style.display = 'block';
+  document.getElementById('proWaitlistForm').style.display = 'none';
+  document.getElementById('proSignalSuccess').style.display = 'block';
 }
 </script>
 
