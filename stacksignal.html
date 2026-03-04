@@ -48,7 +48,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   letter-spacing:-.03em;color:var(--text);margin-bottom:12px}
 .signal-title span{color:var(--teal)}
 .signal-sub{font-size:13px;color:var(--muted);line-height:1.7;max-width:560px;margin-bottom:24px}
-.signal-disclaimer{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);
+.signal-disclaimer{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);
   background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:8px 14px}
 .signal-disclaimer strong{color:var(--text)}
 
@@ -71,39 +71,39 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 
 /* SECTION HEADERS */
 .sec-head{margin:36px 0 16px}
-.sec-head-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px}
-.sec-head-sub{font-size:12px;color:var(--dim);line-height:1.5}
+.sec-head-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--text);margin-bottom:6px}
+.sec-head-sub{font-size:15px;color:var(--dim);line-height:1.6}
 .sec-divider{height:1px;background:var(--border);margin:36px 0}
 
 /* DATA GRID */
 .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .data-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
-.data-card-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:18px}
+.data-card-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:18px}
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.bar-rank{font-size:10px;color:var(--dim);width:14px;text-align:right;flex-shrink:0}
-.bar-name{font-size:12px;color:#c8c4bc;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-rank{font-size:12px;color:var(--dim);width:14px;text-align:right;flex-shrink:0}
+.bar-name{font-size:14px;color:#c8c4bc;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar-track{flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px}
 .bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
-.bar-val{font-size:11px;font-weight:600;width:36px;text-align:right;flex-shrink:0}
-.data-note{font-size:10px;color:var(--dim);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px}
+.bar-val{font-size:13px;font-weight:600;width:36px;text-align:right;flex-shrink:0}
+.data-note{font-size:12px;color:var(--dim);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px}
 
 /* EXIT LIST */
-.exit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .exit-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
-.exit-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px}
-.exit-rank{color:var(--dim);width:14px;text-align:right;flex-shrink:0}
-.exit-tool{color:var(--red);flex:1}
-.exit-arrow{color:var(--dim);flex-shrink:0}
-.exit-rep{color:var(--teal);flex:1.2}
+.exit-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:14px;line-height:1.4}
+.exit-rank{color:var(--dim);width:20px;text-align:right;flex-shrink:0;font-size:12px}
+.exit-tool{color:var(--red);min-width:130px;font-weight:500}
+.exit-arrow{color:#ffc857;flex-shrink:0;font-size:16px;font-weight:700}
+.exit-rep{color:var(--teal);flex:1;font-weight:500}
+.exit-no-rep{color:var(--dim);flex:1;font-style:italic}
 
 /* INDUSTRY CARDS */
 .industry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .industry-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:border-color .2s}
 .industry-card:hover{border-color:rgba(78,205,196,0.3)}
-.industry-card-name{font-size:12px;color:var(--teal);font-weight:600;margin-bottom:12px}
+.industry-card-name{font-size:14px;color:var(--teal);font-weight:600;margin-bottom:12px}
 .industry-card-row{display:flex;justify-content:space-between;margin-bottom:6px}
-.industry-card-label{font-size:11px;color:var(--dim)}
-.industry-card-val{font-size:12px;font-weight:600}
+.industry-card-label{font-size:13px;color:var(--dim)}
+.industry-card-val{font-size:14px;font-weight:600}
 
 /* LOCK GATE */
 /* INDUSTRY PREVIEW (blurred, no lock card) */
@@ -181,7 +181,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
   .page-nav{padding:12px 16px}
   .page-nav-links .page-nav-link:not(.active):not(.page-nav-cta){display:none}
   .signal-stats{grid-template-columns:repeat(2,1fr)}
-  .data-grid,.exit-grid{grid-template-columns:1fr}
+  .data-grid{grid-template-columns:1fr}
 }
 
 /* Animations */
@@ -228,6 +228,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
     <a href="analyze.html" class="page-nav-link">StackScan</a>
     <a href="stacksignal.html" class="page-nav-link active">StackSignal</a>
     <a href="pricing.html" class="page-nav-link">Pricing</a>
+    <a href="/knowledge/index.html" class="page-nav-link">Knowledge</a>
     <a href="analyze.html" class="page-nav-cta">Run Free Analysis</a>
   </div>
 </nav>
@@ -301,15 +302,13 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
     <div class="sec-head-sub">Tools being flagged for removal most often — ranked by AI recommendation frequency</div>
   </div>
 
-  <div class="exit-grid">
-    <div class="exit-card">
-      <div class="data-card-label" style="color:var(--red)">Tools Being Cut</div>
-      <div id="exit-list"></div>
+  <div class="exit-card">
+    <div style="display:flex;gap:24px;margin-bottom:18px;font-size:10px;letter-spacing:.18em;font-weight:600;text-transform:uppercase">
+      <span style="color:var(--red);min-width:130px">Being Swapped</span>
+      <span style="color:#ffc857;margin-right:4px">→</span>
+      <span style="color:var(--teal)">Replaced By</span>
     </div>
-    <div class="exit-card">
-      <div class="data-card-label" style="color:var(--teal)">What Replaces Them</div>
-      <div id="replacement-list"></div>
-    </div>
+    <div id="exit-list"></div>
   </div>
 
   <div class="sec-divider"></div>
@@ -516,14 +515,18 @@ function renderBars(containerId, items, color, usePct = true) {
 
 function renderExitList(cuts, reps) {
   const exitEl = document.getElementById('exit-list');
-  const repEl = document.getElementById('replacement-list');
-  if (!exitEl || !repEl) return;
-  exitEl.innerHTML = cuts.map(([tool], i) =>
-    `<div class="exit-row"><span class="exit-rank">${i+1}</span><span class="exit-tool">${tool}</span></div>`
-  ).join('');
-  repEl.innerHTML = cuts.map(([tool]) => {
-    const rep = reps[tool] || '—';
-    return `<div class="exit-row"><span class="exit-rank">→</span><span class="exit-rep">${rep}</span></div>`;
+  if (!exitEl) return;
+  exitEl.innerHTML = cuts.map(([tool], i) => {
+    const rep = reps[tool];
+    const repHtml = rep
+      ? `<span class="exit-rep">${rep}</span>`
+      : `<span class="exit-no-rep">no direct replacement</span>`;
+    return `<div class="exit-row">
+      <span class="exit-rank">${i+1}</span>
+      <span class="exit-tool">${tool}</span>
+      <span class="exit-arrow">→</span>
+      ${repHtml}
+    </div>`;
   }).join('');
 }
 
