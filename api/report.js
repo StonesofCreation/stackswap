@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
     overlaps_found, tools_flagged, top_recommendation
   } = body || {};
 
-  if (!lead_id) return res.status(400).json({ error: "Missing lead_id" });
+  // lead_id optional — seeder runs without it
 
   const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
   if (!SUPABASE_KEY) return res.status(500).json({ error: "SUPABASE_ANON_KEY not set" });
