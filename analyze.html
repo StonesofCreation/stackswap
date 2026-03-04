@@ -71,8 +71,8 @@ h1 .accent{color:#ffc857}
 .result{display:none;background:rgba(255,255,255,0.015);border:1px solid rgba(255,200,87,.15);border-radius:14px;padding:24px 20px;margin-top:24px;animation:fadeUp .4s ease}
 @media(min-width:480px){.result{padding:28px}}
 .res-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05)}
-.res-glow{width:7px;height:7px;border-radius:50%;background:#ffc857;box-shadow:0 0 10px #ffc857;flex-shrink:0}
-.res-lbl{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#ffc857}
+.res-glow{width:9px;height:9px;border-radius:50%;background:#ffc857;box-shadow:0 0 14px #ffc857;flex-shrink:0}
+.res-lbl{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:#f0ece4;letter-spacing:-.01em}
 
 /* Score */
 .score-ring{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:rgba(255,255,255,0.02);border-radius:10px}
@@ -84,8 +84,8 @@ h1 .accent{color:#ffc857}
 .health-fill{height:100%;border-radius:2px;transition:width 1s ease;width:0}
 
 /* Section headers */
-.sec{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9a9690;margin:28px 0 14px;font-weight:600;display:flex;align-items:center;gap:8px}
-.sec::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05)}
+.sec{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;color:#e0dcd4;margin:32px 0 14px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
 
 /* Consultant take */
 .bp-box{background:rgba(255,200,87,0.04);border:1px solid rgba(255,200,87,.12);border-radius:8px;padding:12px 14px;margin-bottom:8px}
@@ -100,9 +100,9 @@ h1 .accent{color:#ffc857}
 .finding-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:5px}
 .finding-left{flex:1;min-width:0}
 .finding-title{font-size:16px;color:#f0ece4;font-weight:600;line-height:1.4;word-break:break-word;font-family:var(--prose)}
-.finding-title .cut{color:#ff9090}
-.finding-title .arrow{color:#3a3830;margin:0 4px}
-.finding-title .keep{color:#4ecdc4}
+.finding-title .cut{color:#ff4d4d;font-weight:700}
+.finding-title .arrow{color:#4a4845;margin:0 5px}
+.finding-title .keep{color:#4ecdc4;font-weight:700}
 .finding-pill{flex-shrink:0;font-size:13px;font-weight:500;color:#ffc857;background:rgba(255,200,87,0.12);border:1px solid rgba(255,200,87,0.3);border-radius:20px;padding:6px 14px;white-space:nowrap;align-self:flex-start;margin-top:2px;font-family:'DM Mono',monospace;letter-spacing:.03em}
 .finding-body{font-size:15px;color:#b0aca8;line-height:1.85;font-family:var(--prose)}
 
@@ -131,7 +131,7 @@ h1 .accent{color:#ffc857}
 .opt-tag{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.2);color:#4ecdc4;border-radius:20px;padding:4px 10px;font-size:12px;font-family:var(--prose)}
 
 .no-issues{font-size:15px;color:#9a9690;line-height:1.8;padding:8px 0;font-family:var(--prose)}
-.red{color:#ff9090;font-weight:500}
+.red{color:#ff4d4d;font-weight:600}
 .teal{color:#4ecdc4;font-weight:500}
 .amber{color:#ffc857;font-weight:600}
 .gray{color:#5a5650}
@@ -183,8 +183,8 @@ h1 .accent{color:#ffc857}
   border-radius:12px;padding:22px 24px;margin-bottom:4px;position:relative;overflow:hidden}
 .ai-narrative::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(78,205,196,0.5),transparent)}
-.ai-narrative-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:#4ecdc4;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ai-narrative-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;
+  color:#4ecdc4;margin-bottom:14px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em}
 .ai-narrative-label::after{content:'';flex:1;height:1px;background:rgba(78,205,196,0.15)}
 .ai-narrative-body{font-size:15px;color:#c8c4bc;line-height:1.85;font-family:var(--prose);margin-bottom:0}
 .ai-priority-note{font-size:13px;color:#7a7670;line-height:1.7;font-family:var(--prose);
@@ -196,11 +196,14 @@ h1 .accent{color:#ffc857}
 .ai-spend-note{font-size:13px;color:#7a7670;font-family:var(--prose);line-height:1.7;
   margin-top:12px;padding-top:12px;border-top:1px solid rgba(78,205,196,0.08)}
 .ai-spend-label{font-size:10px;color:#4ecdc4;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:4px}
-.ai-loading{display:flex;align-items:center;gap:8px;font-size:14px;color:#7a7670;font-family:var(--prose);padding:2px 0}
-.ai-dot{width:6px;height:6px;border-radius:50%;background:#4ecdc4;animation:aiPulse 1.3s ease infinite}
-.ai-dot:nth-child(2){animation-delay:.2s}
-.ai-dot:nth-child(3){animation-delay:.4s}
-@keyframes aiPulse{0%,100%{opacity:.15;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+.ai-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px 24px;text-align:center}
+.ai-loading-dots{display:flex;align-items:center;gap:10px}
+.ai-dot{width:10px;height:10px;border-radius:50%;background:#4ecdc4;animation:aiPulse 1.3s ease infinite}
+.ai-dot:nth-child(2){animation-delay:.2s;background:#ffc857}
+.ai-dot:nth-child(3){animation-delay:.4s;background:#4ecdc4}
+.ai-loading-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#f0ece4;letter-spacing:-.01em}
+.ai-loading-sub{font-size:14px;color:#7a7670;font-family:var(--prose);line-height:1.6;max-width:320px}
+@keyframes aiPulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
 
 /* ── PAGE NAV ── */
 .page-nav{
@@ -1261,6 +1264,131 @@ function markDot(n, done) {
   d.className = "sdot" + (done?" done":"");
 }
 
+
+// ── STACK FLOW DIAGRAM ────────────────────────────────────────────────────────
+// Known integration flows — tool A feeds data into tool B
+const FLOW_CONNECTIONS = [
+  ["Apollo.io","HubSpot"],["Apollo.io","Salesforce"],["Apollo.io","Smartlead"],
+  ["Smartlead","HubSpot"],["Smartlead","Salesforce"],
+  ["AiSDR","HubSpot"],["AiSDR","Salesforce"],
+  ["Clay","Apollo.io"],["Clay","Smartlead"],["Clay","HubSpot"],
+  ["HubSpot","Intercom"],["HubSpot","Slack"],["HubSpot","Stripe"],
+  ["HubSpot","Google Workspace"],["HubSpot","Loom"],["HubSpot","Calendly"],
+  ["Salesforce","Gong"],["Salesforce","Outreach"],["Salesforce","Slack"],
+  ["Salesforce","Tableau"],["Salesforce","Docusign"],
+  ["Intercom","HubSpot"],["Intercom","Slack"],
+  ["Stripe","HubSpot"],["Stripe","Salesforce"],["Stripe","Slack"],
+  ["Docusign","Salesforce"],["Docusign","HubSpot"],
+  ["Paperless Pipeline","Follow Up Boss"],
+  ["Follow Up Boss","Google Workspace"],["Follow Up Boss","Slack"],
+  ["Brokermint","Follow Up Boss"],["Brokermint","Google Workspace"],
+  ["Google Workspace","Slack"],["Google Workspace","HubSpot"],
+  ["Gong","Salesforce"],["Gong","HubSpot"],["Gong","Slack"],
+  ["Zoom","HubSpot"],["Zoom","Salesforce"],["Zoom","Slack"],
+  ["Notion","Slack"],["Notion","Google Workspace"],
+  ["Linear","Slack"],["Linear","GitHub"],
+  ["Zapier","HubSpot"],["Zapier","Salesforce"],["Zapier","Slack"],
+  ["Calendly","HubSpot"],["Calendly","Google Workspace"],
+  ["Asana","Slack"],["Asana","Google Workspace"],
+  ["ClickUp","Slack"],["ClickUp","Google Workspace"],
+];
+
+function renderStackFlow(container, tools, conflicts) {
+  if (!tools || tools.length === 0) return;
+
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "margin-top:12px;padding:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow-x:auto";
+
+  // Find connections within this stack
+  const stackLower = tools.map(t => t.toLowerCase());
+  const findTool = (name) => tools.find(t => t.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(t.toLowerCase()));
+
+  const connections = FLOW_CONNECTIONS.filter(([a, b]) => {
+    return tools.some(t => t.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(t.toLowerCase())) &&
+           tools.some(t => t.toLowerCase().includes(b.toLowerCase()) || b.toLowerCase().includes(t.toLowerCase()));
+  }).map(([a, b]) => [findTool(a), findTool(b)]).filter(([a,b]) => a && b && a !== b);
+
+  // Build adjacency to find connected order
+  const connected = new Set();
+  connections.forEach(([a,b]) => { connected.add(a); connected.add(b); });
+  const isolated = tools.filter(t => !connected.has(t));
+
+  // Render connected tools as flow chain
+  const conflictToolNames = conflicts.flatMap(ic => ic.tools || []);
+  const isConflict = (t) => conflictToolNames.some(c => t.toLowerCase().includes(c.toLowerCase()));
+
+  // Flow nodes
+  const flowDiv = document.createElement("div");
+  flowDiv.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:"+(isolated.length?"16px":"0")+";";
+  
+  const renderedNodes = new Set();
+  const renderNode = (tool) => {
+    if (renderedNodes.has(tool)) return null;
+    renderedNodes.add(tool);
+    const node = document.createElement("div");
+    const conflict = isConflict(tool);
+    node.style.cssText = `display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap;background:${conflict?'rgba(255,77,77,0.08)':'rgba(78,205,196,0.06)'};border:1px solid ${conflict?'rgba(255,77,77,0.25)':'rgba(78,205,196,0.2)'};color:${conflict?'#ff4d4d':'#4ecdc4'}`;
+    if (conflict) node.title = "Integration conflict detected";
+    node.textContent = tool;
+    return node;
+  };
+
+  // Render in flow order — try to chain connected tools
+  const rendered = new Set();
+  const chains = [];
+  connections.forEach(([a, b]) => {
+    // Find or create chain containing a
+    let chain = chains.find(ch => ch[ch.length-1] === a);
+    if (!chain) { chain = [a]; chains.push(chain); }
+    if (!chain.includes(b)) chain.push(b);
+  });
+  // Flatten chains, remove dupes
+  const orderedTools = [];
+  chains.forEach(ch => ch.forEach(t => { if (!orderedTools.includes(t)) orderedTools.push(t); }));
+  tools.forEach(t => { if (!orderedTools.includes(t)) orderedTools.push(t); }); // append any remaining
+
+  orderedTools.forEach((tool, i) => {
+    const node = renderNode(tool);
+    if (!node) return;
+    flowDiv.appendChild(node);
+    // Add arrow if this tool connects to the next one
+    const nextTool = orderedTools[i+1];
+    if (nextTool && connections.some(([a,b]) => a === tool && b === nextTool)) {
+      const arrow = document.createElement("span");
+      arrow.style.cssText = "color:#3a3830;font-size:14px;font-family:'DM Mono',monospace;flex-shrink:0";
+      arrow.innerHTML = "→";
+      flowDiv.appendChild(arrow);
+    }
+  });
+
+  wrap.appendChild(flowDiv);
+
+  // Isolated tools (no connections in this stack)
+  if (isolated.length > 0) {
+    const isoLabel = document.createElement("div");
+    isoLabel.style.cssText = "font-size:10px;color:#5a5650;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-family:'DM Mono',monospace";
+    isoLabel.textContent = "No detected integrations";
+    wrap.appendChild(isoLabel);
+    const isoRow = document.createElement("div");
+    isoRow.style.cssText = "display:flex;flex-wrap:wrap;gap:6px";
+    isolated.forEach(tool => {
+      const tag = document.createElement("div");
+      tag.style.cssText = "padding:4px 10px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670";
+      tag.textContent = tool;
+      isoRow.appendChild(tag);
+    });
+    wrap.appendChild(isoRow);
+  }
+
+  // Legend
+  const legend = document.createElement("div");
+  legend.style.cssText = "margin-top:12px;font-size:10px;color:#5a5650;font-family:'DM Mono',monospace;letter-spacing:.03em";
+  legend.innerHTML = "<span style='color:rgba(78,205,196,0.5)'>teal</span> = native integration · <span style='color:rgba(255,77,77,0.6)'>red</span> = integration conflict · gray = unconnected · → = data flow direction";
+  wrap.appendChild(legend);
+
+  container.appendChild(wrap);
+}
+
 // ── RENDER RESULT ─────────────────────────────────────────────────────────────
 function renderResult(r) {
   const box = document.getElementById("result-box");
@@ -1462,9 +1590,7 @@ function renderResult(r) {
 
   // ── Optimized stack ──
   box.appendChild(div("sec","Your optimized stack"));
-  const ot=div("opt-tags");
-  r.optimized.forEach(t=>ot.appendChild(span("opt-tag",t)));
-  box.appendChild(ot);
+  renderStackFlow(box, r.optimized, r.integrationConflicts || []);
 
 
   // ── StackAudit upgrade CTA ─────────────────────────────────────────────
@@ -1635,7 +1761,7 @@ function renderMain() {
 
   // Header
   const hdr = div("header");
-  hdr.innerHTML=`<div class="badge"><div class="bdot"></div><span class="btxt">Free Instant Stack Analysis</span></div><h1><span style="color:var(--text,#f0ece4)">Stack</span><span class="accent">Scan</span></h1><p class="sub">Tell us what you use. We'll tell you what you don't need.</p>`;
+  hdr.innerHTML=`<div class="badge"><div class="bdot"></div><span class="btxt">Free Instant Stack Analysis</span></div><h1><span style="color:var(--text,#f0ece4)">Stack</span><span class="accent">Scan</span></h1><p class="sub">Your stack, analyzed. Overlaps, waste, and upgrades — in 60 seconds.</p>`;
   wrap.appendChild(hdr);
 
   // Step 1 — Tools
@@ -1678,7 +1804,14 @@ function renderMain() {
   function doAdd(name){
     const n=name.trim(); if(!n||selectedTools.includes(n)){toolInput.value="";suggBox.classList.remove("show");return;}
     selectedTools.push(n); toolInput.value=""; suggBox.classList.remove("show");
-    if(!TOOLS.includes(n)&&!extraTools.includes(n)) extraTools.push(n);
+    if(!TOOLS.includes(n)&&!extraTools.includes(n)){
+      extraTools.push(n);
+      // Save unknown tool to DB for future autocomplete improvement
+      fetch('/api/tools', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ tool_name: n, source: 'user_input' })
+      }).catch(()=>{});
+    }
     renderTags(); updateCTA(); markDot(1,selectedTools.length>0);
   }
   toolInput.addEventListener("input",()=>showSugg(getSugg(toolInput.value)));
@@ -1703,11 +1836,31 @@ function renderMain() {
   indW.appendChild(indSel);
   indW.appendChild(div("field-hint","helps AI apply industry-specific knowledge to your stack"));
   g2.appendChild(indW);
-  // Budget
+  // Budget — with auto-estimate
   const budW = div("field-wrap"); budW.innerHTML='<label class="lbl">Monthly SaaS Spend ($)</label>';
   const budIn = el("input","field"); budIn.type="text"; budIn.inputMode="numeric"; budIn.pattern="[0-9]*"; budIn.placeholder="e.g. 2500"; budIn.id="bud";
+  const budHint = div("field-hint","used to calculate your actual savings potential");
+  const budEstBtn = document.createElement("button");
+  budEstBtn.type="button";
+  budEstBtn.style.cssText="background:none;border:none;color:#4ecdc4;font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;padding:4px 0;letter-spacing:.03em;text-align:left";
+  budEstBtn.textContent="→ Estimate from my tools";
+  budEstBtn.addEventListener("click", () => {
+    let est = 0;
+    selectedTools.forEach(t => {
+      const k = Object.keys(PRICING).find(k => t.toLowerCase().includes(k.toLowerCase()));
+      if (k) est += PRICING[k];
+    });
+    if (est > 0) {
+      budIn.value = est;
+      budHint.textContent = "\u2713 Estimated from your tool list — adjust if you have negotiated rates";
+      budHint.style.color = "#4ecdc4";
+    } else {
+      budHint.textContent = "Couldn't estimate — try adding more tools first";
+    }
+  });
   budW.appendChild(budIn);
-  budW.appendChild(div("field-hint","used to calculate your actual savings potential"));
+  budW.appendChild(budEstBtn);
+  budW.appendChild(budHint);
   g2.appendChild(budW);
   c2.appendChild(g2);
   indSel.addEventListener("change",()=>markDot(2,!!(indSel.value)));
@@ -1885,7 +2038,7 @@ function renderMain() {
     const _loader = document.createElement("div");
     _loader.id = "ai-narrative-slot";
     _loader.className = "ai-narrative";
-    _loader.innerHTML = `<div class="ai-narrative-label">AI Analysis</div><div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:6px">Claude is reading your stack...</span></div>`;
+    _loader.innerHTML = `<div class="ai-loading"><div class="ai-loading-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div><div class="ai-loading-title">Claude is analyzing your stack</div><div class="ai-loading-sub">Reading overlaps, pricing signals, and integration patterns across your tools...</div></div>`;
     if (_ring && _ring.nextSibling) {
       _rb.insertBefore(_loader, _ring.nextSibling);
     } else if (_rb) {
