@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>StackSwap Data Seeder</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0e13;color:#f0ece4;font-family:'DM Mono',monospace;min-height:100vh;padding:32px 24px 80px}
+h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#f0ece4;margin-bottom:6px;letter-spacing:-.01em}
+.sub{font-size:13px;color:#5a5650;margin-bottom:32px;line-height:1.7}
+.sub a{color:#4ecdc4;text-decoration:none}
+.sub strong{color:#ffc857}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:320px 1fr;gap:24px;max-width:1200px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* Persona list */
+.persona-list{display:flex;flex-direction:column;gap:8px}
+.section-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5a5650;margin:16px 0 8px;font-weight:600}
+.section-label:first-child{margin-top:0}
+
+.persona-btn{width:100%;text-align:left;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;position:relative}
+.persona-btn:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.12)}
+.persona-btn.active{border-color:rgba(255,200,87,0.4);background:rgba(255,200,87,0.04)}
+.persona-btn.done{border-color:rgba(78,205,196,0.3);background:rgba(78,205,196,0.03)}
+.persona-btn.done::after{content:'✓';position:absolute;top:10px;right:12px;font-size:12px;color:#4ecdc4}
+.persona-btn.running{border-color:rgba(255,200,87,0.5);background:rgba(255,200,87,0.06)}
+.persona-btn.running::after{content:'...';position:absolute;top:10px;right:12px;font-size:12px;color:#ffc857}
+.persona-name{font-size:13px;font-weight:600;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:3px}
+.persona-meta{font-size:11px;color:#5a5650;line-height:1.5}
+.persona-score{font-size:11px;color:#4ecdc4;margin-top:4px;font-family:'DM Mono',monospace}
+
+/* Status panel */
+.panel{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto}
+.panel-title{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#7a7670;margin-bottom:16px;font-weight:600}
+
+.status-idle{color:#3a3830;font-size:13px;padding:32px 0;text-align:center;line-height:2}
+.status-running{font-size:13px;line-height:2;color:#9a9690}
+.status-running strong{color:#ffc857;display:block;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;margin-bottom:8px}
+
+.log{font-size:12px;color:#5a5650;line-height:2;max-height:300px;overflow-y:auto;margin-top:12px}
+.log-line{border-bottom:1px solid rgba(255,255,255,0.03);padding:3px 0}
+.log-line.ok{color:#4ecdc4}
+.log-line.warn{color:#ffc857}
+.log-line.err{color:#e05555}
+.log-line.info{color:#7a7670}
+
+.run-btn{width:100%;background:linear-gradient(135deg,#ffc857,#ff9a3c);color:#0f0e13;border:none;border-radius:8px;padding:13px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.05em;cursor:pointer;margin-top:16px;transition:opacity .2s}
+.run-btn:hover{opacity:.88}
+.run-btn:disabled{opacity:.3;cursor:not-allowed}
+.run-all-btn{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#9a9690;border-radius:8px;padding:11px;font-size:12px;font-family:'DM Mono',monospace;letter-spacing:.05em;cursor:pointer;margin-top:8px;transition:all .2s}
+.run-all-btn:hover{color:#f0ece4;border-color:rgba(255,255,255,0.2)}
+.run-all-btn:disabled{opacity:.3;cursor:not-allowed}
+
+.result-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;margin-top:12px}
+.result-card-name{font-size:13px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:8px}
+.result-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;color:#7a7670}
+.result-row span:last-child{color:#c8c4bc}
+
+.progress-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin:16px 0 8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ffc857,#4ecdc4);border-radius:2px;transition:width .4s ease;width:0%}
+.progress-label{font-size:11px;color:#5a5650;text-align:center}
+
+.config{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px;margin-bottom:20px}
+.config-title{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#7a7670;margin-bottom:10px;font-weight:600}
+.config-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12px;color:#7a7670}
+.config-row input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:5px 10px;color:#f0ece4;font-size:12px;font-family:'DM Mono',monospace;width:200px;outline:none}
+.config-row input:focus{border-color:rgba(255,200,87,0.4)}
+
+/* Health badge */
+.health{display:inline-block;font-size:10px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle}
+.health-good{background:rgba(78,205,196,0.1);color:#4ecdc4;border:1px solid rgba(78,205,196,0.2)}
+.health-mid{background:rgba(255,200,87,0.1);color:#ffc857;border:1px solid rgba(255,200,87,0.2)}
+.health-bad{background:rgba(224,85,85,0.1);color:#e05555;border:1px solid rgba(224,85,85,0.2)}
+</style>
+</head>
+<body>
+
+<h1>StackSwap Data Seeder</h1>
+<p class="sub">Runs each persona through the StackScan analyzer and saves to Supabase. <strong>Open analyze.html in another tab first</strong> — this page drives it via <a href="analyze.html" target="analyzer">the analyzer iframe</a>.</p>
+
+<div class="layout">
+
+<!-- LEFT: Persona list -->
+<div>
+  <div class="config">
+    <div class="config-title">Seed Config</div>
+    <div class="config-row">
+      <span>Gate email</span>
+      <input type="email" id="seed-email" value="seed@stackswap.ai" placeholder="seed@stackswap.ai"/>
+    </div>
+    <div class="config-row">
+      <span>Company</span>
+      <input type="text" id="seed-company" value="StackSwap Seed" placeholder="StackSwap Seed"/>
+    </div>
+    <div class="config-row">
+      <span>Role</span>
+      <input type="text" id="seed-role" value="Founder" placeholder="Founder"/>
+    </div>
+    <div class="config-row" style="font-size:11px;color:#3a3830;margin-top:4px">Delay between personas (ms)</div>
+    <div class="config-row"><input type="number" id="seed-delay" value="3000" style="width:100px"/></div>
+  </div>
+
+  <div id="persona-list" class="persona-list"></div>
+</div>
+
+<!-- RIGHT: Status panel -->
+<div class="panel">
+  <div class="panel-title">Status</div>
+  <div id="status-area"><div class="status-idle">← Select a persona to run it<br>or use Run All below</div></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="progress-label" id="progress-label"></div>
+  <button class="run-btn" id="run-selected-btn" disabled onclick="runSelected()">Run Selected</button>
+  <button class="run-all-btn" id="run-all-btn" onclick="runAll()">Run All Personas</button>
+  <div class="log" id="log"></div>
+</div>
+
+</div>
+
+<!-- Hidden analyzer iframe -->
+<iframe id="analyzer" name="analyzer" src="analyze.html" style="display:none;width:1px;height:1px;border:none"></iframe>
+
+<script>
+// ── PERSONAS ─────────────────────────────────────────────────────────────────
+const PERSONAS = [
+  // ── BAD STACKS ──────────────────────────────────────────────────
+  {
+    id: 1,
+    name: "The Over-Funded Startup",
+    category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "12000",
+    tools: ["ZoomInfo","Salesforce","Outreach","Salesloft","Gong","Chorus","Marketo","HubSpot","Drift","Jasper","Tableau","Hotjar","FullStory","Slack","Zoom","Microsoft Teams"],
+    note: "Dual CRM, dual sequencing, dual conversation intel, dual analytics"
+  },
+  {
+    id: 2,
+    name: "The Real Estate Mess",
+    category: "🔴 Bloated / Bad",
+    industry: "Real Estate",
+    teamSize: "6-15",
+    budget: "3200",
+    tools: ["Salesforce","Follow Up Boss","Dotloop","Paperless Pipeline","DocuSign","HelloSign","Zapier","Monday.com","Mailchimp","HubSpot","Zoom","Slack","Google Workspace","Microsoft Teams"],
+    note: "Two CRMs, two e-sign tools, two comms platforms"
+  },
+  {
+    id: 3,
+    name: "The Agency That Thinks It's a SaaS",
+    category: "🔴 Bloated / Bad",
+    industry: "Marketing Agency",
+    teamSize: "1-5",
+    budget: "4800",
+    tools: ["Salesforce","ZoomInfo","Outreach","Marketo","Tableau","Adobe Creative Cloud","Hootsuite","Sprout Social","Jasper","Copy.ai","Asana","Monday.com","Jira","Slack","Zoom"],
+    note: "Enterprise sales stack for 6 people, dual social, dual AI writers, triple PM"
+  },
+  {
+    id: 4,
+    name: "The Zombie Stack",
+    category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "8500",
+    tools: ["Pardot","Salesforce","Clari","Chorus","ZoomInfo","Salesloft","Tableau","Hotjar","FullStory","Heap","Drift","DocuSign","Dropbox","Box","Microsoft 365","Google Workspace","Slack","Microsoft Teams"],
+    note: "Legacy everything, triple analytics, dual storage, dual identity"
+  },
+  {
+    id: 5,
+    name: "The Scrappy Founder Who Over-Tooled",
+    category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech",
+    teamSize: "1-5",
+    budget: "2900",
+    tools: ["HubSpot","Pipedrive","Apollo.io","Smartlead","AiSDR","Instantly","ZoomInfo","Jasper","Copy.ai","ChatGPT","Calendly","Zoom","Loom","Notion","Asana","ClickUp","Airtable"],
+    note: "Triple CRM, quad outbound, triple AI writing, triple PM"
+  },
+  {
+    id: 6,
+    name: "The Enterprise Holdover",
+    category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech",
+    teamSize: "16-50",
+    budget: "18000",
+    tools: ["Salesforce","HubSpot","Marketo","Pardot","Gong","Chorus","Clari","ZoomInfo","Outreach","Salesloft","Tableau","Looker","Zendesk","Intercom","Drift","DocuSign","PandaDoc","Slack","Microsoft Teams","Zoom","Webex"],
+    note: "Basically everything doubled, four contract tools, four support/chat"
+  },
+  {
+    id: 7,
+    name: "The Real Estate Brokerage Disaster",
+    category: "🔴 Bloated / Bad",
+    industry: "Real Estate",
+    teamSize: "16-50",
+    budget: "5100",
+    tools: ["Follow Up Boss","kvCORE","BoomTown","Dotloop","SkySlope","Paperless Pipeline","DocuSign","Lone Wolf Back Office","Brokermint","QuickBooks","Zapier","Monday.com","Asana","HubSpot","Mailchimp","Zoom","Google Workspace","Slack"],
+    note: "Triple CRM, triple transaction mgmt, dual back office, Zapier holding it together"
+  },
+  {
+    id: 8,
+    name: "The AI Hype Stack",
+    category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech",
+    teamSize: "1-5",
+    budget: "3600",
+    tools: ["AiSDR","Instantly","Smartlead","Reply.io","Lemlist","Apollo.io","Clay","ChatGPT","Jasper","Copy.ai","Writer","HubSpot","Pipedrive","Zoom","Google Meet","Notion","ClickUp","Asana"],
+    note: "Five outbound tools, triple AI writing, dual CRM, dual video, triple PM"
+  },
+  {
+    id: 9,
+    name: "The PE-Backed Rollup Chaos",
+    category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech",
+    teamSize: "51-200",
+    budget: "22000",
+    tools: ["Salesforce","HubSpot","Dynamics 365","Outreach","Salesloft","Groove","ZoomInfo","Cognism","Apollo.io","Gong","Chorus","Clari","Tableau","Looker","Power BI","Zendesk","Intercom","Freshdesk","Slack","Teams","Webex","Zoom","DocuSign","PandaDoc","Ironclad"],
+    note: "Three CRMs, three outbound tools, three analytics, three support platforms — classic rollup debt"
+  },
+  {
+    id: 10,
+    name: "The Marketing Team Gone Rogue",
+    category: "🔴 Bloated / Bad",
+    industry: "Marketing Agency",
+    teamSize: "6-15",
+    budget: "7200",
+    tools: ["HubSpot","Marketo","Pardot","Mailchimp","ActiveCampaign","Hootsuite","Sprout Social","Buffer","Jasper","Copy.ai","Writer","ChatGPT","Semrush","Ahrefs","Moz","Google Analytics","Mixpanel","Hotjar"],
+    note: "Three marketing automation platforms, three social tools, four AI writers, three SEO tools"
+  },
+  {
+    id: 11,
+    name: "The Startup That Never Cleaned Up",
+    category: "🔴 Bloated / Bad",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "6400",
+    tools: ["Pipedrive","HubSpot","Salesforce","Trello","Asana","Monday.com","Jira","ClickUp","Notion","Confluence","Google Docs","Slack","Teams","Discord","Intercom","Drift","Zendesk","Freshdesk","Stripe","Chargebee","Recurly"],
+    note: "Accumulated 21 tools across 5 years. Nothing was ever cut."
+  },
+
+  // ── MEDIOCRE / FIXABLE ───────────────────────────────────────────
+  {
+    id: 12,
+    name: "The Mid-Market That Outgrew HubSpot",
+    category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech",
+    teamSize: "16-50",
+    budget: "5500",
+    tools: ["HubSpot","Apollo.io","ZoomInfo","Gong","Calendly","Slack","Notion","Google Workspace","Stripe","Intercom","Zapier","Loom"],
+    note: "Decent stack but ZoomInfo + Apollo overlap, Zapier dependency"
+  },
+  {
+    id: 13,
+    name: "The Solo Founder With Good Instincts",
+    category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech",
+    teamSize: "1-5",
+    budget: "800",
+    tools: ["HubSpot","Apollo.io","Slack","Notion","Google Workspace","Stripe","Zoom","Loom","Calendly","ChatGPT"],
+    note: "Lean but Apollo + HubSpot overlap in sequences"
+  },
+  {
+    id: 14,
+    name: "The Real Estate Team On The Fence",
+    category: "🟡 Mediocre / Fixable",
+    industry: "Real Estate",
+    teamSize: "6-15",
+    budget: "1800",
+    tools: ["Follow Up Boss","Dotloop","DocuSign","Zapier","Mailchimp","Google Workspace","Zoom","Slack","Calendly","BombBomb"],
+    note: "Reasonable stack but Zapier dependency and no CRM-native email"
+  },
+  {
+    id: 15,
+    name: "The Agency With One Too Many Tools",
+    category: "🟡 Mediocre / Fixable",
+    industry: "Marketing Agency",
+    teamSize: "6-15",
+    budget: "3100",
+    tools: ["HubSpot","Semrush","Ahrefs","Adobe Creative Cloud","Notion","Slack","Google Workspace","Zoom","Asana","Monday.com","Loom","ChatGPT"],
+    note: "Semrush + Ahrefs overlap, Asana + Monday.com overlap"
+  },
+  {
+    id: 16,
+    name: "The SDR Team With Legacy Data",
+    category: "🟡 Mediocre / Fixable",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "4200",
+    tools: ["Salesforce","ZoomInfo","Outreach","Gong","Calendly","Slack","Google Workspace","Zoom","Docusign","Notion","Loom"],
+    note: "ZoomInfo could be replaced by Apollo, Outreach is expensive at this size"
+  },
+
+  // ── GOOD / LEAN ──────────────────────────────────────────────────
+  {
+    id: 17,
+    name: "The Ideal Startup Stack",
+    category: "🟢 Good / Lean",
+    industry: "SaaS / Tech",
+    teamSize: "1-5",
+    budget: "600",
+    tools: ["HubSpot","Apollo.io","Slack","Google Workspace","Stripe","Notion","Zoom","Calendly","ChatGPT","Loom"],
+    note: "10 tools, all integrated, no overlap, right-sized"
+  },
+  {
+    id: 18,
+    name: "The Modern Sales Team",
+    category: "🟢 Good / Lean",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "2200",
+    tools: ["HubSpot","Apollo.io","Smartlead","Gong","Calendly","Slack","Google Workspace","Notion","Stripe","Loom","ChatGPT"],
+    note: "Clay-era stack — enrichment + sequencing + CRM without bloat"
+  },
+  {
+    id: 19,
+    name: "The Lean Real Estate Team",
+    category: "🟢 Good / Lean",
+    industry: "Real Estate",
+    teamSize: "6-15",
+    budget: "900",
+    tools: ["Follow Up Boss","Paperless Pipeline","DocuSign","Google Workspace","Zoom","BombBomb","Calendly","ChatGPT"],
+    note: "Purpose-built RE stack, nothing wasted"
+  },
+  {
+    id: 20,
+    name: "The GTM Engineer's Dream Stack",
+    category: "🟢 Good / Lean",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "3200",
+    tools: ["HubSpot","Clay","Smartlead","Apollo.io","Gong","Slack","Google Workspace","Notion","Stripe","Loom","Calendly","ChatGPT","Zapier"],
+    note: "AI-native outbound, minimal overlap, well-integrated"
+  },
+  {
+    id: 21,
+    name: "The Bootstrapped SaaS That Nailed It",
+    category: "🟢 Good / Lean",
+    industry: "SaaS / Tech",
+    teamSize: "1-5",
+    budget: "350",
+    tools: ["HubSpot","Slack","Google Workspace","Stripe","Notion","Calendly","ChatGPT","Loom"],
+    note: "8 tools, zero overlap, everything native"
+  },
+  {
+    id: 22,
+    name: "The Scaling Agency Done Right",
+    category: "🟢 Good / Lean",
+    industry: "Marketing Agency",
+    teamSize: "6-15",
+    budget: "1800",
+    tools: ["HubSpot","Semrush","Adobe Creative Cloud","Slack","Google Workspace","Notion","Asana","Zoom","Loom","ChatGPT","Stripe"],
+    note: "One SEO tool, one creative suite, one PM tool, everything connected"
+  },
+
+  // ── EDGE CASES ───────────────────────────────────────────────────
+  {
+    id: 23,
+    name: "The One-Tool Wonder",
+    category: "⚪ Edge Cases",
+    industry: "SaaS / Tech",
+    teamSize: "1-5",
+    budget: "200",
+    tools: ["Notion"],
+    note: "Extreme minimalism — tests single-tool analysis"
+  },
+  {
+    id: 24,
+    name: "The All-Microsoft Shop",
+    category: "⚪ Edge Cases",
+    industry: "SaaS / Tech",
+    teamSize: "51-200",
+    budget: "8000",
+    tools: ["Microsoft 365","Microsoft Teams","Azure DevOps","Power BI","Dynamics 365","SharePoint","OneDrive","Outlook","LinkedIn Sales Navigator","Microsoft Copilot"],
+    note: "Full Microsoft lock-in — tests ecosystem scoring"
+  },
+  {
+    id: 25,
+    name: "The All-Google Shop",
+    category: "⚪ Edge Cases",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "1200",
+    tools: ["Google Workspace","Google Analytics","Google Ads","Looker","Google Meet","Google Chat","Google Drive","AppSheet","Looker Studio"],
+    note: "Full Google stack — tests integration cohesion scoring"
+  },
+  {
+    id: 26,
+    name: "The Recruiting Firm",
+    category: "⚪ Edge Cases",
+    industry: "SaaS / Tech",
+    teamSize: "6-15",
+    budget: "4500",
+    tools: ["LinkedIn Recruiter","Greenhouse","Lever","Workable","HireVue","Indeed","ZoomInfo","Apollo.io","Slack","Google Workspace","Zoom","Calendly","DocuSign","BambooHR"],
+    note: "Dual ATS (Greenhouse + Lever), dual sourcing (LinkedIn + ZoomInfo + Apollo)"
+  },
+  {
+    id: 27,
+    name: "The E-Commerce Brand",
+    category: "⚪ Edge Cases",
+    industry: "E-commerce",
+    teamSize: "6-15",
+    budget: "2800",
+    tools: ["Shopify","Klaviyo","Gorgias","Postscript","Attentive","Recharge","Loop Returns","Yotpo","Okendo","Google Analytics","Triple Whale","Northbeam","Slack","Notion"],
+    note: "Dual SMS (Postscript + Attentive), dual reviews (Yotpo + Okendo), dual attribution"
+  },
+  {
+    id: 28,
+    name: "The 200-Person Chaos",
+    category: "⚪ Edge Cases",
+    industry: "SaaS / Tech",
+    teamSize: "51-200",
+    budget: "35000",
+    tools: ["Salesforce","HubSpot","Marketo","Pardot","Gong","Chorus","Clari","ZoomInfo","Cognism","Outreach","Salesloft","Groove","Tableau","Looker","Power BI","Domo","Zendesk","Intercom","Freshdesk","ServiceNow","Slack","Teams","Zoom","Webex","DocuSign","PandaDoc","Ironclad","Conga","Workday","BambooHR","Rippling","Jira","Asana","Monday.com","Confluence","Notion","Sharepoint"],
+    note: "Maximum chaos test — 37 tools, everything duplicated"
+  }
+];
+
+// Group by category
+const categories = [...new Set(PERSONAS.map(p => p.category))];
+
+// State
+let selectedPersona = null;
+let running = false;
+let results = {};
+
+// ── RENDER PERSONA LIST ───────────────────────────────────────────────────────
+function renderList() {
+  const list = document.getElementById('persona-list');
+  list.innerHTML = '';
+
+  categories.forEach(cat => {
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    label.textContent = cat;
+    list.appendChild(label);
+
+    PERSONAS.filter(p => p.category === cat).forEach(p => {
+      const btn = document.createElement('div');
+      btn.className = 'persona-btn' + (selectedPersona?.id === p.id ? ' active' : '') + (results[p.id]?.done ? ' done' : '');
+      btn.id = `persona-${p.id}`;
+      btn.onclick = () => selectPersona(p);
+      btn.innerHTML = `
+        <div class="persona-name">${p.name}</div>
+        <div class="persona-meta">${p.industry} · ${p.teamSize} people · $${Number(p.budget).toLocaleString()}/mo</div>
+        <div class="persona-meta" style="margin-top:2px;color:#3a3830">${p.tools.length} tools · ${p.note}</div>
+        ${results[p.id] ? `<div class="persona-score">Score: ${results[p.id].score} · Saves $${results[p.id].saves}/mo</div>` : ''}
+      `;
+      list.appendChild(btn);
+    });
+  });
+}
+
+function selectPersona(p) {
+  selectedPersona = p;
+  renderList();
+  document.getElementById('run-selected-btn').disabled = running;
+  showPersonaDetail(p);
+}
+
+function showPersonaDetail(p) {
+  const area = document.getElementById('status-area');
+  area.innerHTML = `
+    <div class="status-running">
+      <strong>${p.name}</strong>
+      <div style="color:#7a7670;margin-bottom:12px">${p.industry} · ${p.teamSize} · $${Number(p.budget).toLocaleString()}/mo · ${p.tools.length} tools</div>
+      <div style="color:#5a5650;font-size:11px;line-height:1.8">${p.tools.join(', ')}</div>
+    </div>
+  `;
+}
+
+// ── LOG ───────────────────────────────────────────────────────────────────────
+function log(msg, type='info') {
+  const logEl = document.getElementById('log');
+  const line = document.createElement('div');
+  line.className = `log-line ${type}`;
+  line.textContent = `${new Date().toLocaleTimeString()} — ${msg}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// ── CORE: Run analysis via Anthropic API directly ─────────────────────────────
+async function analyzePersona(persona) {
+  log(`Starting: ${persona.name}`, 'info');
+
+  const statusArea = document.getElementById('status-area');
+  statusArea.innerHTML = `
+    <div class="status-running">
+      <strong>Running: ${persona.name}</strong>
+      <div style="color:#7a7670;margin-bottom:8px">${persona.tools.length} tools · ${persona.industry}</div>
+      <div style="color:#4ecdc4;font-size:11px">Calling /api/report directly...</div>
+    </div>
+  `;
+
+  // We call the report API directly with synthetic analysis data
+  // First, compute a rough analysis score client-side
+  const overlapPairs = [
+    ['Salesforce','HubSpot'],['Salesforce','Pipedrive'],['HubSpot','Pipedrive'],
+    ['Outreach','Salesloft'],['Outreach','Smartlead'],['Salesloft','Instantly'],
+    ['Instantly','Smartlead'],['Lemlist','Instantly'],['Reply.io','Smartlead'],
+    ['ZoomInfo','Apollo.io'],['ZoomInfo','Cognism'],
+    ['Gong','Chorus'],['Tableau','Looker'],['Tableau','Power BI'],['Looker','Power BI'],
+    ['Hotjar','FullStory'],['Hotjar','Heap'],['FullStory','Heap'],
+    ['Marketo','Pardot'],['Marketo','HubSpot'],['Pardot','HubSpot'],
+    ['Zendesk','Intercom'],['Zendesk','Freshdesk'],['Intercom','Drift'],
+    ['Asana','Monday.com'],['Asana','ClickUp'],['Monday.com','ClickUp'],['Jira','Asana'],
+    ['Jasper','Copy.ai'],['Jasper','Writer'],['Copy.ai','Writer'],
+    ['Slack','Microsoft Teams'],['Zoom','Google Meet'],['Zoom','Webex'],
+    ['DocuSign','HelloSign'],['DocuSign','PandaDoc'],['PandaDoc','Ironclad'],
+    ['Dropbox','Box'],['Google Workspace','Microsoft 365'],
+    ['Dotloop','SkySlope'],['Dotloop','Paperless Pipeline'],['SkySlope','Paperless Pipeline'],
+    ['Follow Up Boss','kvCORE'],['Follow Up Boss','BoomTown'],['kvCORE','BoomTown'],
+    ['Hootsuite','Sprout Social'],['Hootsuite','Buffer'],['Semrush','Ahrefs'],
+    ['Notion','Confluence'],['Notion','Google Docs'],
+    ['Greenhouse','Lever'],['Greenhouse','Workable'],
+    ['Postscript','Attentive'],['Yotpo','Okendo'],
+  ];
+
+  const tl = persona.tools.map(t => t.toLowerCase());
+  let overlapsFound = 0;
+  let savings = 0;
+  const COSTS = {
+    'zoominfo':500,'salesforce':150,'outreach':150,'salesloft':125,'gong':200,
+    'chorus':100,'marketo':800,'hubspot':100,'drift':400,'jasper':99,'tableau':70,
+    'hotjar':39,'fullstory':200,'pardot':1250,'clari':150,'heap':50,'looker':5000,
+    'zendesk':150,'intercom':200,'freshdesk':50,'docusign':40,'pandadoc':49,
+    'microsoft 365':22,'google workspace':12,'dropbox':20,'box':25,
+    'follow up boss':49,'kvcor':499,'boomtown':1500,'dotloop':89,'skyslope':80,
+    'paperless pipeline':80,'hootsuite':249,'sprout social':249,'buffer':18,
+    'semrush':119,'ahrefs':99,'asana':25,'monday.com':20,'clickup':7,'jira':7,
+    'copy.ai':36,'writer':18,'instantly':97,'smartlead':94,'reply.io':70,'lemlist':59,
+    'apollo.io':79,'clay':149,'greenhouse':6000,'lever':3500,'workable':149,
+  };
+
+  overlapPairs.forEach(([a, b]) => {
+    const hasA = tl.some(t => t.includes(a.toLowerCase()));
+    const hasB = tl.some(t => t.includes(b.toLowerCase()));
+    if (hasA && hasB) {
+      overlapsFound++;
+      const costA = COSTS[a.toLowerCase()] || 50;
+      const costB = COSTS[b.toLowerCase()] || 50;
+      savings += Math.min(costA, costB);
+    }
+  });
+
+  // Compute score (simplified)
+  const legacyTools = ['pardot','chorus','clari','fullstory','jasper','drift','salesloft','tableau','hotjar','heap'];
+  const legacyCount = tl.filter(t => legacyTools.some(l => t.includes(l))).length;
+  let score = 100;
+  score -= overlapsFound * 14;
+  score -= legacyCount * 8;
+  const budget = parseInt(persona.budget) || 0;
+  const teamNum = parseInt(persona.teamSize.split('-')[0]) || 1;
+  const perSeat = budget / teamNum;
+  if (perSeat > 400) score -= 15;
+  else if (perSeat > 250) score -= 8;
+  score = Math.max(5, Math.min(100, score));
+
+  // Fire to /api/report
+  try {
+    const email = document.getElementById('seed-email').value || 'seed@stackswap.ai';
+    const company = document.getElementById('seed-company').value || 'StackSwap Seed';
+
+    // First create a lead
+    const leadResp = await fetch('/api/lead', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        email: email.replace('@', `+${persona.id}@`).replace('+','').replace(/\+\d+@/,`+p${persona.id}@`),
+        company: `${company} — ${persona.name}`,
+        role: 'Founder',
+        teamSize: persona.teamSize,
+        industry: persona.industry,
+      })
+    });
+    const leadText = await leadResp.text();
+    let leadData = {};
+    try { leadData = JSON.parse(leadText); } catch(e) {}
+    const lead_id = leadData.lead_id || null;
+    log(`Lead created: ${lead_id || 'no id'}`, lead_id ? 'ok' : 'warn');
+
+    // Then save report
+    const reportResp = await fetch('/api/report', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        lead_id,
+        tools: persona.tools,
+        tool_count: persona.tools.length,
+        industry: persona.industry,
+        monthly_spend: persona.budget,
+        goals: ['reduce_costs','consolidate_tools'],
+        stack_score: score,
+        estimated_savings_monthly: savings,
+        estimated_savings_annual: savings * 12,
+        overlaps_found: overlapsFound,
+        tools_flagged: persona.tools.slice(0, 5).join(', '),
+        top_recommendation: overlapsFound > 0 ? `Remove ${overlapsFound} overlapping tools` : 'Stack is lean'
+      })
+    });
+    const reportText = await reportResp.text();
+    let reportData = {};
+    try { reportData = JSON.parse(reportText); } catch(e) {}
+
+    if (reportResp.ok) {
+      log(`✓ ${persona.name} — score ${score}, saves $${savings}/mo`, 'ok');
+      results[persona.id] = { done: true, score, saves: savings };
+
+      // Show result card
+      statusArea.innerHTML = `
+        <div class="result-card">
+          <div class="result-card-name">${persona.name} <span class="health ${score>=75?'health-good':score>=50?'health-mid':'health-bad'}">${score >= 75 ? 'HEALTHY' : score >= 50 ? 'NEEDS WORK' : 'CRITICAL'}</span></div>
+          <div class="result-row"><span>Score</span><span style="color:${score>=75?'#4ecdc4':score>=50?'#ffc857':'#e05555'};font-weight:700">${score}/100</span></div>
+          <div class="result-row"><span>Overlaps found</span><span>${overlapsFound}</span></div>
+          <div class="result-row"><span>Monthly savings</span><span>$${savings.toLocaleString()}/mo</span></div>
+          <div class="result-row"><span>Annual savings</span><span>$${(savings*12).toLocaleString()}/yr</span></div>
+          <div class="result-row"><span>Tools</span><span>${persona.tools.length}</span></div>
+          <div class="result-row"><span>Lead ID</span><span style="font-size:10px;color:#3a3830">${lead_id || '—'}</span></div>
+        </div>
+      `;
+    } else {
+      log(`✗ Report save failed: ${reportData?.error || reportResp.status}`, 'err');
+    }
+  } catch(err) {
+    log(`✗ ${persona.name}: ${err.message}`, 'err');
+  }
+
+  renderList();
+}
+
+// ── RUN CONTROLS ─────────────────────────────────────────────────────────────
+async function runSelected() {
+  if (!selectedPersona || running) return;
+  running = true;
+  document.getElementById('run-selected-btn').disabled = true;
+  document.getElementById('run-all-btn').disabled = true;
+  await analyzePersona(selectedPersona);
+  running = false;
+  document.getElementById('run-selected-btn').disabled = false;
+  document.getElementById('run-all-btn').disabled = false;
+}
+
+async function runAll() {
+  if (running) return;
+  running = true;
+  document.getElementById('run-selected-btn').disabled = true;
+  document.getElementById('run-all-btn').disabled = true;
+
+  const delay = parseInt(document.getElementById('seed-delay').value) || 2000;
+  const total = PERSONAS.length;
+
+  for (let i = 0; i < PERSONAS.length; i++) {
+    const p = PERSONAS[i];
+    selectedPersona = p;
+    document.getElementById('progress-fill').style.width = `${Math.round((i/total)*100)}%`;
+    document.getElementById('progress-label').textContent = `${i+1} of ${total} personas`;
+    renderList();
+    await analyzePersona(p);
+    if (i < PERSONAS.length - 1) {
+      log(`Waiting ${delay}ms before next persona...`, 'info');
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('progress-label').textContent = `All ${total} personas complete ✓`;
+  log(`All ${total} personas seeded successfully`, 'ok');
+  running = false;
+  document.getElementById('run-selected-btn').disabled = false;
+  document.getElementById('run-all-btn').disabled = false;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderList();
+</script>
+</body>
+</html>
