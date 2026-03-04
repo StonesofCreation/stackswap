@@ -491,6 +491,80 @@ async function analyzePersona(persona) {
     </div>
   `;
 
+  // ── Auto-price: sum known tool costs, fall back to persona budget ──
+  const TOOL_PRICES = {
+    // Data & Prospecting
+    'zoominfo':500,'apollo.io':79,'clay':149,'cognism':400,'lusha':99,
+    'linkedin sales navigator':99,'linkedin recruiter':825,
+    // CRM
+    'salesforce':150,'hubspot':113,'pipedrive':49,'dynamics 365':95,
+    'follow up boss':49,'kvcor':499,'boomtown':1500,'freshsales':35,
+    // Outbound / Sequencing
+    'outreach':150,'salesloft':125,'smartlead':94,'instantly':97,
+    'reply.io':70,'lemlist':59,'groove':50,'aisdr':250,
+    // Conversation Intel
+    'gong':200,'chorus':100,'avoma':70,
+    // Marketing Automation
+    'marketo':800,'pardot':1250,'activecampaign':79,'mailchimp':20,
+    'klaviyo':45,'hootsuite':249,'sprout social':249,'buffer':18,
+    // Analytics
+    'tableau':70,'looker':5000,'power bi':20,'domo':300,
+    'hotjar':39,'fullstory':200,'heap':50,'mixpanel':25,
+    'google analytics':0,'triple whale':199,'northbeam':99,
+    // AI Writing
+    'jasper':99,'copy.ai':36,'writer':18,'chatgpt':20,'claude':20,
+    // Support / Chat
+    'zendesk':150,'intercom':200,'freshdesk':50,'drift':400,
+    'servicenow':150,'gorgias':50,
+    // Project Management
+    'asana':25,'monday.com':20,'clickup':7,'jira':7,'notion':16,
+    'trello':5,'airtable':20,'confluence':5,'sharepoint':5,
+    // Communication
+    'slack':8,'microsoft teams':6,'zoom':15,'google meet':0,
+    'webex':25,'discord':0,'loom':12,
+    // Workspace / Storage
+    'google workspace':12,'microsoft 365':22,'dropbox':20,'box':25,
+    'onedrive':6,
+    // E-Sign / Contracts
+    'docusign':40,'hellosign':20,'pandadoc':49,'ironclad':500,'conga':100,
+    // Real Estate
+    'dotloop':89,'skyslope':80,'paperless pipeline':80,
+    'lone wolf back office':200,'brokermint':99,'skyslope':80,
+    // CRM – RE
+    'kvcor':499,'boomtown':1500,
+    // Finance / HR
+    'quickbooks':35,'stripe':0,'chargebee':299,'recurly':299,
+    'bamboohr':99,'workday':400,'rippling':8,
+    // Scheduling
+    'calendly':12,'hubspot meetings':0,
+    // Video / Recording
+    'bombbomb':50,'loom':12,
+    // Dev
+    'github':4,'gitlab':19,'azure devops':6,'jira':7,
+    // Misc
+    'zapier':49,'make':9,'adobe creative cloud':55,'semrush':119,'ahrefs':99,'moz':99,
+    'greenhouse':500,'lever':350,'workable':149,'hirevue':300,'indeed':0,
+    'yotpo':19,'okendo':29,'postscript':25,'attentive':400,'recharge':99,
+    'loop returns':99,'shopify':79,'appsheet':10,'looker studio':0,
+  };
+
+  function estimateSpend(tools) {
+    let total = 0;
+    let unpriced = 0;
+    tools.forEach(tool => {
+      const key = Object.keys(TOOL_PRICES).find(k =>
+        tool.toLowerCase().includes(k) || k.includes(tool.toLowerCase())
+      );
+      if (key !== undefined) total += TOOL_PRICES[key];
+      else { total += 45; unpriced++; } // default $45/mo for unknown tools
+    });
+    return total;
+  }
+
+  // Auto-calculate spend from tool list, use persona budget as floor
+  const autoSpend = estimateSpend(persona.tools);
+  const finalSpend = Math.max(autoSpend, parseInt(persona.budget) || 0);
+
   // We call the report API directly with synthetic analysis data
   // First, compute a rough analysis score client-side
   const overlapPairs = [
@@ -548,9 +622,9 @@ async function analyzePersona(persona) {
   let score = 100;
   score -= overlapsFound * 14;
   score -= legacyCount * 8;
-  const budget = parseInt(persona.budget) || 0;
+  const budget = finalSpend;
   const teamNum = parseInt(persona.teamSize.split('-')[0]) || 1;
-  const perSeat = budget / teamNum;
+  const perSeat = budget / Math.max(teamNum, 1);
   if (perSeat > 400) score -= 15;
   else if (perSeat > 250) score -= 8;
   score = Math.max(5, Math.min(100, score));
@@ -583,11 +657,13 @@ async function analyzePersona(persona) {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
-        lead_id,
+        lead_id: lead_id || null,
         tools: persona.tools,
         tool_count: persona.tools.length,
         industry: persona.industry,
-        monthly_spend: persona.budget,
+        monthly_spend: finalSpend,
+        monthly_spend_auto: autoSpend,
+        monthly_spend_stated: parseInt(persona.budget) || 0,
         goals: ['reduce_costs','consolidate_tools'],
         stack_score: score,
         estimated_savings_monthly: savings,
@@ -602,7 +678,7 @@ async function analyzePersona(persona) {
     try { reportData = JSON.parse(reportText); } catch(e) {}
 
     if (reportResp.ok) {
-      log(`✓ ${persona.name} — score ${score}, saves $${savings}/mo`, 'ok');
+      log(`✓ ${persona.name} — score ${score}, spend $${finalSpend}/mo, saves $${savings}/mo`, 'ok');
       results[persona.id] = { done: true, score, saves: savings };
 
       // Show result card
@@ -613,8 +689,10 @@ async function analyzePersona(persona) {
           <div class="result-row"><span>Overlaps found</span><span>${overlapsFound}</span></div>
           <div class="result-row"><span>Monthly savings</span><span>$${savings.toLocaleString()}/mo</span></div>
           <div class="result-row"><span>Annual savings</span><span>$${(savings*12).toLocaleString()}/yr</span></div>
+          <div class="result-row"><span>Auto-priced spend</span><span>$${autoSpend.toLocaleString()}/mo</span></div>
+          <div class="result-row"><span>Stated budget</span><span>$${Number(persona.budget).toLocaleString()}/mo</span></div>
           <div class="result-row"><span>Tools</span><span>${persona.tools.length}</span></div>
-          <div class="result-row"><span>Lead ID</span><span style="font-size:10px;color:#3a3830">${lead_id || '—'}</span></div>
+          <div class="result-row"><span>Lead ID</span><span style="font-size:10px;color:#3a3830">${lead_id || 'seeded (no gate)'}</span></div>
         </div>
       `;
     } else {
