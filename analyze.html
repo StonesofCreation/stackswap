@@ -326,7 +326,11 @@ const OVERLAPS = [
   {a:"HubSpot",b:"Calendly",msg:"HubSpot Meetings is included in your subscription and replaces Calendly for most use cases.",save:20},
   {a:"Outreach",b:"Salesloft",msg:"Direct competitors doing identical jobs — sales engagement sequencing. You cannot need both.",save:100},
   {a:"Outreach",b:"Apollo.io",msg:"Apollo includes data + sequencing. Outreach is sequencing only. Apollo replaces Outreach for most SMBs at lower cost.",save:100},
-  {a:"Apollo.io",b:"ZoomInfo",msg:"Apollo.io gives ~85% of ZoomInfo's data at about 15% of the cost. The overlap is near-total.",save:400},
+  {a:"Apollo.io",b:"Smartlead",msg:"Apollo handles data + sequencing. Smartlead handles AI warm-up and sending. Running both means you're paying twice for outreach infrastructure — pick a primary platform and use the other as a send layer only.",save:100},
+  {a:"Apollo.io",b:"Instantly",msg:"Apollo and Instantly both handle outbound sequencing. Apollo adds data enrichment on top. One sequencing platform is enough.",save:80},
+  {a:"Smartlead",b:"Instantly",msg:"Direct outbound sequencing competitors. Both do AI warm-up and multi-inbox sending. Pick one.",save:80},
+  {a:"Apollo.io",b:"AiSDR",msg:"AiSDR runs on top of your outbound infrastructure — it still needs a sequencing layer, but combined with Apollo's native sequencing you're paying for overlapping automation. Evaluate whether AiSDR's AI layer justifies the added cost over Apollo's built-in sequences.",save:120},
+  {a:"Smartlead",b:"AiSDR",msg:"AiSDR as an AI SDR layer on top of Smartlead creates redundant outbound automation. Smartlead already handles AI-assisted sequencing — audit whether AiSDR is adding incremental value or just adding cost.",save:100},
   {a:"Apollo.io",b:"Lusha",msg:"Both enrich contact data. Apollo is more comprehensive and typically cheaper at scale.",save:60},
   {a:"ZoomInfo",b:"Lusha",msg:"ZoomInfo and Lusha both provide B2B contact enrichment with significant overlap.",save:80},
   {a:"ZoomInfo",b:"Clearbit",msg:"B2B data enrichment overlap. Consolidate to one provider.",save:300},
@@ -418,7 +422,7 @@ const PRICING = {
   "Lone Wolf Back Office":200,"Broker Brain":150,"Profit Power":150,
   "Follow Up Boss":99,"kvCORE":499,"BoomTown":1000,"CINC":900,
   "LionDesk":25,"Wise Agent":32,"Top Producer":60,"Chime CRM":200,
-  "Fireflies.ai":10,"Avoma":40,"Otter.ai":17,"ChatGPT":20,"Claude":20,
+  "Smartlead":97,"Instantly":97,"AiSDR":900,"Lemlist":99,"Mailshake":59,"Reply.io":89,
   "Clearbit":250,"Lusha":40,"Cognism":300,"Grammarly":12,"Writer":18,
 };
 
@@ -440,6 +444,191 @@ function pingZapier(payload) {
   }).catch(()=>{}); // silent fail — never block the UI
 }
 const GOALS = ["Reduce monthly spend","Consolidate overlapping tools","Find AI-native replacements","Improve team adoption","Scale without adding tools","Eliminate redundant features"];
+
+// ── GOLD STANDARD STACKS — proven native integration clusters ────────────────
+// These are battle-tested stacks with native data flow and minimal glue.
+// Score bonus applied when a user's stack closely matches one of these clusters.
+const GOLD_STACKS = [
+  {
+    name: "Modern SMB SaaS (≤50 people)",
+    tools: ["HubSpot","Apollo.io","Slack","Google Workspace","Notion","Loom","Stripe","Intercom"],
+    integrationScore: 95,
+    why: "Every tool in this stack has a native HubSpot connector. One CRM owns all contact data. Apollo feeds leads in, Stripe ties revenue to contacts, Intercom surfaces support history. Zero Zapier needed.",
+    monthlyEstimate: "$600-900/mo for 10 people"
+  },
+  {
+    name: "Lean Outbound SaaS",
+    tools: ["HubSpot","Apollo.io","Smartlead","Slack","Google Workspace","Loom","Calendly"],
+    integrationScore: 92,
+    why: "Apollo enriches and sequences, Smartlead handles deliverability, HubSpot owns the CRM record. All three sync natively. Calendly books meetings directly into HubSpot deals.",
+    monthlyEstimate: "$400-600/mo for 10 people"
+  },
+  {
+    name: "Real Estate Team (≤20 agents)",
+    tools: ["Follow Up Boss","Paperless Pipeline","Google Workspace","Calendly"],
+    integrationScore: 98,
+    why: "Follow Up Boss and Paperless Pipeline have a native, two-way integration — the only RE stack pairing with true embedded sync. Google Workspace covers everything else. $230/mo total.",
+    monthlyEstimate: "$220-250/mo"
+  },
+  {
+    name: "Real Estate Brokerage (20+ agents)",
+    tools: ["Follow Up Boss","Brokermint","Google Workspace","Slack"],
+    integrationScore: 94,
+    why: "Brokermint handles back office, commissions, and transactions. Follow Up Boss handles the CRM and lead routing. Both integrate with Google Workspace. Slack for team comms.",
+    monthlyEstimate: "$500-800/mo"
+  },
+  {
+    name: "Marketing Agency",
+    tools: ["ClickUp","HubSpot","Google Workspace","Figma","Canva","Slack","Loom"],
+    integrationScore: 90,
+    why: "ClickUp manages projects, HubSpot handles client CRM and proposals, Slack for comms, Figma+Canva for creative. Everything connects through Google identity.",
+    monthlyEstimate: "$300-500/mo for 10 people"
+  },
+  {
+    name: "Enterprise GTM",
+    tools: ["Salesforce","Outreach","ZoomInfo","Gong","Slack","Google Workspace","Tableau"],
+    integrationScore: 88,
+    why: "The classic enterprise sales stack. Expensive but fully integrated natively — Gong syncs calls to Salesforce, Outreach syncs sequences, ZoomInfo enriches on contact creation.",
+    monthlyEstimate: "$8,000-15,000/mo for 50 people"
+  },
+  {
+    name: "AI-Native GTM (2025)",
+    tools: ["HubSpot","Clay","Smartlead","Slack","Google Workspace","Apollo.io","ChatGPT"],
+    integrationScore: 91,
+    why: "Clay enriches and builds lists, Smartlead sends at scale with AI warm-up, HubSpot owns the record. This is the modern replacement for the ZoomInfo + Outreach + Salesforce stack at 20% of the cost.",
+    monthlyEstimate: "$400-700/mo for 10 people"
+  },
+  {
+    name: "Bootstrapped SaaS",
+    tools: ["HubSpot","Google Workspace","Slack","Notion","Stripe","Intercom","Linear"],
+    integrationScore: 93,
+    why: "Tight, cheap, and fully integrated. HubSpot free tier for CRM, Stripe for billing (native HubSpot sync), Intercom for support, Linear for engineering. Under $300/mo for a 5-person team.",
+    monthlyEstimate: "$200-350/mo for 5 people"
+  }
+];
+
+// ── TREND INTELLIGENCE ENGINE ────────────────────────────────────────────────
+// Fetches real exit/switch data from StackSignal (Supabase reports table)
+// and adjusts recommendation confidence accordingly.
+// Falls back to static baseline if fetch fails.
+
+const TOOL_EXIT_BASELINE = {
+  // Tools with historically high exit rates (from industry knowledge)
+  // Format: toolName -> { exitRate: 0-1, reason, lastUpdated }
+  "ZoomInfo":     { exitRate: 0.72, reason: "Price increases + Apollo coverage improving", signal: "high" },
+  "Drift":        { exitRate: 0.68, reason: "Price ($2,500+/mo) vs HubSpot Chat included free", signal: "high" },
+  "Marketo":      { exitRate: 0.61, reason: "Complexity + cost vs HubSpot at 60% lower price", signal: "high" },
+  "Hootsuite":    { exitRate: 0.58, reason: "Price increases, Buffer + Loomly now competitive", signal: "high" },
+  "Outreach":     { exitRate: 0.54, reason: "Per-seat pricing, Apollo + Smartlead replace at lower cost", signal: "medium" },
+  "Jasper":       { exitRate: 0.71, reason: "Direct LLM access (Claude/ChatGPT) is cheaper and better", signal: "high" },
+  "Chorus":       { exitRate: 0.62, reason: "Gong and Avoma both surpassed Chorus on AI features", signal: "high" },
+  "Pardot":       { exitRate: 0.55, reason: "Salesforce pricing + complexity vs HubSpot", signal: "medium" },
+  "Tableau":      { exitRate: 0.48, reason: "Power BI included in M365, Metabase free tier strong", signal: "medium" },
+  "Salesloft":    { exitRate: 0.44, reason: "Apollo + Smartlead combination replacing at lower cost", signal: "medium" },
+  "Hotjar":       { exitRate: 0.41, reason: "Microsoft Clarity is free with comparable features", signal: "medium" },
+  "Sprout Social":{ exitRate: 0.52, reason: "Price increases, Buffer covers 80% of use cases at 10% of cost", signal: "medium" },
+  "Clari":        { exitRate: 0.46, reason: "HubSpot forecasting + Gong Revenue displacing Clari", signal: "medium" },
+  "Copy.ai":      { exitRate: 0.65, reason: "Direct LLM access replaced most AI writing tool use cases", signal: "high" },
+  // Tools with low exit rates (sticky, users stay)
+  "HubSpot":      { exitRate: 0.18, reason: "Strong ecosystem, continuous feature releases", signal: "low" },
+  "Slack":        { exitRate: 0.12, reason: "Network effects, deep integrations", signal: "low" },
+  "Google Workspace": { exitRate: 0.09, reason: "Identity layer for most orgs, extremely sticky", signal: "low" },
+  "Salesforce":   { exitRate: 0.21, reason: "Enterprise lock-in, high switching cost", signal: "low" },
+  "Apollo.io":    { exitRate: 0.22, reason: "Strong data + sequencing value, aggressive roadmap", signal: "low" },
+  "Follow Up Boss": { exitRate: 0.19, reason: "Best-in-class RE integrations, strong ecosystem", signal: "low" },
+  "Paperless Pipeline": { exitRate: 0.14, reason: "Flat pricing, reliable, strong FUB integration", signal: "low" },
+  "Notion":       { exitRate: 0.23, reason: "Strong for docs/wiki, sticky once adopted", signal: "low" },
+  "Linear":       { exitRate: 0.15, reason: "Strong product, high developer satisfaction", signal: "low" },
+  "Smartlead":    { exitRate: 0.20, reason: "AI deliverability moat, strong outbound results", signal: "low" },
+};
+
+// Fetch live exit data from StackSignal and merge with baseline
+let LIVE_EXIT_DATA = { ...TOOL_EXIT_BASELINE };
+let trendDataLoaded = false;
+
+async function loadTrendData() {
+  try {
+    const resp = await fetch('/api/metrics');
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (!data.count || data.count < 10) return; // need at least 10 reports for signal
+
+    // Build exit rates from real data
+    const totalReports = data.count;
+    if (data.cuts && data.cuts.length > 0) {
+      data.cuts.forEach(([tool, exitCount]) => {
+        const exitRate = Math.min(exitCount / totalReports, 1);
+        const existing = LIVE_EXIT_DATA[tool];
+        if (existing) {
+          // Blend live data with baseline (60% live, 40% baseline when enough signal)
+          LIVE_EXIT_DATA[tool] = {
+            ...existing,
+            exitRate: totalReports >= 50
+              ? (exitRate * 0.6 + existing.exitRate * 0.4)
+              : (exitRate * 0.3 + existing.exitRate * 0.7),
+            liveCount: exitCount,
+            liveTotal: totalReports,
+            signal: exitRate > 0.5 ? "high" : exitRate > 0.25 ? "medium" : "low"
+          };
+        } else {
+          LIVE_EXIT_DATA[tool] = {
+            exitRate,
+            reason: `Flagged in ${exitCount} of ${totalReports} StackSwap analyses`,
+            signal: exitRate > 0.5 ? "high" : exitRate > 0.25 ? "medium" : "low",
+            liveCount: exitCount,
+            liveTotal: totalReports
+          };
+        }
+      });
+    }
+    trendDataLoaded = true;
+  } catch(e) {
+    // Silent fail — baseline data still works
+  }
+}
+
+// Call on page load, non-blocking
+loadTrendData();
+
+// Get trend signal for a tool — used to add exit rate context to recommendations
+function getTrendSignal(toolName) {
+  const key = Object.keys(LIVE_EXIT_DATA).find(k =>
+    toolName.toLowerCase().includes(k.toLowerCase()) ||
+    k.toLowerCase().includes(toolName.toLowerCase())
+  );
+  return key ? LIVE_EXIT_DATA[key] : null;
+}
+
+// Get gold stack match — returns the closest matching gold stack for this user's tools
+function getGoldStackMatch(tools, industry) {
+  const match = t => tools.some(u => u.toLowerCase().includes(t.toLowerCase()));
+
+  // Industry filter
+  const industryStacks = {
+    "Real Estate": ["Real Estate Team (≤20 agents)", "Real Estate Brokerage (20+ agents)"],
+    "SaaS / Tech": ["Modern SMB SaaS (≤50 people)", "Lean Outbound SaaS", "AI-Native GTM (2025)", "Bootstrapped SaaS", "Enterprise GTM"],
+    "Marketing Agency": ["Marketing Agency"],
+  };
+  const preferredNames = industryStacks[industry] || null;
+
+  let best = null;
+  let bestScore = 0;
+
+  GOLD_STACKS.forEach(gs => {
+    // Skip stacks not relevant to this industry (if industry known)
+    if (preferredNames && !preferredNames.includes(gs.name)) return;
+
+    const matchCount = gs.tools.filter(t => match(t)).length;
+    const matchPct = matchCount / gs.tools.length;
+    if (matchPct > bestScore) {
+      bestScore = matchPct;
+      best = { ...gs, matchPct, matchCount };
+    }
+  });
+
+  return bestScore >= 0.4 ? best : null; // Only surface if at least 40% match
+}
+
 const INDUSTRIES = ["","SaaS / Tech","Real Estate","Marketing Agency","E-commerce","Finance / Fintech","Healthcare / MedTech","Legal","Insurance","Consulting","Recruiting / Staffing","Construction / Trades","Non-Profit","Other"];
 
 // In-memory metrics (persists within session)
@@ -704,21 +893,258 @@ function runAnalysis(tools, teamSize, industry, budget, goals) {
     if (k) spend += PRICING[k];
   });
 
-  // 5. Total savings (overlaps + AI swaps + consultant findings)
+  // 5a. Category cluster overlap detection
+  const CATEGORY_CLUSTERS = [
+    { name:"Outbound / Sales Engagement", tools:["Apollo.io","Smartlead","Instantly","Outreach","Salesloft","AiSDR","Reply.io","Lemlist","Mailshake","Klenty","Woodpecker"], msg:"You have multiple outbound/sequencing tools. Each adds infrastructure debt — domains, inboxes, data sync. Pick one platform and one AI send layer max.", savePerExtra:120 },
+    { name:"CRM", tools:["HubSpot","Salesforce","Pipedrive","Zoho CRM","Close","Freshsales","Copper"], msg:"Multiple CRMs split your data, duplicate contacts, and kill reporting accuracy. One CRM owns the full customer record.", savePerExtra:150 },
+    { name:"B2B Data / Enrichment", tools:["ZoomInfo","Apollo.io","Lusha","Clearbit","Cognism","Clay","Hunter.io","Snov.io"], msg:"Multiple data providers mean significant coverage overlap. Most teams only need one enrichment source.", savePerExtra:200 },
+    { name:"Project Management", tools:["Asana","Monday.com","ClickUp","Jira","Notion","Linear","Basecamp","Wrike","Teamwork"], msg:"Multiple PM tools fragment work across tools nobody fully adopts.", savePerExtra:80 },
+    { name:"Meeting / Collaboration", tools:["Zoom","Google Meet","Microsoft Teams","Webex","GoToMeeting"], msg:"Multiple video conferencing tools are almost always redundant.", savePerExtra:20 },
+    { name:"AI Writing / Content", tools:["Jasper","Copy.ai","Writer","Writesonic","Rytr","ChatGPT","Claude"], msg:"Multiple AI writing tools overlap heavily. Direct LLM access replaces single-purpose AI writers at lower cost.", savePerExtra:60 },
+    { name:"Customer Support / Chat", tools:["Intercom","Zendesk","Freshdesk","HubSpot Service Hub","Drift","Tidio","Crisp"], msg:"Multiple support/chat platforms fragment customer conversations and duplicate ticket workflows.", savePerExtra:100 },
+    { name:"Analytics", tools:["Mixpanel","Amplitude","Heap","FullStory","Hotjar","Google Analytics","Segment","Pendo"], msg:"Multiple analytics tools create data silos and conflicting numbers. Consolidate around one platform.", savePerExtra:100 }
+  ];
+  const categoryOverlaps = [];
+  CATEGORY_CLUSTERS.forEach(cluster => {
+    const hits = cluster.tools.filter(t => match(t));
+    if (hits.length >= 2) {
+      const extras = hits.length - 1;
+      categoryOverlaps.push({ category: cluster.name, tools: hits, msg: cluster.msg, save: extras * cluster.savePerExtra, extras });
+    }
+  });
+
+  // 5b-i. Integration cohesion scoring
+  // Grade how well the stack communicates natively without glue tools.
+  // Native ecosystem clusters — tools that talk to each other without Zapier.
+  const INTEGRATION_ECOSYSTEMS = [
+    {
+      hub: "HubSpot",
+      native: ["Gmail","Google Workspace","Slack","Zoom","Apollo.io","Intercom","Calendly","Databox","Stripe","Zapier","Loom","LinkedIn"],
+      note: "HubSpot is the integration hub for most SMB stacks — most tools have native HubSpot connectors."
+    },
+    {
+      hub: "Salesforce",
+      native: ["Slack","Gong","Outreach","Salesloft","ZoomInfo","Tableau","Docusign","Marketo","Pardot","Stripe","Zoom"],
+      note: "Salesforce has the largest native integration ecosystem but requires admin overhead to maintain."
+    },
+    {
+      hub: "Google Workspace",
+      native: ["Slack","Zoom","HubSpot","Asana","Monday.com","ClickUp","Notion","Calendly","Loom","Zapier","Make","Apollo.io"],
+      note: "Google Workspace integrates natively with most modern SaaS tools."
+    },
+    {
+      hub: "Follow Up Boss",
+      native: ["Paperless Pipeline","Google Workspace","Zillow","Realtor.com","BoomTown","kvCORE","Calendly","Mailchimp","Zapier"],
+      note: "Follow Up Boss has native connectors for most major RE lead sources and transaction tools."
+    },
+    {
+      hub: "Paperless Pipeline",
+      native: ["Follow Up Boss","Dotloop","Google Workspace","Dropbox","DocuSign"],
+      note: "Paperless Pipeline integrates natively with Follow Up Boss — the core RE stack connection."
+    },
+    {
+      hub: "Apollo.io",
+      native: ["HubSpot","Salesforce","Slack","Gmail","Google Workspace","LinkedIn","Zapier","Smartlead"],
+      note: "Apollo exports natively to HubSpot/Salesforce and integrates with most outbound tools."
+    },
+    {
+      hub: "Slack",
+      native: ["Google Workspace","HubSpot","Salesforce","Asana","Monday.com","ClickUp","Notion","Zoom","GitHub","Jira","Linear","Zapier","Make"],
+      note: "Slack integrates natively with almost every modern SaaS tool."
+    }
+  ];
+
+  // Find known integration-breaking combinations (tools that DON'T talk well)
+  const INTEGRATION_CONFLICTS = [
+    {
+      tools: ["Salesforce","HubSpot"],
+      issue: "HubSpot and Salesforce can sync, but running both creates a bi-directional sync nightmare — data conflicts, duplicate records, and constant deduplication overhead. This is one of the most expensive integration mistakes in SaaS.",
+      penalty: 18
+    },
+    {
+      tools: ["Zapier","Make"],
+      issue: "Running both Zapier and Make suggests your automation is fragmented across two platforms. Consolidate all workflows to one — preferably Make for volume, Zapier for simplicity.",
+      penalty: 8
+    },
+    {
+      tools: ["Microsoft Teams","Slack"],
+      issue: "Two team messaging platforms. Communication splits across both, reducing adoption of either. Microsoft 365 includes Teams at no extra cost — if you're paying for Slack, you're likely double-paying for communication.",
+      penalty: 12
+    },
+    {
+      tools: ["Google Workspace","Microsoft 365"],
+      issue: "Running both Google Workspace and Microsoft 365 means you're paying twice for email, calendar, and storage. Every tool you add has to support two identity providers. Pick one and standardize.",
+      penalty: 15
+    },
+    {
+      tools: ["Outreach","Salesloft"],
+      issue: "Two sales engagement platforms is a textbook integration failure — contacts, sequences, and activity data are split across both. You cannot have a single source of truth for sales activity.",
+      penalty: 20
+    },
+    {
+      tools: ["Zendesk","Intercom"],
+      issue: "Running Zendesk and Intercom simultaneously splits customer conversations between two systems. Support agents lose context, customers get inconsistent responses, and neither tool has complete history.",
+      penalty: 15
+    },
+    {
+      tools: ["Dotloop","Paperless Pipeline"],
+      issue: "Two transaction management systems means deals live in two places. Agents will use whichever is easier, leaving incomplete records in both. This is a compliance and audit risk.",
+      penalty: 15
+    },
+    {
+      tools: ["Follow Up Boss","HubSpot"],
+      issue: "Follow Up Boss and HubSpot have overlapping CRM functions. Without a deliberate sync strategy, lead records, contact history, and deal stages will diverge. RE teams should use FUB; generic SaaS teams should use HubSpot.",
+      penalty: 12
+    },
+    {
+      tools: ["Follow Up Boss","Salesforce"],
+      issue: "Salesforce is not built for real estate workflows. Running it alongside Follow Up Boss creates two sources of truth for contacts. This requires expensive Zapier maintenance to keep in sync.",
+      penalty: 15
+    }
+  ];
+
+  // Glue tool detection (Zapier/Make as integration band-aids)
+  const GLUE_TOOLS = ["Zapier","Make","n8n","Integrately","Pabbly","Automate.io"];
+  const hasGlueTools = tools.filter(t => GLUE_TOOLS.some(g => t.toLowerCase().includes(g.toLowerCase())));
+  
+  // Find integration conflicts
+  const integrationConflicts = INTEGRATION_CONFLICTS.filter(ic =>
+    ic.tools.every(t => match(t))
+  );
+
+  // Find orphaned tools — tools with no native connections to the rest of the stack
+  // A tool is "orphaned" if it has no known native integration with any other tool in the stack
+  const allNativeConnections = {};
+  INTEGRATION_ECOSYSTEMS.forEach(eco => {
+    [eco.hub, ...eco.native].forEach(tool => {
+      const userTool = tools.find(t => t.toLowerCase().includes(tool.toLowerCase()));
+      if (!userTool) return;
+      if (!allNativeConnections[userTool]) allNativeConnections[userTool] = new Set();
+      [eco.hub, ...eco.native].forEach(other => {
+        const otherUserTool = tools.find(t => t.toLowerCase().includes(other.toLowerCase()));
+        if (otherUserTool && otherUserTool !== userTool) allNativeConnections[userTool].add(otherUserTool);
+      });
+    });
+  });
+  
+  const orphanedTools = tools.filter(t => {
+    const connections = allNativeConnections[t];
+    return !connections || connections.size === 0;
+  }).filter(t => !["Google Meet","Riverside","MegaAi"].some(skip => t.toLowerCase().includes(skip.toLowerCase())));
+
+  // Glue dependency penalty — using Zapier suggests native integrations are missing
+  let gluePenalty = 0;
+  let glueNote = null;
+  if (hasGlueTools.length > 0 && integrationConflicts.length > 0) {
+    gluePenalty = 10;
+    glueNote = "Zapier/Make usage alongside integration conflicts suggests your stack is held together by automation band-aids rather than native connections.";
+  } else if (hasGlueTools.length > 0 && tools.length > 8) {
+    gluePenalty = 5;
+    glueNote = "Automation tools are fine, but check whether native integrations exist between your core tools before building Zapier workflows.";
+  }
+
+  // All-in-one opportunity detection
+  const ALL_IN_ONE_OPPS = [
+    {
+      replaces: ["Paperless Pipeline","DocuSign","QuickBooks","Back office tool"],
+      recommendation: "Brokermint",
+      why: "Brokermint combines transaction management, commission calculations, back office accounting, and e-sign in one platform. One contract, one support line, one tool.",
+      forIndustries: ["Real Estate"],
+      save: 150
+    },
+    {
+      replaces: ["HubSpot","Intercom","Calendly"],
+      recommendation: "HubSpot Suite",
+      why: "HubSpot CRM + Service Hub + Meetings replaces standalone Intercom and Calendly with native data flow — one contact record across marketing, sales, and support.",
+      forIndustries: ["SaaS / Tech","Marketing Agency","default"],
+      save: 120
+    },
+    {
+      replaces: ["Asana","Notion","Slack"],
+      recommendation: "ClickUp",
+      why: "ClickUp combines task management, docs, chat, and goals in one workspace. Eliminates the context-switching tax of managing three separate tools.",
+      forIndustries: ["SaaS / Tech","Marketing Agency","default"],
+      save: 80
+    },
+    {
+      replaces: ["ZoomInfo","Outreach","Salesforce"],
+      recommendation: "Apollo.io + HubSpot",
+      why: "Apollo (data + sequencing) + HubSpot (CRM + reporting) replaces the ZoomInfo + Outreach + Salesforce stack at a fraction of the cost with better native integration.",
+      forIndustries: ["SaaS / Tech","default"],
+      save: 500
+    }
+  ];
+
+  const currentIndustry = industry || "default";
+  const allInOneOpps = ALL_IN_ONE_OPPS.filter(opp => {
+    const industryMatch = opp.forIndustries.includes(currentIndustry) || opp.forIndustries.includes("default");
+    const toolMatch = opp.replaces.filter(t => match(t)).length >= 2;
+    return industryMatch && toolMatch;
+  });
+
+  // Integration score component
+  const integrationConflictPenalty = integrationConflicts.reduce((s,ic) => s + ic.penalty, 0);
+
+  // 5b. Legacy tool penalty
+
+  const LEGACY_TOOLS = {
+    "ZoomInfo":    { penalty:15, reason:"Enterprise data pricing — Apollo covers most needs at 15% of the cost" },
+    "Marketo":     { penalty:15, reason:"Legacy MAP — HubSpot or AI-native alternatives at a fraction of the cost" },
+    "Pardot":      { penalty:15, reason:"Salesforce pricing tax — far more affordable alternatives exist" },
+    "Tableau":     { penalty:12, reason:"Legacy BI — Power BI or Metabase at near-zero cost" },
+    "Gong":        { penalty:10, reason:"Conversation intel at $100+/seat — Avoma delivers 90% at 40% of the cost" },
+    "Drift":       { penalty:12, reason:"Conversational marketing at $2,500+/mo — HubSpot Chat covers this for free" },
+    "Hootsuite":   { penalty:8,  reason:"Legacy social scheduling — Buffer at 80% lower cost" },
+    "Sprout Social":{ penalty:10, reason:"Social management at $250+/mo — Buffer handles most needs at $15/mo" },
+    "Outreach":    { penalty:10, reason:"Sales engagement at $100+/seat — Smartlead + Clay delivers better deliverability cheaper" },
+    "Salesloft":   { penalty:10, reason:"Sales engagement at $125+/seat — AI-native alternatives match features at lower cost" },
+    "Jasper":      { penalty:10, reason:"GPT wrapper at $99+/mo — direct Claude or ChatGPT at $20/mo does more" },
+    "Copy.ai":     { penalty:8,  reason:"AI writing wrapper — direct LLM access is cheaper and more flexible" },
+    "Chorus":      { penalty:10, reason:"Conversation intel — Avoma matches at $40/seat vs $80+" },
+    "Clari":       { penalty:10, reason:"Revenue forecasting at $150+/seat — HubSpot forecasting covers this cheaper" },
+  };
+  const legacyPenalties = [];
+  tools.forEach(tool => {
+    const key = Object.keys(LEGACY_TOOLS).find(k => tool.toLowerCase().includes(k.toLowerCase()));
+    if (key) legacyPenalties.push({ tool, ...LEGACY_TOOLS[key] });
+  });
+
+  // 5c. Overspend penalty
+  let overspendPenalty = 0;
+  let overspendNote = null;
+  if (spend > 0 && teamSize) {
+    const size = parseInt(teamSize) || 10;
+    const perSeat = spend / size;
+    if (perSeat > 500) { overspendPenalty = 20; overspendNote = `$${Math.round(perSeat)}/seat/mo is well above benchmark — significant consolidation opportunity`; }
+    else if (perSeat > 300) { overspendPenalty = 10; overspendNote = `$${Math.round(perSeat)}/seat/mo is above the efficient range for your team size`; }
+    else if (perSeat > 200) { overspendPenalty = 5; }
+  }
+
+  // 5. Total savings
   const overlapSave = overlaps.reduce((s,o)=>s+o.save,0);
+  const categoryOverlapSave = categoryOverlaps.reduce((s,o)=>s+o.save,0);
   const aiSave = upgrades.slice(0,3).reduce((s,u)=>s+u.save,0);
   const consultantSave = consultantFindings.filter(f=>f.type==="wrong"||f.type==="wrong_tool"||f.type==="redundant").reduce((s,f)=>s+f.save,0);
-  const totalSave = overlapSave + aiSave + consultantSave;
+  const totalSave = overlapSave + categoryOverlapSave + aiSave + consultantSave;
 
-  // 6. Score — now factors in consultant findings
+  // 6. Score — harder penalties including integration health
   let score = 100;
-  score -= overlaps.length * 8;
-  score -= Math.min(upgrades.length * 3, 15);
-  score -= consultantFindings.filter(f=>f.type==="wrong"||f.type==="wrong_tool").length * 12;
-  score -= consultantFindings.filter(f=>f.type==="redundant").length * 6;
-  if (tools.length > 15) score -= 8;
-  if (tools.length > 20) score -= 8;
-  score = Math.max(18, Math.min(96, score));
+  score -= overlaps.length * 12;
+  score -= categoryOverlaps.reduce((s,o) => s + (o.extras * 14), 0);
+  score -= Math.min(legacyPenalties.reduce((s,p) => s + p.penalty, 0), 25);
+  score -= Math.min(integrationConflictPenalty, 30);
+  score -= gluePenalty;
+  score -= Math.min(orphanedTools.length * 5, 15);
+  score -= consultantFindings.filter(f=>f.type==="wrong"||f.type==="wrong_tool").length * 15;
+  score -= consultantFindings.filter(f=>f.type==="redundant").length * 8;
+  score -= Math.min(upgrades.length * 5, 20);
+  score -= overspendPenalty;
+  if (tools.length > 15) score -= 10;
+  if (tools.length > 20) score -= 10;
+  if (overlaps.length > 0 || categoryOverlaps.length > 0) score = Math.min(score, 78);
+  if (integrationConflicts.length > 0) score = Math.min(score, 75);
+  if (legacyPenalties.length > 0) score = Math.min(score, 82);
+  score = Math.max(18, Math.min(92, score));
 
   // 7. Tools to remove
   const toRemove = new Set();
@@ -807,7 +1233,10 @@ function runAnalysis(tools, teamSize, industry, budget, goals) {
     ind.savings += totalSave;
   }
 
-  return {score, overlaps, upgrades, consultantFindings, totalSave, spend, optimized: [...optimized, ...addToOptimized], toRemove, actions, blueprint: bp};
+  // Gold stack match
+  const goldMatch = getGoldStackMatch(tools, industry);
+
+  return {score, overlaps, categoryOverlaps, legacyPenalties, upgrades, consultantFindings, integrationConflicts, orphanedTools, allInOneOpps, glueNote, overspendNote, goldMatch, totalSave, spend, optimized: [...optimized, ...addToOptimized], toRemove, actions, blueprint: bp};
 }
 
 // ── DOM HELPERS ───────────────────────────────────────────────────────────────
@@ -845,11 +1274,11 @@ function renderResult(r) {
   box.appendChild(hd);
 
   // ── Score — horizontal layout, number left, label+bar right ──
-  const color = r.score>=70?"#4ecdc4":r.score>=50?"#ffc857":"#ff6b6b";
-  const label = r.score>=70?"Healthy Stack":r.score>=50?"Needs Attention":"Needs Work";
-  const desc  = r.score>=70?"Your tools are well-chosen with minimal overlap."
-               :r.score>=50?"There are real savings and upgrades on the table."
-               :"You're likely overpaying and have significant overlap.";
+  const color = r.score>=75?"#4ecdc4":r.score>=55?"#ffc857":"#ff6b6b";
+  const label = r.score>=75?"Healthy Stack":r.score>=55?"Needs Attention":"Needs Work";
+  const desc  = r.score>=75?"Your tools are well-chosen with minimal overlap."
+               :r.score>=55?"There are real savings and consolidation opportunities here."
+               :"You're overpaying and have significant overlap — easy wins on the table.";
   const ring = div("score-ring");
   const sn = div("score-num", r.score+""); sn.style.color=color;
   const sr = div("score-right");
@@ -891,13 +1320,20 @@ function renderResult(r) {
     wrongFindings.forEach(f=>box.appendChild(findingCard("wrong",f.title,f.msg,f.save)));
   }
 
-  // ── Tool overlaps ──
+  // ── Tool overlaps (pairwise + category clusters) ──
   const redundantFindings=(r.consultantFindings||[]).filter(f=>f.type==="redundant");
-  const hasOverlaps = r.overlaps.length||redundantFindings.length;
+  const hasOverlaps = r.overlaps.length || redundantFindings.length || (r.categoryOverlaps&&r.categoryOverlaps.length);
   box.appendChild(div("sec","Tool overlaps"));
   if(!hasOverlaps){
     box.appendChild(div("no-issues","No major overlaps detected — your tools serve distinct functions."));
   } else {
+    // Category cluster overlaps first (higher signal)
+    (r.categoryOverlaps||[]).forEach(o=>{
+      const toolList = o.tools.join(" + ");
+      box.appendChild(findingCard("opp",
+        `<span style="color:#ff6b6b;font-weight:700">${o.category} overlap:</span> ${toolList}`,
+        o.msg, o.save));
+    });
     redundantFindings.forEach(f=>box.appendChild(findingCard("opp",`<span class="cut">${f.title}</span>`,f.msg,f.save)));
     r.overlaps.forEach(o=>{
       const ta=selectedTools.find(t=>t.toLowerCase().includes(o.a.toLowerCase()))||o.a;
@@ -913,9 +1349,76 @@ function renderResult(r) {
   if(!r.upgrades.length){
     box.appendChild(div("no-issues","Your stack already includes modern AI-native tools."));
   } else {
-    r.upgrades.slice(0,3).forEach(u=>box.appendChild(findingCard("opp",
-      `Replace <span class="cut">${u.tool}</span><span class="arrow">→</span><span class="keep">${u.r}</span>`,
-      u.why, u.save)));
+    r.upgrades.slice(0,3).forEach(u=>{
+      const trend = getTrendSignal(u.tool);
+      let trendNote = "";
+      if (trend && trend.signal === "high") {
+        const liveStr = trend.liveCount ? ` (${trend.liveCount} of ${trend.liveTotal} StackSwap analyses flagged this)` : "";
+        trendNote = ` <span style="color:#ff6b6b;font-size:11px;font-family:'DM Mono',monospace">&#9650; High exit rate${liveStr} — ${trend.reason}</span>`;
+      } else if (trend && trend.signal === "medium") {
+        trendNote = ` <span style="color:#ffc857;font-size:11px;font-family:'DM Mono',monospace">&#9654; Trending out — ${trend.reason}</span>`;
+      }
+      box.appendChild(findingCard("opp",
+        `Replace <span class="cut">${u.tool}</span><span class="arrow">→</span><span class="keep">${u.r}</span>${trendNote}`,
+        u.why, u.save));
+    });
+  }
+
+  // ── Integration health ──
+  const hasIntegrationIssues = (r.integrationConflicts&&r.integrationConflicts.length) || (r.orphanedTools&&r.orphanedTools.length) || r.glueNote;
+  if(hasIntegrationIssues) {
+    box.appendChild(div("sec","Integration health"));
+    (r.integrationConflicts||[]).forEach(ic=>{
+      const toolBadges = ic.tools.map(t=>`<span class="cut">${t}</span>`).join('<span class="arrow"> + </span>');
+      box.appendChild(findingCard("opp", `Integration conflict: ${toolBadges}`, ic.issue, 0));
+    });
+    if(r.orphanedTools&&r.orphanedTools.length>0) {
+      box.appendChild(findingCard("opp",
+        `Isolated tools: <span class="cut">${r.orphanedTools.join(", ")}</span>`,
+        `These tools have no detected native integrations with the rest of your stack. You're likely relying on Zapier or manual exports to move data — or these tools are siloed entirely. Audit whether they're worth keeping.`,
+        0));
+    }
+    if(r.glueNote) {
+      box.appendChild(findingCard("opp", "Zapier dependency detected", r.glueNote, 0));
+    }
+  }
+
+  // ── All-in-one consolidation opportunities ──
+  if(r.allInOneOpps&&r.allInOneOpps.length) {
+    box.appendChild(div("sec","Consolidation opportunities"));
+    r.allInOneOpps.forEach(opp=>{
+      box.appendChild(findingCard("opp",
+        `Consider: <span class="keep">${opp.recommendation}</span> — replaces ${opp.replaces.filter(t=>selectedTools.some(u=>u.toLowerCase().includes(t.toLowerCase()))).join(" + ")}`,
+        opp.why, opp.save));
+    });
+  }
+
+  // ── Gold stack match ──
+  if(r.goldMatch) {
+    const gs = r.goldMatch;
+    const matchPct = Math.round(gs.matchPct * 100);
+    const missingTools = gs.tools.filter(t => !selectedTools.some(u => u.toLowerCase().includes(t.toLowerCase())));
+    const gs_section = div("sec");
+    gs_section.innerHTML = `Gold standard stack match <span style="font-size:11px;color:var(--teal);font-family:'DM Mono',monospace;margin-left:8px">${matchPct}% match</span>`;
+    box.appendChild(gs_section);
+
+    const gsCard = document.createElement("div");
+    gsCard.style.cssText = "background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.18);border-radius:10px;padding:16px 20px;margin-bottom:12px";
+    gsCard.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:6px;font-family:'DM Mono',monospace">${gs.name}</div>
+      <div style="font-size:13px;color:#c8c4bc;line-height:1.7;margin-bottom:10px">${gs.why}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Estimated cost: ${gs.monthlyEstimate}</div>
+      ${missingTools.length > 0 ? `<div style="font-size:11px;color:var(--muted)">Tools in this stack you're not using: <span style="color:var(--teal)">${missingTools.join(", ")}</span></div>` : "<div style='font-size:11px;color:#39ff85'>✓ Your stack already covers this gold standard</div>"}
+    `;
+    box.appendChild(gsCard);
+  }
+
+  // ── Trend intelligence note ──
+  if(trendDataLoaded) {
+    const trendNote = div("");
+    trendNote.style.cssText = "font-size:10px;color:var(--dim);margin-bottom:16px;font-family:'DM Mono',monospace;letter-spacing:.03em";
+    trendNote.textContent = "\u25b2 Exit rates informed by real StackSwap submission data";
+    box.appendChild(trendNote);
   }
 
   // ── Gaps worth filling ──
@@ -1451,7 +1954,11 @@ function renderMain() {
           estimated_savings_monthly: result.totalSave,
           estimated_savings_annual: result.totalSave * 12,
           overlaps_found: result.overlaps.length,
-          tools_flagged: [...(result.toRemove||[])].join(", "),
+          tools_flagged: [...new Set([
+            ...(result.toRemove||[]),
+            ...(result.categoryOverlaps||[]).flatMap(o=>o.tools),
+            ...(result.integrationConflicts||[]).flatMap(ic=>ic.tools)
+          ])].join(", "),
           top_recommendation: result.upgrades[0]?.r || result.actions[0]?.title || ""
         })
       }).catch(e => console.error("Report save failed:", e));
