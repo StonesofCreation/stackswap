@@ -2,789 +2,905 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>StackSwap Data Seeder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StackSignal — SaaS Stack Intelligence by StackSwap</title>
+<meta name="description" content="Real-time aggregate data on SaaS stack trends. The most used, most cut, and most replaced tools by industry. No vendor bias. No paid placements."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f0e13;color:#f0ece4;font-family:'DM Mono',monospace;min-height:100vh;padding:32px 24px 80px}
-h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;color:#f0ece4;margin-bottom:6px;letter-spacing:-.01em}
-.sub{font-size:13px;color:#5a5650;margin-bottom:32px;line-height:1.7}
-.sub a{color:#4ecdc4;text-decoration:none}
-.sub strong{color:#ffc857}
+:root{
+  --bg:#0f0e13;--surface:rgba(255,255,255,0.02);--border:rgba(255,255,255,0.07);
+  --amber:#ffc857;--teal:#4ecdc4;--red:#ff6b6b;
+  --text:#f0ece4;--muted:#9a9690;--dim:#3a3830;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 35% at 50% 0%,rgba(78,205,196,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 25% at 85% 50%,rgba(255,200,87,0.04) 0%,transparent 50%)}
 
-/* Layout */
-.layout{display:grid;grid-template-columns:320px 1fr;gap:24px;max-width:1200px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
+/* NAV */
+.page-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 28px;background:rgba(15,14,19,0.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.page-nav-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:-.01em}
+.page-nav-logo span{color:var(--amber)}
+.page-nav-links{display:flex;align-items:center;gap:4px}
+.page-nav-link{padding:6px 12px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);
+  text-decoration:none;border:1px solid transparent;transition:all .2s;background:none;letter-spacing:.04em;cursor:pointer}
+.page-nav-link:hover{color:var(--text);background:rgba(255,255,255,0.04);border-color:var(--border)}
+.page-nav-link.active{color:var(--text);border-color:var(--border);background:rgba(255,255,255,0.04)}
+.page-nav-cta{padding:7px 14px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;font-weight:600;
+  color:#0f0e13;background:var(--amber);border:none;cursor:pointer;text-decoration:none;transition:opacity .2s;letter-spacing:.04em}
+.page-nav-cta:hover{opacity:.85}
 
-/* Persona list */
-.persona-list{display:flex;flex-direction:column;gap:8px}
-.section-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#5a5650;margin:16px 0 8px;font-weight:600}
-.section-label:first-child{margin-top:0}
+/* LAYOUT */
+.wrap{max-width:900px;margin:0 auto;padding:100px 24px 80px;position:relative;z-index:1}
 
-.persona-btn{width:100%;text-align:left;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;position:relative}
-.persona-btn:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.12)}
-.persona-btn.active{border-color:rgba(255,200,87,0.4);background:rgba(255,200,87,0.04)}
-.persona-btn.done{border-color:rgba(78,205,196,0.3);background:rgba(78,205,196,0.03)}
-.persona-btn.done::after{content:'✓';position:absolute;top:10px;right:12px;font-size:12px;color:#4ecdc4}
-.persona-btn.running{border-color:rgba(255,200,87,0.5);background:rgba(255,200,87,0.06)}
-.persona-btn.running::after{content:'...';position:absolute;top:10px;right:12px;font-size:12px;color:#ffc857}
-.persona-name{font-size:13px;font-weight:600;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:3px}
-.persona-meta{font-size:11px;color:#5a5650;line-height:1.5}
-.persona-score{font-size:11px;color:#4ecdc4;margin-top:4px;font-family:'DM Mono',monospace}
+/* HERO */
+.signal-hero{margin-bottom:48px}
+.signal-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(78,205,196,0.08);border:1px solid rgba(78,205,196,0.2);
+  border-radius:20px;padding:5px 14px;margin-bottom:20px}
+.signal-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+.signal-badge-txt{font-size:11px;letter-spacing:.15em;color:var(--teal);text-transform:uppercase}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.signal-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;line-height:.95;
+  letter-spacing:-.03em;color:var(--text);margin-bottom:12px}
+.signal-title span{color:var(--teal)}
+.signal-sub{font-size:13px;color:var(--muted);line-height:1.7;max-width:560px;margin-bottom:24px}
+.signal-disclaimer{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:8px 14px}
+.signal-disclaimer strong{color:var(--text)}
 
-/* Status panel */
-.panel{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto}
-.panel-title{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#7a7670;margin-bottom:16px;font-weight:600}
+/* HERO STATS */
+.signal-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
+.signal-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 16px;text-align:center}
+.signal-stat-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:800;line-height:1;margin-bottom:6px}
+.signal-stat-lbl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
 
-.status-idle{color:#3a3830;font-size:13px;padding:32px 0;text-align:center;line-height:2}
-.status-running{font-size:13px;line-height:2;color:#9a9690}
-.status-running strong{color:#ffc857;display:block;font-size:15px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;margin-bottom:8px}
+/* INDUSTRY FILTER */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.filter-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-right:4px}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-family:'DM Mono',monospace;
+  border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .2s}
+.filter-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+.filter-btn.active{background:rgba(78,205,196,0.12);border-color:rgba(78,205,196,0.4);color:var(--teal)}
+.filter-select{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;
+  padding:8px 14px;color:var(--text);font-size:12px;font-family:'DM Mono',monospace;outline:none;cursor:pointer}
+.filter-select option{background:#1a1a22}
 
-.log{font-size:12px;color:#5a5650;line-height:2;max-height:300px;overflow-y:auto;margin-top:12px}
-.log-line{border-bottom:1px solid rgba(255,255,255,0.03);padding:3px 0}
-.log-line.ok{color:#4ecdc4}
-.log-line.warn{color:#ffc857}
-.log-line.err{color:#e05555}
-.log-line.info{color:#7a7670}
+/* SECTION HEADERS */
+.sec-head{margin:36px 0 16px}
+.sec-head-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--text);margin-bottom:6px}
+.sec-head-sub{font-size:15px;color:var(--dim);line-height:1.6}
+.sec-divider{height:1px;background:var(--border);margin:36px 0}
 
-.run-btn{width:100%;background:linear-gradient(135deg,#ffc857,#ff9a3c);color:#0f0e13;border:none;border-radius:8px;padding:13px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.05em;cursor:pointer;margin-top:16px;transition:opacity .2s}
-.run-btn:hover{opacity:.88}
-.run-btn:disabled{opacity:.3;cursor:not-allowed}
-.run-all-btn{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#9a9690;border-radius:8px;padding:11px;font-size:12px;font-family:'DM Mono',monospace;letter-spacing:.05em;cursor:pointer;margin-top:8px;transition:all .2s}
-.run-all-btn:hover{color:#f0ece4;border-color:rgba(255,255,255,0.2)}
-.run-all-btn:disabled{opacity:.3;cursor:not-allowed}
+/* DATA GRID */
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.data-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.data-card-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:18px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-rank{font-size:12px;color:var(--dim);width:14px;text-align:right;flex-shrink:0}
+.bar-name{font-size:14px;color:#c8c4bc;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px}
+.bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.bar-val{font-size:13px;font-weight:600;width:36px;text-align:right;flex-shrink:0}
+.data-note{font-size:12px;color:var(--dim);margin-top:16px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px}
 
-.result-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;margin-top:12px}
-.result-card-name{font-size:13px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:8px}
-.result-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;color:#7a7670}
-.result-row span:last-child{color:#c8c4bc}
+/* EXIT LIST */
+.exit-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.exit-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.exit-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.exit-rank{color:var(--dim);width:20px;text-align:right;flex-shrink:0;font-size:12px;padding-top:2px}
+.exit-main{flex:1;min-width:0}
+.exit-top-row{display:flex;align-items:center;gap:10px;margin-bottom:5px;flex-wrap:wrap}
+.exit-tool{color:var(--red);font-weight:600;font-size:14px}
+.exit-arrow{color:#ffc857;flex-shrink:0;font-size:15px;font-weight:700}
+.exit-rep{color:var(--teal);font-weight:600;font-size:14px}
+.exit-reason{font-size:12px;color:#7a7670;line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 
-.progress-bar{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin:16px 0 8px}
-.progress-fill{height:100%;background:linear-gradient(90deg,#ffc857,#4ecdc4);border-radius:2px;transition:width .4s ease;width:0%}
-.progress-label{font-size:11px;color:#5a5650;text-align:center}
+/* INDUSTRY CARDS */
+.industry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.industry-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:border-color .2s}
+.industry-card:hover{border-color:rgba(78,205,196,0.3)}
+.industry-card-name{font-size:14px;color:var(--teal);font-weight:600;margin-bottom:12px}
+.industry-card-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.industry-card-label{font-size:13px;color:var(--dim)}
+.industry-card-val{font-size:14px;font-weight:600}
 
-.config{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px;margin-bottom:20px}
-.config-title{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#7a7670;margin-bottom:10px;font-weight:600}
-.config-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12px;color:#7a7670}
-.config-row input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:5px 10px;color:#f0ece4;font-size:12px;font-family:'DM Mono',monospace;width:200px;outline:none}
-.config-row input:focus{border-color:rgba(255,200,87,0.4)}
+/* LOCK GATE */
+/* INDUSTRY PREVIEW (blurred, no lock card) */
+.industry-preview-wrap{position:relative;overflow:hidden;border-radius:12px;margin-bottom:0}
+.industry-grid-blur{filter:blur(5px);pointer-events:none;user-select:none;opacity:.35;transform:scale(1.02)}
 
-/* Health badge */
-.health{display:inline-block;font-size:10px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle}
-.health-good{background:rgba(78,205,196,0.1);color:#4ecdc4;border:1px solid rgba(78,205,196,0.2)}
-.health-mid{background:rgba(255,200,87,0.1);color:#ffc857;border:1px solid rgba(255,200,87,0.2)}
-.health-bad{background:rgba(224,85,85,0.1);color:#e05555;border:1px solid rgba(224,85,85,0.2)}
+/* PRO SECTION */
+.pro-section{position:relative;margin:0 0 40px;overflow:hidden;border-radius:16px;
+  background:rgba(78,205,196,0.03);border:1px solid rgba(78,205,196,0.18)}
+.pro-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(78,205,196,0.6),transparent)}
+.pro-section::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(78,205,196,0.07) 0%,transparent 70%)}
+.pro-charts-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.pro-chart-bar{position:absolute;bottom:0;border-radius:3px 3px 0 0;opacity:.06;background:var(--teal)}
+.pro-content{position:relative;z-index:1;padding:52px 40px 48px;display:flex;align-items:center;
+  gap:48px;flex-wrap:wrap}
+.pro-left{flex:1;min-width:260px}
+.pro-badge-row{display:inline-flex;align-items:center;gap:8px;background:rgba(78,205,196,0.08);
+  border:1px solid rgba(78,205,196,0.22);border-radius:20px;padding:5px 14px;margin-bottom:20px}
+.pro-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+.pro-badge-txt{font-size:10px;letter-spacing:.18em;color:var(--teal);text-transform:uppercase;font-weight:600}
+.pro-headline{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(22px,3.5vw,32px);font-weight:800;
+  color:var(--text);letter-spacing:-.02em;line-height:1.1;margin-bottom:12px}
+.pro-headline span{color:var(--teal)}
+.pro-sub{font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:24px;max-width:400px}
+.pro-features{display:flex;flex-direction:column;gap:8px;margin-bottom:0}
+.pro-feat{font-size:12px;color:rgba(78,205,196,0.85);font-family:'DM Mono',monospace;
+  display:flex;align-items:center;gap:8px}
+.pro-feat::before{content:'→';color:var(--teal);font-size:11px}
+.pro-right{flex-shrink:0;width:100%;max-width:340px}
+.pro-waitlist-box{background:rgba(15,14,19,0.7);backdrop-filter:blur(16px);
+  border:1px solid rgba(78,205,196,0.2);border-radius:12px;padding:28px 28px 24px}
+.pro-waitlist-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:10px;font-weight:600;font-family:'DM Mono',monospace}
+.pro-waitlist-headline{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:700;
+  color:var(--text);letter-spacing:-.01em;margin-bottom:6px}
+.pro-waitlist-sub{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.7}
+.pro-waitlist-form{display:flex;flex-direction:column;gap:8px}
+.pro-waitlist-input{width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(78,205,196,0.2);border-radius:7px;padding:11px 14px;
+  font-size:13px;color:var(--text);outline:none;font-family:-apple-system,sans-serif;transition:border-color .2s}
+.pro-waitlist-input::placeholder{color:var(--dim)}
+.pro-waitlist-input:focus{border-color:rgba(78,205,196,0.5)}
+.pro-waitlist-btn{width:100%;padding:12px;border-radius:7px;background:var(--teal);color:#0f0e13;
+  border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;
+  letter-spacing:.05em;transition:opacity .2s}
+.pro-waitlist-btn:hover{opacity:.88}
+.pro-waitlist-success{display:none;font-size:13px;color:var(--teal);text-align:center;
+  padding:10px 0;font-family:'DM Mono',monospace;letter-spacing:.03em}
+.pro-waitlist-note{font-size:11px;color:var(--dim);margin-top:10px;text-align:center}
+
+/* FADE IN ANIMATION */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes barPulse{0%,100%{opacity:.06}50%{opacity:.13}}
+.pro-section{animation:fadeUp .7s ease both;animation-delay:.2s}
+
+/* METHODOLOGY */
+.method-box{background:rgba(255,255,255,0.015);border:1px solid var(--border);border-radius:8px;
+  padding:20px 24px;margin-top:40px}
+.method-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;font-weight:600}
+.method-text{font-size:11px;color:var(--dim);line-height:1.8}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-index:1}
+.footer-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text)}
+.footer-brand span{color:var(--amber)}
+.footer-links{display:flex;gap:20px}
+.footer-link{font-size:11px;color:var(--dim);text-decoration:none}
+.footer-link:hover{color:var(--muted)}
+.footer-note{font-size:11px;color:var(--dim);letter-spacing:.06em}
+
+@media(max-width:640px){
+  .page-nav{padding:12px 16px}
+  .page-nav-links .page-nav-link:not(.active):not(.page-nav-cta){display:none}
+  .signal-stats{grid-template-columns:repeat(2,1fr)}
+  .data-grid{grid-template-columns:1fr}
+}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.signal-hero>*{animation:fadeUp .5s ease both}
+.signal-badge{animation-delay:.05s}.signal-title{animation-delay:.15s}
+.signal-sub{animation-delay:.22s}.signal-disclaimer{animation-delay:.28s}
+/* ── GEO HEATMAP ── */
+.geo-heatmap-wrap{margin-bottom:40px}
+.geo-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.geo-ctrl-group{display:flex;gap:6px}
+.geo-ctrl{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#7a7670;border-radius:6px;padding:6px 14px;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.05em;cursor:pointer;transition:all .2s}
+.geo-ctrl.active,.geo-ctrl:hover{background:rgba(78,205,196,0.1);border-color:rgba(78,205,196,0.3);color:#4ecdc4}
+.geo-legend-btn{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670;border-radius:6px;padding:6px 14px;font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+.geo-legend-btn.active.red{background:rgba(255,77,77,0.08);border-color:rgba(255,77,77,0.25);color:#ff4d4d}
+.geo-legend-btn.active.blue{background:rgba(78,130,255,0.08);border-color:rgba(78,130,255,0.25);color:#4e82ff}
+.geo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.geo-dot.red{background:#ff4d4d;box-shadow:0 0 6px rgba(255,77,77,0.6)}
+.geo-dot.blue{background:#4e82ff;box-shadow:0 0 6px rgba(78,130,255,0.6)}
+.geo-map-container{position:relative;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;min-height:300px}
+#geo-canvas{display:block;width:100%;height:auto;cursor:crosshair}
+.geo-tooltip{position:absolute;background:#1a1920;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;font-size:12px;color:#f0ece4;pointer-events:none;opacity:0;transition:opacity .15s;max-width:200px;z-index:10;font-family:'DM Mono',monospace;line-height:1.6}
+.geo-tooltip.show{opacity:1}
+.geo-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px}
+.geo-loading-dot{width:8px;height:8px;border-radius:50%;background:#4ecdc4;animation:geopulse 1.2s ease infinite}
+.geo-loading-dot:nth-child(2){animation-delay:.2s;background:#ffc857}
+.geo-loading-dot:nth-child(3){animation-delay:.4s}
+@keyframes geoplus{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+@keyframes geoMapIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.geo-bottom{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.geo-region-card{flex:1;min-width:160px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px 14px}
+.geo-region-name{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9a9690;margin-bottom:8px;font-family:'DM Mono',monospace}
+.geo-region-tool{font-size:12px;color:#f0ece4;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.geo-region-tool .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+@keyframes geoMapIn{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
 
-<h1>StackSwap Data Seeder</h1>
-<p class="sub">Runs each persona through the StackScan analyzer and saves to Supabase. <strong>Open analyze.html in another tab first</strong> — this page drives it via <a href="analyze.html" target="analyzer">the analyzer iframe</a>.</p>
+<nav class="page-nav">
+  <a href="index.html" class="page-nav-logo">Stack<span>Swap</span></a>
+  <div class="page-nav-links">
+    <a href="index.html" class="page-nav-link">Home</a>
+    <a href="analyze.html" class="page-nav-link">StackScan</a>
+    <a href="stacksignal.html" class="page-nav-link active">StackSignal</a>
+    <a href="pricing.html" class="page-nav-link">Pricing</a>
+    <a href="/knowledge/index.html" class="page-nav-link">Knowledge</a>
+    <a href="analyze.html" class="page-nav-cta">Run Free Analysis</a>
+  </div>
+</nav>
 
-<div class="layout">
+<div class="wrap">
 
-<!-- LEFT: Persona list -->
-<div>
-  <div class="config">
-    <div class="config-title">Seed Config</div>
-    <div class="config-row">
-      <span>Gate email</span>
-      <input type="email" id="seed-email" value="seed@stackswap.ai" placeholder="seed@stackswap.ai"/>
+  <!-- HERO -->
+  <div class="signal-hero">
+    <div class="signal-badge"><div class="signal-badge-dot"></div><span class="signal-badge-txt">StackSignal — Live Stack Data</span></div>
+    <h1 class="signal-title">Stack<span>Signal</span></h1>
+    <p class="signal-sub">Aggregate trends from anonymized stack submissions. The tools companies are actually using, leaving, and replacing — by industry. Updated as new analyses are submitted.</p>
+    <div class="signal-disclaimer">
+      <span>🔒</span>
+      <span><strong>Free tier:</strong> Aggregate data only. Industry filtering, time slicing, and segmentation available with StackSignal Pro — <a href="#industry-lock" style="color:var(--teal);text-decoration:none">join the waitlist</a>.</span>
     </div>
-    <div class="config-row">
-      <span>Company</span>
-      <input type="text" id="seed-company" value="StackSwap Seed" placeholder="StackSwap Seed"/>
-    </div>
-    <div class="config-row">
-      <span>Role</span>
-      <input type="text" id="seed-role" value="Founder" placeholder="Founder"/>
-    </div>
-    <div class="config-row" style="font-size:11px;color:#3a3830;margin-top:4px">Delay between personas (ms)</div>
-    <div class="config-row"><input type="number" id="seed-delay" value="3000" style="width:100px"/></div>
   </div>
 
-  <div id="persona-list" class="persona-list"></div>
+  <!-- STATS -->
+  <div class="signal-stats" id="stats-bar">
+    <div class="signal-stat">
+      <div class="signal-stat-val" style="color:var(--amber)" id="stat-count">—</div>
+      <div class="signal-stat-lbl">Stacks Analyzed</div>
+    </div>
+    <div class="signal-stat">
+      <div class="signal-stat-val" style="color:var(--teal)" id="stat-savings">—</div>
+      <div class="signal-stat-lbl">Savings Identified</div>
+    </div>
+    <div class="signal-stat">
+      <div class="signal-stat-val" style="color:var(--red)" id="stat-cuts">—</div>
+      <div class="signal-stat-lbl">Tools Flagged</div>
+    </div>
+    <div class="signal-stat">
+      <div class="signal-stat-val" style="color:#c8c4bc" id="stat-industries">—</div>
+      <div class="signal-stat-lbl">Industries</div>
+    </div>
+  </div>
+
+  <!-- INDUSTRY FILTER (aggregate only — filtering is locked) -->
+  <div class="filter-bar">
+    <span class="filter-label">View</span>
+    <button class="filter-btn active" id="btn-all">All Industries</button>
+    <button class="filter-btn lock-trigger" id="btn-filter" onclick="showLockModal()">
+      🔒 Filter by Industry
+    </button>
+  </div>
+
+  <!-- TOP STACK -->
+  <div class="sec-head">
+    <div class="sec-head-title">Top Stack</div>
+    <div class="sec-head-sub">Most common tools found across submitted stacks · All industries</div>
+  </div>
+
+  <div class="data-grid">
+    <div class="data-card">
+      <div class="data-card-label" style="color:var(--amber)">Most Used Tools</div>
+      <div id="most-used-bars"></div>
+      <div class="data-note">Tools appearing most frequently across all submitted stacks. Updated with each new analysis.</div>
+    </div>
+    <div class="data-card">
+      <div class="data-card-label" style="color:var(--teal)">Rising Replacements</div>
+      <div id="rising-bars"></div>
+      <div class="data-note">Tools AI is recommending most often as upgrades or replacements. Derived from swap logic, not vendor input.</div>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- EXIT LIST -->
+  <div class="sec-head">
+    <div class="sec-head-title">The Exit List</div>
+    <div class="sec-head-sub">Tools being flagged for removal most often — ranked by AI recommendation frequency</div>
+  </div>
+
+  <div class="exit-card">
+    <div style="display:flex;gap:10px;margin-bottom:18px;font-size:10px;letter-spacing:.15em;font-weight:600;text-transform:uppercase;padding-left:30px">
+      <span style="color:var(--red);min-width:120px">Being Swapped</span>
+      <span style="color:#ffc857;margin-right:4px">→</span>
+      <span style="color:var(--teal);margin-right:16px">Replaced By</span>
+      <span style="color:var(--dim)">Why AI recommends the switch</span>
+    </div>
+    <div id="exit-list"></div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+
+  <div class="sec-divider"></div>
+
+  <!-- GEOGRAPHIC HEATMAP -->
+  <div class="sec-head">
+    <div class="sec-head-title">Global Stack Activity</div>
+    <div class="sec-head-sub">Where teams are swapping tools — live from StackSwap submissions</div>
+  </div>
+
+  <div class="geo-heatmap-wrap" id="geo-heatmap-wrap">
+    <!-- Slice controls -->
+    <div class="geo-controls">
+      <div class="geo-ctrl-group">
+        <button class="geo-ctrl active" data-view="world" onclick="setGeoView('world',this)">World</button>
+        <button class="geo-ctrl" data-view="us" onclick="setGeoView('us',this)">United States</button>
+      </div>
+      <div class="geo-ctrl-group">
+        <button class="geo-legend-btn amber active" onclick="setGeoMode('exits',this)">
+          <span class="geo-dot amber"></span>Most Exited
+        </button>
+        <button class="geo-legend-btn teal" onclick="setGeoMode('adopted',this)">
+          <span class="geo-dot teal"></span>Most Adopted
+        </button>
+      </div>
+    </div>
+
+    <!-- Map canvas -->
+    <div class="geo-map-container" id="geo-map-container">
+      <canvas id="geo-canvas" width="900" height="460"></canvas>
+      <div class="geo-tooltip" id="geo-tooltip"></div>
+      <div class="geo-loading" id="geo-loading">
+        <div class="geo-loading-dot"></div><div class="geo-loading-dot"></div><div class="geo-loading-dot"></div>
+      </div>
+    </div>
+
+    <!-- Bottom: top tools by region -->
+    <div class="geo-bottom" id="geo-bottom"></div>
+  </div>
+
+  <!-- BY INDUSTRY (preview cards — full drill-in is locked) -->
+  <div class="sec-head">
+    <div class="sec-head-title">By Industry</div>
+    <div class="sec-head-sub">Aggregate snapshot per industry · Full filtering available with Intelligence access</div>
+  </div>
+
+  <!-- BLURRED INDUSTRY PREVIEW -->
+  <div class="industry-preview-wrap">
+    <div class="industry-grid industry-grid-blur" id="industry-grid"></div>
+  </div>
+
+  <!-- STACKSIGNAL PRO SECTION -->
+  <div class="pro-section" id="industry-lock">
+    <!-- animated background bars for visual texture -->
+    <div class="pro-charts-bg" aria-hidden="true">
+      <div class="pro-chart-bar" style="left:5%;width:32px;height:55%;animation:barPulse 3.2s ease-in-out infinite"></div>
+      <div class="pro-chart-bar" style="left:12%;width:28px;height:72%;animation:barPulse 2.8s ease-in-out infinite .4s"></div>
+      <div class="pro-chart-bar" style="left:18%;width:36px;height:41%;animation:barPulse 3.5s ease-in-out infinite .2s"></div>
+      <div class="pro-chart-bar" style="left:25%;width:30px;height:88%;animation:barPulse 2.6s ease-in-out infinite .6s"></div>
+      <div class="pro-chart-bar" style="left:32%;width:24px;height:60%;animation:barPulse 3.1s ease-in-out infinite .1s"></div>
+      <div class="pro-chart-bar" style="right:5%;width:32px;height:65%;animation:barPulse 2.9s ease-in-out infinite .3s"></div>
+      <div class="pro-chart-bar" style="right:12%;width:28px;height:48%;animation:barPulse 3.3s ease-in-out infinite .5s"></div>
+      <div class="pro-chart-bar" style="right:20%;width:36px;height:80%;animation:barPulse 2.7s ease-in-out infinite .2s"></div>
+      <div class="pro-chart-bar" style="right:28%;width:24px;height:55%;animation:barPulse 3.0s ease-in-out infinite .7s"></div>
+    </div>
+    <div class="pro-content">
+      <div class="pro-left">
+        <div class="pro-badge-row">
+          <div class="pro-badge-dot"></div>
+          <span class="pro-badge-txt">StackSignal Pro — Early Access</span>
+        </div>
+        <div class="pro-headline">The full picture,<br><span>by your industry.</span></div>
+        <p class="pro-sub">The free dashboard shows you what's trending across all submissions. Pro lets you slice every chart by industry, team size, and time period — so you see exactly what companies like yours are doing.</p>
+        <div class="pro-features">
+          <div class="pro-feat">Filter every chart by industry &amp; team size</div>
+          <div class="pro-feat">Switching velocity trends over time</div>
+          <div class="pro-feat">Track which categories are growing vs. contracting</div>
+          <div class="pro-feat">CSV export for any dataset</div>
+          <div class="pro-feat">Early access pricing locked in at signup</div>
+        </div>
+      </div>
+      <div class="pro-right">
+        <div class="pro-waitlist-box">
+          <div class="pro-waitlist-label">Get Early Access</div>
+          <div class="pro-waitlist-headline">Join the waitlist — be first in.</div>
+          <div class="pro-waitlist-sub">StackSignal Pro launches soon. Drop your email to get notified first.</div>
+          <div class="pro-waitlist-form" id="proWaitlistForm">
+            <input type="email" class="pro-waitlist-input" placeholder="your@email.com" id="proSignalEmail"/>
+            <button class="pro-waitlist-btn" onclick="submitProWaitlist()">Notify Me →</button>
+          </div>
+          <div class="pro-waitlist-success" id="proSignalSuccess">✓ You're on the list. We'll be in touch.</div>
+          <div class="pro-waitlist-note">No spam. One email when Pro launches.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METHODOLOGY -->
+  <div class="method-box">
+    <div class="method-label">Data Methodology</div>
+    <p class="method-text">Rankings are derived from AI analysis of anonymized stack submissions. No vendor has paid for placement. No sponsored results. Recommendations are generated purely by pattern-matching tool overlaps, pricing data, and industry-specific best practices. Dataset updates in real time with every new analysis. Savings figures are estimates based on current vendor list pricing and may not reflect negotiated rates.</p>
+  </div>
+
 </div>
 
-<!-- RIGHT: Status panel -->
-<div class="panel">
-  <div class="panel-title">Status</div>
-  <div id="status-area"><div class="status-idle">← Select a persona to run it<br>or use Run All below</div></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-  <div class="progress-label" id="progress-label"></div>
-  <button class="run-btn" id="run-selected-btn" disabled onclick="runSelected()">Run Selected</button>
-  <button class="run-all-btn" id="run-all-btn" onclick="runAll()">Run All Personas</button>
-  <div class="log" id="log"></div>
-</div>
 
-</div>
-
-<!-- Hidden analyzer iframe -->
-<iframe id="analyzer" name="analyzer" src="analyze.html" style="display:none;width:1px;height:1px;border:none"></iframe>
+<!-- WAITLIST ANCHOR (kept for any external links) -->
+<div id="signal-waitlist"></div>
+</section>
 
 <script>
-// ── PERSONAS ─────────────────────────────────────────────────────────────────
-const PERSONAS = [
-  // ── BAD STACKS ──────────────────────────────────────────────────
-  {
-    id: 1,
-    name: "The Over-Funded Startup",
-    category: "🔴 Bloated / Bad",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "12000",
-    tools: ["ZoomInfo","Salesforce","Outreach","Salesloft","Gong","Chorus","Marketo","HubSpot","Drift","Jasper","Tableau","Hotjar","FullStory","Slack","Zoom","Microsoft Teams"],
-    note: "Dual CRM, dual sequencing, dual conversation intel, dual analytics"
-  },
-  {
-    id: 2,
-    name: "The Real Estate Mess",
-    category: "🔴 Bloated / Bad",
-    industry: "Real Estate",
-    teamSize: "6-15",
-    budget: "3200",
-    tools: ["Salesforce","Follow Up Boss","Dotloop","Paperless Pipeline","DocuSign","HelloSign","Zapier","Monday.com","Mailchimp","HubSpot","Zoom","Slack","Google Workspace","Microsoft Teams"],
-    note: "Two CRMs, two e-sign tools, two comms platforms"
-  },
-  {
-    id: 3,
-    name: "The Agency That Thinks It's a SaaS",
-    category: "🔴 Bloated / Bad",
-    industry: "Marketing Agency",
-    teamSize: "1-5",
-    budget: "4800",
-    tools: ["Salesforce","ZoomInfo","Outreach","Marketo","Tableau","Adobe Creative Cloud","Hootsuite","Sprout Social","Jasper","Copy.ai","Asana","Monday.com","Jira","Slack","Zoom"],
-    note: "Enterprise sales stack for 6 people, dual social, dual AI writers, triple PM"
-  },
-  {
-    id: 4,
-    name: "The Zombie Stack",
-    category: "🔴 Bloated / Bad",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "8500",
-    tools: ["Pardot","Salesforce","Clari","Chorus","ZoomInfo","Salesloft","Tableau","Hotjar","FullStory","Heap","Drift","DocuSign","Dropbox","Box","Microsoft 365","Google Workspace","Slack","Microsoft Teams"],
-    note: "Legacy everything, triple analytics, dual storage, dual identity"
-  },
-  {
-    id: 5,
-    name: "The Scrappy Founder Who Over-Tooled",
-    category: "🔴 Bloated / Bad",
-    industry: "SaaS / Tech",
-    teamSize: "1-5",
-    budget: "2900",
-    tools: ["HubSpot","Pipedrive","Apollo.io","Smartlead","AiSDR","Instantly","ZoomInfo","Jasper","Copy.ai","ChatGPT","Calendly","Zoom","Loom","Notion","Asana","ClickUp","Airtable"],
-    note: "Triple CRM, quad outbound, triple AI writing, triple PM"
-  },
-  {
-    id: 6,
-    name: "The Enterprise Holdover",
-    category: "🔴 Bloated / Bad",
-    industry: "SaaS / Tech",
-    teamSize: "16-50",
-    budget: "18000",
-    tools: ["Salesforce","HubSpot","Marketo","Pardot","Gong","Chorus","Clari","ZoomInfo","Outreach","Salesloft","Tableau","Looker","Zendesk","Intercom","Drift","DocuSign","PandaDoc","Slack","Microsoft Teams","Zoom","Webex"],
-    note: "Basically everything doubled, four contract tools, four support/chat"
-  },
-  {
-    id: 7,
-    name: "The Real Estate Brokerage Disaster",
-    category: "🔴 Bloated / Bad",
-    industry: "Real Estate",
-    teamSize: "16-50",
-    budget: "5100",
-    tools: ["Follow Up Boss","kvCORE","BoomTown","Dotloop","SkySlope","Paperless Pipeline","DocuSign","Lone Wolf Back Office","Brokermint","QuickBooks","Zapier","Monday.com","Asana","HubSpot","Mailchimp","Zoom","Google Workspace","Slack"],
-    note: "Triple CRM, triple transaction mgmt, dual back office, Zapier holding it together"
-  },
-  {
-    id: 8,
-    name: "The AI Hype Stack",
-    category: "🔴 Bloated / Bad",
-    industry: "SaaS / Tech",
-    teamSize: "1-5",
-    budget: "3600",
-    tools: ["AiSDR","Instantly","Smartlead","Reply.io","Lemlist","Apollo.io","Clay","ChatGPT","Jasper","Copy.ai","Writer","HubSpot","Pipedrive","Zoom","Google Meet","Notion","ClickUp","Asana"],
-    note: "Five outbound tools, triple AI writing, dual CRM, dual video, triple PM"
-  },
-  {
-    id: 9,
-    name: "The PE-Backed Rollup Chaos",
-    category: "🔴 Bloated / Bad",
-    industry: "SaaS / Tech",
-    teamSize: "51-200",
-    budget: "22000",
-    tools: ["Salesforce","HubSpot","Dynamics 365","Outreach","Salesloft","Groove","ZoomInfo","Cognism","Apollo.io","Gong","Chorus","Clari","Tableau","Looker","Power BI","Zendesk","Intercom","Freshdesk","Slack","Teams","Webex","Zoom","DocuSign","PandaDoc","Ironclad"],
-    note: "Three CRMs, three outbound tools, three analytics, three support platforms — classic rollup debt"
-  },
-  {
-    id: 10,
-    name: "The Marketing Team Gone Rogue",
-    category: "🔴 Bloated / Bad",
-    industry: "Marketing Agency",
-    teamSize: "6-15",
-    budget: "7200",
-    tools: ["HubSpot","Marketo","Pardot","Mailchimp","ActiveCampaign","Hootsuite","Sprout Social","Buffer","Jasper","Copy.ai","Writer","ChatGPT","Semrush","Ahrefs","Moz","Google Analytics","Mixpanel","Hotjar"],
-    note: "Three marketing automation platforms, three social tools, four AI writers, three SEO tools"
-  },
-  {
-    id: 11,
-    name: "The Startup That Never Cleaned Up",
-    category: "🔴 Bloated / Bad",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "6400",
-    tools: ["Pipedrive","HubSpot","Salesforce","Trello","Asana","Monday.com","Jira","ClickUp","Notion","Confluence","Google Docs","Slack","Teams","Discord","Intercom","Drift","Zendesk","Freshdesk","Stripe","Chargebee","Recurly"],
-    note: "Accumulated 21 tools across 5 years. Nothing was ever cut."
-  },
-
-  // ── MEDIOCRE / FIXABLE ───────────────────────────────────────────
-  {
-    id: 12,
-    name: "The Mid-Market That Outgrew HubSpot",
-    category: "🟡 Mediocre / Fixable",
-    industry: "SaaS / Tech",
-    teamSize: "16-50",
-    budget: "5500",
-    tools: ["HubSpot","Apollo.io","ZoomInfo","Gong","Calendly","Slack","Notion","Google Workspace","Stripe","Intercom","Zapier","Loom"],
-    note: "Decent stack but ZoomInfo + Apollo overlap, Zapier dependency"
-  },
-  {
-    id: 13,
-    name: "The Solo Founder With Good Instincts",
-    category: "🟡 Mediocre / Fixable",
-    industry: "SaaS / Tech",
-    teamSize: "1-5",
-    budget: "800",
-    tools: ["HubSpot","Apollo.io","Slack","Notion","Google Workspace","Stripe","Zoom","Loom","Calendly","ChatGPT"],
-    note: "Lean but Apollo + HubSpot overlap in sequences"
-  },
-  {
-    id: 14,
-    name: "The Real Estate Team On The Fence",
-    category: "🟡 Mediocre / Fixable",
-    industry: "Real Estate",
-    teamSize: "6-15",
-    budget: "1800",
-    tools: ["Follow Up Boss","Dotloop","DocuSign","Zapier","Mailchimp","Google Workspace","Zoom","Slack","Calendly","BombBomb"],
-    note: "Reasonable stack but Zapier dependency and no CRM-native email"
-  },
-  {
-    id: 15,
-    name: "The Agency With One Too Many Tools",
-    category: "🟡 Mediocre / Fixable",
-    industry: "Marketing Agency",
-    teamSize: "6-15",
-    budget: "3100",
-    tools: ["HubSpot","Semrush","Ahrefs","Adobe Creative Cloud","Notion","Slack","Google Workspace","Zoom","Asana","Monday.com","Loom","ChatGPT"],
-    note: "Semrush + Ahrefs overlap, Asana + Monday.com overlap"
-  },
-  {
-    id: 16,
-    name: "The SDR Team With Legacy Data",
-    category: "🟡 Mediocre / Fixable",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "4200",
-    tools: ["Salesforce","ZoomInfo","Outreach","Gong","Calendly","Slack","Google Workspace","Zoom","Docusign","Notion","Loom"],
-    note: "ZoomInfo could be replaced by Apollo, Outreach is expensive at this size"
-  },
-
-  // ── GOOD / LEAN ──────────────────────────────────────────────────
-  {
-    id: 17,
-    name: "The Ideal Startup Stack",
-    category: "🟢 Good / Lean",
-    industry: "SaaS / Tech",
-    teamSize: "1-5",
-    budget: "600",
-    tools: ["HubSpot","Apollo.io","Slack","Google Workspace","Stripe","Notion","Zoom","Calendly","ChatGPT","Loom"],
-    note: "10 tools, all integrated, no overlap, right-sized"
-  },
-  {
-    id: 18,
-    name: "The Modern Sales Team",
-    category: "🟢 Good / Lean",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "2200",
-    tools: ["HubSpot","Apollo.io","Smartlead","Gong","Calendly","Slack","Google Workspace","Notion","Stripe","Loom","ChatGPT"],
-    note: "Clay-era stack — enrichment + sequencing + CRM without bloat"
-  },
-  {
-    id: 19,
-    name: "The Lean Real Estate Team",
-    category: "🟢 Good / Lean",
-    industry: "Real Estate",
-    teamSize: "6-15",
-    budget: "900",
-    tools: ["Follow Up Boss","Paperless Pipeline","DocuSign","Google Workspace","Zoom","BombBomb","Calendly","ChatGPT"],
-    note: "Purpose-built RE stack, nothing wasted"
-  },
-  {
-    id: 20,
-    name: "The GTM Engineer's Dream Stack",
-    category: "🟢 Good / Lean",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "3200",
-    tools: ["HubSpot","Clay","Smartlead","Apollo.io","Gong","Slack","Google Workspace","Notion","Stripe","Loom","Calendly","ChatGPT","Zapier"],
-    note: "AI-native outbound, minimal overlap, well-integrated"
-  },
-  {
-    id: 21,
-    name: "The Bootstrapped SaaS That Nailed It",
-    category: "🟢 Good / Lean",
-    industry: "SaaS / Tech",
-    teamSize: "1-5",
-    budget: "350",
-    tools: ["HubSpot","Slack","Google Workspace","Stripe","Notion","Calendly","ChatGPT","Loom"],
-    note: "8 tools, zero overlap, everything native"
-  },
-  {
-    id: 22,
-    name: "The Scaling Agency Done Right",
-    category: "🟢 Good / Lean",
-    industry: "Marketing Agency",
-    teamSize: "6-15",
-    budget: "1800",
-    tools: ["HubSpot","Semrush","Adobe Creative Cloud","Slack","Google Workspace","Notion","Asana","Zoom","Loom","ChatGPT","Stripe"],
-    note: "One SEO tool, one creative suite, one PM tool, everything connected"
-  },
-
-  // ── EDGE CASES ───────────────────────────────────────────────────
-  {
-    id: 23,
-    name: "The One-Tool Wonder",
-    category: "⚪ Edge Cases",
-    industry: "SaaS / Tech",
-    teamSize: "1-5",
-    budget: "200",
-    tools: ["Notion"],
-    note: "Extreme minimalism — tests single-tool analysis"
-  },
-  {
-    id: 24,
-    name: "The All-Microsoft Shop",
-    category: "⚪ Edge Cases",
-    industry: "SaaS / Tech",
-    teamSize: "51-200",
-    budget: "8000",
-    tools: ["Microsoft 365","Microsoft Teams","Azure DevOps","Power BI","Dynamics 365","SharePoint","OneDrive","Outlook","LinkedIn Sales Navigator","Microsoft Copilot"],
-    note: "Full Microsoft lock-in — tests ecosystem scoring"
-  },
-  {
-    id: 25,
-    name: "The All-Google Shop",
-    category: "⚪ Edge Cases",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "1200",
-    tools: ["Google Workspace","Google Analytics","Google Ads","Looker","Google Meet","Google Chat","Google Drive","AppSheet","Looker Studio"],
-    note: "Full Google stack — tests integration cohesion scoring"
-  },
-  {
-    id: 26,
-    name: "The Recruiting Firm",
-    category: "⚪ Edge Cases",
-    industry: "SaaS / Tech",
-    teamSize: "6-15",
-    budget: "4500",
-    tools: ["LinkedIn Recruiter","Greenhouse","Lever","Workable","HireVue","Indeed","ZoomInfo","Apollo.io","Slack","Google Workspace","Zoom","Calendly","DocuSign","BambooHR"],
-    note: "Dual ATS (Greenhouse + Lever), dual sourcing (LinkedIn + ZoomInfo + Apollo)"
-  },
-  {
-    id: 27,
-    name: "The E-Commerce Brand",
-    category: "⚪ Edge Cases",
-    industry: "E-commerce",
-    teamSize: "6-15",
-    budget: "2800",
-    tools: ["Shopify","Klaviyo","Gorgias","Postscript","Attentive","Recharge","Loop Returns","Yotpo","Okendo","Google Analytics","Triple Whale","Northbeam","Slack","Notion"],
-    note: "Dual SMS (Postscript + Attentive), dual reviews (Yotpo + Okendo), dual attribution"
-  },
-  {
-    id: 28,
-    name: "The 200-Person Chaos",
-    category: "⚪ Edge Cases",
-    industry: "SaaS / Tech",
-    teamSize: "51-200",
-    budget: "35000",
-    tools: ["Salesforce","HubSpot","Marketo","Pardot","Gong","Chorus","Clari","ZoomInfo","Cognism","Outreach","Salesloft","Groove","Tableau","Looker","Power BI","Domo","Zendesk","Intercom","Freshdesk","ServiceNow","Slack","Teams","Zoom","Webex","DocuSign","PandaDoc","Ironclad","Conga","Workday","BambooHR","Rippling","Jira","Asana","Monday.com","Confluence","Notion","Sharepoint"],
-    note: "Maximum chaos test — 37 tools, everything duplicated"
+async function submitProWaitlist() {
+  const input = document.getElementById('proSignalEmail');
+  const email = input.value.trim();
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = 'rgba(255,107,107,0.5)';
+    setTimeout(() => input.style.borderColor = 'rgba(78,205,196,0.2)', 1500);
+    return;
   }
-];
-
-// Group by category
-const categories = [...new Set(PERSONAS.map(p => p.category))];
-
-// State
-let selectedPersona = null;
-let running = false;
-let results = {};
-
-// ── RENDER PERSONA LIST ───────────────────────────────────────────────────────
-function renderList() {
-  const list = document.getElementById('persona-list');
-  list.innerHTML = '';
-
-  categories.forEach(cat => {
-    const label = document.createElement('div');
-    label.className = 'section-label';
-    label.textContent = cat;
-    list.appendChild(label);
-
-    PERSONAS.filter(p => p.category === cat).forEach(p => {
-      const btn = document.createElement('div');
-      btn.className = 'persona-btn' + (selectedPersona?.id === p.id ? ' active' : '') + (results[p.id]?.done ? ' done' : '');
-      btn.id = `persona-${p.id}`;
-      btn.onclick = () => selectPersona(p);
-      btn.innerHTML = `
-        <div class="persona-name">${p.name}</div>
-        <div class="persona-meta">${p.industry} · ${p.teamSize} people · $${Number(p.budget).toLocaleString()}/mo</div>
-        <div class="persona-meta" style="margin-top:2px;color:#3a3830">${p.tools.length} tools · ${p.note}</div>
-        ${results[p.id] ? `<div class="persona-score">Score: ${results[p.id].score} · Saves $${results[p.id].saves}/mo</div>` : ''}
-      `;
-      list.appendChild(btn);
+  try {
+    await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email,
+        waitlist_type: 'intelligence_pro',
+        source_page: 'stacksignal',
+        context: {}
+      })
     });
-  });
+  } catch(e) {}
+  document.getElementById('proWaitlistForm').style.display = 'none';
+  document.getElementById('proSignalSuccess').style.display = 'block';
 }
+</script>
 
-function selectPersona(p) {
-  selectedPersona = p;
-  renderList();
-  document.getElementById('run-selected-btn').disabled = running;
-  showPersonaDetail(p);
-}
-
-function showPersonaDetail(p) {
-  const area = document.getElementById('status-area');
-  area.innerHTML = `
-    <div class="status-running">
-      <strong>${p.name}</strong>
-      <div style="color:#7a7670;margin-bottom:12px">${p.industry} · ${p.teamSize} · $${Number(p.budget).toLocaleString()}/mo · ${p.tools.length} tools</div>
-      <div style="color:#5a5650;font-size:11px;line-height:1.8">${p.tools.join(', ')}</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">Stack<span>Swap</span></div>
+    <div class="footer-links">
+      <a href="analyze.html" class="footer-link">StackScan</a>
+      <a href="stacksignal.html" class="footer-link">StackSignal</a>
+      <a href="pro.html" class="footer-link">StackAudit</a>
+      <a href="pricing.html" class="footer-link">Pricing</a>
     </div>
-  `;
-}
+    <div class="footer-note">POWERED BY DEMANDSTACK — NO VENDOR BIAS</div>
+  </div>
+</footer>
 
-// ── LOG ───────────────────────────────────────────────────────────────────────
-function log(msg, type='info') {
-  const logEl = document.getElementById('log');
-  const line = document.createElement('div');
-  line.className = `log-line ${type}`;
-  line.textContent = `${new Date().toLocaleTimeString()} — ${msg}`;
-  logEl.appendChild(line);
-  logEl.scrollTop = logEl.scrollHeight;
-}
-
-
-// ── GEO DATA PER PERSONA ─────────────────────────────────────────────────────
-const PERSONA_GEO = {
-  1: {country:'US',country_name:'United States',region:'California',state:'CA'},
-  2: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
-  3: {country:'US',country_name:'United States',region:'New York',state:'NY'},
-  4: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
-  5: {country:'US',country_name:'United States',region:'Colorado',state:'CO'},
-  6: {country:'US',country_name:'United States',region:'Massachusetts',state:'MA'},
-  7: {country:'US',country_name:'United States',region:'Florida',state:'FL'},
-  8: {country:'US',country_name:'United States',region:'California',state:'CA'},
-  9: {country:'GB',country_name:'United Kingdom',region:'England',state:null},
-  10: {country:'CA',country_name:'Canada',region:'Ontario',state:null},
-  11: {country:'US',country_name:'United States',region:'Washington',state:'WA'},
-  12: {country:'US',country_name:'United States',region:'Georgia',state:'GA'},
-  13: {country:'AU',country_name:'Australia',region:'New South Wales',state:null},
-  14: {country:'US',country_name:'United States',region:'Arizona',state:'AZ'},
-  15: {country:'US',country_name:'United States',region:'Oregon',state:'OR'},
-  16: {country:'US',country_name:'United States',region:'New York',state:'NY'},
-  17: {country:'DE',country_name:'Germany',region:'Bavaria',state:null},
-  18: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
-  19: {country:'US',country_name:'United States',region:'Tennessee',state:'TN'},
-  20: {country:'US',country_name:'United States',region:'California',state:'CA'},
-  21: {country:'NL',country_name:'Netherlands',region:'Noord-Holland',state:null},
-  22: {country:'US',country_name:'United States',region:'Illinois',state:'IL'},
-  23: {country:'SG',country_name:'Singapore',region:'Central Region',state:null},
-  24: {country:'US',country_name:'United States',region:'Virginia',state:'VA'},
-  25: {country:'US',country_name:'United States',region:'California',state:'CA'},
-  26: {country:'US',country_name:'United States',region:'New York',state:'NY'},
-  27: {country:'US',country_name:'United States',region:'Ohio',state:'OH'},
-  28: {country:'US',country_name:'United States',region:'Texas',state:'TX'},
+<script>
+// ── SEED DATA (shown while loading or when no real data exists) ───────────────
+const SEED_MOST_USED = [
+  ["HubSpot", 88], ["Slack", 82], ["Notion", 74], ["Google Workspace", 68],
+  ["Zoom", 61], ["Salesforce", 54], ["Zapier", 48], ["Asana", 44]
+];
+const SEED_RISING = [
+  ["Apollo.io", 78], ["Clay", 65], ["Notion AI", 60], ["HubSpot Chat", 55],
+  ["Microsoft Clarity", 50], ["Buffer", 44], ["Loom", 38], ["Linear", 34]
+];
+const SEED_CUTS = [
+  ["ZoomInfo", 91], ["Drift", 76], ["Marketo", 69], ["Jasper", 62],
+  ["Hootsuite", 58], ["Outreach", 50], ["Gong", 44], ["Chorus", 38]
+];
+const SEED_REPS = {
+  "ZoomInfo": "Apollo.io", "Drift": "HubSpot Chat", "Marketo": "HubSpot Mktg Hub",
+  "Jasper": "Claude or ChatGPT", "Hootsuite": "Buffer or Loomly",
+  "Outreach": "Smartlead + Clay", "Gong": "Avoma", "Chorus": "Avoma",
+  "Salesloft": "Smartlead + HubSpot", "Pardot": "HubSpot Mktg Hub",
+  "Tableau": "Looker Studio", "Clari": "HubSpot Forecasting",
+  "FullStory": "Hotjar", "Heap": "Hotjar", "Intercom": "HubSpot Chat",
+  "PandaDoc": "DocuSign", "Dropbox": "Google Drive",
+  "Microsoft Teams": "Slack", "Webex": "Zoom",
+  "Copy.ai": "Claude or ChatGPT", "Writer": "Claude or ChatGPT",
+  "Reply.io": "Smartlead", "Lemlist": "Smartlead", "Instantly": "Smartlead",
+  "kvCORE": "Follow Up Boss", "BoomTown": "Follow Up Boss",
+  "HelloSign": "DocuSign", "SkySlope": "Paperless Pipeline",
+  "Sprout Social": "Buffer or Loomly", "Ahrefs": "Semrush",
 };
 
-// ── CORE: Run analysis via Anthropic API directly ─────────────────────────────
-async function analyzePersona(persona) {
-  log(`Starting: ${persona.name}`, 'info');
+const SWAP_REASONS = {
+  "ZoomInfo":        "6× the price of Apollo for comparable B2B data. Most SMB teams don't use the features that justify the cost.",
+  "Drift":           "HubSpot Chat is included in most HubSpot plans. Paying separately for Drift adds $400+/mo for duplicate functionality.",
+  "Marketo":         "Built for enterprise. Under 200 seats, HubSpot covers 90% of the use cases at a fraction of the price.",
+  "Pardot":          "Legacy Salesforce product with a steep learning curve. HubSpot replaces it with better UX and lower TCO.",
+  "Jasper":          "AI writing wrappers are being made obsolete by direct access to Claude and ChatGPT at $20/mo.",
+  "Copy.ai":         "Same issue as Jasper — a wrapper around the same models you can access directly for less.",
+  "Writer":          "Enterprise AI writing at consumer AI prices — direct LLM access outperforms it for most use cases.",
+  "Hootsuite":       "Overpriced for what it does. Buffer and Loomly offer comparable scheduling at 80% less cost.",
+  "Sprout Social":   "Better suited for agencies managing many brands. Most single-brand teams overpay for unused features.",
+  "Outreach":        "Clay + Smartlead delivers better personalization and deliverability at a lower combined cost.",
+  "Salesloft":       "Significant overlap with HubSpot sequences. Teams with HubSpot Sales Hub rarely need both.",
+  "Reply.io":        "Smartlead has better deliverability infrastructure and lower cost at equivalent send volumes.",
+  "Lemlist":         "Smartlead outperforms on deliverability and cost per seat at meaningful send volumes.",
+  "Instantly":       "Smartlead is the more robust choice once teams scale past basic cold email volume.",
+  "Gong":            "Avoma delivers call recording and coaching at roughly 60% of Gong's per-seat cost.",
+  "Chorus":          "Gong acquired and deprioritized Chorus. Avoma is the cleaner modern alternative.",
+  "Clari":           "Forecast functionality is now built into HubSpot and Salesforce natively at most tiers.",
+  "Tableau":         "Looker Studio is free and covers most reporting needs unless you're doing complex data modeling.",
+  "FullStory":       "Hotjar covers session recording and heatmaps at a lower cost for most team sizes.",
+  "Heap":            "Hotjar's feature set overlaps substantially with Heap for behavioral analytics at a lower price.",
+  "Intercom":        "HubSpot Chat and Service Hub replaces Intercom for most teams already on HubSpot.",
+  "PandaDoc":        "DocuSign is included in many existing contracts and covers basic e-sign without extra cost.",
+  "HelloSign":       "DocuSign has better integration coverage and is more widely accepted by counterparties.",
+  "Dropbox":         "Google Drive and OneDrive are bundled into workspace subscriptions most teams already pay for.",
+  "Microsoft Teams": "Slack has superior integrations and developer ecosystem for tech-forward teams.",
+  "Webex":           "Zoom is the default standard. Webex seats are rarely justified outside Cisco-heavy enterprises.",
+  "kvCORE":          "Follow Up Boss is purpose-built for agents, easier to configure, and better supported.",
+  "BoomTown":        "High cost relative to Follow Up Boss for comparable lead management at most brokerage sizes.",
+  "SkySlope":        "Paperless Pipeline is leaner and more cost-effective for most independent brokerages.",
+  "Ahrefs":          "Semrush offers comparable SEO data with better content and PPC tools in the same platform.",
+};
+const SEED_INDUSTRIES = [
+  { name: "SaaS / Tech", count: 0, savings: 0, topCut: "ZoomInfo" },
+  { name: "Marketing Agency", count: 0, savings: 0, topCut: "Hootsuite" },
+  { name: "Real Estate Brokerage", count: 0, savings: 0, topCut: "Dotloop" },
+  { name: "E-commerce", count: 0, savings: 0, topCut: "Klaviyo" },
+  { name: "Finance / Fintech", count: 0, savings: 0, topCut: "Marketo" },
+  { name: "Healthcare / MedTech", count: 0, savings: 0, topCut: "Salesforce" },
+];
 
-  const statusArea = document.getElementById('status-area');
-  statusArea.innerHTML = `
-    <div class="status-running">
-      <strong>Running: ${persona.name}</strong>
-      <div style="color:#7a7670;margin-bottom:8px">${persona.tools.length} tools · ${persona.industry}</div>
-      <div style="color:#4ecdc4;font-size:11px">Calling /api/report directly...</div>
+// ── RENDER HELPERS ────────────────────────────────────────────────────────────
+function freq(arr, n = 10) {
+  const m = {};
+  arr.forEach(t => { if(t) m[t] = (m[t]||0) + 1; });
+  return Object.entries(m).sort((a,b) => b[1]-a[1]).slice(0, n);
+}
+
+function renderBars(containerId, items, color, usePct = true) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const max = items[0]?.[1] || 1;
+  const total = items.reduce((s,[,v]) => s+v, 0);
+  el.innerHTML = items.map(([name, val], i) => {
+    const w = ((val/max)*100).toFixed(0);
+    const pct = total > 0 ? ((val/total)*100).toFixed(0) : val;
+    return `<div class="bar-row">
+      <span class="bar-rank">${i+1}</span>
+      <span class="bar-name">${name}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${color}"></div></div>
+      <span class="bar-val" style="color:${color}">${usePct ? pct+'%' : val}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderExitList(cuts, reps, reasons) {
+  const exitEl = document.getElementById('exit-list');
+  if (!exitEl) return;
+  const withRep = cuts.filter(([tool]) => reps[tool]);
+  exitEl.innerHTML = withRep.map(([tool], i) => {
+    const reason = (reasons || {})[tool] || null;
+    return `<div class="exit-row">
+      <span class="exit-rank">${i+1}</span>
+      <div class="exit-main">
+        <div class="exit-top-row">
+          <span class="exit-tool">${tool}</span>
+          <span class="exit-arrow">→</span>
+          <span class="exit-rep">${reps[tool]}</span>
+        </div>
+        ${reason ? `<div class="exit-reason">${reason}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('') || '<div style="font-size:13px;color:#5a5650;font-family:\'DM Mono\',monospace;padding:8px 0">No swap data yet — run more analyses to populate.</div>';
+}
+
+function renderIndustryCards(industries) {
+  const grid = document.getElementById('industry-grid');
+  if (!grid) return;
+  grid.innerHTML = industries.map(ind => `
+    <div class="industry-card">
+      <div class="industry-card-name">${ind.name}</div>
+      <div class="industry-card-row">
+        <span class="industry-card-label">Analyses</span>
+        <span class="industry-card-val" style="color:var(--text)">${ind.count || '—'}</span>
+      </div>
+      <div class="industry-card-row">
+        <span class="industry-card-label">Avg savings</span>
+        <span class="industry-card-val" style="color:var(--teal)">${ind.count ? '$'+(ind.savings/ind.count).toFixed(0)+'/mo' : '—'}</span>
+      </div>
+      <div class="industry-card-row">
+        <span class="industry-card-label">Top cut</span>
+        <span class="industry-card-val" style="color:var(--red)">${ind.topCut || '—'}</span>
+      </div>
     </div>
-  `;
+  `).join('');
+}
 
-  // ── Auto-price: sum known tool costs, fall back to persona budget ──
-  const TOOL_PRICES = {
-    // Data & Prospecting
-    'zoominfo':500,'apollo.io':79,'clay':149,'cognism':400,'lusha':99,
-    'linkedin sales navigator':99,'linkedin recruiter':825,
-    // CRM
-    'salesforce':150,'hubspot':113,'pipedrive':49,'dynamics 365':95,
-    'follow up boss':49,'kvcor':499,'boomtown':1500,'freshsales':35,
-    // Outbound / Sequencing
-    'outreach':150,'salesloft':125,'smartlead':94,'instantly':97,
-    'reply.io':70,'lemlist':59,'groove':50,'aisdr':250,
-    // Conversation Intel
-    'gong':200,'chorus':100,'avoma':70,
-    // Marketing Automation
-    'marketo':800,'pardot':1250,'activecampaign':79,'mailchimp':20,
-    'klaviyo':45,'hootsuite':249,'sprout social':249,'buffer':18,
-    // Analytics
-    'tableau':70,'looker':5000,'power bi':20,'domo':300,
-    'hotjar':39,'fullstory':200,'heap':50,'mixpanel':25,
-    'google analytics':0,'triple whale':199,'northbeam':99,
-    // AI Writing
-    'jasper':99,'copy.ai':36,'writer':18,'chatgpt':20,'claude':20,
-    // Support / Chat
-    'zendesk':150,'intercom':200,'freshdesk':50,'drift':400,
-    'servicenow':150,'gorgias':50,
-    // Project Management
-    'asana':25,'monday.com':20,'clickup':7,'jira':7,'notion':16,
-    'trello':5,'airtable':20,'confluence':5,'sharepoint':5,
-    // Communication
-    'slack':8,'microsoft teams':6,'zoom':15,'google meet':0,
-    'webex':25,'discord':0,'loom':12,
-    // Workspace / Storage
-    'google workspace':12,'microsoft 365':22,'dropbox':20,'box':25,
-    'onedrive':6,
-    // E-Sign / Contracts
-    'docusign':40,'hellosign':20,'pandadoc':49,'ironclad':500,'conga':100,
-    // Real Estate
-    'dotloop':89,'skyslope':80,'paperless pipeline':80,
-    'lone wolf back office':200,'brokermint':99,'skyslope':80,
-    // CRM – RE
-    'kvcor':499,'boomtown':1500,
-    // Finance / HR
-    'quickbooks':35,'stripe':0,'chargebee':299,'recurly':299,
-    'bamboohr':99,'workday':400,'rippling':8,
-    // Scheduling
-    'calendly':12,'hubspot meetings':0,
-    // Video / Recording
-    'bombbomb':50,'loom':12,
-    // Dev
-    'github':4,'gitlab':19,'azure devops':6,'jira':7,
-    // Misc
-    'zapier':49,'make':9,'adobe creative cloud':55,'semrush':119,'ahrefs':99,'moz':99,
-    'greenhouse':500,'lever':350,'workable':149,'hirevue':300,'indeed':0,
-    'yotpo':19,'okendo':29,'postscript':25,'attentive':400,'recharge':99,
-    'loop returns':99,'shopify':79,'appsheet':10,'looker studio':0,
-  };
+function renderAll(data) {
+  const hasReal = data.count > 0;
 
-  function estimateSpend(tools) {
-    let total = 0;
-    let unpriced = 0;
-    tools.forEach(tool => {
-      const key = Object.keys(TOOL_PRICES).find(k =>
-        tool.toLowerCase().includes(k) || k.includes(tool.toLowerCase())
-      );
-      if (key !== undefined) total += TOOL_PRICES[key];
-      else { total += 45; unpriced++; } // default $45/mo for unknown tools
-    });
-    return total;
+  // Stats
+  document.getElementById('stat-count').textContent = hasReal ? data.count.toLocaleString() : '—';
+  document.getElementById('stat-savings').textContent = hasReal ? '$' + data.totalSavings.toLocaleString() : '—';
+  document.getElementById('stat-cuts').textContent = hasReal ? data.cuts.length : '—';
+  document.getElementById('stat-industries').textContent = hasReal
+    ? Object.keys(data.byIndustry).length
+    : SEED_INDUSTRIES.length;
+
+  // Charts — real data if available, seed otherwise
+  const cutsArr = hasReal ? data.cuts : SEED_CUTS;
+  const recsArr = hasReal ? data.recs : SEED_RISING;
+
+  renderBars('most-used-bars', SEED_MOST_USED, 'var(--amber)');
+  renderBars('rising-bars', recsArr, 'var(--teal)');
+  renderExitList(cutsArr, SEED_REPS, SWAP_REASONS);
+
+  // Industry cards
+  if (hasReal) {
+    const inds = Object.entries(data.byIndustry).map(([name, d]) => {
+      const cutFreq = {};
+      (d.cuts || []).forEach(t => { cutFreq[t] = (cutFreq[t]||0)+1; });
+      const topCut = Object.entries(cutFreq).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+      return { name, count: d.count, savings: d.savings, topCut };
+    }).sort((a,b) => b.count - a.count);
+    renderIndustryCards(inds);
+  } else {
+    renderIndustryCards(SEED_INDUSTRIES);
+  }
+}
+
+
+// ── GEO HEATMAP ENGINE ────────────────────────────────────────────────────────
+let _geoMode = 'exits';   // 'exits' | 'adopted'
+let _geoView = 'world';   // 'world' | 'us'
+let _geoRawData = {};
+let _geoAnimFrame = null;
+
+// Mercator projection helpers
+function mercatorX(lng, w) { return (lng + 180) / 360 * w; }
+function mercatorY(lat, h) {
+  const r = Math.log(Math.tan(Math.PI/4 + lat * Math.PI/360));
+  return h/2 - (r / (2*Math.PI)) * h * 2.2;
+}
+
+// Country centroids [lng, lat] for world dots
+const COUNTRY_CENTROIDS = {
+  "US":[  -98.58,  39.83], "CA":[ -96.82,  56.13], "GB":[  -3.44,  55.38],
+  "DE":[   10.45,  51.17], "FR":[    2.21,  46.23], "AU":[  133.78, -25.27],
+  "IN":[   78.96,  20.59], "SG":[  103.82,   1.35], "JP":[  138.25,  36.20],
+  "KR":[  127.77,  35.91], "CN":[  104.20,  35.86], "HK":[  114.17,  22.32],
+  "NL":[    5.29,  52.13], "SE":[   18.64,  60.13], "NO":[    8.47,  60.47],
+  "DK":[    9.50,  56.26], "FI":[   25.75,  61.92], "CH":[    8.23,  46.82],
+  "ES":[   -3.75,  40.46], "IT":[   12.57,  41.87], "PL":[   19.13,  51.92],
+  "PT":[   -8.22,  39.40], "BE":[    4.47,  50.50], "AT":[   14.55,  47.52],
+  "IE":[   -8.24,  53.41], "NZ":[  172.69, -40.90], "ZA":[   25.08, -29.00],
+  "NG":[    8.68,   9.08], "KE":[   37.91,  -0.02], "EG":[   30.80,  26.82],
+  "BR":[ -51.93, -14.24], "AR":[ -63.62, -38.42], "MX":[ -102.55,  23.63],
+  "CO":[ -74.30,   4.57], "PE":[ -75.02,  -9.19], "CL":[ -71.54, -35.68],
+  "AE":[   53.85,  23.42], "SA":[   45.08,  23.89], "IL":[   34.85,  31.05],
+};
+
+// US state centroids [lng, lat]
+const US_STATE_CENTROIDS = {
+  "AL":[ -86.8,  32.8], "AK":[-153.0,  64.2], "AZ":[-111.1,  34.3], "AR":[ -92.4,  34.9],
+  "CA":[-119.4,  36.8], "CO":[-105.5,  39.0], "CT":[  -72.7,  41.6], "DE":[  -75.5,  39.0],
+  "FL":[ -81.5,  27.8], "GA":[ -83.4,  32.7], "HI":[-157.5,  20.3], "ID":[-114.5,  44.2],
+  "IL":[ -89.2,  40.0], "IN":[ -86.1,  40.3], "IA":[ -93.1,  42.0], "KS":[ -98.4,  38.5],
+  "KY":[ -85.3,  37.5], "LA":[ -91.9,  31.2], "ME":[ -69.4,  45.4], "MD":[ -76.6,  39.1],
+  "MA":[ -71.5,  42.4], "MI":[ -84.5,  44.3], "MN":[ -94.3,  46.4], "MS":[ -89.7,  32.7],
+  "MO":[ -92.3,  38.5], "MT":[-110.5,  46.9], "NE":[ -99.9,  41.5], "NV":[-116.4,  38.5],
+  "NH":[ -71.6,  43.2], "NJ":[ -74.4,  40.1], "NM":[-106.1,  34.3], "NY":[ -75.5,  43.0],
+  "NC":[ -79.4,  35.6], "ND":[-100.5,  47.5], "OH":[ -82.8,  40.4], "OK":[ -97.1,  35.5],
+  "OR":[-120.6,  44.0], "PA":[ -77.2,  40.6], "RI":[ -71.5,  41.7], "SC":[ -80.9,  33.8],
+  "SD":[-100.2,  44.4], "TN":[ -86.7,  35.9], "TX":[ -99.3,  31.1], "UT":[-111.1,  39.3],
+  "VT":[ -72.7,  44.0], "VA":[ -78.7,  37.5], "WA":[-120.7,  47.4], "WV":[ -80.6,  38.6],
+  "WI":[ -89.6,  44.5], "WY":[-107.3,  43.1],
+};
+
+function setGeoView(view, btn) {
+  _geoView = view;
+  document.querySelectorAll('.geo-ctrl').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGeoMap();
+}
+function setGeoMode(mode, btn) {
+  _geoMode = mode;
+  document.querySelectorAll('.geo-legend-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGeoMap();
+}
+
+function renderGeoMap() {
+  const canvas = document.getElementById('geo-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = 'rgba(15,14,19,0)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid lines (subtle latitude/longitude)
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let lng = -180; lng <= 180; lng += 30) {
+    const x = mercatorX(lng, W);
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let lat = -60; lat <= 80; lat += 30) {
+    const y = mercatorY(lat, H);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
   }
 
-  // Auto-calculate spend from tool list, use persona budget as floor
-  const autoSpend = estimateSpend(persona.tools);
-  const finalSpend = Math.max(autoSpend, parseInt(persona.budget) || 0);
+  const isUS = _geoView === 'us';
+  const centroids = isUS ? US_STATE_CENTROIDS : COUNTRY_CENTROIDS;
+  const color = _geoMode === 'exits' ? '#ffc857' : '#4ecdc4';
+  const glowColor = _geoMode === 'exits' ? 'rgba(255,200,87,' : 'rgba(78,205,196,';
 
-  // We call the report API directly with synthetic analysis data
-  // First, compute a rough analysis score client-side
-  const overlapPairs = [
-    ['Salesforce','HubSpot'],['Salesforce','Pipedrive'],['HubSpot','Pipedrive'],
-    ['Outreach','Salesloft'],['Outreach','Smartlead'],['Salesloft','Instantly'],
-    ['Instantly','Smartlead'],['Lemlist','Instantly'],['Reply.io','Smartlead'],
-    ['ZoomInfo','Apollo.io'],['ZoomInfo','Cognism'],
-    ['Gong','Chorus'],['Tableau','Looker'],['Tableau','Power BI'],['Looker','Power BI'],
-    ['Hotjar','FullStory'],['Hotjar','Heap'],['FullStory','Heap'],
-    ['Marketo','Pardot'],['Marketo','HubSpot'],['Pardot','HubSpot'],
-    ['Zendesk','Intercom'],['Zendesk','Freshdesk'],['Intercom','Drift'],
-    ['Asana','Monday.com'],['Asana','ClickUp'],['Monday.com','ClickUp'],['Jira','Asana'],
-    ['Jasper','Copy.ai'],['Jasper','Writer'],['Copy.ai','Writer'],
-    ['Slack','Microsoft Teams'],['Zoom','Google Meet'],['Zoom','Webex'],
-    ['DocuSign','HelloSign'],['DocuSign','PandaDoc'],['PandaDoc','Ironclad'],
-    ['Dropbox','Box'],['Google Workspace','Microsoft 365'],
-    ['Dotloop','SkySlope'],['Dotloop','Paperless Pipeline'],['SkySlope','Paperless Pipeline'],
-    ['Follow Up Boss','kvCORE'],['Follow Up Boss','BoomTown'],['kvCORE','BoomTown'],
-    ['Hootsuite','Sprout Social'],['Hootsuite','Buffer'],['Semrush','Ahrefs'],
-    ['Notion','Confluence'],['Notion','Google Docs'],
-    ['Greenhouse','Lever'],['Greenhouse','Workable'],
-    ['Postscript','Attentive'],['Yotpo','Okendo'],
-  ];
+  // Projection bounds for US zoom
+  const USbounds = { lngMin:-130, lngMax:-65, latMin:23, latMax:50 };
 
-  const tl = persona.tools.map(t => t.toLowerCase());
-  let overlapsFound = 0;
-  let savings = 0;
-  const COSTS = {
-    'zoominfo':500,'salesforce':150,'outreach':150,'salesloft':125,'gong':200,
-    'chorus':100,'marketo':800,'hubspot':100,'drift':400,'jasper':99,'tableau':70,
-    'hotjar':39,'fullstory':200,'pardot':1250,'clari':150,'heap':50,'looker':5000,
-    'zendesk':150,'intercom':200,'freshdesk':50,'docusign':40,'pandadoc':49,
-    'microsoft 365':22,'google workspace':12,'dropbox':20,'box':25,
-    'follow up boss':49,'kvcor':499,'boomtown':1500,'dotloop':89,'skyslope':80,
-    'paperless pipeline':80,'hootsuite':249,'sprout social':249,'buffer':18,
-    'semrush':119,'ahrefs':99,'asana':25,'monday.com':20,'clickup':7,'jira':7,
-    'copy.ai':36,'writer':18,'instantly':97,'smartlead':94,'reply.io':70,'lemlist':59,
-    'apollo.io':79,'clay':149,'greenhouse':6000,'lever':3500,'workable':149,
-  };
-
-  overlapPairs.forEach(([a, b]) => {
-    const hasA = tl.some(t => t.includes(a.toLowerCase()));
-    const hasB = tl.some(t => t.includes(b.toLowerCase()));
-    if (hasA && hasB) {
-      overlapsFound++;
-      const costA = COSTS[a.toLowerCase()] || 50;
-      const costB = COSTS[b.toLowerCase()] || 50;
-      savings += Math.min(costA, costB);
+  function toCanvas(lng, lat) {
+    if (isUS) {
+      const x = (lng - USbounds.lngMin) / (USbounds.lngMax - USbounds.lngMin) * W;
+      const y = (1 - (lat - USbounds.latMin) / (USbounds.latMax - USbounds.latMin)) * H;
+      return [x, y];
     }
+    return [mercatorX(lng, W), mercatorY(lat, H)];
+  }
+
+  // Build intensity map from geo data
+  const intensity = {};
+  let maxCount = 1;
+
+  if (isUS) {
+    // Use US state data from leads
+    Object.values(_geoRawData).forEach(country => {
+      if (country.country !== 'US') return;
+      Object.entries(country.regions || {}).forEach(([region, count]) => {
+        // Map region name to state code
+        const stateCode = Object.keys(US_STATE_CENTROIDS).find(s =>
+          region.includes(s) || s.includes(region.slice(0,2).toUpperCase())
+        );
+        if (stateCode) {
+          intensity[stateCode] = (intensity[stateCode] || 0) + count;
+          if (intensity[stateCode] > maxCount) maxCount = intensity[stateCode];
+        }
+      });
+    });
+    // Fallback: just show TX since that's our base
+    if (Object.keys(intensity).length === 0) {
+      intensity['TX'] = 1; intensity['CA'] = 1; intensity['NY'] = 1;
+    }
+  } else {
+    Object.values(_geoRawData).forEach(country => {
+      intensity[country.country] = country.count || 1;
+      if (country.count > maxCount) maxCount = country.count;
+    });
+  }
+
+  // Draw dots for each location
+  const dotData = [];
+  Object.entries(centroids).forEach(([code, [lng, lat]]) => {
+    const [x, y] = toCanvas(lng, lat);
+    if (x < -20 || x > W+20 || y < -20 || y > H+20) return;
+    const count = intensity[code] || 0;
+    const normalizedSize = count > 0
+      ? 4 + (count / maxCount) * (isUS ? 28 : 22)
+      : 2;
+    const alpha = count > 0 ? 0.15 + (count / maxCount) * 0.75 : 0.04;
+    dotData.push({ code, x, y, count, size: normalizedSize, alpha });
   });
 
-  // Compute score (simplified)
-  const legacyTools = ['pardot','chorus','clari','fullstory','jasper','drift','salesloft','tableau','hotjar','heap'];
-  const legacyCount = tl.filter(t => legacyTools.some(l => t.includes(l))).length;
-  let score = 100;
-  score -= overlapsFound * 14;
-  score -= legacyCount * 8;
-  const budget = finalSpend;
-  const teamNum = parseInt(persona.teamSize.split('-')[0]) || 1;
-  const perSeat = budget / Math.max(teamNum, 1);
-  if (perSeat > 400) score -= 15;
-  else if (perSeat > 250) score -= 8;
-  score = Math.max(5, Math.min(100, score));
+  // Draw in two passes: glow then solid
+  // Pass 1: glow halos for active dots
+  dotData.filter(d => d.count > 0).forEach(({ x, y, size, alpha }) => {
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
+    grad.addColorStop(0, glowColor + (alpha * 0.5) + ')');
+    grad.addColorStop(1, glowColor + '0)');
+    ctx.beginPath();
+    ctx.arc(x, y, size * 2, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  });
 
-  // Fire to /api/report
-  try {
-    const email = document.getElementById('seed-email').value || 'seed@stackswap.ai';
-    const company = document.getElementById('seed-company').value || 'StackSwap Seed';
+  // Pass 2: solid dots
+  dotData.forEach(({ x, y, size, alpha, count }) => {
+    ctx.beginPath();
+    ctx.arc(x, y, count > 0 ? size : 2, 0, Math.PI * 2);
+    ctx.fillStyle = count > 0
+      ? color.replace(')', '') + '' // solid color
+      : 'rgba(255,255,255,0.06)';
+    ctx.globalAlpha = count > 0 ? alpha : 1;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
 
-    // First create a lead
-    const leadResp = await fetch('/api/lead', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        email: email.replace('@', `+${persona.id}@`).replace('+','').replace(/\+\d+@/,`+p${persona.id}@`),
-        company: `${company} — ${persona.name}`,
-        role: 'Founder',
-        team_size: persona.teamSize,
-        industry: persona.industry,
-        timezone: 'America/Chicago',
-        language: 'en-US',
-        ...(PERSONA_GEO[persona.id] || {country:'US',country_name:'United States',region:'Texas',state:'TX'}),
-      })
-    });
-    const leadText = await leadResp.text();
-    let leadData = {};
-    try { leadData = JSON.parse(leadText); } catch(e) {}
-    const lead_id = leadData.lead_id || null;
-    log(`Lead created: ${lead_id || 'no id'}`, lead_id ? 'ok' : 'warn');
+  // Labels for top active dots
+  const topDots = dotData.filter(d => d.count > 0).sort((a,b) => b.count - a.count).slice(0, 8);
+  ctx.font = '10px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  topDots.forEach(({ code, x, y, size, count }) => {
+    ctx.fillStyle = 'rgba(240,236,228,0.9)';
+    ctx.fillText(code, x, y + size + 12);
+  });
 
-    // Then save report
-    const reportResp = await fetch('/api/report', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        lead_id: lead_id || null,
-        tools: persona.tools,
-        tool_count: persona.tools.length,
-        industry: persona.industry,
-        monthly_spend: finalSpend,
-        monthly_spend_auto: autoSpend,
-        monthly_spend_stated: parseInt(persona.budget) || 0,
-        goals: ['reduce_costs','consolidate_tools'],
-        stack_score: score,
-        estimated_savings_monthly: savings,
-        estimated_savings_annual: savings * 12,
-        overlaps_found: overlapsFound,
-        tools_flagged: persona.tools.slice(0, 5).join(', '),
-        top_recommendation: overlapsFound > 0 ? `Remove ${overlapsFound} overlapping tools` : 'Stack is lean'
-      })
-    });
-    const reportText = await reportResp.text();
-    let reportData = {};
-    try { reportData = JSON.parse(reportText); } catch(e) {}
+  // Store dotData on canvas for tooltip
+  canvas._dotData = dotData;
+  canvas._isUS = isUS;
 
-    if (reportResp.ok) {
-      log(`✓ ${persona.name} — score ${score}, spend $${finalSpend}/mo, saves $${savings}/mo`, 'ok');
-      results[persona.id] = { done: true, score, saves: savings };
+  // Animate in
+  canvas.style.animation = 'geoMapIn .4s ease';
+  setTimeout(() => canvas.style.animation = '', 400);
 
-      // Show result card
-      statusArea.innerHTML = `
-        <div class="result-card">
-          <div class="result-card-name">${persona.name} <span class="health ${score>=75?'health-good':score>=50?'health-mid':'health-bad'}">${score >= 75 ? 'HEALTHY' : score >= 50 ? 'NEEDS WORK' : 'CRITICAL'}</span></div>
-          <div class="result-row"><span>Score</span><span style="color:${score>=75?'#4ecdc4':score>=50?'#ffc857':'#e05555'};font-weight:700">${score}/100</span></div>
-          <div class="result-row"><span>Overlaps found</span><span>${overlapsFound}</span></div>
-          <div class="result-row"><span>Monthly savings</span><span>$${savings.toLocaleString()}/mo</span></div>
-          <div class="result-row"><span>Annual savings</span><span>$${(savings*12).toLocaleString()}/yr</span></div>
-          <div class="result-row"><span>Auto-priced spend</span><span>$${autoSpend.toLocaleString()}/mo</span></div>
-          <div class="result-row"><span>Stated budget</span><span>$${Number(persona.budget).toLocaleString()}/mo</span></div>
-          <div class="result-row"><span>Tools</span><span>${persona.tools.length}</span></div>
-          <div class="result-row"><span>Lead ID</span><span style="font-size:10px;color:#3a3830">${lead_id || 'seeded (no gate)'}</span></div>
-        </div>
-      `;
+  renderGeoBottom(dotData);
+}
+
+function renderGeoBottom(dotData) {
+  const bottom = document.getElementById('geo-bottom');
+  if (!bottom) return;
+  const topRegions = dotData.filter(d => d.count > 0).sort((a,b) => b.count - a.count).slice(0, 5);
+  if (topRegions.length === 0) {
+    bottom.innerHTML = '<div style="font-size:12px;color:#5a5650;font-family:\'DM Mono\',monospace;padding:8px 0">Geographic data will populate as more scans come in from different regions.</div>';
+    return;
+  }
+  const color = _geoMode === 'exits' ? '#ffc857' : '#4ecdc4';
+  bottom.innerHTML = topRegions.map(d => {
+    const regionData = _geoRawData[d.code];
+    const topIndustry = regionData ? Object.entries(regionData.industries||{}).sort((a,b)=>b[1]-a[1])[0] : null;
+    return `<div class="geo-region-card">
+      <div class="geo-region-name">${d.code}</div>
+      <div class="geo-region-tool"><span class="dot" style="background:${color}"></span>${d.count} submission${d.count !== 1 ? 's' : ''}</div>
+      ${topIndustry ? `<div style="font-size:10px;color:#7a7670;margin-top:4px;font-family:'DM Mono',monospace">${topIndustry[0]}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// Tooltip on hover
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('geo-canvas');
+  const tooltip = document.getElementById('geo-tooltip');
+  if (!canvas || !tooltip) return;
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top) * scaleY;
+    const dots = canvas._dotData || [];
+    const hit = dots.find(d => d.count > 0 && Math.hypot(mx - d.x, my - d.y) < d.size + 8);
+    if (hit) {
+      const regionData = _geoRawData[hit.code];
+      const topIndustry = regionData ? Object.entries(regionData.industries||{}).sort((a,b)=>b[1]-a[1])[0] : null;
+      tooltip.innerHTML = `<strong style="color:#f0ece4">${hit.code}</strong><br>${hit.count} scan${hit.count!==1?'s':''} recorded${topIndustry ? `<br><span style="color:#9a9690">${topIndustry[0]}</span>` : ''}`;
+      const tx = Math.min(e.clientX - rect.left + 14, rect.width - 160);
+      const ty = e.clientY - rect.top - 50;
+      tooltip.style.left = tx + 'px';
+      tooltip.style.top = ty + 'px';
+      tooltip.classList.add('show');
     } else {
-      log(`✗ Report save failed: ${reportData?.error || reportResp.status}`, 'err');
+      tooltip.classList.remove('show');
     }
-  } catch(err) {
-    log(`✗ ${persona.name}: ${err.message}`, 'err');
+  });
+  canvas.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+});
+
+function initGeoMap(metricsData) {
+  _geoRawData = metricsData.geo || {};
+  document.getElementById('geo-loading').style.display = 'none';
+  renderGeoMap();
+}
+
+// ── FETCH REAL DATA FROM /api/metrics ─────────────────────────────────────────
+async function loadMetrics() {
+  try {
+    const resp = await fetch('/api/metrics');
+    if (!resp.ok) throw new Error('fetch failed');
+    const data = await resp.json();
+    renderAll(data);
+    initGeoMap(data);
+  } catch(e) {
+    console.warn('Metrics fetch failed, using seed data:', e.message);
+    renderAll({ count: 0, totalSavings: 0, cuts: [], recs: [], byIndustry: {} });
+    initGeoMap({ geo: {} });
   }
-
-  renderList();
 }
 
-// ── RUN CONTROLS ─────────────────────────────────────────────────────────────
-async function runSelected() {
-  if (!selectedPersona || running) return;
-  running = true;
-  document.getElementById('run-selected-btn').disabled = true;
-  document.getElementById('run-all-btn').disabled = true;
-  await analyzePersona(selectedPersona);
-  running = false;
-  document.getElementById('run-selected-btn').disabled = false;
-  document.getElementById('run-all-btn').disabled = false;
+loadMetrics();
+
+// ── LOCK MODAL ────────────────────────────────────────────────────────────────
+function showLockModal() {
+  document.getElementById('industry-lock').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
-
-async function runAll() {
-  if (running) return;
-  running = true;
-  document.getElementById('run-selected-btn').disabled = true;
-  document.getElementById('run-all-btn').disabled = true;
-
-  const delay = parseInt(document.getElementById('seed-delay').value) || 2000;
-  const total = PERSONAS.length;
-
-  for (let i = 0; i < PERSONAS.length; i++) {
-    const p = PERSONAS[i];
-    selectedPersona = p;
-    document.getElementById('progress-fill').style.width = `${Math.round((i/total)*100)}%`;
-    document.getElementById('progress-label').textContent = `${i+1} of ${total} personas`;
-    renderList();
-    await analyzePersona(p);
-    if (i < PERSONAS.length - 1) {
-      log(`Waiting ${delay}ms before next persona...`, 'info');
-      await new Promise(r => setTimeout(r, delay));
-    }
-  }
-
-  document.getElementById('progress-fill').style.width = '100%';
-  document.getElementById('progress-label').textContent = `All ${total} personas complete ✓`;
-  log(`All ${total} personas seeded successfully`, 'ok');
-  running = false;
-  document.getElementById('run-selected-btn').disabled = false;
-  document.getElementById('run-all-btn').disabled = false;
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-renderList();
 </script>
+
 </body>
 </html>
