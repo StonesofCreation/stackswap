@@ -330,11 +330,11 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
         <button class="geo-ctrl" data-view="us" onclick="setGeoView('us',this)">United States</button>
       </div>
       <div class="geo-ctrl-group">
-        <button class="geo-legend-btn red active" onclick="setGeoMode('exits',this)">
-          <span class="geo-dot red"></span>Most Exited
+        <button class="geo-legend-btn amber active" onclick="setGeoMode('exits',this)">
+          <span class="geo-dot amber"></span>Most Exited
         </button>
-        <button class="geo-legend-btn blue" onclick="setGeoMode('adopted',this)">
-          <span class="geo-dot blue"></span>Most Adopted
+        <button class="geo-legend-btn teal" onclick="setGeoMode('adopted',this)">
+          <span class="geo-dot teal"></span>Most Adopted
         </button>
       </div>
     </div>
@@ -671,8 +671,8 @@ function renderGeoMap() {
 
   const isUS = _geoView === 'us';
   const centroids = isUS ? US_STATE_CENTROIDS : COUNTRY_CENTROIDS;
-  const color = _geoMode === 'exits' ? '#ff4d4d' : '#4e82ff';
-  const glowColor = _geoMode === 'exits' ? 'rgba(255,77,77,' : 'rgba(78,130,255,';
+  const color = _geoMode === 'exits' ? '#ffc857' : '#4ecdc4';
+  const glowColor = _geoMode === 'exits' ? 'rgba(255,200,87,' : 'rgba(78,205,196,';
 
   // Projection bounds for US zoom
   const USbounds = { lngMin:-130, lngMax:-65, latMin:23, latMax:50 };
@@ -732,11 +732,11 @@ function renderGeoMap() {
   // Draw in two passes: glow then solid
   // Pass 1: glow halos for active dots
   dotData.filter(d => d.count > 0).forEach(({ x, y, size, alpha }) => {
-    const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 3);
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, size * 2);
     grad.addColorStop(0, glowColor + (alpha * 0.5) + ')');
     grad.addColorStop(1, glowColor + '0)');
     ctx.beginPath();
-    ctx.arc(x, y, size * 3, 0, Math.PI * 2);
+    ctx.arc(x, y, size * 2, 0, Math.PI * 2);
     ctx.fillStyle = grad;
     ctx.fill();
   });
@@ -781,7 +781,7 @@ function renderGeoBottom(dotData) {
     bottom.innerHTML = '<div style="font-size:12px;color:#5a5650;font-family:\'DM Mono\',monospace;padding:8px 0">Geographic data will populate as more scans come in from different regions.</div>';
     return;
   }
-  const color = _geoMode === 'exits' ? '#ff4d4d' : '#4e82ff';
+  const color = _geoMode === 'exits' ? '#ffc857' : '#4ecdc4';
   bottom.innerHTML = topRegions.map(d => {
     const regionData = _geoRawData[d.code];
     const topIndustry = regionData ? Object.entries(regionData.industries||{}).sort((a,b)=>b[1]-a[1])[0] : null;
