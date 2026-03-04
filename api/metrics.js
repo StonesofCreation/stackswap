@@ -52,7 +52,9 @@ module.exports = async function handler(req, res) {
     reports.forEach(r => {
       if (r.top_recommendation) {
         const rec = r.top_recommendation.trim();
-        if (rec) recCounts[rec] = (recCounts[rec] || 0) + 1;
+        // Filter out sentences/actions — only count tool names (short, no spaces beyond 3 words, no "Remove"/"Swap"/"Cut" prefix)
+        const isToolName = rec.length < 40 && !rec.startsWith('Remove') && !rec.startsWith('Swap') && !rec.startsWith('Cut') && !rec.startsWith('Add') && !rec.toLowerCase().includes('overlapping') && !rec.toLowerCase().includes('stack is');
+        if (rec && isToolName) recCounts[rec] = (recCounts[rec] || 0) + 1;
       }
     });
 
