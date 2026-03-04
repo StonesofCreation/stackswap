@@ -116,7 +116,39 @@ export default async function handler(req, res) {
     const sortedCuts = Object.entries(cutCounts).sort((a, b) => b[1] - a[1]).slice(0, 20);
     const sortedRecs = Object.entries(recCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
 
-    return res.status(200).json({ count, totalSavings: Math.round(totalSavings), cuts: sortedCuts, recs: sortedRecs, byIndustry, pricing });
+    // Geo aggregation — fetch leads with geo data
+    let geoData = {};
+    try {
+      const geoResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/leads?select=country,country_name,region,state,industry&limit=2000`,
+        { headers }
+      );
+      if (geoResp.ok) {
+        const leads = await geoResp.json();
+        // Join with reports cuts via lead_id for tool-level geo data
+        // For now aggregate submission counts by country/region
+        leads.forEach(l => {
+          if (!l.country) return;
+          const key = l.country;
+          if (!geoData[key]) geoData[key] = {
+            country: l.country,
+            country_name: l.country_name || l.country,
+            count: 0,
+            regions: {},
+            industries: {}
+          };
+          geoData[key].count++;
+          if (l.region) {
+            geoData[key].regions[l.region] = (geoData[key].regions[l.region] || 0) + 1;
+          }
+          if (l.industry) {
+            geoData[key].industries[l.industry] = (geoData[key].industries[l.industry] || 0) + 1;
+          }
+        });
+      }
+    } catch(e) { /* silent fail */ }
+
+    return res.status(200).json({ count, totalSavings: Math.round(totalSavings), cuts: sortedCuts, recs: sortedRecs, byIndustry, pricing, geo: geoData });
 
   } catch (e) {
     console.error("Metrics error:", e.message);
