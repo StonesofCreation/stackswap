@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
       let all = [], offset = 0;
       while (true) {
         const resp = await fetch(
-          `${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count&limit=${PAGE}&offset=${offset}`,
+          `${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count,capability_coverage,missing_capabilities,redundant_capabilities&limit=${PAGE}&offset=${offset}`,
           { headers }
         );
         if (!resp.ok) { const e = await resp.text(); throw new Error(e); }
@@ -166,7 +166,28 @@ module.exports = async function handler(req, res) {
       }
     } catch(e) { /* silent fail */ }
 
-    return res.status(200).json({ count, totalSavings: Math.round(totalSavings), cuts: sortedCuts, recs: sortedRecs, byIndustry, pricing, geo: geoData });
+
+    // ── Capability statistics ─────────────────────────────────────────────────
+    const capStats = { common: {}, redundant: {}, missing: {} };
+    try {
+      reports.forEach(r => {
+        (r.capability_coverage || []).forEach(cap => {
+          capStats.common[cap] = (capStats.common[cap] || 0) + 1;
+        });
+        (r.redundant_capabilities || []).forEach(cap => {
+          capStats.redundant[cap] = (capStats.redundant[cap] || 0) + 1;
+        });
+        (r.missing_capabilities || []).forEach(cap => {
+          capStats.missing[cap] = (capStats.missing[cap] || 0) + 1;
+        });
+      });
+    } catch(_) {}
+
+    const topCommonCaps   = Object.entries(capStats.common).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const topRedundantCaps = Object.entries(capStats.redundant).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const topMissingCaps  = Object.entries(capStats.missing).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+    return res.status(200).json({ count, totalSavings: Math.round(totalSavings), cuts: sortedCuts, recs: sortedRecs, byIndustry, pricing, geo: geoData, capabilities: { common: topCommonCaps, redundant: topRedundantCaps, missing: topMissingCaps } });
 
   } catch (e) {
     console.error("Metrics error:", e.message);
