@@ -469,7 +469,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 </footer>
 
 <script>
-const ZAPIER_WEBHOOK = "";
+
 
 async function submitWaitlist(inputId, successId) {
   const input = document.getElementById(inputId);
@@ -480,15 +480,18 @@ async function submitWaitlist(inputId, successId) {
     setTimeout(() => input.style.borderColor = '', 1500);
     return;
   }
-  if (ZAPIER_WEBHOOK) {
-    try {
-      await fetch(ZAPIER_WEBHOOK, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ email, page: 'pro', timestamp: new Date().toISOString() })
-      });
-    } catch(e) { /* silent fail */ }
-  }
+  try {
+    await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email,
+        waitlist_type: 'stackaudit',
+        source_page: 'pro',
+        context: {}
+      })
+    });
+  } catch(e) { /* silent fail */ }
   input.style.display = 'none';
   input.closest('.waitlist-form') && (input.closest('.waitlist-form').querySelector('.waitlist-btn').style.display = 'none');
   success.style.display = 'block';
