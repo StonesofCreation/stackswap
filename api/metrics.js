@@ -17,17 +17,33 @@ module.exports = async function handler(req, res) {
   };
 
   try {
-    const [reportsResp, pricingResp] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count&limit=1000`, { headers }),
-      fetch(`${SUPABASE_URL}/rest/v1/pricing_signals?select=tool_name,implied_price,team_size,industry&limit=2000`, { headers })
-    ]);
-
-    if (!reportsResp.ok) {
-      const err = await reportsResp.text();
-      return res.status(502).json({ error: "Supabase error", detail: err });
+    // ── Paginate reports — Supabase hard-caps at 1000 rows per request ────────
+    async function fetchAllReports() {
+      const PAGE = 1000;
+      let all = [], offset = 0;
+      while (true) {
+        const resp = await fetch(
+          `${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count&limit=${PAGE}&offset=${offset}`,
+          { headers }
+        );
+        if (!resp.ok) { const e = await resp.text(); throw new Error(e); }
+        const page = await resp.json();
+        all = all.concat(page);
+        if (page.length < PAGE) break;
+        offset += PAGE;
+      }
+      return all;
     }
 
-    const reports = await reportsResp.json();
+    const [reports, pricingResp] = await Promise.all([
+      fetchAllReports(),
+      fetch(`${SUPABASE_URL}/rest/v1/pricing_signals?select=tool_name,implied_price,team_size,industry&limit=5000`, { headers })
+    ]);
+
+    if (!pricingResp.ok) {
+      const err = await pricingResp.text();
+      return res.status(502).json({ error: "Supabase error", detail: err });
+    }
     const count = reports.length;
 
     if (count === 0) {
