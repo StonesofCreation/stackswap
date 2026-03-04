@@ -4249,6 +4249,106 @@ function estimateStackSpend(tools, teamSize) {
   return tools.reduce((sum, tool) => sum + calcToolCost(tool, teamSize), 0);
 }
 
+// ── STRUCTURED STACK GENERATOR ───────────────────────────────────────────────
+// Generates realistic stacks based on capability slots, not random tool lists.
+// Follows: 1 CRM, 1 collab, 1 meeting, 1 data, 1 outreach, 1 automation, 1 PM, 1-3 niche
+// Stack size: 6-14 tools.
+
+const STRUCTURED_POOLS = {
+  saas: {
+    crm:          { good:["HubSpot","Pipedrive","Attio","Close"],                         bad:["Salesforce","HubSpot","Pipedrive","Zoho CRM"] },
+    data:         { good:["Apollo.io","Clay","Lusha"],                                    bad:["ZoomInfo","Apollo.io","Cognism","LinkedIn Sales Navigator"] },
+    outreach:     { good:["Smartlead","Instantly","Apollo.io"],                           bad:["Outreach","Salesloft","Smartlead","Instantly","Reply.io","Lemlist"] },
+    conv_intel:   { good:["Avoma","Otter.ai"],                                            bad:["Gong","Chorus","Avoma"] },
+    automation:   { good:["Make","n8n","Zapier"],                                         bad:["Zapier","Workato","Make","Tray.io"] },
+    collab:       { good:["Slack","Discord"],                                             bad:["Slack","Microsoft Teams","Discord"] },
+    meeting:      { good:["Zoom","Google Meet"],                                          bad:["Zoom","Webex","Google Meet","Microsoft Teams"] },
+    pm:           { good:["Linear","ClickUp","Notion"],                                   bad:["Asana","Monday.com","ClickUp","Jira","Notion","Airtable"] },
+    docs:         { good:["Notion"],                                                      bad:["Notion","Confluence","Slab","Coda"] },
+    analytics:    { good:["PostHog","Mixpanel","Amplitude"],                              bad:["Heap","Mixpanel","Amplitude","FullStory","Hotjar"] },
+    niche:        { good:["Stripe","Calendly","Loom","GitHub Copilot"],                   bad:["Clari","Tableau","Looker","Jasper","Copy.ai","Writer","Grammarly"] },
+  },
+  real_estate: {
+    crm:          { good:["Follow Up Boss","Attio"],                                      bad:["Follow Up Boss","kvCORE","BoomTown","Salesforce","HubSpot"] },
+    transaction:  { good:["Paperless Pipeline","SkySlope"],                               bad:["Paperless Pipeline","Dotloop","SkySlope","Brokermint"] },
+    esign:        { good:["PandaDoc"],                                                    bad:["DocuSign","HelloSign","PandaDoc","Adobe Sign"] },
+    collab:       { good:["Google Workspace","Slack"],                                    bad:["Google Workspace","Microsoft 365","Slack","Teams"] },
+    meeting:      { good:["Zoom","Google Meet"],                                          bad:["Zoom","Webex","Google Meet"] },
+    email:        { good:["Mailchimp","ConvertKit"],                                      bad:["Mailchimp","Constant Contact","ActiveCampaign","HubSpot"] },
+    niche:        { good:["Calendly","Canva","ChatGPT"],                                  bad:["BombBomb","Loom","Canva","ChatGPT","QuickBooks"] },
+  },
+  ecommerce: {
+    platform:     { good:["Shopify"],                                                     bad:["Shopify","WooCommerce","BigCommerce","Magento"] },
+    email:        { good:["Klaviyo"],                                                     bad:["Klaviyo","Mailchimp","Attentive","Omnisend"] },
+    support:      { good:["Gorgias","Help Scout"],                                        bad:["Gorgias","Zendesk","Freshdesk","Reamaze","Intercom"] },
+    analytics:    { good:["Triple Whale","Google Analytics"],                             bad:["Triple Whale","Northbeam","Rockerbox","Heap","FullStory"] },
+    automation:   { good:["Make","Zapier"],                                               bad:["Zapier","Klaviyo Flows","Make"] },
+    collab:       { good:["Slack","Google Workspace"],                                    bad:["Slack","Microsoft Teams","Google Workspace"] },
+    niche:        { good:["Recharge","Printful","ShipStation","Yotpo"],                   bad:["Recharge","Chargebee","ShipStation","Shippo","Loop Returns","AfterShip"] },
+  },
+  agency: {
+    crm:          { good:["HubSpot","Pipedrive"],                                         bad:["HubSpot","Salesforce","Pipedrive"] },
+    pm:           { good:["ClickUp","Notion","Linear"],                                   bad:["Asana","Monday.com","ClickUp","Jira","Notion","Wrike"] },
+    creative:     { good:["Figma","Canva"],                                               bad:["Adobe Creative Cloud","Figma","Canva","Sketch"] },
+    seo:          { good:["Semrush","Ahrefs"],                                            bad:["Semrush","Ahrefs","Moz","Surfer SEO"] },
+    social:       { good:["Buffer","Loomly"],                                             bad:["Hootsuite","Sprout Social","Buffer","Later"] },
+    collab:       { good:["Slack","Google Workspace"],                                    bad:["Slack","Microsoft Teams","Google Workspace","Zoom"] },
+    niche:        { good:["Loom","Calendly","ChatGPT","Google Analytics"],                bad:["Jasper","Copy.ai","Writer","Grammarly","Mixpanel","Hotjar"] },
+  },
+};
+
+const IND_TO_POOL = {
+  "SaaS / Tech":       "saas",
+  "Real Estate":       "real_estate",
+  "E-commerce":        "ecommerce",
+  "Marketing Agency":  "agency",
+};
+
+function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function pickN(arr, n) {
+  const s = [...arr].sort(() => .5 - Math.random());
+  return s.slice(0, Math.min(n, s.length));
+}
+
+/**
+ * Build a structured stack for a given industry and quality tier
+ * @param {string} industry  - e.g. "SaaS / Tech"
+ * @param {string} tier      - "good" | "bad" | "mediocre"
+ * @returns {string[]}       - deduplicated tool list, 6-14 items
+ */
+function buildStructuredStack(industry, tier) {
+  const poolKey = IND_TO_POOL[industry] || "saas";
+  const slots   = STRUCTURED_POOLS[poolKey];
+  const quality = tier === "good" ? "good" : "bad"; // mediocre uses bad pool with fewer extras
+
+  const tools = new Set();
+
+  Object.entries(slots).forEach(([slot, opts]) => {
+    const pool = opts[quality] || opts.bad;
+    if (slot === "niche") {
+      // Bad stacks get 2-3 niche tools, good stacks get 1
+      const count = tier === "bad" ? 2 + Math.floor(Math.random() * 2) : 1;
+      pickN(pool, count).forEach(t => tools.add(t));
+    } else if (tier === "bad") {
+      // Bad stacks: sometimes pick 2 from a slot (redundancy)
+      const count = Math.random() < 0.4 ? 2 : 1;
+      pickN(pool, count).forEach(t => tools.add(t));
+    } else {
+      tools.add(rnd(pool));
+    }
+  });
+
+  // Ensure 6-14 range
+  const arr = [...tools];
+  if (arr.length < 6) {
+    // pad with niche
+    const nichePool = slots.niche?.bad || ["Loom","Calendly","Stripe","Zapier","ChatGPT"];
+    nichePool.forEach(t => { if (arr.length < 8 && !tools.has(t)) arr.push(t); });
+  }
+  return arr.slice(0, 14);
+}
+
+
 /**
  * Generate per-tool pricing breakdown for Supabase writes
  * Returns array of { tool_name, estimated_price, implied_price }
