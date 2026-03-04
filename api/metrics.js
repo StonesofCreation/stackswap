@@ -10,35 +10,34 @@ export default async function handler(req, res) {
   const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
   if (!SUPABASE_ANON_KEY) return res.status(500).json({ error: "SUPABASE_ANON_KEY not set" });
 
-  try {
-    // Fetch all reports - select only the fields we need for aggregation
-    const resp = await fetch(
-      `${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count&limit=1000`,
-      {
-        headers: {
-          "apikey": SUPABASE_ANON_KEY,
-          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
+  const headers = {
+    "apikey": SUPABASE_ANON_KEY,
+    "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+    "Content-Type": "application/json"
+  };
 
-    if (!resp.ok) {
-      const err = await resp.text();
+  try {
+    const [reportsResp, pricingResp] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/reports?select=industry,monthly_spend,estimated_savings_monthly,tools_flagged,top_recommendation,tool_count&limit=1000`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/pricing_signals?select=tool_name,implied_price,team_size,industry&limit=2000`, { headers })
+    ]);
+
+    if (!reportsResp.ok) {
+      const err = await reportsResp.text();
       return res.status(502).json({ error: "Supabase error", detail: err });
     }
 
-    const reports = await resp.json();
+    const reports = await reportsResp.json();
     const count = reports.length;
 
     if (count === 0) {
-      return res.status(200).json({ count: 0, totalSavings: 0, cuts: {}, recs: {}, byIndustry: {} });
+      return res.status(200).json({ count: 0, totalSavings: 0, cuts: [], recs: [], byIndustry: {}, pricing: {} });
     }
 
-    // Aggregate savings
+    // Savings
     const totalSavings = reports.reduce((sum, r) => sum + (r.estimated_savings_monthly || 0), 0);
 
-    // Aggregate tools flagged (tools_flagged is a string like "ZoomInfo, Drift, Marketo")
+    // Tool exit counts
     const cutCounts = {};
     reports.forEach(r => {
       if (r.tools_flagged) {
@@ -48,7 +47,7 @@ export default async function handler(req, res) {
       }
     });
 
-    // Aggregate top recommendations
+    // Recommendation counts
     const recCounts = {};
     reports.forEach(r => {
       if (r.top_recommendation) {
@@ -57,7 +56,7 @@ export default async function handler(req, res) {
       }
     });
 
-    // Aggregate by industry
+    // By industry
     const byIndustry = {};
     reports.forEach(r => {
       const ind = r.industry || "Other";
@@ -71,22 +70,53 @@ export default async function handler(req, res) {
       }
     });
 
-    // Sort cuts and recs by frequency, return top 10
-    const sortedCuts = Object.entries(cutCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10);
+    // Pricing signals aggregation
+    const pricingByTool = {};
+    if (pricingResp.ok) {
+      const signals = await pricingResp.json();
+      signals.forEach(s => {
+        if (!s.tool_name || s.tool_name === "_total") return;
+        if (!s.implied_price || s.implied_price < 1 || s.implied_price > 50000) return;
+        const key = s.tool_name.toLowerCase();
+        if (!pricingByTool[key]) pricingByTool[key] = { tool_name: s.tool_name, prices: [], by_team_size: {} };
+        pricingByTool[key].prices.push(s.implied_price);
+        if (s.team_size) {
+          const bucket = s.team_size <= 5 ? "1-5" : s.team_size <= 20 ? "6-20" : s.team_size <= 50 ? "21-50" : "50+";
+          if (!pricingByTool[key].by_team_size[bucket]) pricingByTool[key].by_team_size[bucket] = [];
+          pricingByTool[key].by_team_size[bucket].push(s.implied_price);
+        }
+      });
+    }
 
-    const sortedRecs = Object.entries(recCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10);
-
-    return res.status(200).json({
-      count,
-      totalSavings: Math.round(totalSavings),
-      cuts: sortedCuts,
-      recs: sortedRecs,
-      byIndustry
+    // Compute medians, remove outliers
+    const pricing = {};
+    Object.entries(pricingByTool).forEach(([key, data]) => {
+      if (data.prices.length < 2) return;
+      const sorted = [...data.prices].sort((a, b) => a - b);
+      const median = sorted[Math.floor(sorted.length / 2)];
+      const filtered = sorted.filter(p => p >= median / 3 && p <= median * 3);
+      if (filtered.length < 2) return;
+      const cleanMedian = filtered[Math.floor(filtered.length / 2)];
+      const byTeamSize = {};
+      Object.entries(data.by_team_size).forEach(([bucket, prices]) => {
+        if (prices.length < 2) return;
+        const ts = [...prices].sort((a, b) => a - b);
+        byTeamSize[bucket] = ts[Math.floor(ts.length / 2)];
+      });
+      pricing[data.tool_name] = {
+        median: cleanMedian,
+        mean: Math.round(filtered.reduce((s, v) => s + v, 0) / filtered.length),
+        min: filtered[0],
+        max: filtered[filtered.length - 1],
+        sample_count: filtered.length,
+        by_team_size: byTeamSize
+      };
     });
+
+    const sortedCuts = Object.entries(cutCounts).sort((a, b) => b[1] - a[1]).slice(0, 20);
+    const sortedRecs = Object.entries(recCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+    return res.status(200).json({ count, totalSavings: Math.round(totalSavings), cuts: sortedCuts, recs: sortedRecs, byIndustry, pricing });
 
   } catch (e) {
     console.error("Metrics error:", e.message);
