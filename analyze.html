@@ -94,13 +94,13 @@ h1 .accent{color:#ffc857}
 
 /* Finding cards */
 .finding{border-radius:8px;padding:12px 14px;margin-bottom:8px;border:1px solid}
-.finding-wrong{background:rgba(255,80,80,0.04);border-color:rgba(255,80,80,.15)}
+.finding-wrong{background:rgba(200,70,70,0.04);border-color:rgba(200,70,70,.15)}
 .finding-opp{background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,.06)}
 .finding-missing{background:rgba(78,205,196,0.03);border-color:rgba(78,205,196,.12)}
 .finding-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:5px}
 .finding-left{flex:1;min-width:0}
 .finding-title{font-size:16px;color:#f0ece4;font-weight:600;line-height:1.4;word-break:break-word;font-family:var(--prose)}
-.finding-title .cut{color:#ff4d4d;font-weight:700}
+.finding-title .cut{color:#e05555;font-weight:600}
 .finding-title .arrow{color:#4a4845;margin:0 5px}
 .finding-title .keep{color:#4ecdc4;font-weight:700}
 .finding-pill{flex-shrink:0;font-size:13px;font-weight:500;color:#ffc857;background:rgba(255,200,87,0.12);border:1px solid rgba(255,200,87,0.3);border-radius:20px;padding:6px 14px;white-space:nowrap;align-self:flex-start;margin-top:2px;font-family:'DM Mono',monospace;letter-spacing:.03em}
@@ -131,7 +131,7 @@ h1 .accent{color:#ffc857}
 .opt-tag{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.2);color:#4ecdc4;border-radius:20px;padding:4px 10px;font-size:12px;font-family:var(--prose)}
 
 .no-issues{font-size:15px;color:#9a9690;line-height:1.8;padding:8px 0;font-family:var(--prose)}
-.red{color:#ff4d4d;font-weight:600}
+.red{color:#e05555;font-weight:600}
 .teal{color:#4ecdc4;font-weight:500}
 .amber{color:#ffc857;font-weight:600}
 .gray{color:#5a5650}
@@ -1333,7 +1333,7 @@ function runAnalysis(tools, teamSize, industry, budget, goals) {
   // Next: best AI swap
   if (actions.length < 3 && sortedUpgrades.length > 0) {
     const top = sortedUpgrades[0];
-    actions.push({title:`Replace ${top.tool} with ${top.r}`, text:top.why+` Save ~$${top.save}/mo.`});
+    actions.push({title:`Swap ${top.tool} → ${top.r}`, text:top.why+` Save ~$${top.save}/mo.`});
   }
 
   // Fallback
@@ -1500,14 +1500,14 @@ function renderStackFlow(container, tools, conflicts) {
   // Isolated tools (no connections in this stack)
   if (isolated.length > 0) {
     const isoLabel = document.createElement("div");
-    isoLabel.style.cssText = "font-size:10px;color:#5a5650;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-family:'DM Mono',monospace";
+    isoLabel.style.cssText = "font-size:12px;color:#7a7670;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;font-family:'DM Mono',monospace";
     isoLabel.textContent = "No detected integrations";
     wrap.appendChild(isoLabel);
     const isoRow = document.createElement("div");
     isoRow.style.cssText = "display:flex;flex-wrap:wrap;gap:6px";
     isolated.forEach(tool => {
       const tag = document.createElement("div");
-      tag.style.cssText = "padding:4px 10px;border-radius:6px;font-size:12px;font-family:'DM Mono',monospace;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670";
+      tag.style.cssText = "padding:7px 13px;border-radius:6px;font-size:14px;font-family:'DM Mono',monospace;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670";
       tag.textContent = tool;
       isoRow.appendChild(tag);
     });
@@ -1516,7 +1516,7 @@ function renderStackFlow(container, tools, conflicts) {
 
   // Legend
   const legend = document.createElement("div");
-  legend.style.cssText = "margin-top:12px;font-size:10px;color:#5a5650;font-family:'DM Mono',monospace;letter-spacing:.03em";
+  legend.style.cssText = "margin-top:14px;font-size:12px;color:#7a7670;font-family:'DM Mono',monospace;letter-spacing:.02em";
   legend.innerHTML = "<span style='color:rgba(78,205,196,0.5)'>teal</span> = native integration · <span style='color:rgba(255,77,77,0.6)'>red</span> = integration conflict · gray = unconnected · → = data flow direction";
   wrap.appendChild(legend);
 
@@ -1536,7 +1536,7 @@ function renderResult(r) {
   box.appendChild(hd);
 
   // ── Score — horizontal layout, number left, label+bar right ──
-  const color = r.score>=75?"#4ecdc4":r.score>=55?"#ffc857":"#ff6b6b";
+  const color = r.score>=75?"#4ecdc4":r.score>=55?"#ffc857":"#d96060";
   const label = r.score>=75?"Healthy Stack":r.score>=55?"Needs Attention":"Needs Work";
   const desc  = r.score>=75?"Your tools are well-chosen with minimal overlap."
                :r.score>=55?"There are real savings and consolidation opportunities here."
@@ -1589,11 +1589,21 @@ function renderResult(r) {
   if(!hasOverlaps){
     box.appendChild(div("no-issues","No major overlaps detected — your tools serve distinct functions."));
   } else {
+    // Section AI summary
+    const overlapCount = r.overlaps.length + (r.categoryOverlaps||[]).length + redundantFindings.length;
+    const overlapSavePotential = [...r.overlaps, ...(r.categoryOverlaps||[])].reduce((s,o)=>s+(o.save||0),0);
+    const sectionSummary1 = document.createElement('div');
+    sectionSummary1.style.cssText = 'background:rgba(229,85,85,0.05);border:1px solid rgba(229,85,85,0.15);border-left:3px solid #e05555;border-radius:8px;padding:13px 16px;margin-bottom:14px;font-size:14px;color:#c8c4bc;line-height:1.75;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+    sectionSummary1.innerHTML = `<span style="color:#e05555;font-weight:700;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase">Overlap Analysis</span><br>${overlapCount > 2
+      ? `You have <strong style="color:#f0ece4">${overlapCount} overlap${overlapCount!==1?'s':''}</strong> — this is the biggest drag on your stack efficiency.${overlapSavePotential > 0 ? ` Cutting redundant tools here alone saves an estimated <strong style="color:#ffc857">$${overlapSavePotential.toLocaleString()}/mo</strong>.` : ''} Pick one tool per job and standardize.`
+      : `You have ${overlapCount} overlap${overlapCount!==1?'s':''}.${overlapSavePotential > 0 ? ` Resolving ${overlapCount===1?'it':'them'} saves ~$${overlapSavePotential.toLocaleString()}/mo.` : ''} These are quick wins.`
+    }`;
+    box.appendChild(sectionSummary1);
     // Category cluster overlaps first (higher signal)
     (r.categoryOverlaps||[]).forEach(o=>{
       const toolList = o.tools.join(" + ");
       box.appendChild(findingCard("opp",
-        `<span style="color:#ff6b6b;font-weight:700">${o.category} overlap:</span> ${toolList}`,
+        `<span style="color:#d96060;font-weight:700">${o.category} overlap:</span> ${toolList}`,
         o.msg, o.save));
     });
     redundantFindings.forEach(f=>box.appendChild(findingCard("opp",`<span class="cut">${f.title}</span>`,f.msg,f.save)));
@@ -1611,17 +1621,23 @@ function renderResult(r) {
   if(!r.upgrades.length){
     box.appendChild(div("no-issues","Your stack already includes modern AI-native tools."));
   } else {
+    const upgradeSummary = document.createElement('div');
+    upgradeSummary.style.cssText = 'background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.15);border-left:3px solid #4ecdc4;border-radius:8px;padding:13px 16px;margin-bottom:14px;font-size:14px;color:#c8c4bc;line-height:1.75;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+    const upgradeNames = r.upgrades.slice(0,3).map(u=>u.tool).join(', ');
+    const upgradeSave = r.upgrades.slice(0,3).reduce((s,u)=>s+u.save,0);
+    upgradeSummary.innerHTML = `<span style="color:#4ecdc4;font-weight:700;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase">Modernization Opportunities</span><br>You're running <strong style="color:#f0ece4">${r.upgrades.length} legacy tool${r.upgrades.length!==1?'s':''}</strong> (${upgradeNames}) where AI-native alternatives now deliver better results at lower cost. Swapping these saves an estimated <strong style="color:#ffc857">$${upgradeSave.toLocaleString()}/mo</strong> while reducing manual work.`;
+    box.appendChild(upgradeSummary);
     r.upgrades.slice(0,3).forEach(u=>{
       const trend = getTrendSignal(u.tool);
       let trendNote = "";
       if (trend && trend.signal === "high") {
         const liveStr = trend.liveCount ? ` (${trend.liveCount} of ${trend.liveTotal} StackSwap analyses flagged this)` : "";
-        trendNote = ` <span style="color:#ff6b6b;font-size:11px;font-family:'DM Mono',monospace">&#9650; High exit rate${liveStr} — ${trend.reason}</span>`;
+        trendNote = ` <span style="color:#d96060;font-size:11px;font-family:'DM Mono',monospace">&#9650; High exit rate${liveStr} — ${trend.reason}</span>`;
       } else if (trend && trend.signal === "medium") {
         trendNote = ` <span style="color:#ffc857;font-size:11px;font-family:'DM Mono',monospace">&#9654; Trending out — ${trend.reason}</span>`;
       }
       box.appendChild(findingCard("opp",
-        `Replace <span class="cut">${u.tool}</span><span class="arrow">→</span><span class="keep">${u.r}</span>${trendNote}`,
+        `Swap <span class="cut">${u.tool}</span><span class="arrow">→</span><span class="keep">${u.r}</span>${trendNote}`,
         u.why, u.save));
     });
   }
@@ -1630,6 +1646,17 @@ function renderResult(r) {
   const hasIntegrationIssues = (r.integrationConflicts&&r.integrationConflicts.length) || (r.orphanedTools&&r.orphanedTools.length) || r.glueNote;
   if(hasIntegrationIssues) {
     box.appendChild(div("sec","Integration health"));
+    // Integration AI summary
+    const intConflictCount = (r.integrationConflicts||[]).length;
+    const orphanCount = (r.orphanedTools||[]).length;
+    const intSummary = document.createElement('div');
+    intSummary.style.cssText = 'background:rgba(255,180,50,0.05);border:1px solid rgba(255,180,50,0.15);border-left:3px solid #ffc857;border-radius:8px;padding:13px 16px;margin-bottom:14px;font-size:14px;color:#c8c4bc;line-height:1.75;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+    const intLines = [];
+    if (intConflictCount > 0) intLines.push(`<strong style="color:#f0ece4">${intConflictCount} integration conflict${intConflictCount!==1?'s':''}</strong> detected — these tools actively work against each other, creating data sync issues and split records.`);
+    if (orphanCount > 0) intLines.push(`<strong style="color:#f0ece4">${orphanCount} isolated tool${orphanCount!==1?'s':''}</strong> with no native connections — likely relying on Zapier or manual exports to function.`);
+    if (r.glueNote) intLines.push('Automation dependency suggests your stack lacks native integration coverage.');
+    intSummary.innerHTML = `<span style="color:#ffc857;font-weight:700;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase">Integration Assessment</span><br>${intLines.join(' ')} A well-integrated stack passes data automatically — no Zapier, no manual exports, no lost context.`;
+    box.appendChild(intSummary);
     (r.integrationConflicts||[]).forEach(ic=>{
       const toolBadges = ic.tools.map(t=>`<span class="cut">${t}</span>`).join('<span class="arrow"> + </span>');
       box.appendChild(findingCard("opp", `Integration conflict: ${toolBadges}`, ic.issue, 0));
@@ -1655,22 +1682,34 @@ function renderResult(r) {
     });
   }
 
-  // ── Gold stack match ──
+  // ── StackMatch ──
   if(r.goldMatch) {
     const gs = r.goldMatch;
     const matchPct = Math.round(gs.matchPct * 100);
     const missingTools = gs.tools.filter(t => !selectedTools.some(u => u.toLowerCase().includes(t.toLowerCase())));
+    const matchColor = matchPct >= 80 ? '#4ecdc4' : matchPct >= 60 ? '#ffc857' : '#e05555';
+
     const gs_section = div("sec");
-    gs_section.innerHTML = `Gold standard stack match <span style="font-size:11px;color:var(--teal);font-family:'DM Mono',monospace;margin-left:8px">${matchPct}% match</span>`;
+    gs_section.innerHTML = `<span style="color:${matchColor};font-family:'DM Mono',monospace;font-size:22px;font-weight:700;letter-spacing:-.02em">${matchPct}%</span>&nbsp;StackMatch`;
     box.appendChild(gs_section);
 
     const gsCard = document.createElement("div");
-    gsCard.style.cssText = "background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.18);border-radius:10px;padding:16px 20px;margin-bottom:12px";
+    gsCard.style.cssText = `background:rgba(78,205,196,0.03);border:1px solid rgba(78,205,196,0.14);border-radius:12px;padding:20px 22px;margin-bottom:12px`;
     gsCard.innerHTML = `
-      <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:6px;font-family:'DM Mono',monospace">${gs.name}</div>
-      <div style="font-size:13px;color:#c8c4bc;line-height:1.7;margin-bottom:10px">${gs.why}</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Estimated cost: ${gs.monthlyEstimate}</div>
-      ${missingTools.length > 0 ? `<div style="font-size:11px;color:var(--muted)">Tools in this stack you're not using: <span style="color:var(--teal)">${missingTools.join(", ")}</span></div>` : "<div style='font-size:11px;color:#39ff85'>✓ Your stack already covers this gold standard</div>"}
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="font-size:32px;font-weight:800;color:${matchColor};font-family:'DM Mono',monospace;letter-spacing:-.02em;line-height:1">${matchPct}%</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif">StackMatch — ${gs.name}</div>
+          <div style="font-size:12px;color:#7a7670;font-family:'DM Mono',monospace;margin-top:2px">Estimated: ${gs.monthlyEstimate}</div>
+        </div>
+      </div>
+      <div style="font-size:14px;color:#c8c4bc;line-height:1.75;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${gs.why}</div>
+      <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:10px">
+        <div style="height:100%;width:${matchPct}%;background:${matchColor};border-radius:3px;transition:width 1s ease"></div>
+      </div>
+      ${missingTools.length > 0
+        ? `<div style="font-size:13px;color:#9a9690">To reach 100% StackMatch, consider adding: <span style="color:#4ecdc4;font-weight:600">${missingTools.join(", ")}</span></div>`
+        : `<div style="font-size:13px;color:#39ff85;font-weight:600">✓ Your stack fully covers this pattern</div>`}
     `;
     box.appendChild(gsCard);
   }
@@ -1723,7 +1762,16 @@ function renderResult(r) {
   });
 
   // ── Optimized stack ──
-  box.appendChild(div("sec","Your optimized stack"));
+  const optSecLabel = div("sec");
+  optSecLabel.innerHTML = "Your optimized stack";
+  box.appendChild(optSecLabel);
+
+  // Context note above the flow
+  const optNote = document.createElement('div');
+  optNote.style.cssText = 'font-size:14px;color:#9a9690;line-height:1.7;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+  optNote.innerHTML = `<strong style="color:#e0dcd4">${r.optimized.length} tools</strong> — arrows show native data flow direction. <span style="color:#4ecdc4">Teal</span> = natively connected. <span style="color:#e05555">Red</span> = integration conflict. Gray = unconnected.`;
+  box.appendChild(optNote);
+
   renderStackFlow(box, r.optimized, r.integrationConflicts || []);
 
 
@@ -1793,7 +1841,7 @@ async function getAINarrative(result, tools, industry, budget, goals, teamSize) 
   const overlapSummary = result.overlaps.slice(0,5)
     .map(o=>`Cut ${o.b} → Keep ${o.a} (save $${o.save}/mo)`).join("; ");
   const upgradeSummary = result.upgrades.slice(0,4)
-    .map(u=>`Replace ${u.tool} with ${u.r} (save $${u.save}/mo)`).join("; ");
+    .map(u=>`Swap ${u.tool} → ${u.r} (save $${u.save}/mo)`).join("; ");
   const wrongTools = (result.consultantFindings||[])
     .filter(f=>f.type==="wrong"||f.type==="wrong_tool").map(f=>f.title).join(", ");
   const goalsList = goals.length ? goals.join(", ") : "general optimization";
@@ -2455,7 +2503,7 @@ function renderMetrics(filterIndustry) {
     const g2=div("mgrid");
     const cutFreq=freq(dsCuts,8);
     if(cutFreq.length){
-      g2.appendChild(makeBarCard("🔴 Tools Being Cut","ranked by how often AI flags them for removal",cutFreq,"#ff6b6b",true));
+      g2.appendChild(makeBarCard("🔴 Tools Being Cut","ranked by how often AI flags them for removal",cutFreq,"#d96060",true));
       // Replacement map: for each cut tool, what replaces it most?
       const repMap={};
       // Build from AI_SWAPS knowledge
@@ -2470,7 +2518,7 @@ function renderMetrics(filterIndustry) {
         repCard.innerHTML+=`
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px">
             <span style="color:#5a5650;width:14px;text-align:right">${i+1}</span>
-            <span style="color:#ff6b6b;flex:1">${tool}</span>
+            <span style="color:#d96060;flex:1">${tool}</span>
             <span style="color:#3a3830">→</span>
             <span style="color:#4ecdc4;flex:1.2">${rep||"varies"}</span>
           </div>`;
@@ -2504,7 +2552,7 @@ function renderMetrics(filterIndustry) {
           </div>
           <div style="display:flex;justify-content:space-between">
             <span style="font-size:11px;color:#5a5650">Top cut</span>
-            <span style="font-size:12px;color:#ff6b6b;font-weight:600">${freq(data.cuts,1)[0]?.[0]||"—"}</span>
+            <span style="font-size:12px;color:#d96060;font-weight:600">${freq(data.cuts,1)[0]?.[0]||"—"}</span>
           </div>`;
         card.addEventListener("mouseenter",()=>card.style.borderColor="rgba(255,200,87,0.3)");
         card.addEventListener("mouseleave",()=>card.style.borderColor="");
