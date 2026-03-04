@@ -179,6 +179,41 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
   .dash-stats-mock{grid-template-columns:repeat(2,1fr)}
   .dash-charts-mock{grid-template-columns:1fr}
 }
+/* ── HAMBURGER / MOBILE NAV ── */
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;
+  padding:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:7px;cursor:pointer;transition:background .2s;flex-shrink:0}
+.nav-hamburger:hover{background:rgba(255,255,255,0.08)}
+.nav-hamburger span{display:block;height:2px;background:var(--text);border-radius:2px;
+  transition:transform .25s ease,opacity .25s ease,width .25s ease}
+.nav-hamburger span:nth-child(2){width:70%}
+nav.open .nav-hamburger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+nav.open .nav-hamburger span:nth-child(2){opacity:0;width:0}
+nav.open .nav-hamburger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-drawer{display:none;position:fixed;top:57px;left:0;right:0;bottom:0;z-index:99;
+  background:rgba(15,14,19,0.97);backdrop-filter:blur(16px);
+  flex-direction:column;padding:24px 20px 40px;gap:6px;
+  border-top:1px solid rgba(255,255,255,0.06);overflow-y:auto}
+.nav-drawer.open{display:flex}
+.nav-drawer-link{display:block;padding:13px 16px;border-radius:8px;font-size:15px;
+  font-family:'DM Mono',monospace;color:var(--muted);text-decoration:none;
+  border:1px solid transparent;transition:all .15s;letter-spacing:.03em}
+.nav-drawer-link:hover,.nav-drawer-link.active{color:var(--text);
+  background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08)}
+.nav-drawer-cta{display:block;margin-top:12px;padding:14px 16px;border-radius:8px;
+  font-size:14px;font-family:'DM Mono',monospace;font-weight:700;
+  color:#0f0e13;background:var(--amber);text-decoration:none;
+  text-align:center;letter-spacing:.04em;transition:opacity .2s}
+.nav-drawer-cta:hover{opacity:.88}
+.nav-drawer-divider{height:1px;background:rgba(255,255,255,0.06);margin:8px 0}
+@media(max-width:768px){
+  .nav-hamburger{display:flex}
+  .nav-links{display:none}
+  nav{padding:10px 16px}
+}
+@media(min-width:769px){
+  .nav-drawer{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -191,8 +226,12 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
     <a href="pro.html" class="page-nav-link active">StackAudit</a>
     <a href="stacksignal.html" class="page-nav-link">StackSignal</a>
     <a href="pricing.html" class="page-nav-link">Pricing</a>
+    <a href="/knowledge/index.html" class="page-nav-link">Knowledge</a>
     <a href="analyze.html" class="page-nav-cta">Run Free StackScan</a>
   </div>
+  <button class="nav-hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
