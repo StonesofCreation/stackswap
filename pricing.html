@@ -133,7 +133,7 @@ nav.open .nav-hamburger span:nth-child(3){transform:translateY(-7px) rotate(-45d
   nav{padding:10px 16px}
 }
 @media(min-width:769px){
-  .nav-drawer{display:none!important}
+  .nav-drawer{display:none}
 }
 </style></head><body><nav class="page-nav">
   <a href="index.html" class="page-nav-logo">Stack<span>Swap</span></a>
@@ -309,3 +309,24 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 </ul>
 <a href="stacksignal.html" class="card-cta" style="background:transparent;color:var(--teal);border:1px solid rgba(78,205,196,0.4);display:block;text-align:center;padding:12px;border-radius:7px;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;text-decoration:none;letter-spacing:.04em;margin-top:auto;">Get Early Access →</a></div>
 </div></div></section><section class="comparison"><div class="wrap"><div class="sec-label fade-up">Full Comparison</div><h2 class="sec-h2 fade-up" style="margin-bottom:36px">Everything, side by side.</h2><div class="comp-wrap fade-up"><table class="comp-table"><thead><tr><th style="text-align:left">Feature</th><th style="color:var(--teal)">StackScan</th><th style="color:var(--amber)">StackAudit</th><th style="color:var(--teal)">Signal Pro</th></tr></thead><tbody>
+<script>
+function toggleNav() {
+  var nav = document.querySelector('nav');
+  var drawer = document.getElementById('nav-drawer');
+  if (!nav || !drawer) return;
+  var isOpen = nav.classList.contains('open');
+  nav.classList.toggle('open');
+  drawer.style.display = isOpen ? 'none' : 'flex';
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+document.addEventListener('click', function(e) {
+  var nav = document.querySelector('nav');
+  var drawer = document.getElementById('nav-drawer');
+  if (!nav || !drawer) return;
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !drawer.contains(e.target)) {
+    nav.classList.remove('open');
+    drawer.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+});
+</script>
