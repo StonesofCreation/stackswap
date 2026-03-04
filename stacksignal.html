@@ -278,7 +278,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
         <div class="lock-title">StackSignal Pro</div>
         <div class="lock-desc">Filter by industry, team size, and time period. See which tools are winning and losing in your specific market.</div>
         <div class="lock-tier">Early Access — Coming Soon</div>
-        <a href="intelligence.html" class="lock-btn">See What's Included →</a>
+        <a href="#signal-waitlist" class="lock-btn">Get Early Access →</a>
         <div class="lock-free-note">Or <a href="analyze.html" style="color:var(--teal);text-decoration:none">run a free analysis</a> to contribute to the dataset</div>
       </div>
     </div>
@@ -291,7 +291,7 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
       <p>Filter every chart by industry, team size, and time period. Export to CSV. See switching velocity trends. Track which categories are growing vs. contracting.</p>
     </div>
     <div class="upgrade-banner-right">
-      <a href="stacksignal.html#waitlist" class="upgrade-btn-primary">Get Early Access →</a>
+      <a href="#signal-waitlist" class="upgrade-btn-primary">Get Early Access →</a>
       <a href="analyze.html" class="upgrade-btn-sec">Run Free Analysis</a>
     </div>
   </div>
@@ -304,14 +304,55 @@ footer{border-top:1px solid var(--border);padding:32px 24px;position:relative;z-
 
 </div>
 
+
+<!-- WAITLIST SECTION -->
+<section id="signal-waitlist" style="padding:80px 0;border-top:1px solid rgba(255,255,255,0.07);position:relative;z-index:1">
+  <div style="max-width:500px;margin:0 auto;padding:0 24px;text-align:center">
+    <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:16px;font-family:'DM Mono',monospace">StackSignal Pro</div>
+    <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:800;color:var(--text);letter-spacing:-.02em;margin-bottom:12px">Get early access.</h2>
+    <p style="font-size:15px;color:var(--muted);line-height:1.75;margin-bottom:32px">Industry filtering, switching velocity, team size segmentation, and CSV export. We'll notify you the moment it launches.</p>
+    <div style="display:flex;gap:8px;max-width:420px;margin:0 auto 12px" id="signal-waitlist-form">
+      <input type="email" id="signalEmail" placeholder="your@email.com" style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(78,205,196,0.25);border-radius:7px;padding:11px 14px;font-size:14px;color:var(--text);outline:none;font-family:var(--prose)" />
+      <button onclick="submitSignalWaitlist()" style="padding:11px 20px;border-radius:7px;background:var(--teal);color:#0f0e13;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.04em;white-space:nowrap;transition:opacity .2s">Notify Me →</button>
+    </div>
+    <div id="signalWaitlistSuccess" style="display:none;font-size:14px;color:var(--teal);padding:8px 0;font-family:'DM Mono',monospace">✓ You're on the list.</div>
+    <div style="font-size:12px;color:var(--dim)">No spam. One email when StackSignal Pro launches.</div>
+  </div>
+</section>
+
+<script>
+async function submitSignalWaitlist() {
+  const input = document.getElementById('signalEmail');
+  const email = input.value.trim();
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = 'rgba(255,107,107,0.5)';
+    setTimeout(() => input.style.borderColor = 'rgba(78,205,196,0.25)', 1500);
+    return;
+  }
+  try {
+    await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email,
+        waitlist_type: 'intelligence_pro',
+        source_page: 'stacksignal',
+        context: {}
+      })
+    });
+  } catch(e) {}
+  document.getElementById('signal-waitlist-form').style.display = 'none';
+  document.getElementById('signalWaitlistSuccess').style.display = 'block';
+}
+</script>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">Stack<span>Swap</span></div>
     <div class="footer-links">
-      <a href="analyze.html" class="footer-link">Analyzer</a>
+      <a href="analyze.html" class="footer-link">StackScan</a>
       <a href="stacksignal.html" class="footer-link">StackSignal</a>
-      <a href="pro.html" class="footer-link">Pro Audit</a>
-      <a href="intelligence.html" class="footer-link">Intelligence</a>
+      <a href="pro.html" class="footer-link">StackAudit</a>
       <a href="pricing.html" class="footer-link">Pricing</a>
     </div>
     <div class="footer-note">POWERED BY DEMANDSTACK — NO VENDOR BIAS</div>
