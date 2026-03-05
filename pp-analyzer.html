@@ -217,14 +217,20 @@ body{
 .pp-tool-chip-cost{font-size:11px;color:var(--muted);font-family:'Inter',monospace}
 
 /* ── FILTER PILLS ── */
-.pp-filter-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
-.pp-filter-pill{
-  padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;
-  cursor:pointer;border:none;transition:all .15s;
-  background:var(--gray);color:var(--muted);
+.pp-filter-bar{
+  display:flex;gap:10px;flex-wrap:nowrap;margin-bottom:28px;
+  justify-content:center;overflow-x:auto;padding-bottom:4px;
 }
-.pp-filter-pill.active{background:var(--blue);color:#fff}
-.pp-filter-pill:hover:not(.active){background:var(--border);color:var(--text)}
+.pp-filter-bar::-webkit-scrollbar{height:3px}
+.pp-filter-bar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.pp-filter-pill{
+  padding:14px 28px;border-radius:12px;font-size:15px;font-weight:700;
+  cursor:pointer;border:2px solid transparent;transition:all .15s;
+  background:var(--gray);color:var(--muted);white-space:nowrap;flex-shrink:0;
+  font-family:'Sora',sans-serif;letter-spacing:-.01em;line-height:1;
+}
+.pp-filter-pill.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 4px 14px rgba(24,71,237,0.25)}
+.pp-filter-pill:hover:not(.active){background:var(--border);color:var(--text);border-color:var(--border)}
 
 /* ── SELECTED STACK SUMMARY ── */
 .pp-stack-summary{
@@ -651,109 +657,1135 @@ let _filterCat = 'All';
 let _loading = false;
 let _lead_id = null;
 
-// ── TOOLS DATABASE ─────────────────────────────────────────────────────────────
+// ── TOOLS DATABASE — enriched with features, pricing, contract terms, integrations ──
+// Each tool: id, name, cat (display), stage (workflow), cost (est monthly), cost_note,
+//            model, contract, features[], integrations[], ideal_for, strengths[], weaknesses[], competitors[]
 const TOOLS = [
-  // Transaction Management
-  {id:'paperless-pipeline', name:'Paperless Pipeline', cat:'Transaction Management', cost:75, model:'per_transaction'},
-  {id:'skyslope',           name:'Skyslope',           cat:'Transaction Management', cost:299, model:'flat'},
-  {id:'dotloop',            name:'Dotloop',            cat:'Transaction Mgmt + eSign', cost:149, model:'flat'},
-  {id:'open-to-close',      name:'Open to Close',      cat:'Transaction Management', cost:99,  model:'flat'},
-  {id:'transaction-desk',   name:'Transaction Desk',   cat:'Transaction Management', cost:0,   model:'freemium'},
-  {id:'brokermint',         name:'Brokermint',         cat:'Transaction + Commission', cost:249, model:'flat'},
-  {id:'lone-wolf',          name:'Lone Wolf',          cat:'Back Office Suite',     cost:399, model:'flat'},
-  {id:'propertybase',       name:'Propertybase',       cat:'CRM + Back Office',     cost:399, model:'flat'},
-  // eSign
-  {id:'docusign',           name:'DocuSign',           cat:'eSign',                cost:45,  model:'per_seat'},
-  {id:'authentisign',       name:'Authentisign',       cat:'eSign',                cost:25,  model:'per_seat'},
-  {id:'digisign',           name:'DigiSign',           cat:'eSign',                cost:20,  model:'per_seat'},
-  // CRM
-  {id:'follow-up-boss',     name:'Follow Up Boss',     cat:'CRM',                  cost:99,  model:'per_seat'},
-  {id:'lofty',              name:'Lofty (Chime)',      cat:'CRM + Marketing',      cost:449, model:'flat'},
-  {id:'kvcore',             name:'kvCORE',             cat:'CRM + Marketing',      cost:499, model:'flat'},
-  {id:'sierra-interactive', name:'Sierra Interactive', cat:'CRM + IDX',            cost:499, model:'flat'},
-  {id:'wise-agent',         name:'Wise Agent',         cat:'CRM',                  cost:49,  model:'flat'},
-  {id:'boomtown',           name:'BoomTown',           cat:'CRM + Lead Gen',       cost:1000,model:'flat'},
-  {id:'hubspot',            name:'HubSpot',            cat:'CRM + Marketing Suite',cost:800, model:'flat'},
-  {id:'salesforce',         name:'Salesforce',         cat:'Enterprise CRM',       cost:1500,model:'per_seat'},
-  // Lead Gen
-  {id:'zillow-premier',     name:'Zillow Premier Agent',cat:'Lead Generation',     cost:500, model:'per_lead'},
-  {id:'realtor-com',        name:'Realtor.com Leads',  cat:'Lead Generation',      cost:300, model:'per_lead'},
-  {id:'market-leader',      name:'Market Leader',      cat:'Lead Gen + CRM',       cost:189, model:'flat'},
-  // Marketing
-  {id:'canva',              name:'Canva',              cat:'Design / Marketing',   cost:15,  model:'per_seat'},
-  {id:'mailchimp',          name:'MailChimp',          cat:'Email Marketing',      cost:50,  model:'flat'},
-  {id:'activecampaign',     name:'ActiveCampaign',     cat:'Email Marketing + CRM',cost:79,  model:'flat'},
-  // Productivity
-  {id:'google-workspace',   name:'Google Workspace',   cat:'Productivity Suite',   cost:12,  model:'per_seat'},
-  {id:'microsoft-365',      name:'Microsoft 365',      cat:'Productivity Suite',   cost:15,  model:'per_seat'},
-  {id:'slack',              name:'Slack',              cat:'Team Communication',   cost:8,   model:'per_seat'},
-  {id:'zoom',               name:'Zoom',               cat:'Video Conferencing',   cost:15,  model:'per_seat'},
-  // Automation
-  {id:'zapier',             name:'Zapier',             cat:'Automation',           cost:99,  model:'flat'},
-  {id:'make',               name:'Make (Integromat)',  cat:'Automation',           cost:29,  model:'flat'},
-  // RE Operations
-  {id:'showingtime',        name:'ShowingTime',        cat:'Showing Management',   cost:35,  model:'flat'},
-  {id:'showing-suite',      name:'Showing Suite',      cat:'Showing Management',   cost:29,  model:'flat'},
-  {id:'cloud-cma',          name:'Cloud CMA',          cat:'CMA Reports',          cost:99,  model:'flat'},
-  {id:'rpr',                name:'RPR',                cat:'Market Data',          cost:0,   model:'freemium'},
-  {id:'mls',                name:'MLS Access',         cat:'MLS',                  cost:50,  model:'flat'},
-  {id:'qualia',             name:'Qualia',             cat:'Title + Closing',      cost:299, model:'flat'},
-  {id:'notarize',           name:'Notarize',           cat:'Remote Notarization',  cost:25,  model:'per_use'},
-  {id:'buildout',           name:'Buildout',           cat:'Commercial RE Marketing',cost:299,model:'flat'},
+
+  // ─── TRANSACTION MANAGEMENT ────────────────────────────────────────────────
+  {
+    id:'paperless-pipeline', name:'Paperless Pipeline', cat:'Transaction Management', stage:'transaction',
+    cost:75, cost_note:'$65–$450/mo — per-transaction pricing scales with volume, not headcount',
+    model:'per_transaction', contract:'month-to-month (no annual contract required)',
+    features:[
+      'Transaction Management (buyer, seller, lease)','Commission Module — full CDA / disbursement authorization generator',
+      'Agent Commission Plans (flat, tiered, split, team)','Built-in eSign — no DocuSign needed',
+      'Forms Builder — custom compliance checklists + document templates','Unlimited Document Storage',
+      'Production Reports + Leaderboards','Agent Billing + invoicing',
+      'Office & Agent dashboards','Unlimited users on every plan',
+      'Agent + TC portal access','Mobile-responsive interface',
+      'QuickBooks export for accounting','Zapier integration (3,000+ apps)'
+    ],
+    integrations:['Zapier','QuickBooks Online','QuickBooks Desktop','Google Drive','Dropbox','Outlook','Gmail','ShowingTime','Follow Up Boss','Calendly'],
+    ideal_for:'Independent brokerages, boutique teams, and TCs managing 5–500+ agents; any brokerage that wants full commission management without paying per seat',
+    size:'small-large',
+    pp_positioning:'PP directly competes with SkySlope, Dotloop, Open to Close, Brokermint, and Lone Wolf on transaction management — and wins on price, flexibility, and built-in eSign + commission features. Per-transaction pricing means cost scales with your business (pay less in slow markets). Unlimited users = no seat tax as your brokerage grows.',
+    strengths:[
+      'Only major platform with per-transaction pricing — pay for activity, not headcount',
+      'Full commission module + CDA generator included (no add-on cost)',
+      'Built-in eSign — eliminates need for DocuSign for most brokerages',
+      'Custom forms builder — build any compliance checklist or intake form',
+      'Unlimited users on every plan — no per-agent seat fees',
+      'No annual contract — month-to-month, cancel anytime',
+      'Simple onboarding — most brokerages up and running in < 1 week',
+      'Dedicated support — phone + email, real humans'
+    ],
+    weaknesses:['No built-in CRM (pairs best with Follow Up Boss or similar)','No built-in IDX or lead gen','Accounting/GL requires QuickBooks integration','Less enterprise compliance depth than SkySlope for franchise environments'],
+    competitors:['SkySlope','Dotloop','Open to Close','Brokermint','Lone Wolf Transactions','Sisu (partial overlap on commission)'],
+  },
+  {
+    id:'skyslope', name:'SkySlope', cat:'Transaction Management', stage:'transaction',
+    cost:277, cost_note:'~$277+/mo — quote-based, brokerage-level pricing',
+    model:'flat', contract:'annual (contracts typical)',
+    features:['Transaction Management','DigiSign eSign','SkySlope Forms (MLS-linked)','Compliance Auditing','SkySlope Books (accounting add-on)','AI-assisted audit','Mobile app','Broker dashboard'],
+    integrations:['Google Maps','RealSatisfied','Profit Power','zipLogix','MLS systems','Qualia'],
+    ideal_for:'Mid-to-large brokerages and franchises; high compliance environments',
+    size:'medium-enterprise',
+    strengths:['Strong compliance tools with AI auditing','Pre-loaded MLS forms by state','DigiSign included','Enterprise-grade scalability','900K+ users, 3M+ transactions annually'],
+    weaknesses:['Quote-based pricing — no public rates, harder to compare','Annual contracts','More complex/expensive than PP for small brokerages','Customer support complaints in reviews','MLS/Forms sync issues reported'],
+    competitors:['Paperless Pipeline','Dotloop','Open to Close','Brokermint'],
+  },
+  {
+    id:'dotloop', name:'Dotloop', cat:'Transaction Management', stage:'transaction',
+    cost:149, cost_note:'$31/agent/mo (agent plan); brokerage $149+/mo; owned by Zillow',
+    model:'flat', contract:'monthly available',
+    features:['Transaction Management','eSign (built-in)','Forms Library','Document Storage','Loop sharing','Task management','Compliance'],
+    integrations:['Zillow','Realtor.com','Follow Up Boss','kvCORE','BoomTown','MLS'],
+    ideal_for:'Agents and small-medium brokerages; Zillow ecosystem users',
+    size:'small-medium',
+    strengths:['Widely used — most agents know it','Good eSign UX','Zillow integration','NAR/MLS form library'],
+    weaknesses:['Zillow-owned (data concern for some)','No commission module','Limited reporting vs PP','Less value per dollar than PP for brokerages that need commission tracking'],
+    competitors:['Paperless Pipeline','SkySlope','Open to Close','Transaction Desk'],
+  },
+  {
+    id:'open-to-close', name:'Open to Close', cat:'Transaction Management', stage:'transaction',
+    cost:99, cost_note:'$99–$349/mo; TC and small brokerage plans available',
+    model:'flat', contract:'month-to-month',
+    features:['Transaction Management','Automated task workflows','Client portal','Document management','Email automation','TC-focused tools'],
+    integrations:['Zapier','DocuSign','HelloSign','Dotloop','Google Drive','Follow Up Boss'],
+    ideal_for:'Transaction coordinators and small independent brokerages',
+    size:'small-medium',
+    strengths:['Clean modern UI','Strong automation for TCs','Affordable for small teams','Good client portal'],
+    weaknesses:['No commission module','No built-in eSign (needs DocuSign/HelloSign)','Less compliance depth than SkySlope/PP','Smaller ecosystem'],
+    competitors:['Paperless Pipeline','Dotloop','SkySlope'],
+  },
+  {
+    id:'transaction-desk', name:'Transaction Desk', cat:'Transaction Management', stage:'transaction',
+    cost:0, cost_note:'Often free with NAR/MLS membership in participating states',
+    model:'freemium', contract:'subscription or MLS-bundled',
+    features:['Transaction Management','zipForm integration','Forms Library','Document storage','Basic eSign'],
+    integrations:['zipLogix','MLS systems','DocuSign'],
+    ideal_for:'Agents who want a free/low-cost MLS-bundled option',
+    size:'small',
+    strengths:['Free with many MLS memberships','NAR zipForm integration','Basic compliance'],
+    weaknesses:['Outdated interface','Very limited commission/reporting features','Not built for broker management','Minimal automation'],
+    competitors:['Paperless Pipeline','Dotloop','Form Simplicity'],
+  },
+  {
+    id:'brokermint', name:'Brokermint', cat:'Transaction + Commission', stage:'transaction',
+    cost:249, cost_note:'$249–$499+/mo; pricing based on agent count',
+    model:'flat', contract:'annual recommended',
+    features:['Transaction Management','Commission Automation','Agent Billing','ACH Payments','Accounting Tools','eSign','Reporting','MLS integration'],
+    integrations:['QuickBooks','Zapier','DocuSign','MLS','ShowingTime','Dotloop'],
+    ideal_for:'Brokerages needing full back-office accounting + transaction management',
+    size:'medium-large',
+    strengths:['Strong commission automation with ACH payments','Combined back-office + transaction management','Good reporting','Agent billing built-in'],
+    weaknesses:['More complex to set up','Annual contracts for best pricing','Higher cost than PP for basic TM','Customer support can be slow'],
+    competitors:['Paperless Pipeline','Lone Wolf Back Office','Profit Power','SkySlope Books'],
+  },
+  {
+    id:'lone-wolf', name:'Lone Wolf Transactions', cat:'Transaction Management', stage:'transaction',
+    cost:299, cost_note:'$299+/mo; enterprise pricing, part of Lone Wolf suite',
+    model:'flat', contract:'annual (enterprise contracts)',
+    features:['Transaction Management','Document Management','Compliance','Forms','eSign','Agent Mobile App','Broker Dashboard'],
+    integrations:['Lone Wolf Back Office','MLS','DocuSign','Zapier','QuickBooks'],
+    ideal_for:'Large brokerages and franchises already in the Lone Wolf ecosystem',
+    size:'large-enterprise',
+    strengths:['Deep integration with Lone Wolf Back Office','Enterprise compliance tools','Franchise-level controls','Strong MLS integrations'],
+    weaknesses:['Expensive','Requires annual contracts','Best value only within Lone Wolf ecosystem','Complex implementation'],
+    competitors:['SkySlope','Dotloop','Paperless Pipeline','Brokermint'],
+  },
+  {
+    id:'lone-wolf-back-office', name:'Lone Wolf Back Office', cat:'Back Office + Accounting', stage:'transaction',
+    cost:399, cost_note:'$399+/mo; enterprise pricing',
+    model:'flat', contract:'annual',
+    features:['Commission Tracking','General Ledger','Accounts Payable/Receivable','Agent Billing','Financial Reporting','Trust Accounting','Payroll Integration'],
+    integrations:['Lone Wolf Transactions','QuickBooks','DocuSign','MLS'],
+    ideal_for:'Large brokerages needing full accounting + back office',
+    size:'large-enterprise',
+    strengths:['Full general ledger and accounting','Trust accounting compliance','Deep reporting','Long track record in RE'],
+    weaknesses:['Dated interface','Very expensive','Requires significant setup and training','Overkill for small brokerages'],
+    competitors:['Brokermint','Profit Power','QuickBooks + Paperless Pipeline'],
+  },
+  {
+    id:'profit-power', name:'Profit Power', cat:'Back Office + Accounting', stage:'transaction',
+    cost:199, cost_note:'$199+/mo; pricing on request',
+    model:'flat', contract:'annual',
+    features:['Commission Calculations','Back Office Accounting','Agent Management','Financial Reporting','Trust Accounting'],
+    integrations:['QuickBooks','MLS','DocuSign'],
+    ideal_for:'Independent brokerages needing dedicated back office accounting',
+    size:'small-medium',
+    strengths:['RE-specific accounting','More affordable than Lone Wolf for small brokerages','Trust accounting'],
+    weaknesses:['Dated interface','Limited integrations','No transaction management component'],
+    competitors:['Lone Wolf Back Office','Brokermint','QuickBooks + PP'],
+  },
+  {
+    id:'form-simplicity', name:'Form Simplicity', cat:'Transaction Management', stage:'transaction',
+    cost:30, cost_note:'$30+/mo; often bundled with Florida Realtors membership',
+    model:'flat', contract:'subscription',
+    features:['RE Forms Library','Transaction Management','eSign','Document Storage','Florida-specific forms'],
+    integrations:['Florida Realtors MLS','zipLogix','DocuSign'],
+    ideal_for:'Florida-based agents and brokerages using Florida Realtors resources',
+    size:'small-medium',
+    strengths:['Deeply integrated with Florida RE ecosystem','Affordable','State-specific forms'],
+    weaknesses:['Florida-centric, limited nationally','Basic features vs full TM platforms','No commission module'],
+    competitors:['Paperless Pipeline','Dotloop','Transaction Desk'],
+  },
+
+  // ─── eSIGN / DOCS ──────────────────────────────────────────────────────────
+  {
+    id:'docusign', name:'DocuSign', cat:'eSign', stage:'esign',
+    cost:45, cost_note:'$45–$65/seat/mo (standard); RE-specific plan ~$25/agent/mo annually',
+    model:'per_seat', contract:'annual for best pricing, monthly available',
+    features:['eSignature','Document Templates','Bulk Send','In-Person Signing','Audit Trail','Mobile App','ID Verification','Notarize integration'],
+    integrations:['Salesforce','HubSpot','Paperless Pipeline','Open to Close','Google Drive','Dropbox','Microsoft 365','Zapier'],
+    ideal_for:'Any brokerage needing standalone best-in-class eSign',
+    size:'all',
+    strengths:['Industry standard — clients recognize and trust it','Extensive integrations','Strong mobile app','RE-specific plan affordable'],
+    weaknesses:['Redundant if using PP (which includes eSign)','Annual contracts for best pricing','Can be expensive at full per-seat pricing','Overkill for simple signing needs'],
+    competitors:['Adobe Sign','HelloSign','Authentisign','DigiSign (SkySlope)','PP built-in eSign'],
+  },
+  {
+    id:'adobe-sign', name:'Adobe Sign', cat:'eSign', stage:'esign',
+    cost:30, cost_note:'$30–$50/seat/mo; included with Adobe Acrobat Pro plans',
+    model:'per_seat', contract:'annual',
+    features:['eSignature','Document Creation','PDF editing','Bulk Send','Audit Trail','Microsoft 365 integration'],
+    integrations:['Microsoft 365','Salesforce','Workday','Google Drive','SharePoint'],
+    ideal_for:'Brokerages already using Adobe Acrobat or Microsoft ecosystem',
+    size:'all',
+    strengths:['Strong PDF creation + eSign combo','Microsoft 365 native integration','Trusted brand'],
+    weaknesses:['More expensive standalone','Annual contracts','Not RE-specific','Better value only within Adobe ecosystem'],
+    competitors:['DocuSign','HelloSign','Authentisign'],
+  },
+  {
+    id:'hellosign', name:'HelloSign (Dropbox Sign)', cat:'eSign', stage:'esign',
+    cost:25, cost_note:'$20–$25/seat/mo; free tier available (3 docs/mo)',
+    model:'per_seat', contract:'monthly available',
+    features:['eSignature','Templates','Bulk Send','Audit Trail','Embedded signing','API'],
+    integrations:['Dropbox','Google Drive','HubSpot','Salesforce','Slack','Zapier'],
+    ideal_for:'Small teams wanting affordable, simple eSign without RE-specific features',
+    size:'small-medium',
+    strengths:['Affordable','Clean UX','Good API for developers','Free tier available','Month-to-month available'],
+    weaknesses:['Not RE-specific','Limited compliance features','Less recognized by RE clients than DocuSign'],
+    competitors:['DocuSign','Authentisign','DigiSign'],
+  },
+  {
+    id:'authentisign', name:'Authentisign', cat:'eSign', stage:'esign',
+    cost:25, cost_note:'~$25–$40/mo flat (via Instanet); often MLS-bundled',
+    model:'flat', contract:'monthly',
+    features:['eSignature','RE-specific templates','Transaction linking','Compliance audit trail','Mobile signing'],
+    integrations:['Instanet Solutions','MLS systems','Transaction Desk'],
+    ideal_for:'Agents using Instanet/Transaction Desk ecosystem',
+    size:'small-medium',
+    strengths:['RE-specific design','Often MLS-bundled at low cost','Simple for agents'],
+    weaknesses:['Limited integrations outside Instanet','Less polished UI','Smaller ecosystem than DocuSign'],
+    competitors:['DocuSign','DigiSign','HelloSign','PP built-in eSign'],
+  },
+  {
+    id:'glide', name:'Glide', cat:'eSign', stage:'esign',
+    cost:25, cost_note:'Free for agents; $25+/mo for brokers — CA/TX focused',
+    model:'freemium', contract:'monthly',
+    features:['eSign','California RE disclosure forms (RLA, TDS, SPQ, etc.)','Auto-fill from MLS','Client-friendly portals','Compliance'],
+    integrations:['California Association of Realtors','MLS (CRMLS, SFAR)','Follow Up Boss'],
+    ideal_for:'California (and expanding) agents needing fast disclosure package prep',
+    size:'small-medium',
+    strengths:['Free for agents','Purpose-built for CA disclosure forms','Very fast to send disclosure packages','CAR-forms built in'],
+    weaknesses:['California-centric (expanding to other states)','Not a full TM platform','Limited accounting/commission features'],
+    competitors:['Dotloop','DocuSign','Authentisign','SkySlope Forms'],
+  },
+
+  // ─── CRM ───────────────────────────────────────────────────────────────────
+  {
+    id:'follow-up-boss', name:'Follow Up Boss', cat:'CRM', stage:'crm',
+    cost:99, cost_note:'$69/seat/mo (Starter) to $1,000+/mo (Platform); Zillow-owned; month-to-month',
+    model:'per_seat', contract:'month-to-month',
+    features:['Lead Aggregation (200+ sources)','Pipeline Management','Calling & SMS','Email Automation','Drip Campaigns','Team Reporting','Open API','Agent Accountability','Integrations Marketplace'],
+    integrations:['Zillow','Realtor.com','Google Ads','Facebook Ads','ShowingTime','Dotloop','Paperless Pipeline','Follow Up Boss Pixel','Gmail','Outlook','zapier'],
+    ideal_for:'High-performing teams and brokerages (5–200+ agents) with diverse lead sources',
+    size:'small-large',
+    strengths:['Open API / integrates with almost everything','Best-in-class lead aggregation','Strong team accountability features','Month-to-month pricing','Top-rated support','Now Zillow-owned but stays open ecosystem'],
+    weaknesses:['Per-seat pricing gets expensive at scale','No built-in IDX website','No transaction management','Requires connecting other tools for full stack'],
+    competitors:['kvCORE','Lofty','Sierra Interactive','LionDesk','Wise Agent'],
+  },
+  {
+    id:'kvcore', name:'kvCORE (BoldTrail)', cat:'CRM + Marketing', stage:'crm',
+    cost:499, cost_note:'$499–$2,000+/mo flat; Inside Real Estate; annual contracts typical',
+    model:'flat', contract:'annual (strong push)',
+    features:['IDX Website','CRM','AI Behavioral Automation','Lead Generation','Marketing Autopilot','Listing Manager','Recruiting Tools','kvCORE Marketplace','Team/Brokerage Management'],
+    integrations:['Zillow','Realtor.com','Facebook Ads','Google Ads','Lone Wolf','Dotloop','ShowingTime','Zapier'],
+    ideal_for:'Brokerages and large teams wanting an all-in-one platform to replace multiple tools',
+    size:'medium-enterprise',
+    strengths:['True all-in-one — replaces many separate tools','AI-powered behavioral automation','Enterprise-level controls for brokerages','Marketplace of add-ons','Includes IDX website for all agents'],
+    weaknesses:['Annual contracts, hard to exit','Can be overwhelming — steep learning curve','Expensive vs best-of-breed approach','Support quality inconsistent at scale','All-in-one means less flexibility to swap pieces'],
+    competitors:['Follow Up Boss','Lofty','BoomTown','Sierra Interactive'],
+  },
+  {
+    id:'lofty', name:'Lofty (formerly Chime)', cat:'CRM + Marketing', stage:'crm',
+    cost:449, cost_note:'$449+/mo; annual contracts typical; was Chime CRM',
+    model:'flat', contract:'annual',
+    features:['IDX Website','CRM','AI Lead Nurturing','Marketing Automation','Listing Management','Transaction Management (basic)','Team Tools','AI Assistants'],
+    integrations:['MLS','Zillow','Realtor.com','Google Ads','Facebook Ads','Zapier','SkySlope'],
+    ideal_for:'Mid-size teams wanting AI-powered automation with an all-in-one platform',
+    size:'medium-large',
+    strengths:['AI-powered lead nurturing','Strong IDX and home search experience','Transaction management included (basic)','Good automation builder'],
+    weaknesses:['Annual contracts','Less open integration ecosystem than FUB','Support can be inconsistent','More complex to manage than FUB'],
+    competitors:['kvCORE','Follow Up Boss','Sierra Interactive','BoomTown'],
+  },
+  {
+    id:'sierra-interactive', name:'Sierra Interactive', cat:'CRM + IDX', stage:'crm',
+    cost:499, cost_note:'$499–$1,000+/mo; strong SEO focus; annual contracts',
+    model:'flat', contract:'annual',
+    features:['IDX Website (high SEO performance)','CRM','Lead Routing','Automated Campaigns','Reporting','Team Management','Google Ads integration'],
+    integrations:['Google Ads','Facebook Ads','Zapier','Follow Up Boss','BoomTown'],
+    ideal_for:'SEO-focused teams and brokerages that want strong organic lead generation',
+    size:'medium-large',
+    strengths:['Highest-rated IDX websites for SEO','Strong Google rankings out of the box','Good CRM for team accountability','Dedicated onboarding'],
+    weaknesses:['Annual contracts','More expensive than Real Geeks for similar features','Less automation than kvCORE/Lofty','No built-in transaction management'],
+    competitors:['kvCORE','Lofty','Real Geeks','BoomTown'],
+  },
+  {
+    id:'wise-agent', name:'Wise Agent', cat:'CRM', stage:'crm',
+    cost:49, cost_note:'$49/mo flat — unlimited contacts, unlimited users, month-to-month',
+    model:'flat', contract:'month-to-month',
+    features:['Contact Management','Drip Campaigns','Email Marketing','Transaction Tracking (basic)','Referral Tree','Team Dashboard','Document Storage'],
+    integrations:['Zapier','Gmail','Outlook','Zillow','Realtor.com','BombBomb','Dotloop'],
+    ideal_for:'Individual agents and small teams needing an affordable all-in-one CRM',
+    size:'small',
+    strengths:['Very affordable ($49 flat)','Unlimited contacts and users','RE-specific features','Month-to-month','Good customer support'],
+    weaknesses:['Dated interface','Limited automation compared to FUB/kvCORE','No IDX website','Basic reporting','Small integration ecosystem'],
+    competitors:['Follow Up Boss','LionDesk','Top Producer','IXACT Contact'],
+  },
+  {
+    id:'liondesk', name:'LionDesk', cat:'CRM', stage:'crm',
+    cost:39, cost_note:'$39–$89/mo; now part of Lone Wolf Technologies',
+    model:'flat', contract:'month-to-month',
+    features:['Contact Management','Video Texting','AI Lead Follow-up (Gabby)','Drip Campaigns','Transaction Tracking (basic)','Power Dialer','Facebook Leads integration'],
+    integrations:['Zapier','Gmail','Zillow','Realtor.com','Facebook Leads','Lone Wolf'],
+    ideal_for:'Budget-conscious agents wanting a CRM with video texting and AI follow-up',
+    size:'small',
+    strengths:['Very affordable','Video texting differentiator','AI follow-up bot (Gabby)','Part of Lone Wolf ecosystem'],
+    weaknesses:['Acquired by Lone Wolf — uncertain roadmap','Dated UI','Limited reporting','Small team features'],
+    competitors:['Wise Agent','Top Producer','Follow Up Boss'],
+  },
+  {
+    id:'top-producer', name:'Top Producer', cat:'CRM', stage:'crm',
+    cost:129, cost_note:'$129+/mo per agent; Market Leader subsidiary',
+    model:'per_seat', contract:'monthly available',
+    features:['Contact Management','MLS Property Insights','Smart Targeting','Drip Campaigns','FiveStreet Lead Response','Sphere nurturing'],
+    integrations:['MLS','Zillow','Realtor.com','Market Leader','Gmail','Outlook'],
+    ideal_for:'Agents focused on sphere of influence and database nurturing',
+    size:'small-medium',
+    strengths:['30+ year track record','MLS data integration for contact insights','Good sphere nurturing','FiveStreet speed-to-lead tool'],
+    weaknesses:['Expensive per seat','Dated platform vs modern CRMs','Limited team/broker features','Better options available for the price'],
+    competitors:['Follow Up Boss','Wise Agent','LionDesk','kvCORE'],
+  },
+  {
+    id:'real-geeks', name:'Real Geeks', cat:'CRM + IDX', stage:'crm',
+    cost:299, cost_note:'$299/mo for 2 agents + $25/agent/mo; month-to-month available',
+    model:'flat', contract:'monthly available',
+    features:['IDX Website','CRM','Lead Management','Automated Follow-up','Facebook/Google Ad Management','Market Reports','Team tools'],
+    integrations:['Zillow','Realtor.com','Google Ads','Facebook Ads','Follow Up Boss','SkySlope','Zapier'],
+    ideal_for:'Small-medium teams wanting affordable IDX + CRM without bloated features',
+    size:'small-medium',
+    strengths:['Affordable for IDX + CRM combo','Good SEO','Clean UI','Month-to-month available','Strong integrations including SkySlope'],
+    weaknesses:['Less automation than kvCORE/Lofty','Not ideal for enterprise brokerages','Limited marketing suite'],
+    competitors:['Sierra Interactive','kvCORE','Lofty','BoomTown'],
+  },
+  {
+    id:'boomtown', name:'BoomTown', cat:'CRM + Lead Gen', stage:'crm',
+    cost:1000, cost_note:'$1,000–$1,500+/mo + $750+ setup; Inside Real Estate (also owns kvCORE)',
+    model:'flat', contract:'annual + setup fee',
+    features:['IDX Website','CRM','Predictive Analytics (Now Wall)','PPC Lead Generation','Automated Follow-up','Success Assurance (concierge leads)','Transaction Dashboard'],
+    integrations:['Mojo Dialer','Google Ads','Facebook Ads','Zapier','kvCORE (btPRO)'],
+    ideal_for:'High-volume PPC-focused teams of 10+ agents with dedicated ISAs and phone dialers',
+    size:'medium-large',
+    strengths:['25% of top US teams use it','Now Wall predictive CRM','Built-in PPC management','Success Assurance lead nurturing','Strong ROI for PPC-heavy operations'],
+    weaknesses:['Most expensive RE platform','Annual contracts + setup fees','You don\'t own your website or data','Overkill for smaller teams','Limited SEO value'],
+    competitors:['kvCORE','CINC','Sierra Interactive','Lofty'],
+  },
+  {
+    id:'ixact-contact', name:'IXACT Contact', cat:'CRM', stage:'crm',
+    cost:44, cost_note:'$44/mo per agent; month-to-month',
+    model:'per_seat', contract:'month-to-month',
+    features:['Contact Management','Monthly e-Newsletter','Social Stream automation','Drip Campaigns','Listing and Closing Activity Plans','RE-specific pipeline'],
+    integrations:['Gmail','Outlook','Zillow','Realtor.com','Zapier'],
+    ideal_for:'Individual agents focused on sphere nurturing and database marketing',
+    size:'small',
+    strengths:['RE-specific with activity plans','Automated monthly newsletter','Affordable','Month-to-month'],
+    weaknesses:['Very basic vs modern CRMs','Limited team features','No IDX website'],
+    competitors:['Wise Agent','Top Producer','Follow Up Boss'],
+  },
+  {
+    id:'propertybase', name:'Propertybase', cat:'CRM + Back Office', stage:'crm',
+    cost:399, cost_note:'$399+/mo; Salesforce-based RE CRM',
+    model:'flat', contract:'annual',
+    features:['Salesforce-based CRM','IDX Website','Transaction Management','MLS integration','Marketing tools','Commission tracking','Reporting'],
+    integrations:['Salesforce ecosystem','MLS','DocuSign','Zapier','Marketing Cloud'],
+    ideal_for:'Enterprise brokerages that need Salesforce-grade customization in a RE wrapper',
+    size:'large-enterprise',
+    strengths:['Built on Salesforce — enterprise power','Highly customizable','Full transaction management + CRM in one','Strong reporting'],
+    weaknesses:['Very expensive','Complex to implement and maintain','Requires Salesforce admin knowledge','Overkill for most brokerages'],
+    competitors:['kvCORE','Follow Up Boss','Lofty'],
+  },
+
+  // ─── LEAD GENERATION ───────────────────────────────────────────────────────
+  {
+    id:'zillow-premier', name:'Zillow Premier Agent', cat:'Lead Generation', stage:'leadgen',
+    cost:500, cost_note:'$300–$2,000+/mo per zip code; pay-per-click / impression model',
+    model:'per_lead', contract:'month-to-month (flexible)',
+    features:['Buyer leads from Zillow/Trulia','Zillow app connection','Lead routing','CRM (basic, built-in)','Market insights'],
+    integrations:['Follow Up Boss','kvCORE','Lofty','Dotloop','HubSpot'],
+    ideal_for:'Agents/teams in high-traffic markets willing to pay for buyer intent leads',
+    size:'small-large',
+    strengths:['Highest volume of buyer leads in most markets','No contract — pay monthly','Strong brand recognition with consumers','Connects directly to Follow Up Boss'],
+    weaknesses:['Expensive per-lead cost in competitive markets','Lead quality varies widely by zip code','Zillow owns the relationship with the consumer','Costs rise quickly as competition increases'],
+    competitors:['Realtor.com Connections','CINC','Market Leader','BoomTown'],
+  },
+  {
+    id:'realtor-com', name:'Realtor.com Connections Plus', cat:'Lead Generation', stage:'leadgen',
+    cost:300, cost_note:'$200–$1,000+/mo; no contract required',
+    model:'per_lead', contract:'month-to-month',
+    features:['Buyer + seller leads','Local Expert (zip code exclusivity)','ReadyConnect Concierge','Lead routing','Basic CRM'],
+    integrations:['Follow Up Boss','kvCORE','HubSpot','Zapier'],
+    ideal_for:'Agents wanting an alternative or complement to Zillow Premier Agent',
+    size:'small-large',
+    strengths:['Often lower cost per lead than Zillow in many markets','Second-largest portal audience','Local Expert gives zip exclusivity option','Month-to-month'],
+    weaknesses:['Lead quality varies','Consumer intent can be lower than Zillow','Less brand recognition than Zillow'],
+    competitors:['Zillow Premier Agent','CINC','Market Leader'],
+  },
+  {
+    id:'cinc', name:'CINC', cat:'Lead Generation + CRM', stage:'leadgen',
+    cost:900, cost_note:'$900–$1,500+/mo; annual contracts; PPC-managed platform',
+    model:'flat', contract:'annual',
+    features:['Google/Facebook PPC Management','IDX Website','CRM','Predictive lead scoring','Team lead routing','CINC AI (lead texting bot)','Reporting'],
+    integrations:['Google Ads','Facebook Ads','Zapier','Follow Up Boss'],
+    ideal_for:'Mid-to-large teams running dedicated PPC campaigns for buyer lead generation',
+    size:'medium-large',
+    strengths:['Managed PPC — done for you','Strong lead scoring and routing','CINC AI automates first contact','Good ROI for phone-heavy operations'],
+    weaknesses:['Expensive annual contracts','You don\'t control your ad budget directly','Less flexible than running your own ads','Less recognized than BoomTown'],
+    competitors:['BoomTown','kvCORE','Ylopo','Sierra Interactive'],
+  },
+  {
+    id:'market-leader', name:'Market Leader', cat:'Lead Generation + CRM', stage:'leadgen',
+    cost:189, cost_note:'$189–$600+/mo; guaranteed exclusive leads; month-to-month available',
+    model:'flat', contract:'monthly available',
+    features:['Exclusive buyer/seller leads','IDX Website','CRM','Email drip campaigns','Network Boost (social media ads)','Lead guarantee'],
+    integrations:['Gmail','Outlook','Zapier','Top Producer'],
+    ideal_for:'Individual agents and small teams wanting guaranteed exclusive leads at moderate cost',
+    size:'small-medium',
+    strengths:['Exclusive leads (not shared with other agents)','Affordable entry point','Guaranteed number of leads per month','Month-to-month available'],
+    weaknesses:['Lead quality can be inconsistent','IDX and CRM are basic','Leads not as warm as Zillow/Realtor.com portal leads','Limited customization'],
+    competitors:['Zillow Premier Agent','Realtor.com','Zurple','CINC'],
+  },
+  {
+    id:'ylopo', name:'Ylopo', cat:'Lead Generation', stage:'leadgen',
+    cost:600, cost_note:'$600–$1,500+/mo; ad spend separate; annual contracts',
+    model:'flat', contract:'annual',
+    features:['Facebook/Google PPC','IDX Website','Raiya AI (automated follow-up)','Remarketing','Seller leads (Ylopo Stars)','Video ads','Database reactivation'],
+    integrations:['Follow Up Boss','Sierra Interactive','kvCORE','Lofty','Zapier'],
+    ideal_for:'Teams with strong follow-up processes wanting cutting-edge digital marketing',
+    size:'medium-large',
+    strengths:['Best-in-class Facebook/Google RE ads','Raiya AI for automated follow-up','Works well with Follow Up Boss','Strong remarketing to database'],
+    weaknesses:['Annual contracts','Ad spend is separate budget','Requires a good CRM like FUB to maximize value','Not a standalone platform'],
+    competitors:['CINC','BoomTown','kvCORE','Sierra Interactive'],
+  },
+  {
+    id:'offrs', name:'Offrs (Seller Leads)', cat:'Lead Generation', stage:'leadgen',
+    cost:200, cost_note:'$200–$500+/mo; predictive seller lead platform',
+    model:'flat', contract:'monthly available',
+    features:['Predictive Seller Identification','AI-targeted territory farming','Smart Data','Seller lead campaigns','Email/direct mail integration'],
+    integrations:['Follow Up Boss','kvCORE','Zapier','Mailchimp'],
+    ideal_for:'Listing-focused agents wanting to predict and target likely sellers before they list',
+    size:'small-medium',
+    strengths:['Predictive analytics to find sellers early','Exclusive territory option','Good for listing-focused agents','Complements buyer lead tools'],
+    weaknesses:['Seller leads have longer sales cycles','Not a full CRM','Requires consistent long-term nurturing to see ROI','Monthly cost adds up'],
+    competitors:['SmartZip','Market Leader','BoldTrail (kvCORE)'],
+  },
+  {
+    id:'landvoice', name:'Landvoice', cat:'Lead Generation', stage:'leadgen',
+    cost:100, cost_note:'$80–$200/mo; FSBO + expired + pre-foreclosure leads',
+    model:'flat', contract:'monthly available',
+    features:['FSBO Leads','Expired Listing Leads','Pre-Foreclosure Leads','Neighborhood Search','DNC scrubbing','CRM (basic)'],
+    integrations:['Follow Up Boss','CINC','Mojo Dialer','SkySlope'],
+    ideal_for:'Prospecting agents who cold-call FSBOs and expired listings',
+    size:'small-medium',
+    strengths:['Affordable for FSBO/expired leads','Good data accuracy','DNC scrubbed','Integrates with dialers'],
+    weaknesses:['Requires heavy phone prospecting','Not suitable for all agent styles','Leads need significant follow-up effort'],
+    competitors:['REDX','Vulcan7','Espresso Agent'],
+  },
+
+  // ─── MARKETING ─────────────────────────────────────────────────────────────
+  {
+    id:'canva', name:'Canva', cat:'Design / Marketing', stage:'marketing',
+    cost:15, cost_note:'$15/seat/mo (Pro); Teams plan $10/seat/mo (billed annually); free tier available',
+    model:'per_seat', contract:'monthly available',
+    features:['Graphic Design','Social Media Templates','RE-specific templates','Brand Kit','Video editing','Print design','Presentations','AI design tools'],
+    integrations:['Google Drive','Dropbox','Slack','HubSpot','Mailchimp','Hootsuite','Facebook'],
+    ideal_for:'Any agent or brokerage creating their own marketing materials',
+    size:'all',
+    strengths:['Extremely easy to use','Huge RE template library','Very affordable','Teams brand kit feature','Free tier available'],
+    weaknesses:['Not RE-specific — templates need customization','Print quality limited vs professional design tools','No CRM or lead integration'],
+    competitors:['Adobe Creative Cloud','Fiverr','Coffee & Contracts'],
+  },
+  {
+    id:'coffee-contracts', name:'Coffee & Contracts', cat:'Design / Marketing', stage:'marketing',
+    cost:54, cost_note:'$54/mo per agent; $44/mo billed annually',
+    model:'flat', contract:'monthly available',
+    features:['Done-for-you RE social media content','Monthly content calendar','Instagram/Facebook templates','Stories','Market update templates','Listing templates','Educational content','Canva integration'],
+    integrations:['Canva','Instagram','Facebook','Buffer','Later'],
+    ideal_for:'Agents who want consistent professional social media content without creating from scratch',
+    size:'small',
+    strengths:['RE-specific content done for you','Saves 10+ hours/month on content creation','Professional quality','New content monthly','Huge library'],
+    weaknesses:['Not unique to your brand — many agents use same templates','No CRM or lead gen','Requires customizing each post with your info'],
+    competitors:['Canva','Back At You Media','Loomly'],
+  },
+  {
+    id:'bombbomb', name:'BombBomb', cat:'Video Email Marketing', stage:'marketing',
+    cost:40, cost_note:'$39–$79/seat/mo; video email + tracking',
+    model:'per_seat', contract:'monthly available',
+    features:['Video Email','Video Text','Screen Recording','Email Tracking (open/view)','CRM Integrations','Landing Pages','Video analytics'],
+    integrations:['Follow Up Boss','kvCORE','Gmail','Outlook','Salesforce','Zapier','HubSpot'],
+    ideal_for:'Agents wanting to stand out with video communication in follow-up',
+    size:'small-medium',
+    strengths:['Strong differentiation vs text email','Video open rates much higher','Works inside Gmail/Outlook','Good FUB integration'],
+    weaknesses:['Added cost per seat','Requires comfort on camera','Not a standalone CRM or marketing suite'],
+    competitors:['Loom','Dubb','Hippo Video'],
+  },
+  {
+    id:'mailchimp', name:'Mailchimp', cat:'Email Marketing', stage:'marketing',
+    cost:50, cost_note:'$13–$350/mo based on contacts; free up to 500 contacts',
+    model:'flat', contract:'monthly',
+    features:['Email Marketing','Automation','Landing Pages','Audience Segmentation','A/B Testing','Analytics','RE templates'],
+    integrations:['Zapier','Salesforce','HubSpot','WordPress','Squarespace','Facebook','Canva'],
+    ideal_for:'Brokerages wanting straightforward mass email campaigns to their database',
+    size:'all',
+    strengths:['Free tier available','Easy to use','Good analytics','Wide integration support'],
+    weaknesses:['Not RE-specific','Less automation depth than ActiveCampaign','Can get expensive at large contact lists','CRM features basic'],
+    competitors:['ActiveCampaign','Constant Contact','Keap','kvCORE built-in email'],
+  },
+  {
+    id:'activecampaign', name:'ActiveCampaign', cat:'Email Marketing + CRM', stage:'marketing',
+    cost:79, cost_note:'$29–$149/mo based on contacts and features; monthly available',
+    model:'flat', contract:'monthly available',
+    features:['Email Marketing','Marketing Automation','CRM','Lead Scoring','SMS','Site Tracking','Predictive sending','Advanced segmentation'],
+    integrations:['Zapier','Salesforce','HubSpot','Facebook','Shopify','WordPress','Typeform'],
+    ideal_for:'Brokerages wanting powerful email automation + basic CRM without RE-specific platform',
+    size:'small-medium',
+    strengths:['Best-in-class email automation','Visual automation builder','CRM included','Affordable for feature depth','Monthly contracts'],
+    weaknesses:['Not RE-specific','No IDX or lead generation','Learning curve for automation setup','Interface can feel complex'],
+    competitors:['Mailchimp','Keap','HubSpot','kvCORE built-in'],
+  },
+  {
+    id:'constant-contact', name:'Constant Contact', cat:'Email Marketing', stage:'marketing',
+    cost:35, cost_note:'$12–$80/mo; easy email marketing, monthly contracts',
+    model:'flat', contract:'monthly',
+    features:['Email Marketing','Event Marketing','Social Media posting','Landing Pages','Surveys','Basic automation'],
+    integrations:['Zapier','Salesforce','WordPress','Eventbrite','Canva','Shopify'],
+    ideal_for:'Small brokerages wanting simple reliable email newsletters',
+    size:'small',
+    strengths:['Very easy to use','Good deliverability','Phone support available','Event marketing tools'],
+    weaknesses:['Less automation than ActiveCampaign','More expensive per contact than Mailchimp','Basic CRM only'],
+    competitors:['Mailchimp','ActiveCampaign'],
+  },
+  {
+    id:'back-at-you', name:'Back At You Media', cat:'Social Media Marketing', stage:'marketing',
+    cost:250, cost_note:'$250+/mo for brokerages; social media automation for RE',
+    model:'flat', contract:'monthly',
+    features:['Auto-post listing content','Social media automation','Broker/agent co-branding','Listing videos','Market update posts','Lead capture from social'],
+    integrations:['MLS','Facebook','Instagram','Twitter','LinkedIn','Canva'],
+    ideal_for:'Brokerages wanting automated social media content tied to their MLS listings',
+    size:'medium-large',
+    strengths:['MLS-connected auto-posting','Brokerage + agent co-branding','Consistent social presence without manual effort'],
+    weaknesses:['Generic content','Expensive for small offices','Requires social media strategy to see results'],
+    competitors:['Coffee & Contracts','Canva + Loomly','kvCORE social tools'],
+  },
+  {
+    id:'homebot', name:'Homebot', cat:'Sphere Marketing', stage:'marketing',
+    cost:50, cost_note:'$50–$100/mo per agent; automated home value reports to past clients',
+    model:'flat', contract:'monthly',
+    features:['Automated monthly home value reports','Refinance opportunities','Equity calculations','Client portal','Lender co-marketing','Lead re-engagement'],
+    integrations:['Follow Up Boss','Salesforce','Gmail','Zapier','MLS'],
+    ideal_for:'Agents wanting to stay top-of-mind with past clients and sphere through value-add content',
+    size:'small-medium',
+    strengths:['High open rates (50%+) on home reports','Generates re-engagement and referrals','Easy to set up','Lender co-marketing splits cost','Passive income from referrals'],
+    weaknesses:['Not a CRM — no follow-up tools','Requires a good database to market to','Monthly cost per agent'],
+    competitors:['Cloud CMA','RPR','Top Producer Market Snapshot'],
+  },
+
+  // ─── OPERATIONS ────────────────────────────────────────────────────────────
+  {
+    id:'showingtime', name:'ShowingTime', cat:'Showing Management', stage:'operations',
+    cost:35, cost_note:'$35–$100+/mo; owned by Zillow since 2021',
+    model:'flat', contract:'monthly',
+    features:['Showing Scheduling','Automated Feedback','Listing Activity Reports','Agent Mobile App','Seller Showing Alerts','Team coordination','MLS integration'],
+    integrations:['MLS systems (200+)','Follow Up Boss','kvCORE','Paperless Pipeline','Dotloop','Calendly'],
+    ideal_for:'Any brokerage needing automated showing scheduling and feedback',
+    size:'all',
+    strengths:['Industry standard — buyers and agents know it','Deep MLS integration','Free for agents in many markets','Seller-facing reports','Mobile app'],
+    weaknesses:['Zillow-owned (some data concerns)','Less flexible than Showing Suite for customization','Basic functionality at entry level'],
+    competitors:['Showing Suite','Aligned Showings','CSS (Centralized Showing Service)'],
+  },
+  {
+    id:'showing-suite', name:'Showing Suite', cat:'Showing Management', stage:'operations',
+    cost:29, cost_note:'$29–$79/mo; independent alternative to ShowingTime',
+    model:'flat', contract:'monthly',
+    features:['Showing Scheduling','Automated Feedback','CRM (basic)','Seller Reports','Offers Module','Agent Accountability'],
+    integrations:['MLS systems','Zapier','Google Calendar'],
+    ideal_for:'Brokerages wanting a ShowingTime alternative with more customization',
+    size:'small-medium',
+    strengths:['More affordable than ShowingTime','Offers module included','Not owned by Zillow','Basic CRM included'],
+    weaknesses:['Smaller network than ShowingTime','Less MLS integration depth','Less recognized by agents'],
+    competitors:['ShowingTime','Aligned Showings'],
+  },
+  {
+    id:'cloud-cma', name:'Cloud CMA', cat:'CMA Reports', stage:'operations',
+    cost:99, cost_note:'$99/mo per agent; MLS-integrated CMA reports',
+    model:'per_seat', contract:'monthly',
+    features:['Comparative Market Analysis Reports','Buyer Tours','Property Reports','Neighborhood Reports','Listing Presentations','PDF/web delivery','Branded reports'],
+    integrations:['MLS (1,500+ MLSs)','Follow Up Boss','kvCORE','Zapier'],
+    ideal_for:'Agents wanting polished, branded CMA presentations to win listings',
+    size:'small-medium',
+    strengths:['Best CMA presentation tool in RE','1,500+ MLS integrations','Buyer tour feature','Modern design templates','Easy to create and share'],
+    weaknesses:['Expensive per agent','Just for CMAs — not a full platform','Overlaps with RPR for data'],
+    competitors:['RPR','HomeSnap (for CMAs)','kvCORE CMAs','BoomTown CMAs'],
+  },
+  {
+    id:'rpr', name:'RPR (Realtors Property Resource)', cat:'Market Data', stage:'operations',
+    cost:0, cost_note:'FREE with NAR membership — included in dues',
+    model:'freemium', contract:'NAR membership',
+    features:['Property Reports','CMA Reports','Neighborhood Data','Market Trends','Commercial Data','School Info','Flood & Hazard Data','Branded Reports'],
+    integrations:['MLS','NAR member apps','Canva (export)'],
+    ideal_for:'NAR member agents wanting free market data and CMA reports',
+    size:'all',
+    strengths:['Free with NAR membership','Massive property database','Good CMA and market reports','Commercial property data','Nationwide coverage'],
+    weaknesses:['Less polished than Cloud CMA for presentations','Requires NAR membership','UI less modern','Limited integration with CRMs'],
+    competitors:['Cloud CMA','Homebot','kvCORE market reports'],
+  },
+  {
+    id:'qualia', name:'Qualia', cat:'Title + Closing', stage:'operations',
+    cost:299, cost_note:'$299+/mo; title and closing management platform',
+    model:'flat', contract:'monthly',
+    features:['Title Production','Escrow Management','Order Management','eClose/RON','Client Communication Portal','Document Delivery','Compliance','Integrations with lenders'],
+    integrations:['DocuSign','Notarize','Snapdocs','MLS','QuickBooks','LOS systems'],
+    ideal_for:'Title companies and closing attorneys managing their operations; brokerages with in-house title',
+    size:'medium-large',
+    strengths:['Best title production platform in the industry','eClose and RON capabilities','Strong compliance tools','Client portal experience'],
+    weaknesses:['For title/closing companies primarily — not a brokerage TM tool','Expensive for small title operations','Complex implementation'],
+    competitors:['SoftPro','RamQuest','ResWare'],
+  },
+  {
+    id:'notarize', name:'Notarize (Proof)', cat:'Remote Notarization', stage:'operations',
+    cost:25, cost_note:'$25–$40 per notarization; subscription plans available for high volume',
+    model:'per_use', contract:'pay-per-use or subscription',
+    features:['Remote Online Notarization (RON)','Identity Verification','Audit Trail','Digital Document Delivery','24/7 notary availability','Multi-state compliance'],
+    integrations:['DocuSign','Qualia','Snapdocs','LOS systems','Title platforms'],
+    ideal_for:'Brokerages and title companies wanting to offer remote closings',
+    size:'all',
+    strengths:['Leader in RON space','24/7 availability','Strong compliance','Easy for clients to use'],
+    weaknesses:['Per-use cost adds up for high volume','RON not available in all states','Requires document prep beforehand'],
+    competitors:['Snapdocs','DocuSign Notary','SIGNiX'],
+  },
+  {
+    id:'mls-access', name:'MLS Access', cat:'MLS', stage:'operations',
+    cost:50, cost_note:'$25–$100/mo; varies by board/association',
+    model:'flat', contract:'subscription',
+    features:['MLS Listing Access','IDX Data Feed','Listing Management','Showing coordination','Market Data','RETS/RESO API'],
+    integrations:['All major RE platforms','IDX providers','ShowingTime','Dotloop'],
+    ideal_for:'Every licensed agent and brokerage — required for most RE operations',
+    size:'all',
+    strengths:['Required for RE business','Source of truth for listing data','Connects to all major RE platforms'],
+    weaknesses:['Cost and features vary widely by board','Not optional — just a cost of doing business'],
+    competitors:['N/A — MLS is required'],
+  },
+  {
+    id:'google-workspace', name:'Google Workspace', cat:'Productivity Suite', stage:'operations',
+    cost:12, cost_note:'$6–$18/seat/mo; Gmail, Drive, Meet, Docs, Sheets, Calendar',
+    model:'per_seat', contract:'monthly available',
+    features:['Gmail','Google Drive','Google Meet','Docs/Sheets/Slides','Calendar','Google Chat','Shared drives','Admin controls'],
+    integrations:['Zapier','Slack','Salesforce','HubSpot','DocuSign','Asana','Virtually all SaaS tools'],
+    ideal_for:'Any brokerage needing email, documents, and collaboration tools',
+    size:'all',
+    strengths:['Affordable','Works on any device','Deep integration with almost everything','Excellent sharing/collaboration','Google Meet for video calls'],
+    weaknesses:['Not RE-specific','Requires Microsoft 365 choice (pick one)','Less polished than M365 for desktop apps'],
+    competitors:['Microsoft 365'],
+  },
+  {
+    id:'microsoft-365', name:'Microsoft 365', cat:'Productivity Suite', stage:'operations',
+    cost:15, cost_note:'$6–$22/seat/mo; Outlook, Teams, OneDrive, Word, Excel, PowerPoint',
+    model:'per_seat', contract:'monthly available',
+    features:['Outlook Email','Microsoft Teams','OneDrive','Word/Excel/PowerPoint','SharePoint','Power Automate','Power BI (business plans)'],
+    integrations:['Zapier','Salesforce','Dynamics 365','DocuSign','Adobe Sign','Virtually all SaaS tools'],
+    ideal_for:'Brokerages already in the Microsoft ecosystem or needing Excel/PowerPoint heavily',
+    size:'all',
+    strengths:['Best desktop Office apps (Word/Excel/PowerPoint)','Teams for communication (replaces Slack if M365)','Power BI included in higher plans','SharePoint for document management'],
+    weaknesses:['Not RE-specific','Pricier than Google Workspace for basics','Microsoft Teams UX less intuitive than Slack'],
+    competitors:['Google Workspace'],
+  },
+  {
+    id:'slack', name:'Slack', cat:'Team Communication', stage:'operations',
+    cost:8, cost_note:'$7.25–$12.50/seat/mo; free tier available (90-day message history)',
+    model:'per_seat', contract:'monthly available',
+    features:['Team Messaging','Channels','Video/audio calls','File sharing','Workflow Builder','App integrations','Search','Huddles'],
+    integrations:['Google Workspace','Microsoft 365','Salesforce','HubSpot','Zapier','GitHub','Asana','DocuSign'],
+    ideal_for:'Teams wanting organized asynchronous communication beyond group texts and email',
+    size:'small-large',
+    strengths:['Best-in-class team messaging','Searchable history','Huge integration ecosystem','Free tier usable for small teams'],
+    weaknesses:['Redundant if using Microsoft Teams (M365 included)','Can be distracting for field agents','Per-seat cost adds up'],
+    competitors:['Microsoft Teams','Google Chat'],
+  },
+  {
+    id:'zoom', name:'Zoom', cat:'Video Conferencing', stage:'operations',
+    cost:15, cost_note:'$13–$20/seat/mo; free tier available (40-min group calls)',
+    model:'per_seat', contract:'monthly available',
+    features:['Video Meetings','Webinars','Zoom Phone','Team Chat','Zoom Rooms','Recording','Virtual backgrounds','Breakout rooms'],
+    integrations:['Google Calendar','Outlook','Slack','Salesforce','HubSpot','Zapier','Calendly'],
+    ideal_for:'Any brokerage doing virtual meetings, training, or webinars',
+    size:'all',
+    strengths:['Industry standard for video','Very reliable','Free tier generous for 1-on-1 calls','Webinar capability','Easy for clients'],
+    weaknesses:['Redundant if using Google Meet (Google Workspace) or Teams (M365)','Per-seat cost','Zoom fatigue is real'],
+    competitors:['Google Meet','Microsoft Teams','GoToMeeting'],
+  },
+  {
+    id:'zapier', name:'Zapier', cat:'Automation', stage:'operations',
+    cost:99, cost_note:'$20–$599+/mo based on tasks; free tier (100 tasks/mo)',
+    model:'flat', contract:'monthly available',
+    features:['No-code Automation','5,000+ app integrations','Multi-step Zaps','Webhooks','Filtering','Delay','Paths (conditional logic)','Zapier Tables'],
+    integrations:['Literally 5,000+ apps including all major RE tools'],
+    ideal_for:'Any brokerage wanting to automate workflows between tools without developers',
+    size:'all',
+    strengths:['5,000+ integrations — connects everything','No code required','Reliable and well-documented','Free tier for basics'],
+    weaknesses:['Can get expensive at high task volume','Complex Zaps can be brittle','Make is more powerful for same price at scale'],
+    competitors:['Make (Integromat)','n8n','Tray.io'],
+  },
+  {
+    id:'make', name:'Make (Integromat)', cat:'Automation', stage:'operations',
+    cost:29, cost_note:'$9–$99/mo; significantly more powerful than Zapier per dollar',
+    model:'flat', contract:'monthly available',
+    features:['Visual Automation Builder','1,800+ integrations','Complex multi-step workflows','Data transformations','HTTP/webhooks','Scheduling','Error handling','Scenarios'],
+    integrations:['All major RE tools','API-based connections','Zapier-comparable app list'],
+    ideal_for:'Brokerages with complex automation needs wanting more power for less cost than Zapier',
+    size:'small-large',
+    strengths:['Much more powerful than Zapier per dollar','Visual scenario builder','Better error handling','More operations per dollar'],
+    weaknesses:['Steeper learning curve than Zapier','Smaller community/documentation','Fewer native integrations than Zapier (1,800 vs 5,000)'],
+    competitors:['Zapier','n8n','Workato'],
+  },
+  {
+    id:'buildout', name:'Buildout', cat:'Commercial RE Marketing', stage:'marketing',
+    cost:299, cost_note:'$299+/mo; commercial real estate specific marketing platform',
+    model:'flat', contract:'monthly',
+    features:['Commercial Listing Management','Offering Memorandums','Property Websites','Email Campaigns','CoStar/LoopNet integration','Deal tracking','Broker collaboration'],
+    integrations:['CoStar','LoopNet','CREXI','DocuSign','Salesforce'],
+    ideal_for:'Commercial real estate brokerages and teams',
+    size:'medium-large',
+    strengths:['Purpose-built for commercial RE','OM generator','LoopNet/CoStar integration','Saves hours on deal marketing'],
+    weaknesses:['Expensive for smaller commercial teams','Not relevant for residential','Limited CRM'],
+    competitors:['CREXI','AIR CRE','Apto CRM'],
+  },
+
+  // ─── NEW: UNIVERSAL CRM ────────────────────────────────────────────────────
+  {
+    id:'hubspot', name:'HubSpot CRM', cat:'CRM', stage:'crm',
+    cost:50, cost_note:'Free tier (limited); Sales Hub Starter $20/seat/mo; Pro $100/seat/mo (annual)',
+    model:'per_seat', contract:'monthly available; annual for best pricing',
+    features:['Contact & Deal Management','Pipeline Customization','Email Sequences & Templates','Meeting Scheduler','Live Chat','Marketing Automation (Pro+)','Lead Scoring','Reporting Dashboards','AI-powered data enrichment','Custom Properties','Integrations Marketplace (1,500+ apps)'],
+    integrations:['Zapier','Zillow','DocuSign','Gmail','Outlook','Slack','Calendly','Facebook Ads','Google Ads','Salesforce','ActiveCampaign','Paperless Pipeline (via Zapier)'],
+    ideal_for:'Brokerages that want a universal, highly-customizable CRM without RE-specific lock-in; teams with mixed residential + commercial + rentals',
+    size:'all',
+    strengths:['Free tier usable for small brokerages','Extremely powerful automation at Pro tier','Best-in-class reporting and dashboards','1,500+ native integrations','Not RE-specific = full flexibility','Scales from solo agent to enterprise','Strong AI enrichment for contact records'],
+    weaknesses:['Not built for RE — no native IDX, MLS, or showing integration','Can get expensive at scale (Pro/Enterprise)','No RE-specific commission module','Setup requires customization; not out-of-the-box for brokerages'],
+    competitors:['Follow Up Boss','Salesforce','Pipedrive','kvCORE','LionDesk'],
+  },
+  {
+    id:'salesforce', name:'Salesforce', cat:'Enterprise CRM', stage:'crm',
+    cost:165, cost_note:'Starter ~$25/seat/mo; Pro $80/seat/mo; Enterprise $165/seat/mo (annual only)',
+    model:'per_seat', contract:'annual (required)',
+    features:['Contact & Account Management','Opportunity Pipeline','Einstein AI Lead Scoring','Custom Objects & Workflows','AppExchange (thousands of add-ons)','Advanced Reporting & Dashboards','Marketing Cloud integration','Service Cloud','Territory Management','API-first architecture'],
+    integrations:['Virtually everything via AppExchange','DocuSign','Zillow','Google Workspace','Microsoft 365','Zapier','Slack','QuickBooks','Buildout CRE'],
+    ideal_for:'Large enterprise brokerages, commercial RE firms, and franchise networks needing maximum customization and reporting depth',
+    size:'large-enterprise',
+    strengths:['Most powerful and customizable CRM on the market','Massive ecosystem (AppExchange)','Best-in-class analytics and reporting','Ideal for complex multi-office or enterprise structures','Industry standard for enterprise RE companies'],
+    weaknesses:['Expensive — annual contracts only','Requires dedicated admin or consultant to implement','Major overkill for small/mid brokerages','Steep learning curve','No RE-specific features out-of-box (need PropertyBase or similar add-on)'],
+    competitors:['HubSpot','Microsoft Dynamics','PropertyBase','kvCORE (enterprise)'],
+  },
+  {
+    id:'pipedrive', name:'Pipedrive', cat:'CRM', stage:'crm',
+    cost:25, cost_note:'Essential $15/seat/mo; Advanced $29/seat/mo; Professional $59/seat/mo (annual)',
+    model:'per_seat', contract:'monthly available',
+    features:['Visual Sales Pipeline (drag-and-drop)','Contact & Deal Management','Email Sync + Tracking','Activity Reminders','Automations','Revenue Forecasting','Reporting','LeadBooster add-on (chatbot + forms)','AI Sales Assistant'],
+    integrations:['Zapier','Google Workspace','Microsoft 365','Slack','Mailchimp','DocuSign','Calendly','Facebook Ads'],
+    ideal_for:'Small-to-mid brokerages wanting a simple, visual CRM that agents will actually use without RE-specific complexity',
+    size:'small-medium',
+    strengths:['Best visual pipeline UX in the CRM market','Affordable and simple','Agents actually adopt it','Month-to-month available','AI sales assistant included','Good automation builder'],
+    weaknesses:['Not RE-specific — no MLS, IDX, or showing integration','No built-in lead generation','Limited at enterprise scale','Less powerful than HubSpot at higher tiers'],
+    competitors:['HubSpot','Follow Up Boss','Wise Agent','LionDesk'],
+  },
+  {
+    id:'ixact-contact', name:'IXACT Contact', cat:'CRM', stage:'crm',
+    cost:39, cost_note:'$39/mo flat; unlimited contacts; month-to-month',
+    model:'flat', contract:'month-to-month',
+    features:['Contact Management','Keep-in-touch reminders','Monthly e-Newsletter (automated)','Business referral tracking','Drip email campaigns','Activity calendar','Social stream integration','Mobile app'],
+    integrations:['Gmail','Outlook','Zapier','BombBomb','Zillow','Facebook'],
+    ideal_for:'Individual agents and small teams focused on sphere of influence and relationship-based business',
+    size:'small',
+    strengths:['Very affordable','Automated monthly newsletter included','Referral tree tracking','RE-specific relationship reminders','Easy to use','Month-to-month'],
+    weaknesses:['Basic CRM — no IDX or lead gen','No power dialer or SMS','Limited automation vs FUB/kvCORE','Not suited for large teams'],
+    competitors:['Wise Agent','LionDesk','Top Producer','Follow Up Boss'],
+  },
+
+  // ─── NEW: LEAD GEN / AI CONVERSION ────────────────────────────────────────
+  {
+    id:'boldleads', name:'BoldLeads (BoldTrail Leads)', cat:'Lead Generation', stage:'leadgen',
+    cost:399, cost_note:'$399–$750+/mo; buyer + seller lead funnels with exclusive territory option',
+    model:'flat', contract:'annual (strong push)',
+    features:['Buyer & Seller Lead Funnels','Facebook/Google PPC management','Exclusive territory option','Automated follow-up sequences','CRM (basic)','Landing pages','Seller net sheet tool'],
+    integrations:['Follow Up Boss','kvCORE','Zapier','Facebook Ads','Google Ads'],
+    ideal_for:'Agents wanting done-for-you lead gen funnels with territory exclusivity',
+    size:'small-medium',
+    strengths:['Seller lead specialization','Exclusive territory protects your investment','Done-for-you landing pages','Automated nurture sequences included'],
+    weaknesses:['Annual contracts','Lead quality varies by market','Basic CRM — most users pair with FUB','Not ideal for buyer-only teams'],
+    competitors:['Market Leader','CINC','Ylopo','Zurple'],
+  },
+  {
+    id:'zurple', name:'Zurple', cat:'Lead Generation', stage:'leadgen',
+    cost:299, cost_note:'$299+/mo; IDX website + behavioral automated follow-up; annual contracts',
+    model:'flat', contract:'annual',
+    features:['IDX Website','Behavioral Lead Tracking (Insights)','Automated personalized email follow-up','Lead segmentation by behavior','AI-suggested conversations','Market reports','Team routing'],
+    integrations:['MLS (via IDX)','Zapier','Follow Up Boss (limited)'],
+    ideal_for:'Agents who want their IDX to automatically follow up based on what each lead is searching',
+    size:'small-medium',
+    strengths:['Unique behavioral automation — sends emails based on search activity, not time','Personalized automated follow-up that feels human','Combines IDX + CRM + auto-follow-up in one'],
+    weaknesses:['Annual contracts','Closed ecosystem — hard to integrate outside tools','Less customizable than FUB + Ylopo combo','Limited reporting'],
+    competitors:['Market Leader','BoldLeads','CINC','Real Geeks'],
+  },
+  {
+    id:'redx', name:'REDX', cat:'Lead Generation', stage:'leadgen',
+    cost:80, cost_note:'$80–$200/mo; FSBO, expired, FRBO, pre-foreclosure leads + power dialer',
+    model:'flat', contract:'month-to-month',
+    features:['FSBO Leads','Expired Listing Leads','FRBO Leads','Pre-Foreclosure Leads','GeoLeads (geographic farming)','Storm Dialer (power dialer)','DNC scrubbing','CRM (basic)'],
+    integrations:['Follow Up Boss','kvCORE','CINC','Mojo Dialer','Zapier'],
+    ideal_for:'Prospecting-focused agents who actively cold-call FSBO and expired listings',
+    size:'small-medium',
+    strengths:['Best known FSBO/expired data provider','Storm Dialer built-in (power dialer)','DNC compliant','Affordable monthly pricing','GeoLeads for geographic farming'],
+    weaknesses:['Requires heavy phone prospecting skills','Leads have long conversion cycles','Not suitable for agents who don\'t prospect by phone'],
+    competitors:['Landvoice','Vulcan7','Espresso Agent','Mojo Dialer'],
+  },
+  {
+    id:'structurely', name:'Structurely (AI Lead Conversion)', cat:'Lead Generation', stage:'leadgen',
+    cost:499, cost_note:'$499–$1,200+/mo; AI SMS/chat assistant for instant lead response',
+    model:'flat', contract:'monthly available',
+    features:['AI SMS Lead Response (24/7)','AI Chat (website widget)','Lead Qualification via conversation','Appointment booking','Lead scoring from conversations','CRM handoff','Multi-language support'],
+    integrations:['Follow Up Boss','kvCORE','BoomTown','Lofty','Salesforce','HubSpot','Zapier'],
+    ideal_for:'High-volume teams and brokerages wanting instant AI response to every lead regardless of time of day',
+    size:'medium-large',
+    strengths:['Instant 24/7 lead response (huge for speed-to-lead)','Conversational AI feels natural','Qualifies and routes leads before human involvement','Works with virtually any CRM','Higher contact rates vs waiting for agent callback'],
+    weaknesses:['Expensive for smaller teams','AI conversations can feel off in complex situations','Requires CRM integration to be effective','Not a standalone platform'],
+    competitors:['Verse.io','Ylopo Raiya','CINC AI','kvCORE AI Behavioral Automation'],
+  },
+  {
+    id:'realscout', name:'RealScout', cat:'Lead Generation', stage:'leadgen',
+    cost:39, cost_note:'$39–$99/agent/mo; buyer-intent platform with MLS-powered alerts',
+    model:'per_seat', contract:'monthly available',
+    features:['Buyer graph (tracks buyer search behavior)','Agent-branded MLS search portal','Smart listing alerts','Listing match alerts sent by agent to buyers','Lead engagement scoring','Price change notifications','Open house follow-up','Database re-engagement'],
+    integrations:['Follow Up Boss','Compass CRM','HubSpot','Gmail','Zapier','MLS'],
+    ideal_for:'Buyer-agent focused teams wanting to generate and keep leads engaged with their own branded MLS search',
+    size:'small-medium',
+    strengths:['Buyer graph gives powerful intent data','Agent-branded (not Zillow-branded) experience','Strong database re-engagement tool','Easy to use','Good FUB integration'],
+    weaknesses:['Buyer-focused — limited value for listing-heavy operations','No seller lead tools','Per-seat cost adds up at scale'],
+    competitors:['Homebeat','Cloud CMA buyer tours','IDX features inside kvCORE/Lofty'],
+  },
+
+  // ─── NEW: OPERATIONS / ACCOUNTING ─────────────────────────────────────────
+  {
+    id:'quickbooks', name:'QuickBooks Online', cat:'Accounting', stage:'operations',
+    cost:35, cost_note:'Simple Start $35/mo; Plus $90/mo; Advanced $200/mo (monthly billing)',
+    model:'flat', contract:'monthly available',
+    features:['Profit & Loss Reports','Accounts Payable / Receivable','Bank Reconciliation','Invoicing','Payroll (add-on)','Tax Prep Export','1099 Contractor Management','Multi-user access','Mobile app'],
+    integrations:['Paperless Pipeline','Brokermint','Lone Wolf Back Office','PayPal','Stripe','Google Sheets','Zapier','TurboTax','ADP','Gusto'],
+    ideal_for:'Any brokerage needing general-purpose accounting; pairs with PP for full back-office (PP handles commissions, QB handles GL)',
+    size:'all',
+    strengths:['Industry standard — most accountants and CPAs know it','Pairs perfectly with Paperless Pipeline for commission + GL','Very affordable for what it does','Strong reporting','Payroll add-on available'],
+    weaknesses:['Not RE-specific — no commission plan templates','No transaction management','Requires manual or Zapier-based sync with RE tools','Monthly cost increases at higher tiers'],
+    competitors:['Lone Wolf Back Office','Brokermint (accounting features)','FreshBooks','Xero'],
+  },
+  {
+    id:'sisu', name:'Sisu', cat:'Team Performance', stage:'operations',
+    cost:99, cost_note:'$99/mo platform + $15/agent/mo; pricing on request for larger brokerages',
+    model:'flat', contract:'monthly available',
+    features:['Team Performance Dashboards (TV-ready leaderboards)','Agent Coaching & Accountability tools','Goal tracking + activity metrics','Commission Management + back office reporting','Transaction Management (contract-to-close)','Client Portal (Domino\'s-style deal tracker)','Gamification & contests','AI coaching recommendations','Lead source ROI analysis','Payroll reporting'],
+    integrations:['Follow Up Boss','kvCORE','Lofty','BoomTown','Sierra Interactive','Zapier','Google Sheets'],
+    ideal_for:'High-accountability teams and brokerages (10–200+ agents) wanting performance visibility, agent coaching, and transaction + commission management in one place',
+    size:'medium-large',
+    strengths:['Best agent accountability and coaching platform in RE','Live performance dashboards motivate agents','Transaction management + commission in one tool (overlap with PP)','Client portal is highly praised','Deep FUB integration','AI coaching identifies what to do before it\'s too late'],
+    weaknesses:['Can overlap with Paperless Pipeline on transaction + commission management','Custom pricing — not transparent','Annual contract pressure reported','Requires buy-in from agents to use effectively'],
+    competitors:['Paperless Pipeline (partial overlap)','Brokermint','Google Sheets + FUB','Real Grader'],
+  },
+  {
+    id:'calendly', name:'Calendly', cat:'Scheduling', stage:'operations',
+    cost:10, cost_note:'Free tier; Standard $10/seat/mo; Teams $16/seat/mo (annual)',
+    model:'per_seat', contract:'monthly available',
+    features:['Meeting Scheduling Automation','Calendar Integration (Google/Outlook)','Booking page','SMS/email reminders','Round-robin routing','Team scheduling','Embed on websites','Zoom/Teams/Meet integration','Workflows (pre/post meeting automation)'],
+    integrations:['Google Calendar','Outlook','Zoom','Google Meet','Microsoft Teams','Salesforce','HubSpot','Follow Up Boss','Zapier','Stripe (collect payment at booking)'],
+    ideal_for:'Any agent or brokerage wanting to eliminate back-and-forth scheduling for buyer/seller consultations, showings, and team meetings',
+    size:'all',
+    strengths:['Free tier generous for individuals','Eliminates scheduling friction with clients','Works with every major calendar','Reminders reduce no-shows','Embed on any website'],
+    weaknesses:['Not RE-specific','No CRM built in','Per-seat cost at scale','Some clients prefer phone scheduling'],
+    competitors:['Acuity Scheduling','HubSpot Meetings (free with HubSpot)','SimplyBook.me'],
+  },
+  {
+    id:'loom', name:'Loom', cat:'Video Communication', stage:'operations',
+    cost:12, cost_note:'Free tier (25 videos); Business $12.50/seat/mo (annual); 4K recordings',
+    model:'per_seat', contract:'monthly available',
+    features:['Screen + Camera Recording','Instant shareable video link','Viewer engagement analytics (who watched, when)','Comments & reactions on videos','Transcripts (AI-generated)','Trim & edit recordings','Slack/Gmail embed','AI video summaries'],
+    integrations:['Slack','Gmail','Outlook','Notion','HubSpot','Salesforce','Zapier'],
+    ideal_for:'Agents doing async client communication, walkthrough explanations, or internal team training without scheduling calls',
+    size:'all',
+    strengths:['Free tier generous','Instant async video — send a 90-second video instead of a long email','Viewer engagement data (did they watch?)','Transcripts with AI summaries','No RE equivalent — universal but highly valuable'],
+    weaknesses:['Not RE-specific','Requires recipients to be comfortable watching video','Can feel impersonal at scale','BombBomb may be better for personalized prospecting video'],
+    competitors:['BombBomb','Dubb','Vidyard'],
+  },
+
+  // ─── NEW: MARKETING / SOCIAL ───────────────────────────────────────────────
+  {
+    id:'buffer', name:'Buffer', cat:'Social Media Marketing', stage:'marketing',
+    cost:15, cost_note:'Free tier (3 channels); Essentials $6/channel/mo; Team $12/channel/mo',
+    model:'flat', contract:'monthly available',
+    features:['Social Media Scheduling','Multi-platform posting (Instagram, Facebook, LinkedIn, X, TikTok)','Analytics & engagement reporting','Content calendar','Link-in-bio page','AI post writer','Team collaboration'],
+    integrations:['Canva','Zapier','RSS feeds','Shopify','Google Analytics'],
+    ideal_for:'Agents and brokerages wanting consistent social media posting without doing it manually each day',
+    size:'small-medium',
+    strengths:['Very affordable (free for basics)','Clean simple UI','Good analytics','Multi-platform in one place','AI post writing assists content creation'],
+    weaknesses:['Not RE-specific','No MLS integration for auto-listing posts','Fewer features than Hootsuite','Content still needs to come from you'],
+    competitors:['Hootsuite','Later','Back At You','Coffee & Contracts + Buffer'],
+  },
+  {
+    id:'hootsuite', name:'Hootsuite', cat:'Social Media Marketing', stage:'marketing',
+    cost:99, cost_note:'Professional $99/mo (10 accounts); Team $249/mo; monthly available',
+    model:'flat', contract:'monthly available',
+    features:['Social Media Scheduling & Publishing','Analytics & Reporting','Social Listening','Team workflows & approvals','Ad management','Bulk scheduling','Content library','AI caption writer'],
+    integrations:['Canva','Adobe Creative Cloud','Google Analytics','Salesforce','HubSpot','Zapier'],
+    ideal_for:'Mid-size brokerages managing multiple social accounts across multiple agents or locations',
+    size:'medium-large',
+    strengths:['Industry standard for social management','Best analytics and reporting of social tools','Social listening to monitor brand mentions','Team approval workflows','Manages 10+ social accounts'],
+    weaknesses:['Expensive for small teams','No RE-specific features','Buffer is better value for small teams','Learning curve for full feature use'],
+    competitors:['Buffer','Later','Sprout Social','Back At You'],
+  },
+
+  // ─── NEW: PRODUCTIVITY & COLLABORATION ────────────────────────────────────
+  {
+    id:'notion', name:'Notion', cat:'Productivity Suite', stage:'operations',
+    cost:10, cost_note:'Free tier; Plus $10/seat/mo; Business $18/seat/mo (annual)',
+    model:'per_seat', contract:'monthly available',
+    features:['Notes & Documents (wiki-style)','Databases & Tables','Project Management','Templates','Team collaboration','AI writing assistant','Calendar view','Kanban boards','Integrations via API'],
+    integrations:['Zapier','Slack','Google Drive','GitHub','Jira','Make','Calendly'],
+    ideal_for:'Brokerages wanting a flexible operations hub, SOP library, and team collaboration space beyond Google Docs',
+    size:'small-medium',
+    strengths:['Extremely flexible — use as wiki, CRM, project manager, or all three','Free tier is powerful','AI assistant included at Plus','Popular with modern tech-forward teams'],
+    weaknesses:['Not RE-specific','Can be over-engineered for simple needs','No native integrations with most RE tools (requires Zapier)','Requires setup discipline'],
+    competitors:['Google Workspace Docs/Drive','Monday.com','Asana','Confluence'],
+  },
+  {
+    id:'monday', name:'Monday.com', cat:'Project Management', stage:'operations',
+    cost:12, cost_note:'Free (2 users); Basic $9/seat/mo; Standard $12/seat/mo; Pro $19/seat/mo (annual)',
+    model:'per_seat', contract:'monthly available',
+    features:['Visual Project Boards','Automations','Timeline/Gantt view','Team Dashboards','Forms (intake)','Time Tracking','Integrations','Workspaces for different teams','CRM (Work OS)'],
+    integrations:['Zapier','Slack','Google Drive','Microsoft 365','HubSpot','Salesforce','DocuSign','Zoom'],
+    ideal_for:'Brokerages managing complex internal projects, onboarding workflows, recruiting pipelines, or marketing campaigns beyond what a CRM handles',
+    size:'small-large',
+    strengths:['Very visual and intuitive','Strong automation builder','Versatile — works across departments','Free tier available','Good for tracking agent onboarding, marketing calendars, etc.'],
+    weaknesses:['Not RE-specific','Can replace Asana but not a CRM or TM tool','Per-seat cost at scale','Not ideal for transaction management'],
+    competitors:['Asana','Notion','ClickUp','Trello'],
+  },
+
+  // ─── NEW: ACCOUNTING / BACK OFFICE ────────────────────────────────────────
+  {
+    id:'real-page', name:'RealPage (Commission Manager)', cat:'Back Office Suite', stage:'transaction',
+    cost:299, cost_note:'$299+/mo; quote-based for enterprise; primarily residential property management',
+    model:'flat', contract:'annual',
+    features:['Commission Automation','Back Office Accounting','Agent Management','Lease Administration','Property Management (residential)','Financial Reporting'],
+    integrations:['QuickBooks','Yardi','DocuSign','MLS'],
+    ideal_for:'Large residential property management companies and enterprise brokerages with PM divisions',
+    size:'large-enterprise',
+    strengths:['Industry-leading property management + back office','Commission automation for large brokerages','Strong financial reporting'],
+    weaknesses:['Expensive','Primarily for property management — overkill for pure sales brokerage','Annual contracts','Complex implementation'],
+    competitors:['Yardi','AppFolio','Buildium','Lone Wolf Back Office'],
+  },
+
+  // ─── EXISTING BUILDOUT (kept with updated competitive set) ─────────────────
 ];
 
-const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-// Workflow stage pills — each maps to swimlane cats
+// ── SWIMLANE CONFIG — maps display cats to workflow stages ────────────────────
+const SWIMLANES = [
+  { label: 'Lead Gen',     cats: ['Lead Generation','Lead Generation + CRM','Lead Gen + CRM'] },
+  { label: 'CRM',          cats: ['CRM','CRM + Marketing','CRM + IDX','CRM + Marketing Suite','CRM + Back Office','CRM + Lead Gen','Enterprise CRM','Email Marketing + CRM'] },
+  { label: 'Transaction',  cats: ['Transaction Management','Transaction + Commission','Back Office + Accounting','Back Office Suite','Team Performance'] },
+  { label: 'eSign / Docs', cats: ['eSign','Remote Notarization','Title + Closing'] },
+  { label: 'Marketing',    cats: ['Email Marketing','Design / Marketing','Social Media Marketing','Sphere Marketing','Video Email Marketing','Commercial RE Marketing','Video Communication'] },
+  { label: 'Operations',   cats: ['Showing Management','CMA Reports','Market Data','MLS','Productivity Suite','Project Management','Team Communication','Video Conferencing','Automation','Scheduling','Accounting'] },
+];
+
+// ── WORKFLOW STAGES — for filter pills (broader than swimlane cats) ──────────────
 const WORKFLOW_STAGES = [
   { label: 'All',          cats: null },
-  { label: 'Lead Gen',     cats: ['Lead Generation','Lead Gen + CRM'] },
-  { label: 'CRM',          cats: ['CRM','CRM + Marketing','CRM + IDX','CRM + Marketing Suite','Enterprise CRM','CRM + Back Office','CRM + Lead Gen'] },
-  { label: 'Transaction',  cats: ['Transaction Management','Transaction Mgmt + eSign','Transaction + Commission','Back Office Suite'] },
+  { label: 'Lead Gen',     cats: ['Lead Generation','Lead Generation + CRM','Lead Gen + CRM'] },
+  { label: 'CRM',          cats: ['CRM','CRM + Marketing','CRM + IDX','CRM + Marketing Suite','Enterprise CRM','CRM + Back Office','CRM + Lead Gen','Email Marketing + CRM'] },
+  { label: 'Transaction',  cats: ['Transaction Management','Transaction Mgmt + eSign','Transaction + Commission','Back Office + Accounting','Back Office Suite','Team Performance'] },
   { label: 'eSign / Docs', cats: ['eSign','Remote Notarization','Title + Closing'] },
-  { label: 'Marketing',    cats: ['Email Marketing','Email Marketing + CRM','Design / Marketing','Commercial RE Marketing'] },
-  { label: 'Operations',   cats: ['Showing Management','CMA Reports','Market Data','MLS','Productivity Suite','Team Communication','Video Conferencing','Automation'] },
-];
-const GRADE_COLORS = {A:'#16A34A', B:'#16A34A', C:'#D97706', D:'#EA580C', F:'#DC2626'};
-
-// ── SWIMLANE CONFIG — maps categories to brokerage workflow stages ─────────────
-const SWIMLANES = [
-  { label: 'Lead Gen',      cats: ['Lead Generation','Lead Gen + CRM'] },
-  { label: 'CRM',           cats: ['CRM','CRM + Marketing','CRM + IDX','CRM + Marketing Suite','Enterprise CRM','CRM + Back Office'] },
-  { label: 'Transaction',   cats: ['Transaction Management','Transaction Mgmt + eSign','Transaction + Commission','Back Office Suite'] },
-  { label: 'eSign / Docs',  cats: ['eSign','Remote Notarization','Title + Closing'] },
-  { label: 'Accounting',    cats: ['Transaction + Commission'] }, // secondary lane for accounting tools
-  { label: 'Marketing',     cats: ['Email Marketing','Email Marketing + CRM','Design / Marketing','Commercial RE Marketing'] },
-  { label: 'Operations',    cats: ['Showing Management','CMA Reports','Market Data','MLS','Productivity Suite','Team Communication','Video Conferencing','Automation'] },
+  { label: 'Marketing',    cats: ['Email Marketing','Design / Marketing','Social Media Marketing','Sphere Marketing','Video Email Marketing','Commercial RE Marketing','Video Communication'] },
+  { label: 'Operations',   cats: ['Showing Management','CMA Reports','Market Data','MLS','Productivity Suite','Project Management','Team Communication','Video Conferencing','Automation','Scheduling','Accounting'] },
 ];
 
-// ── OVERLAP PAIRS — for swimlane overlap flags ────────────────────────────────
+// ── OVERLAP PAIRS — for swimlane overlap detection ────────────────────────────
 const OVERLAP_PAIRS = [
-  ['paperless-pipeline','skyslope'],['paperless-pipeline','dotloop'],['paperless-pipeline','open-to-close'],
-  ['paperless-pipeline','brokermint'],['paperless-pipeline','lone-wolf'],['skyslope','dotloop'],
-  ['skyslope','open-to-close'],['dotloop','open-to-close'],['brokermint','lone-wolf'],
-  ['follow-up-boss','lofty'],['follow-up-boss','kvcore'],['follow-up-boss','sierra-interactive'],
-  ['follow-up-boss','wise-agent'],['lofty','kvcore'],['lofty','sierra-interactive'],
-  ['docusign','dotloop'],['docusign','authentisign'],['docusign','digisign'],
-  ['authentisign','digisign'],['mailchimp','activecampaign'],['google-workspace','microsoft-365'],
-  ['zapier','make'],['showingtime','showing-suite'],
+  // Transaction management overlaps
+  ['paperless-pipeline','skyslope'],
+  ['paperless-pipeline','dotloop'],
+  ['paperless-pipeline','open-to-close'],
+  ['paperless-pipeline','transaction-desk'],
+  ['paperless-pipeline','brokermint'],
+  ['paperless-pipeline','lone-wolf'],
+  ['paperless-pipeline','form-simplicity'],
+  ['skyslope','dotloop'],
+  ['skyslope','open-to-close'],
+  ['skyslope','brokermint'],
+  ['skyslope','lone-wolf'],
+  ['dotloop','open-to-close'],
+  ['dotloop','transaction-desk'],
+  ['brokermint','lone-wolf'],
+  ['brokermint','lone-wolf-back-office'],
+  ['lone-wolf','lone-wolf-back-office'],
+  ['lone-wolf-back-office','profit-power'],
+  // eSign overlaps (if also using PP which has built-in eSign)
+  ['paperless-pipeline','docusign'],
+  ['paperless-pipeline','authentisign'],
+  ['paperless-pipeline','hellosign'],
+  ['paperless-pipeline','adobe-sign'],
+  ['docusign','authentisign'],
+  ['docusign','hellosign'],
+  ['docusign','adobe-sign'],
+  ['dotloop','docusign'],  // dotloop has eSign built in
+  ['skyslope','docusign'], // skyslope has DigiSign
+  // CRM overlaps
+  ['follow-up-boss','kvcore'],
+  ['follow-up-boss','lofty'],
+  ['follow-up-boss','boomtown'],
+  ['follow-up-boss','sierra-interactive'],
+  ['follow-up-boss','wise-agent'],
+  ['follow-up-boss','liondesk'],
+  ['follow-up-boss','top-producer'],
+  ['follow-up-boss','ixact-contact'],
+  ['follow-up-boss','real-geeks'],
+  ['kvcore','lofty'],
+  ['kvcore','boomtown'],
+  ['kvcore','sierra-interactive'],
+  ['kvcore','real-geeks'],
+  ['lofty','boomtown'],
+  ['lofty','sierra-interactive'],
+  ['boomtown','cinc'],
+  ['wise-agent','liondesk'],
+  ['wise-agent','top-producer'],
+  ['wise-agent','ixact-contact'],
+  ['liondesk','top-producer'],
+  // Lead gen overlaps
+  ['zillow-premier','realtor-com'],
+  ['zillow-premier','cinc'],
+  ['zillow-premier','market-leader'],
+  ['cinc','boomtown'],
+  ['cinc','ylopo'],
+  ['market-leader','offrs'],
+  // Email/marketing overlaps
+  ['mailchimp','activecampaign'],
+  ['kvcore','mailchimp'],  // kvCORE has built-in email marketing
+  ['kvcore','activecampaign'],
+  ['lofty','mailchimp'],
+  // Productivity/comms
+  ['google-workspace','microsoft-365'],
+  ['slack','zoom'],  // partial (Teams replaces both if M365)
+  // Automation
+  ['zapier','make'],
+  // Showing management
+  ['showingtime','showing-suite'],
 ];
 
-// ── SWAP RECOMMENDATIONS — current tool → better option ──────────────────────
+// ── SWAP RECOMMENDATIONS — what to replace and why ───────────────────────────
 const SWAPS = {
-  'skyslope':         { to:'Paperless Pipeline', reason:'Simpler interface, lower cost per transaction, strong compliance tracking. Paperless Pipeline scales affordably with your agent count.', save_pct:0.40 },
-  'dotloop':          { to:'Paperless Pipeline + DocuSign', reason:'Dotloop bundles eSign + transaction mgmt but charges for both. Splitting saves money and gives you best-in-class tools for each job.', save_pct:0.30 },
-  'lone-wolf':        { to:'Paperless Pipeline + Brokermint', reason:'Lone Wolf is expensive and complex. PP handles transactions; Brokermint handles commissions — combined cost is typically lower.', save_pct:0.25 },
-  'boomtown':         { to:'Follow Up Boss + Zillow Premier Agent', reason:'BoomTown bundles PPC lead gen and CRM at a premium. Separating gives you more control and usually lower combined cost.', save_pct:0.20 },
-  'lofty':            { to:'Follow Up Boss', reason:'Follow Up Boss is purpose-built for team workflows with better automation and integrations at roughly half the cost.', save_pct:0.35 },
-  'kvcore':           { to:'Follow Up Boss + Market Leader', reason:'kvCORE is comprehensive but expensive. FUB + targeted lead gen is often more cost-effective for independent brokerages.', save_pct:0.30 },
-  'wise-agent':       { to:'Follow Up Boss', reason:'FUB has a stronger ecosystem, better MLS integrations, and superior team automation at a comparable price.', save_pct:0 },
-  'salesforce':       { to:'HubSpot', reason:'Salesforce is built for enterprise. For brokerages under 200 agents, HubSpot delivers equivalent CRM capability at a fraction of the cost.', save_pct:0.60 },
-  'mailchimp':        { to:'ActiveCampaign', reason:'ActiveCampaign includes CRM + automation + email in one platform. More powerful for brokerage drip campaigns at a similar price point.', save_pct:0 },
-  'zapier':           { to:'Make (Integromat)', reason:'Make handles the same automations at roughly 70% lower cost for high-volume workflows.', save_pct:0.65 },
-  'showing-suite':    { to:'ShowingTime', reason:'ShowingTime has broader MLS integration and is the industry standard — better agent adoption.', save_pct:0 },
+  'skyslope': {
+    to: 'Paperless Pipeline',
+    reason: 'Paperless Pipeline includes transaction management + commission module + CDA generator + forms builder + eSign all in one platform, with transparent per-transaction pricing and no annual contract. SkySlope requires separate add-ons (Books for accounting, DigiSign for eSign) and typically requires annual contracts at higher cost.',
+    save_pct: 0.40
+  },
+  'dotloop': {
+    to: 'Paperless Pipeline',
+    reason: 'Dotloop is owned by Zillow and charges flat fees for basic eSign + transaction management. Paperless Pipeline includes a full commission module, CDA generator, and built-in forms — providing significantly more value for independent brokerages at a per-transaction price that scales with your volume.',
+    save_pct: 0.30
+  },
+  'lone-wolf': {
+    to: 'Paperless Pipeline + QuickBooks',
+    reason: 'Lone Wolf is expensive enterprise software. Paperless Pipeline handles transactions + commissions + CDAs, while QuickBooks handles full accounting — combined cost is typically 40-60% less with better ease of use.',
+    save_pct: 0.45
+  },
+  'lone-wolf-back-office': {
+    to: 'Paperless Pipeline + QuickBooks',
+    reason: 'Lone Wolf Back Office is complex, dated, and expensive. Paperless Pipeline’s commission module handles commission tracking and CDAs; QuickBooks handles general ledger. Simpler and significantly cheaper.',
+    save_pct: 0.40
+  },
+  'brokermint': {
+    to: 'Paperless Pipeline',
+    reason: 'Paperless Pipeline covers the core value of Brokermint — transaction management, commission tracking, CDA generation — at a lower price point with no annual contract and a simpler interface. Brokermint’s ACH payments are valuable if you distribute commissions at close; evaluate if that feature justifies the higher cost.',
+    save_pct: 0.35
+  },
+  'transaction-desk': {
+    to: 'Paperless Pipeline',
+    reason: 'Transaction Desk is a basic MLS-bundled tool with minimal features. Paperless Pipeline provides a professional-grade transaction management system with commission tracking, forms, and eSign — a major upgrade for minimal additional cost.',
+    save_pct: 0
+  },
+  'form-simplicity': {
+    to: 'Paperless Pipeline',
+    reason: 'Paperless Pipeline includes forms management as part of its full transaction platform — you get commission tracking, CDA generation, eSign, and more alongside forms. If you’re paying separately for Form Simplicity, consolidating to PP likely saves money.',
+    save_pct: 0.25
+  },
+  'open-to-close': {
+    to: 'Paperless Pipeline',
+    reason: 'Open to Close is TC-focused with no commission module. If your brokerage needs commission tracking and CDA generation (most do), Paperless Pipeline handles the full workflow. Open to Close is better suited for transaction coordinators without broker back-office needs.',
+    save_pct: 0.20
+  },
+  'boomtown': {
+    to: 'Follow Up Boss + Ylopo',
+    reason: 'BoomTown charges $1,000-1,500+/mo plus setup fees, and you don’t own your website or data. Follow Up Boss ($69+/seat/mo) + Ylopo ($600+/mo for ads) provides better tech at comparable or lower cost, with full data ownership and a superior open integration ecosystem.',
+    save_pct: 0.20
+  },
+  'kvcore': {
+    to: 'Follow Up Boss + Market Leader',
+    reason: 'kvCORE costs $499-2,000+/mo with annual contracts. Follow Up Boss provides a superior CRM at $69+/seat/mo month-to-month, and pairing with Market Leader or targeted lead gen typically delivers better ROI. FUB integrates with nearly everything kvCORE replaces.',
+    save_pct: 0.35
+  },
+  'lofty': {
+    to: 'Follow Up Boss',
+    reason: 'Follow Up Boss is purpose-built for team CRM workflows, has a larger integration ecosystem, and costs significantly less than Lofty. Lofty’s all-in-one approach sounds appealing but creates lock-in. FUB’s open API means you can connect best-in-class tools at every layer.',
+    save_pct: 0.35
+  },
+  'propertybase': {
+    to: 'Follow Up Boss',
+    reason: 'Propertybase requires Salesforce admin knowledge and costs $399+/mo. Follow Up Boss delivers the CRM capabilities most real estate teams actually need at a fraction of the cost, with purpose-built RE workflows and superior support.',
+    save_pct: 0.60
+  },
+  'wise-agent': {
+    to: 'Follow Up Boss',
+    reason: 'Wise Agent is affordable but dated. Follow Up Boss has a vastly superior integration ecosystem, better automation, stronger team accountability tools, and is the industry-leading CRM for high-performing RE teams. The upgrade cost is worth it if your team has 5+ agents.',
+    save_pct: 0
+  },
+  'liondesk': {
+    to: 'Follow Up Boss',
+    reason: 'LionDesk was acquired by Lone Wolf and its roadmap is uncertain. Follow Up Boss is independently focused on being the best RE CRM and has significantly better integrations, automation, and support.',
+    save_pct: 0
+  },
+  'top-producer': {
+    to: 'Follow Up Boss',
+    reason: 'Top Producer is a legacy CRM at $129+/seat/mo with a dated interface. Follow Up Boss at $69/seat/mo is more modern, has better integrations, superior team tools, and is what the top RE teams in the US are switching to.',
+    save_pct: 0.45
+  },
+  'showing-suite': {
+    to: 'ShowingTime',
+    reason: 'ShowingTime has broader MLS integration (200+ MLSs), better agent/buyer recognition, and is more widely used — improving agent adoption. Unless you have a specific feature need that Showing Suite uniquely solves, ShowingTime is the industry standard.',
+    save_pct: 0
+  },
+  'adobe-sign': {
+    to: 'Paperless Pipeline (built-in eSign)',
+    reason: 'If you’re already on or moving to Paperless Pipeline, its built-in eSign handles the RE use case completely. Adobe Sign is designed for enterprise document workflows — not RE-specific. Consolidating eliminates a subscription and reduces logins.',
+    save_pct: 0.30
+  },
+  'hellosign': {
+    to: 'Paperless Pipeline (built-in eSign)',
+    reason: 'Paperless Pipeline’s built-in eSign handles your RE documents natively within your transaction workflow. HelloSign is a general eSign tool that adds a separate subscription and a disconnected step to your process.',
+    save_pct: 0.25
+  },
+  'zapier': {
+    to: 'Make (Integromat)',
+    reason: 'Make handles the same automation workflows at roughly 60-70% lower cost for high-volume use. For complex multi-step automations, Make is also more powerful and flexible. Switch if you’re spending $50+/mo on Zapier tasks.',
+    save_pct: 0.65
+  },
+  'mailchimp': {
+    to: 'ActiveCampaign',
+    reason: 'ActiveCampaign includes CRM, advanced automation, and email marketing in one platform. For brokerages running nurture sequences, it’s significantly more powerful than Mailchimp at a similar price point.',
+    save_pct: 0
+  },
+  'microsoft-365': {
+    to: 'Google Workspace',
+    reason: 'Google Workspace is typically 15-30% cheaper and integrates more seamlessly with the web-based tools most RE teams use (Zapier, CRMs, etc.). If your team is not dependent on Excel/PowerPoint features, Google Workspace is the simpler choice.',
+    save_pct: 0.20
+  },
 };
 
-// ── UTILS ──────────────────────────────────────────────────────────────────────
+// \u2500\u2500 UTILS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function el(tag, cls, html) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -768,7 +1800,7 @@ function isSelected(id) { return !!_tools.find(t => t.id === id); }
 function fmt(n) { return Math.round(n).toLocaleString(); }
 function fmtDollar(n) { return '$' + fmt(n); }
 
-// ── STEPS BAR ─────────────────────────────────────────────────────────────────
+// \u2500\u2500 STEPS BAR \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function renderSteps() {
   const bar = $('steps-bar');
   if (!bar) return;
@@ -780,7 +1812,7 @@ function renderSteps() {
     const active = _step === num;
     const stepWrap = el('div', 'pp-step');
     const dot = el('div', 'pp-step-dot ' + (done ? 'done' : active ? 'active' : 'idle'));
-    dot.textContent = done ? '✓' : num;
+    dot.textContent = done ? '\u2713' : num;
     const lbl = el('span', 'pp-step-label ' + (done ? 'done' : active ? 'active' : 'idle'));
     lbl.textContent = label;
     stepWrap.appendChild(dot);
@@ -793,7 +1825,7 @@ function renderSteps() {
   });
 }
 
-// ── RENDER ROUTER ─────────────────────────────────────────────────────────────
+// \u2500\u2500 RENDER ROUTER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function render() {
   renderSteps();
   const app = $('pp-app');
@@ -805,12 +1837,12 @@ function render() {
   if (_step === 4)   { app.appendChild(renderReport()); return; }
 }
 
-// ── STEP 1: PROFILE ───────────────────────────────────────────────────────────
+// \u2500\u2500 STEP 1: PROFILE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function renderStep1() {
   const card = el('div', 'pp-card');
 
   const title = el('div', 'pp-card-title', 'Tell us about your brokerage');
-  const sub = el('div', 'pp-card-sub', 'This helps our AI give you accurate, tailored recommendations — no generic advice.');
+  const sub = el('div', 'pp-card-sub', 'This helps our AI give you accurate, tailored recommendations \u2014 no generic advice.');
   card.appendChild(title);
   card.appendChild(sub);
 
@@ -866,7 +1898,7 @@ function renderStep1() {
   card.appendChild(ag);
 
   // CTA
-  const btn = el('button', 'pp-btn', 'Continue to Stack Builder →');
+  const btn = el('button', 'pp-btn', 'Continue to Stack Builder \u2192');
   btn.id = 'step1-btn';
   btn.disabled = !profileComplete();
   if (!profileComplete()) btn.classList.add('disabled');
@@ -912,77 +1944,13 @@ function updateStep1Btn() {
   ok ? btn.classList.remove('disabled') : btn.classList.add('disabled');
 }
 
-// ── STEP 2: STACK ─────────────────────────────────────────────────────────────
+// \u2500\u2500 STEP 2: STACK \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function renderStep2() {
   const wrap = document.createDocumentFragment();
   const card = el('div', 'pp-card');
 
-  card.appendChild(el('div', 'pp-card-title', 'Build your current tech stack'));
-  card.appendChild(el('div', 'pp-card-sub', 'Search by name or browse by category. Add every tool your brokerage currently pays for.'));
-
-  // ── Quick search
-  const searchWrap = el('div', 'pp-search-wrap');
-  searchWrap.id = 'search-wrap';
-  const searchIcon = el('span', 'pp-search-icon', '🔍');
-  const searchInput = el('input', 'pp-search-input');
-  searchInput.id = 'tool-search';
-  searchInput.type = 'text';
-  searchInput.placeholder = 'Search tools — try "SkySlope", "Follow Up Boss", "DocuSign"…';
-  searchInput.autocomplete = 'off';
-  const suggBox = el('div', 'pp-search-suggestions');
-  suggBox.id = 'search-suggestions';
-  suggBox.style.display = 'none';
-  searchWrap.appendChild(searchIcon);
-  searchWrap.appendChild(searchInput);
-  searchWrap.appendChild(suggBox);
-  card.appendChild(searchWrap);
-
-  // Search events
-  let _focusedSuggIdx = -1;
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim().toLowerCase();
-    _focusedSuggIdx = -1;
-    if (q.length < 1) { suggBox.style.display = 'none'; return; }
-    const matches = TOOLS.filter(t => t.name.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q)).slice(0, 8);
-    if (!matches.length) {
-      suggBox.innerHTML = `<div class="pp-search-empty">No tools found for "${searchInput.value}"</div>`;
-      suggBox.style.display = 'block';
-      return;
-    }
-    suggBox.innerHTML = '';
-    matches.forEach((tool, idx) => {
-      const item = el('div', 'pp-search-sugg-item' + (isSelected(tool.id) ? ' selected-item' : ''));
-      item.dataset.idx = idx;
-      item.innerHTML = `
-        <span class="pp-search-sugg-name">${tool.name}</span>
-        <span class="pp-search-sugg-cat">${tool.cat}</span>
-        <span class="pp-search-sugg-cost">$${tool.cost}/mo</span>
-        ${isSelected(tool.id) ? '<span style="font-size:11px;color:var(--green);font-weight:600">✓ Added</span>' : ''}
-      `;
-      if (!isSelected(tool.id)) {
-        item.addEventListener('mousedown', e => {
-          e.preventDefault();
-          toggleTool(tool);
-          searchInput.value = '';
-          suggBox.style.display = 'none';
-        });
-      }
-      suggBox.appendChild(item);
-    });
-    suggBox.style.display = 'block';
-  });
-  searchInput.addEventListener('keydown', e => {
-    const items = suggBox.querySelectorAll('.pp-search-sugg-item:not(.selected-item)');
-    if (e.key === 'ArrowDown') { e.preventDefault(); _focusedSuggIdx = Math.min(_focusedSuggIdx + 1, items.length - 1); items.forEach((it,i) => it.classList.toggle('focused', i === _focusedSuggIdx)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); _focusedSuggIdx = Math.max(_focusedSuggIdx - 1, 0); items.forEach((it,i) => it.classList.toggle('focused', i === _focusedSuggIdx)); }
-    else if (e.key === 'Enter' && _focusedSuggIdx >= 0 && items[_focusedSuggIdx]) { items[_focusedSuggIdx].dispatchEvent(new MouseEvent('mousedown')); }
-    else if (e.key === 'Escape') { suggBox.style.display = 'none'; searchInput.blur(); }
-  });
-  searchInput.addEventListener('blur', () => { setTimeout(() => { suggBox.style.display = 'none'; }, 120); });
-
-  // ── Divider
-  const divider = el('div', 'pp-search-divider', 'or browse by category');
-  card.appendChild(divider);
+  card.appendChild(el('div', 'pp-card-title', 'Select your current tools'));
+  card.appendChild(el('div', 'pp-card-sub', 'Check every tool your brokerage currently pays for. You can adjust the actual monthly cost below.'));
 
   // ── Filter pills — workflow stages
   const filterBar = el('div', 'pp-filter-bar');
@@ -994,21 +1962,21 @@ function renderStep2() {
   filterBar.id = 'filter-bar';
   card.appendChild(filterBar);
 
-  // ── Tool grid
+  // Tool grid
   const grid = el('div', 'pp-tool-grid');
   grid.id = 'tool-grid';
   card.appendChild(grid);
   renderToolGrid();
 
-  // ── Selected stack (swimlane + cost editor)
+  // Selected stack summary
   const summaryWrap = el('div');
   summaryWrap.id = 'stack-summary-wrap';
   card.appendChild(summaryWrap);
   renderStackSummary();
 
-  // ── Buttons
+  // Buttons
   const btnRow = el('div', 'pp-btn-row');
-  const backBtn = el('button', 'pp-btn-ghost', '← Back');
+  const backBtn = el('button', 'pp-btn-ghost', '\u2190 Back');
   backBtn.addEventListener('click', () => { _step = 1; render(); window.scrollTo(0,0); });
   btnRow.appendChild(backBtn);
 
@@ -1045,7 +2013,7 @@ function renderToolGrid() {
     chip.innerHTML = `
       <div class="pp-tool-chip-top">
         <span class="pp-tool-chip-name">${tool.name}</span>
-        <span class="pp-tool-chip-check">${sel ? '✓' : '+'}</span>
+        <span class="pp-tool-chip-check">${sel ? '\u2713' : '+'}</span>
       </div>
       <span class="pp-tool-chip-cat">${tool.cat}</span>
       <span class="pp-tool-chip-cost">$${tool.cost}/mo est.</span>
@@ -1071,77 +2039,8 @@ function renderStackSummary() {
   wrap.innerHTML = '';
   if (_tools.length === 0) return;
 
-  // ── Detect overlaps in selected tools ──────────────────────────────────────
-  const overlapIds = new Set();
-  OVERLAP_PAIRS.forEach(([a, b]) => {
-    if (isSelected(a) && isSelected(b)) { overlapIds.add(a); overlapIds.add(b); }
-  });
-
-  // ── SWIMLANE DIAGRAM ───────────────────────────────────────────────────────
-  const swimlane = el('div', 'pp-swimlane');
-
-  const swimTitle = el('div', 'pp-swimlane-title');
-  const overlapCount = Math.floor(overlapIds.size / 2);
-  swimTitle.innerHTML = 'Your Brokerage Workflow' +
-    (overlapCount > 0 ? ` <span style="font-size:12px;font-weight:600;color:var(--amber);background:rgba(217,119,6,0.1);padding:2px 9px;border-radius:20px">${overlapCount} overlap${overlapCount > 1 ? 's' : ''} detected</span>` : '');
-  swimlane.appendChild(swimTitle);
-
-  // Build lane → tools mapping (skip empty lanes)
-  const laneData = SWIMLANES.map(lane => {
-    const tools = _tools.filter(t => lane.cats.includes(t.cat));
-    return { ...lane, tools };
-  }).filter(l => l.tools.length > 0);
-
-  if (laneData.length > 0) {
-    const flowRow = el('div', 'pp-swimlane-flow');
-    laneData.forEach((lane, i) => {
-      const laneEl = el('div', 'pp-lane');
-      laneEl.appendChild(el('div', 'pp-lane-header', lane.label));
-      const toolsEl = el('div', 'pp-lane-tools');
-      lane.tools.forEach(tool => {
-        const hasOvlp = overlapIds.has(tool.id);
-        const toolEl = el('div', 'pp-lane-tool' + (hasOvlp ? ' has-overlap' : ' solo'), tool.name);
-        toolEl.title = hasOvlp ? '⚠️ Overlap detected in this category' : '✓ No overlap detected';
-        toolsEl.appendChild(toolEl);
-        if (hasOvlp) {
-          toolsEl.appendChild(el('div', 'pp-lane-overlap-flag', '⚠ overlap'));
-        }
-      });
-      laneEl.appendChild(toolsEl);
-      flowRow.appendChild(laneEl);
-      if (i < laneData.length - 1) {
-        flowRow.appendChild(el('div', 'pp-lane-arrow', '→'));
-      }
-    });
-    swimlane.appendChild(flowRow);
-  }
-
-  // Tools not in any swimlane
-  const lanedIds = new Set(laneData.flatMap(l => l.tools.map(t => t.id)));
-  const unlanedTools = _tools.filter(t => !lanedIds.has(t.id));
-  if (unlanedTools.length > 0) {
-    const otherLane = el('div');
-    otherLane.style.cssText = 'margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center';
-    otherLane.appendChild(Object.assign(el('span', '', 'Other:'), { style: { fontSize:'11px', fontWeight:'600', color:'var(--muted)', marginRight:'4px', textTransform:'uppercase', letterSpacing:'.06em' } }));
-    unlanedTools.forEach(t => {
-      otherLane.appendChild(el('span', 'pp-tag pp-tag-muted', t.name));
-    });
-    swimlane.appendChild(otherLane);
-  }
-
-  // Legend
-  const legend = el('div', 'pp-swimlane-legend');
-  legend.innerHTML = `
-    <div class="pp-swimlane-legend-item"><div class="pp-swimlane-legend-dot" style="background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.3)"></div> No overlap</div>
-    <div class="pp-swimlane-legend-item"><div class="pp-swimlane-legend-dot" style="background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.4)"></div> Overlap — paying twice</div>
-    <div class="pp-swimlane-legend-item">→ Brokerage workflow order</div>
-  `;
-  swimlane.appendChild(legend);
-  wrap.appendChild(swimlane);
-
-  // ── COST EDITOR ───────────────────────────────────────────────────────────
   const box = el('div', 'pp-stack-summary');
-  box.innerHTML = `<div class="pp-stack-summary-title">Adjust your actual monthly costs</div>`;
+  box.innerHTML = `<div class="pp-stack-summary-title">Your Stack (${_tools.length} tool${_tools.length !== 1 ? 's' : ''})</div>`;
 
   _tools.forEach(tool => {
     const row = el('div', 'pp-stack-row');
@@ -1153,7 +2052,7 @@ function renderStackSummary() {
         <input class="pp-cost-input" type="number" id="cost-${tool.id}" value="${_costs[tool.id] ?? tool.cost}" placeholder="${tool.cost}"/>
         <span class="pp-cost-mo">/mo</span>
       </div>
-      <button class="pp-stack-remove" data-id="${tool.id}" title="Remove">×</button>
+      <button class="pp-stack-remove" data-id="${tool.id}" title="Remove">\u00d7</button>
     `;
     box.appendChild(row);
   });
@@ -1199,15 +2098,15 @@ function updateStep2Btn(btn) {
   btn.disabled = !ok;
   ok ? btn.classList.remove('disabled') : btn.classList.add('disabled');
   btn.textContent = ok
-    ? `Analyze My Stack (${_tools.length} tools · ${fmtDollar(total)}/mo) →`
+    ? `Analyze My Stack (${_tools.length} tools \u00b7 ${fmtDollar(total)}/mo) \u2192`
     : 'Select at least one tool to continue';
 }
 
-// ── STEP 3: EMAIL ─────────────────────────────────────────────────────────────
+// \u2500\u2500 STEP 3: EMAIL \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function renderStep3() {
   const card = el('div', 'pp-card');
 
-  card.appendChild(el('div', 'pp-card-title', 'Almost there — where do we send your report?'));
+  card.appendChild(el('div', 'pp-card-title', 'Almost there \u2014 where do we send your report?'));
   card.appendChild(el('div', 'pp-card-sub', 'Your AI analysis generates instantly. No sales calls unless you request one.'));
 
   // Preview checklist
@@ -1217,13 +2116,13 @@ function renderStep3() {
     'Stack overlap & redundancy analysis with exact tools identified',
     'Potential annual savings broken down by category',
     'Recommended optimized stack for your brokerage size',
-    'Gap analysis — categories where you may be underserved',
+    'Gap analysis \u2014 categories where you may be underserved',
     'Quick wins ranked by impact and implementation speed',
-    'Honest assessment of where Paperless Pipeline fits (or doesn\'t)',
+    'Honest assessment of where Paperless Pipeline fits (or doesn’t)',
   ];
   items.forEach(item => {
     const row = el('div', 'pp-checklist-item');
-    row.innerHTML = `<span class="pp-check-icon">✓</span><span class="pp-check-text">${item}</span>`;
+    row.innerHTML = `<span class="pp-check-icon">\u2713</span><span class="pp-check-text">${item}</span>`;
     checklist.appendChild(row);
   });
   card.appendChild(checklist);
@@ -1241,7 +2140,7 @@ function renderStep3() {
     updateStep3Btn();
   });
   emailField.appendChild(emailInput);
-  emailField.appendChild(el('div', 'pp-helper', 'We\'ll never spam you. You can unsubscribe anytime.'));
+  emailField.appendChild(el('div', 'pp-helper', 'We’ll never spam you. You can unsubscribe anytime.'));
   card.appendChild(emailField);
 
   // Error placeholder
@@ -1251,11 +2150,11 @@ function renderStep3() {
 
   // Buttons
   const btnRow = el('div', 'pp-btn-row');
-  const backBtn = el('button', 'pp-btn-ghost', '← Back');
+  const backBtn = el('button', 'pp-btn-ghost', '\u2190 Back');
   backBtn.addEventListener('click', () => { _step = 2; render(); window.scrollTo(0,0); });
   btnRow.appendChild(backBtn);
 
-  const nextBtn = el('button', 'pp-btn' + (isEmailValid() ? '' : ' disabled'), 'Generate My Free Analysis →');
+  const nextBtn = el('button', 'pp-btn' + (isEmailValid() ? '' : ' disabled'), 'Generate My Free Analysis \u2192');
   nextBtn.id = 'step3-btn';
   nextBtn.disabled = !isEmailValid();
   nextBtn.style.flex = '1';
@@ -1274,7 +2173,7 @@ function updateStep3Btn() {
   ok ? btn.classList.remove('disabled') : btn.classList.add('disabled');
 }
 
-// ── LOADER ────────────────────────────────────────────────────────────────────
+// \u2500\u2500 LOADER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function renderLoader() {
   const wrap = el('div', 'pp-card pp-loader');
   wrap.innerHTML = `
@@ -1288,7 +2187,7 @@ function renderLoader() {
   return wrap;
 }
 
-// ── ANALYSIS ──────────────────────────────────────────────────────────────────
+// \u2500\u2500 ANALYSIS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function runAnalysis() {
   _loading = true;
   render();
@@ -1302,7 +2201,7 @@ async function runAnalysis() {
     `- ${t.name} (${t.cat}): $${parseFloat(_costs[t.id]) || t.cost}/mo`
   ).join('\n');
 
-  const prompt = `You are a neutral, expert real estate technology consultant. Analyze this brokerage's tech stack objectively. Recommend the best tools for their situation — NOT any particular vendor. Only recommend Paperless Pipeline if it genuinely solves a real problem in their stack.
+  const prompt = `You are a neutral, expert real estate technology consultant. Analyze this brokerage’s tech stack objectively. Recommend the best tools for their situation \u2014 NOT any particular vendor. Only recommend Paperless Pipeline if it genuinely solves a real problem in their stack.
 
 BROKERAGE PROFILE:
 - Name: ${_profile.company_name}
@@ -1418,12 +2317,12 @@ async function saveSubmission(report) {
   }
 }
 
-// ── REPORT ────────────────────────────────────────────────────────────────────
+// \u2500\u2500 REPORT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function renderReport() {
   const r = _report;
   const frag = document.createDocumentFragment();
 
-  // ── Header card
+  // \u2500\u2500 Header card
   const header = el('div', 'pp-report-header');
   const gradeColor = GRADE_COLORS[r.stack_grade] || '#fff';
   header.innerHTML = `
@@ -1431,7 +2330,7 @@ function renderReport() {
       <div>
         <div class="pp-report-meta">Stack Analysis Report</div>
         <div class="pp-report-title">${_profile.company_name}</div>
-        <div class="pp-report-sub">${_profile.first_name} ${_profile.last_name} · ${_profile.state} · ${_tools.length} tools analyzed</div>
+        <div class="pp-report-sub">${_profile.first_name} ${_profile.last_name} \u00b7 ${_profile.state} \u00b7 ${_tools.length} tools analyzed</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div class="pp-report-grade" style="color:${gradeColor}">${r.stack_grade}</div>
@@ -1442,7 +2341,7 @@ function renderReport() {
   `;
   frag.appendChild(header);
 
-  // ── Savings row
+  // \u2500\u2500 Savings row
   const savings = el('div', 'pp-savings-row');
   [
     { label:'Current Annual Spend',    val: fmtDollar(r.total_annual_current),      sub: fmtDollar(r.total_monthly_current)+'/mo',    color:'var(--red)' },
@@ -1459,10 +2358,10 @@ function renderReport() {
   });
   frag.appendChild(savings);
 
-  // ── Overlaps
+  // \u2500\u2500 Overlaps
   if (r.overlaps && r.overlaps.length) {
     const card = el('div', 'pp-card');
-    card.innerHTML = `<div class="pp-card-title">⚠️ Overlaps & Redundancies</div><div class="pp-card-sub">You may be paying for duplicate functionality across these tools.</div>`;
+    card.innerHTML = `<div class="pp-card-title">\u26a0\ufe0f Overlaps & Redundancies</div><div class="pp-card-sub">You may be paying for duplicate functionality across these tools.</div>`;
     const label = el('div', 'pp-section-label', 'FOUND ' + r.overlaps.length + ' OVERLAP' + (r.overlaps.length > 1 ? 'S' : ''));
     label.style.color = 'var(--amber)';
     card.appendChild(label);
@@ -1478,10 +2377,10 @@ function renderReport() {
     frag.appendChild(card);
   }
 
-  // ── Gaps
+  // \u2500\u2500 Gaps
   if (r.gaps && r.gaps.length) {
     const card = el('div', 'pp-card');
-    card.innerHTML = `<div class="pp-card-title">🔍 Stack Gaps</div><div class="pp-card-sub">Areas where your tech stack may be limiting your brokerage.</div>`;
+    card.innerHTML = `<div class="pp-card-title">\ud83d\udd0d Stack Gaps</div><div class="pp-card-sub">Areas where your tech stack may be limiting your brokerage.</div>`;
     r.gaps.forEach(g => {
       const item = el('div', 'pp-gap-item');
       const tag = el('span', 'pp-tag pp-tag-blue', g.category);
@@ -1493,10 +2392,10 @@ function renderReport() {
     frag.appendChild(card);
   }
 
-  // ── Quick wins
+  // \u2500\u2500 Quick wins
   if (r.quick_wins && r.quick_wins.length) {
     const card = el('div', 'pp-card');
-    card.innerHTML = `<div class="pp-card-title">⚡ Quick Wins</div><div class="pp-card-sub">Actions ranked by impact you can take right now.</div>`;
+    card.innerHTML = `<div class="pp-card-title">\u26a1 Quick Wins</div><div class="pp-card-sub">Actions ranked by impact you can take right now.</div>`;
     r.quick_wins.forEach((w, i) => {
       const bgColor = w.priority === 'high' ? 'var(--green)' : w.priority === 'medium' ? 'var(--amber)' : 'var(--muted)';
       const tagCls = w.priority === 'high' ? 'pp-tag pp-tag-green' : w.priority === 'medium' ? 'pp-tag pp-tag-amber' : 'pp-tag pp-tag-muted';
@@ -1514,7 +2413,7 @@ function renderReport() {
     frag.appendChild(card);
   }
 
-  // ── Paperless Pipeline fit
+  // \u2500\u2500 Paperless Pipeline fit
   if (r.paperless_pipeline_fit && r.paperless_pipeline_fit.relevant) {
     const fit = r.paperless_pipeline_fit;
     const fitCard = el('div', 'pp-fit-box');
@@ -1522,7 +2421,7 @@ function renderReport() {
     fitCard.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:12px">
         <div>
-          <div class="pp-card-title" style="margin-bottom:4px">Paperless Pipeline — Is It Right For You?</div>
+          <div class="pp-card-title" style="margin-bottom:4px">Paperless Pipeline \u2014 Is It Right For You?</div>
           <div style="font-size:13px;color:var(--muted)">Honest AI assessment based on your specific stack</div>
         </div>
         <div class="pp-fit-score-wrap">
@@ -1556,115 +2455,55 @@ function renderReport() {
     cta.href = 'https://paperlesspipeline.com/demo';
     cta.target = '_blank';
     cta.rel = 'noopener';
-    cta.textContent = 'See Paperless Pipeline in Action →';
+    cta.textContent = 'See Paperless Pipeline in Action \u2192';
     cta.style.marginTop = '20px';
     fitCard.appendChild(cta);
 
     frag.appendChild(fitCard);
   }
 
-  // ── Recommended stack — swap comparison cards
+  // \u2500\u2500 Recommended stack
   if (r.recommended_stack && r.recommended_stack.length) {
     const card = el('div', 'pp-card');
-    card.innerHTML = `<div class="pp-card-title">🔄 Recommended Swaps</div><div class="pp-card-sub">Each card shows what to replace and what to move to — with the reason and estimated savings.</div>`;
-
-    // Build swap cards: match recommended tools against current tools they replace
-    const renderedSwaps = new Set();
-    r.recommended_stack.forEach(rec => {
-      const replaces = rec.replaces || [];
-      if (replaces.length > 0) {
-        replaces.forEach(fromName => {
-          if (renderedSwaps.has(fromName + '→' + rec.tool)) return;
-          renderedSwaps.add(fromName + '→' + rec.tool);
-
-          // Find current tool cost
-          const fromTool = _tools.find(t => t.name.toLowerCase().includes(fromName.toLowerCase()) || fromName.toLowerCase().includes(t.name.toLowerCase()));
-          const fromCost = fromTool ? (parseFloat(_costs[fromTool.id]) || fromTool.cost) : null;
-          const toCost = rec.monthly_cost || 0;
-          const savingsAmt = fromCost && fromCost > toCost ? fromCost - toCost : null;
-
-          const swapCard = el('div', 'pp-swap-card');
-          swapCard.innerHTML = `
-            <div class="pp-swap-header">
-              <div class="pp-swap-from">
-                <div class="pp-swap-label from">Current</div>
-                <div class="pp-swap-tool-name">${fromName}</div>
-                ${fromCost ? `<div class="pp-swap-tool-cost">${fmtDollar(fromCost)}/mo</div>` : ''}
-              </div>
-              <div class="pp-swap-arrow-col">
-                <div class="pp-swap-arrow-icon">→</div>
-              </div>
-              <div class="pp-swap-to">
-                <div class="pp-swap-label to">Recommended</div>
-                <div class="pp-swap-tool-name">${rec.tool}</div>
-                <div class="pp-swap-tool-cost">${fmtDollar(toCost)}/mo</div>
-              </div>
-            </div>
-            <div class="pp-swap-body">
-              <div class="pp-swap-reason">${rec.why}</div>
-              ${savingsAmt && savingsAmt > 0 ? `<div class="pp-swap-savings-pill">Save ~${fmtDollar(savingsAmt)}/mo</div>` : ''}
-            </div>
-          `;
-          card.appendChild(swapCard);
-        });
-      } else {
-        // New addition — no direct swap, render as a simpler add card
-        const addKey = 'add→' + rec.tool;
-        if (renderedSwaps.has(addKey)) return;
-        renderedSwaps.add(addKey);
-        const addCard = el('div', 'pp-swap-card');
-        addCard.innerHTML = `
-          <div class="pp-swap-header">
-            <div class="pp-swap-from" style="background:var(--gray)">
-              <div class="pp-swap-label" style="color:var(--muted)">Gap in your stack</div>
-              <div class="pp-swap-tool-name" style="color:var(--muted)">${rec.category}</div>
-              <div class="pp-swap-tool-cost">Not covered</div>
-            </div>
-            <div class="pp-swap-arrow-col">
-              <div class="pp-swap-arrow-icon">+</div>
-            </div>
-            <div class="pp-swap-to">
-              <div class="pp-swap-label to">Add this</div>
-              <div class="pp-swap-tool-name">${rec.tool}</div>
-              <div class="pp-swap-tool-cost">${fmtDollar(rec.monthly_cost)}/mo</div>
-            </div>
-          </div>
-          <div class="pp-swap-body">
-            <div class="pp-swap-reason">${rec.why}</div>
-          </div>
-        `;
-        card.appendChild(addCard);
-      }
+    card.innerHTML = `<div class="pp-card-title">\u2705 Your Recommended Stack</div><div class="pp-card-sub">Optimized for your brokerage size, budget, and workflow.</div>`;
+    r.recommended_stack.forEach((item, i) => {
+      const row = el('div', 'pp-rec-item');
+      const replacesHtml = item.replaces && item.replaces.length
+        ? `<div class="pp-rec-replaces">Replaces: ${item.replaces.join(', ')}</div>`
+        : '';
+      row.innerHTML = `
+        <div style="flex:1">
+          <div class="pp-rec-name">${item.tool} <span style="font-weight:400;font-size:13px;color:var(--muted)">\u00b7 ${item.category}</span></div>
+          <div class="pp-rec-why">${item.why}</div>
+          ${replacesHtml}
+        </div>
+        <div class="pp-rec-cost">${fmtDollar(item.monthly_cost)}/mo</div>
+      `;
+      card.appendChild(row);
     });
-
-    // Optimized total
-    const totalRow = el('div');
-    totalRow.style.cssText = 'border-top:2px solid var(--navy);padding-top:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;';
-    totalRow.innerHTML = `
-      <span style="font-weight:700;font-size:15px">Optimized Monthly Total</span>
-      <span style="font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:var(--green)">${fmtDollar(r.estimated_monthly_optimized)}/mo</span>
+    const total = el('div', 'pp-rec-total');
+    total.innerHTML = `
+      <span class="pp-rec-total-label">Optimized Monthly Total</span>
+      <span class="pp-rec-total-val">${fmtDollar(r.estimated_monthly_optimized)}/mo</span>
     `;
-    card.appendChild(totalRow);
+    card.appendChild(total);
     frag.appendChild(card);
   }
 
-  // ── Footer CTA
+  // \u2500\u2500 Footer CTA
   const footerCta = el('div', 'pp-footer-cta');
   footerCta.innerHTML = `
-    <div class="pp-footer-cta-title">Ready to optimize your stack?</div>
-    <div class="pp-footer-cta-sub">Start a free trial of Paperless Pipeline, or book a call with our team to walk through your report together.</div>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">
-      <a href="https://app.paperlesspipeline.com/accounts/register" class="pp-btn" style="display:inline-block;width:auto;padding:14px 28px;text-decoration:none;flex-shrink:0" target="_blank" rel="noopener">Start Free Trial →</a>
-      <a href="https://paperlesspipeline.com/demo" style="display:inline-flex;align-items:center;padding:14px 28px;border:1.5px solid var(--blue);border-radius:10px;font-family:Sora,sans-serif;font-size:16px;font-weight:700;color:var(--blue);text-decoration:none;white-space:nowrap;flex-shrink:0;background:#fff;transition:background .2s" target="_blank" rel="noopener">Book a Strategy Call</a>
-    </div>
-    <div class="pp-footer-cta-note">No credit card required for the trial. No commitment on the call.</div>
+    <div class="pp-footer-cta-title">Want help implementing this?</div>
+    <div class="pp-footer-cta-sub">Our team can walk you through exactly how to optimize your brokerage tech stack \u2014 no commitment required.</div>
+    <a href="https://paperlesspipeline.com/demo" class="pp-btn" style="display:inline-block;width:auto;padding:14px 32px;text-decoration:none" target="_blank" rel="noopener">Book a Free 20-Min Strategy Call</a>
+    <div class="pp-footer-cta-note">No commitment. No pressure. Just clarity on your path forward.</div>
   `;
   frag.appendChild(footerCta);
 
   return frag;
 }
 
-// ── BOOT ──────────────────────────────────────────────────────────────────────
+// \u2500\u2500 BOOT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 render();
 </script>
 </body>
