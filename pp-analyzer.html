@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RE Back-Office Analyzer — Powered by StackSwap</title>
+<meta name="description" content="Find out if your brokerage is overpaying for software. AI-powered analysis of your real estate tech stack in 60 seconds."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1847ED;
+  --blue-dark:#1238C4;
+  --navy:#0B1F5E;
+  --navy-dark:#071040;
+  --white:#FFFFFF;
+  --gray:#F4F6FC;
+  --border:#DDE3F5;
+  --text:#1A2340;
+  --muted:#6B7899;
+  --green:#16A34A;
+  --red:#DC2626;
+  --amber:#D97706;
+  --surface:#EEF2FF;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--white);
+  color:var(--text);
+  min-height:100vh;
+}
+
+/* ── NAV ── */
+.pp-nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:14px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pp-nav-logo{
+  display:flex;align-items:center;gap:10px;text-decoration:none;
+}
+.pp-logo-mark{
+  width:34px;height:34px;border-radius:8px;
+  background:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.pp-logo-mark svg{display:block}
+.pp-logo-text{
+  font-family:'Sora',sans-serif;font-weight:800;font-size:16px;
+  color:var(--navy);line-height:1.15;
+}
+.pp-logo-text span{color:var(--blue)}
+.pp-nav-badge{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:600;
+  color:var(--muted);letter-spacing:.06em;text-transform:uppercase;
+  background:var(--surface);border:1px solid var(--border);
+  padding:4px 10px;border-radius:20px;
+}
+
+/* ── HERO ── */
+.pp-hero{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-dark) 100%);
+  padding:72px 24px 56px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.pp-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% -10%,rgba(24,71,237,0.35) 0%,transparent 70%);
+  pointer-events:none;
+}
+.pp-hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px;padding:6px 16px;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  color:rgba(255,255,255,0.9);letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:24px;
+}
+.pp-hero-eyebrow .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#4ade80;
+  box-shadow:0 0 6px rgba(74,222,128,0.8);
+  animation:pulse-dot 2s infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+.pp-hero h1{
+  font-family:'Sora',sans-serif;font-weight:800;
+  font-size:clamp(28px,5vw,52px);
+  color:#fff;line-height:1.1;
+  margin-bottom:16px;letter-spacing:-.02em;
+}
+.pp-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(90deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.pp-hero-sub{
+  font-size:17px;color:rgba(255,255,255,0.72);
+  max-width:520px;margin:0 auto 40px;line-height:1.6;
+}
+
+/* ── PROGRESS STEPS ── */
+.pp-steps{
+  display:flex;align-items:center;
+  max-width:480px;margin:0 auto;
+  position:relative;z-index:1;
+}
+.pp-step{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+.pp-step-dot{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Sora',sans-serif;font-weight:700;font-size:13px;
+  transition:all .3s;
+}
+.pp-step-dot.done{background:#4ade80;color:var(--navy)}
+.pp-step-dot.active{background:var(--blue);color:#fff;box-shadow:0 0 0 4px rgba(24,71,237,0.25)}
+.pp-step-dot.idle{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.15)}
+.pp-step-label{font-size:11px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.pp-step-label.active{color:#fff}
+.pp-step-label.done{color:#4ade80}
+.pp-step-label.idle{color:rgba(255,255,255,0.35)}
+.pp-step-line{flex:1;height:2px;margin:0 6px;margin-bottom:18px;transition:background .3s}
+.pp-step-line.done{background:#4ade80}
+.pp-step-line.idle{background:rgba(255,255,255,0.12)}
+
+/* ── CONTAINER ── */
+.pp-body{padding:40px 0 80px}
+.pp-container{max-width:860px;margin:0 auto;padding:0 24px}
+
+/* ── CARDS ── */
+.pp-card{
+  background:#fff;border:1px solid var(--border);border-radius:16px;
+  padding:32px;margin-bottom:24px;
+  box-shadow:0 2px 12px rgba(11,31,94,0.06);
+  animation:fadeUp .4s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.pp-card-title{
+  font-family:'Sora',sans-serif;font-weight:700;font-size:20px;
+  color:var(--navy);margin-bottom:6px;
+}
+.pp-card-sub{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5}
+
+/* ── FORM FIELDS ── */
+.pp-label{
+  display:block;font-size:13px;font-weight:600;
+  color:var(--text);margin-bottom:6px;
+}
+.pp-label .req{color:var(--red);margin-left:2px}
+.pp-input,.pp-select{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:9px;
+  font-size:14px;font-family:'Inter',sans-serif;color:var(--text);
+  background:#fff;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  appearance:none;
+}
+.pp-input:focus,.pp-select:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(24,71,237,0.12);
+}
+.pp-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.pp-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.pp-field{margin-bottom:16px}
+
+/* ── BUTTONS ── */
+.pp-btn{
+  display:block;width:100%;padding:15px 28px;
+  background:var(--blue);color:#fff;border:none;border-radius:10px;
+  font-family:'Sora',sans-serif;font-size:16px;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:-.01em;
+  text-align:center;text-decoration:none;
+}
+.pp-btn:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(24,71,237,0.3)}
+.pp-btn:active{transform:translateY(0)}
+.pp-btn:disabled,.pp-btn.disabled{background:var(--border);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+.pp-btn-ghost{
+  display:inline-block;padding:13px 22px;
+  background:transparent;color:var(--blue);
+  border:1.5px solid var(--blue);border-radius:10px;
+  font-family:'Sora',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.pp-btn-ghost:hover{background:var(--surface)}
+.pp-btn-row{display:flex;gap:12px;align-items:center}
+
+/* ── TOOL CHIPS ── */
+.pp-tool-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:9px;margin-bottom:24px;
+}
+.pp-tool-chip{
+  padding:11px 14px;border-radius:10px;cursor:pointer;
+  border:1.5px solid var(--border);background:#fff;
+  transition:all .15s;
+  display:flex;flex-direction:column;gap:3px;
+  user-select:none;
+}
+.pp-tool-chip:hover{border-color:rgba(24,71,237,0.4);background:var(--surface)}
+.pp-tool-chip.selected{
+  border-color:var(--blue);background:rgba(24,71,237,0.05);
+}
+.pp-tool-chip-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.pp-tool-chip-name{font-weight:600;font-size:13px;color:var(--text);line-height:1.3}
+.pp-tool-chip.selected .pp-tool-chip-name{color:var(--blue)}
+.pp-tool-chip-check{font-size:14px;flex-shrink:0;color:var(--border);transition:color .15s}
+.pp-tool-chip.selected .pp-tool-chip-check{color:var(--blue)}
+.pp-tool-chip-cat{font-size:11px;color:var(--muted)}
+.pp-tool-chip-cost{font-size:11px;color:var(--muted);font-family:'Inter',monospace}
+
+/* ── FILTER PILLS ── */
+.pp-filter-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
+.pp-filter-pill{
+  padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;
+  background:var(--gray);color:var(--muted);
+}
+.pp-filter-pill.active{background:var(--blue);color:#fff}
+.pp-filter-pill:hover:not(.active){background:var(--border);color:var(--text)}
+
+/* ── SELECTED STACK SUMMARY ── */
+.pp-stack-summary{
+  background:var(--gray);border-radius:12px;padding:20px;margin-bottom:20px;
+}
+.pp-stack-summary-title{
+  font-family:'Sora',sans-serif;font-weight:700;font-size:15px;
+  color:var(--navy);margin-bottom:14px;
+}
+.pp-stack-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.pp-stack-row-name{flex:1;font-size:14px;font-weight:500}
+.pp-stack-row-cat{font-size:12px;color:var(--muted);width:130px;flex-shrink:0}
+.pp-cost-input-wrap{display:flex;align-items:center;gap:4px}
+.pp-cost-symbol{font-size:14px;color:var(--muted)}
+.pp-cost-input{
+  width:76px;padding:7px 10px;
+  border:1.5px solid var(--border);border-radius:7px;
+  font-size:13px;font-family:'Inter',monospace;color:var(--text);
+  background:#fff;outline:none;
+  transition:border-color .2s;
+}
+.pp-cost-input:focus{border-color:var(--blue)}
+.pp-cost-mo{font-size:11px;color:var(--muted)}
+.pp-stack-remove{
+  background:none;border:none;color:var(--muted);
+  cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;
+  transition:color .15s;
+}
+.pp-stack-remove:hover{color:var(--red)}
+.pp-stack-total{
+  border-top:1.5px solid var(--border);padding-top:12px;margin-top:4px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.pp-stack-total-label{font-weight:700;color:var(--navy);font-size:14px}
+.pp-stack-total-val{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:var(--navy)}
+.pp-stack-total-annual{text-align:right;font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── EMAIL STEP ── */
+.pp-checklist{background:var(--gray);border-radius:12px;padding:20px;margin-bottom:24px}
+.pp-checklist-title{font-weight:700;color:var(--navy);font-size:15px;margin-bottom:12px}
+.pp-checklist-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}
+.pp-check-icon{color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+.pp-check-text{font-size:14px;color:var(--text);line-height:1.4}
+.pp-input-big{font-size:16px;padding:14px 16px}
+.pp-helper{font-size:12px;color:var(--muted);margin-top:6px}
+
+/* ── LOADER ── */
+.pp-loader{text-align:center;padding:48px 0}
+.pp-loader-ring{
+  width:52px;height:52px;margin:0 auto 20px;
+  border:3px solid var(--border);
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pp-loader-title{font-family:'Sora',sans-serif;font-weight:700;font-size:17px;color:var(--navy);margin-bottom:8px}
+.pp-loader-sub{font-size:14px;color:var(--muted);line-height:1.5;max-width:320px;margin:0 auto}
+.pp-loader-tools{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+  margin-top:20px;
+}
+.pp-loader-tool{
+  padding:4px 12px;background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;font-size:12px;color:var(--blue);font-weight:500;
+}
+
+/* ── REPORT ── */
+.pp-report-header{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-dark) 100%);
+  border-radius:16px;padding:32px;margin-bottom:24px;color:#fff;
+  position:relative;overflow:hidden;
+}
+.pp-report-header::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(24,71,237,0.25);
+  pointer-events:none;
+}
+.pp-report-meta{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:8px}
+.pp-report-title{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin-bottom:4px}
+.pp-report-sub{font-size:13px;opacity:.65}
+.pp-report-grade{
+  font-family:'Sora',sans-serif;font-weight:800;font-size:56px;line-height:1;
+}
+.pp-report-grade-label{font-size:11px;opacity:.6;font-weight:600;letter-spacing:.06em;margin-top:2px}
+.pp-report-summary{
+  margin-top:20px;padding:16px 20px;
+  background:rgba(255,255,255,0.08);border-radius:10px;
+  font-size:15px;line-height:1.65;color:rgba(255,255,255,.92);
+}
+
+/* ── SAVINGS ROW ── */
+.pp-savings-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;
+}
+.pp-savings-card{
+  background:#fff;border:1.5px solid var(--border);border-radius:12px;
+  padding:20px;text-align:center;
+  box-shadow:0 1px 6px rgba(11,31,94,0.05);
+}
+.pp-savings-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.pp-savings-val{font-family:'Sora',sans-serif;font-weight:800;font-size:26px;line-height:1;margin-bottom:4px}
+.pp-savings-sub{font-size:12px;color:var(--muted)}
+
+/* ── SECTION CARDS ── */
+.pp-section-label{
+  font-family:'Sora',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.pp-overlap-item{
+  padding:14px 16px;border-radius:10px;margin-bottom:10px;
+  border:1px solid #FDE68A;background:#FFFBEB;
+}
+.pp-overlap-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.pp-gap-item{
+  padding:14px 16px;border-radius:10px;margin-bottom:10px;
+  border:1px solid var(--border);background:var(--surface);
+}
+.pp-win-item{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:13px 0;
+  border-bottom:1px solid var(--border);
+}
+.pp-win-item:last-child{border-bottom:none}
+.pp-win-num{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;flex-shrink:0;
+  margin-top:1px;
+}
+.pp-win-body{flex:1}
+.pp-win-action{font-size:14px;font-weight:600;margin-bottom:3px}
+.pp-win-impact{font-size:13px;color:var(--muted);line-height:1.4}
+.pp-priority-tag{
+  display:inline-block;padding:2px 9px;border-radius:20px;
+  font-size:11px;font-weight:600;margin-left:auto;flex-shrink:0;
+}
+
+/* ── PP FIT BOX ── */
+.pp-fit-box{
+  border:2px solid var(--blue);border-radius:16px;padding:28px;
+  margin-bottom:24px;background:#fff;
+  box-shadow:0 4px 20px rgba(24,71,237,0.1);
+}
+.pp-fit-score-wrap{text-align:right}
+.pp-fit-score{
+  font-family:'Sora',sans-serif;font-weight:800;font-size:44px;
+  color:var(--blue);line-height:1;
+}
+.pp-fit-score-denom{font-size:16px;color:var(--muted)}
+.pp-fit-score-label{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+
+/* ── RECOMMENDED STACK ── */
+.pp-rec-item{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:14px 0;border-bottom:1px solid var(--border);gap:16px;
+}
+.pp-rec-item:last-child{border-bottom:none}
+.pp-rec-name{font-weight:700;font-size:15px;margin-bottom:3px}
+.pp-rec-cat{font-size:13px;color:var(--muted)}
+.pp-rec-why{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.4}
+.pp-rec-replaces{font-size:12px;color:var(--green);margin-top:4px;font-weight:500}
+.pp-rec-cost{font-family:'Sora',sans-serif;font-weight:700;font-size:16px;color:var(--navy);text-align:right;flex-shrink:0}
+.pp-rec-total{
+  border-top:2px solid var(--navy);padding-top:14px;margin-top:4px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.pp-rec-total-label{font-weight:700;font-size:15px}
+.pp-rec-total-val{font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:var(--green)}
+
+/* ── TAG PILLS ── */
+.pp-tag{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:12px;font-weight:600;
+}
+.pp-tag-blue{background:rgba(24,71,237,0.1);color:var(--blue)}
+.pp-tag-amber{background:rgba(217,119,6,0.1);color:var(--amber)}
+.pp-tag-green{background:rgba(22,163,74,0.1);color:var(--green)}
+.pp-tag-muted{background:var(--gray);color:var(--muted)}
+.pp-tag-red{background:rgba(220,38,38,0.1);color:var(--red)}
+
+/* ── FOOTER CTA ── */
+.pp-footer-cta{
+  background:var(--gray);border-radius:16px;padding:36px;
+  text-align:center;margin-bottom:24px;
+}
+.pp-footer-cta-title{
+  font-family:'Sora',sans-serif;font-weight:800;font-size:22px;
+  color:var(--navy);margin-bottom:8px;
+}
+.pp-footer-cta-sub{font-size:15px;color:var(--muted);margin-bottom:28px;max-width:440px;margin-left:auto;margin-right:auto}
+.pp-footer-cta-note{font-size:12px;color:var(--muted);margin-top:12px}
+
+/* ── POWERED BY ── */
+.pp-powered{
+  text-align:center;padding:20px;
+  font-size:12px;color:var(--muted);
+}
+.pp-powered a{color:var(--blue);text-decoration:none;font-weight:600}
+
+/* ── ERROR ── */
+.pp-error{
+  background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;
+  padding:12px 16px;margin-bottom:16px;color:var(--red);font-size:14px;
+}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  .pp-nav{padding:12px 16px}
+  .pp-hero{padding:48px 16px 40px}
+  .pp-container{padding:0 16px}
+  .pp-card{padding:20px}
+  .pp-grid2,.pp-grid3{grid-template-columns:1fr}
+  .pp-savings-row{grid-template-columns:1fr}
+  .pp-steps{max-width:320px}
+  .pp-report-header{padding:22px}
+  .pp-fit-box{padding:20px}
+  .pp-step-label{display:none}
+  .pp-stack-row{flex-wrap:wrap}
+  .pp-stack-row-cat{width:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="pp-nav">
+  <a href="https://paperlesspipeline.com" class="pp-nav-logo" target="_blank" rel="noopener">
+    <div class="pp-logo-mark">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M3 15L9 3L15 15" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="9" cy="11" r="2" fill="white"/>
+      </svg>
+    </div>
+    <div class="pp-logo-text">Paperless<br/><span>Pipeline</span></div>
+  </a>
+  <div class="pp-nav-badge">RE Back-Office Analyzer</div>
+</nav>
+
+<!-- HERO -->
+<div class="pp-hero">
+  <div class="pp-hero-eyebrow">
+    <div class="dot"></div>
+    AI-Powered · Free · No Sales Pressure
+  </div>
+  <h1>Is Your Brokerage<br/><em>Overpaying</em> for Software?</h1>
+  <p class="pp-hero-sub">Enter your current tech stack. Get an instant AI analysis of overlaps, gaps, and exactly how much you could save — in under 60 seconds.</p>
+  <div class="pp-steps" id="steps-bar">
+    <!-- injected by JS -->
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="pp-body">
+  <div class="pp-container">
+    <div id="pp-app"><!-- steps injected here --></div>
+  </div>
+</div>
+
+<div class="pp-powered">
+  Powered by <a href="https://stackswap.ai" target="_blank" rel="noopener">StackSwap</a> · AI-driven SaaS stack intelligence
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────────
+let _step = 1;
+let _profile = { first_name:'', last_name:'', company_name:'', job_title:'', phone:'', state:'', brokerage_type:'', agent_count:'', annual_transactions:'' };
+let _tools = [];       // selected tool objects
+let _costs = {};       // { toolId: cost }
+let _email = '';
+let _report = null;
+let _filterCat = 'All';
+let _loading = false;
+let _lead_id = null;
+
+// ── TOOLS DATABASE ─────────────────────────────────────────────────────────────
+const TOOLS = [
+  // Transaction Management
+  {id:'paperless-pipeline', name:'Paperless Pipeline', cat:'Transaction Management', cost:75, model:'per_transaction'},
+  {id:'skyslope',           name:'Skyslope',           cat:'Transaction Management', cost:299, model:'flat'},
+  {id:'dotloop',            name:'Dotloop',            cat:'Transaction Mgmt + eSign', cost:149, model:'flat'},
+  {id:'open-to-close',      name:'Open to Close',      cat:'Transaction Management', cost:99,  model:'flat'},
+  {id:'transaction-desk',   name:'Transaction Desk',   cat:'Transaction Management', cost:0,   model:'freemium'},
+  {id:'brokermint',         name:'Brokermint',         cat:'Transaction + Commission', cost:249, model:'flat'},
+  {id:'lone-wolf',          name:'Lone Wolf',          cat:'Back Office Suite',     cost:399, model:'flat'},
+  {id:'propertybase',       name:'Propertybase',       cat:'CRM + Back Office',     cost:399, model:'flat'},
+  // eSign
+  {id:'docusign',           name:'DocuSign',           cat:'eSign',                cost:45,  model:'per_seat'},
+  {id:'authentisign',       name:'Authentisign',       cat:'eSign',                cost:25,  model:'per_seat'},
+  {id:'digisign',           name:'DigiSign',           cat:'eSign',                cost:20,  model:'per_seat'},
+  // CRM
+  {id:'follow-up-boss',     name:'Follow Up Boss',     cat:'CRM',                  cost:99,  model:'per_seat'},
+  {id:'lofty',              name:'Lofty (Chime)',      cat:'CRM + Marketing',      cost:449, model:'flat'},
+  {id:'kvcore',             name:'kvCORE',             cat:'CRM + Marketing',      cost:499, model:'flat'},
+  {id:'sierra-interactive', name:'Sierra Interactive', cat:'CRM + IDX',            cost:499, model:'flat'},
+  {id:'wise-agent',         name:'Wise Agent',         cat:'CRM',                  cost:49,  model:'flat'},
+  {id:'boomtown',           name:'BoomTown',           cat:'CRM + Lead Gen',       cost:1000,model:'flat'},
+  {id:'hubspot',            name:'HubSpot',            cat:'CRM + Marketing Suite',cost:800, model:'flat'},
+  {id:'salesforce',         name:'Salesforce',         cat:'Enterprise CRM',       cost:1500,model:'per_seat'},
+  // Lead Gen
+  {id:'zillow-premier',     name:'Zillow Premier Agent',cat:'Lead Generation',     cost:500, model:'per_lead'},
+  {id:'realtor-com',        name:'Realtor.com Leads',  cat:'Lead Generation',      cost:300, model:'per_lead'},
+  {id:'market-leader',      name:'Market Leader',      cat:'Lead Gen + CRM',       cost:189, model:'flat'},
+  // Marketing
+  {id:'canva',              name:'Canva',              cat:'Design / Marketing',   cost:15,  model:'per_seat'},
+  {id:'mailchimp',          name:'MailChimp',          cat:'Email Marketing',      cost:50,  model:'flat'},
+  {id:'activecampaign',     name:'ActiveCampaign',     cat:'Email Marketing + CRM',cost:79,  model:'flat'},
+  // Productivity
+  {id:'google-workspace',   name:'Google Workspace',   cat:'Productivity Suite',   cost:12,  model:'per_seat'},
+  {id:'microsoft-365',      name:'Microsoft 365',      cat:'Productivity Suite',   cost:15,  model:'per_seat'},
+  {id:'slack',              name:'Slack',              cat:'Team Communication',   cost:8,   model:'per_seat'},
+  {id:'zoom',               name:'Zoom',               cat:'Video Conferencing',   cost:15,  model:'per_seat'},
+  // Automation
+  {id:'zapier',             name:'Zapier',             cat:'Automation',           cost:99,  model:'flat'},
+  {id:'make',               name:'Make (Integromat)',  cat:'Automation',           cost:29,  model:'flat'},
+  // RE Operations
+  {id:'showingtime',        name:'ShowingTime',        cat:'Showing Management',   cost:35,  model:'flat'},
+  {id:'showing-suite',      name:'Showing Suite',      cat:'Showing Management',   cost:29,  model:'flat'},
+  {id:'cloud-cma',          name:'Cloud CMA',          cat:'CMA Reports',          cost:99,  model:'flat'},
+  {id:'rpr',                name:'RPR',                cat:'Market Data',          cost:0,   model:'freemium'},
+  {id:'mls',                name:'MLS Access',         cat:'MLS',                  cost:50,  model:'flat'},
+  {id:'qualia',             name:'Qualia',             cat:'Title + Closing',      cost:299, model:'flat'},
+  {id:'notarize',           name:'Notarize',           cat:'Remote Notarization',  cost:25,  model:'per_use'},
+  {id:'buildout',           name:'Buildout',           cat:'Commercial RE Marketing',cost:299,model:'flat'},
+];
+
+const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+const CATS = ['All', ...new Set(TOOLS.map(t => t.cat))].filter(Boolean);
+const GRADE_COLORS = {A:'#16A34A', B:'#16A34A', C:'#D97706', D:'#EA580C', F:'#DC2626'};
+
+// ── UTILS ──────────────────────────────────────────────────────────────────────
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+function $(id) { return document.getElementById(id); }
+function totalMonthly() {
+  return _tools.reduce((s, t) => s + (parseFloat(_costs[t.id]) || 0), 0);
+}
+function isSelected(id) { return !!_tools.find(t => t.id === id); }
+function fmt(n) { return Math.round(n).toLocaleString(); }
+function fmtDollar(n) { return '$' + fmt(n); }
+
+// ── STEPS BAR ─────────────────────────────────────────────────────────────────
+function renderSteps() {
+  const bar = $('steps-bar');
+  if (!bar) return;
+  const labels = ['Profile', 'Stack', 'Email', 'Report'];
+  bar.innerHTML = '';
+  labels.forEach((label, i) => {
+    const num = i + 1;
+    const done = _step > num;
+    const active = _step === num;
+    const stepWrap = el('div', 'pp-step');
+    const dot = el('div', 'pp-step-dot ' + (done ? 'done' : active ? 'active' : 'idle'));
+    dot.textContent = done ? '✓' : num;
+    const lbl = el('span', 'pp-step-label ' + (done ? 'done' : active ? 'active' : 'idle'));
+    lbl.textContent = label;
+    stepWrap.appendChild(dot);
+    stepWrap.appendChild(lbl);
+    bar.appendChild(stepWrap);
+    if (i < 3) {
+      const line = el('div', 'pp-step-line ' + (done ? 'done' : 'idle'));
+      bar.appendChild(line);
+    }
+  });
+}
+
+// ── RENDER ROUTER ─────────────────────────────────────────────────────────────
+function render() {
+  renderSteps();
+  const app = $('pp-app');
+  app.innerHTML = '';
+  if (_loading)      { app.appendChild(renderLoader()); return; }
+  if (_step === 1)   { app.appendChild(renderStep1()); return; }
+  if (_step === 2)   { app.appendChild(renderStep2()); return; }
+  if (_step === 3)   { app.appendChild(renderStep3()); return; }
+  if (_step === 4)   { app.appendChild(renderReport()); return; }
+}
+
+// ── STEP 1: PROFILE ───────────────────────────────────────────────────────────
+function renderStep1() {
+  const card = el('div', 'pp-card');
+
+  const title = el('div', 'pp-card-title', 'Tell us about your brokerage');
+  const sub = el('div', 'pp-card-sub', 'This helps our AI give you accurate, tailored recommendations — no generic advice.');
+  card.appendChild(title);
+  card.appendChild(sub);
+
+  // Name row
+  const nameRow = el('div', 'pp-grid2');
+  nameRow.appendChild(makeField('First Name', 'first_name', 'text', 'Jane', true));
+  nameRow.appendChild(makeField('Last Name', 'last_name', 'text', 'Smith', true));
+  card.appendChild(nameRow);
+
+  // Brokerage name
+  const bnField = el('div', 'pp-field');
+  bnField.appendChild(makeLabel('Brokerage Name', true));
+  const bnInput = makeInput('company_name', 'text', 'e.g. Smith Realty Group');
+  bnField.appendChild(bnInput);
+  card.appendChild(bnField);
+
+  // Role + Phone
+  const rp = el('div', 'pp-grid2');
+  rp.appendChild(makeField('Your Role', 'job_title', 'text', 'Broker/Owner, Team Lead...', false));
+  rp.appendChild(makeField('Phone', 'phone', 'tel', '(555) 000-0000', false));
+  card.appendChild(rp);
+
+  // State + Brokerage type
+  const st = el('div', 'pp-grid2');
+
+  // State select
+  const stateWrap = el('div', 'pp-field');
+  stateWrap.appendChild(makeLabel('State', true));
+  const stateSelect = el('select', 'pp-select');
+  stateSelect.id = 'field-state';
+  stateSelect.innerHTML = '<option value="">Select state...</option>' +
+    US_STATES.map(s => `<option value="${s}"${_profile.state === s ? ' selected' : ''}>${s}</option>`).join('');
+  stateSelect.addEventListener('change', e => { _profile.state = e.target.value; updateStep1Btn(); });
+  stateWrap.appendChild(stateSelect);
+  st.appendChild(stateWrap);
+
+  // Brokerage type
+  const btWrap = el('div', 'pp-field');
+  btWrap.appendChild(makeLabel('Brokerage Type', false));
+  const btSelect = el('select', 'pp-select');
+  btSelect.id = 'field-brokerage_type';
+  const btOptions = ['','Independent Brokerage','Franchise (RE/MAX, KW, etc.)','Team within a Brokerage','Virtual Brokerage','Commercial Brokerage','Property Management'];
+  btSelect.innerHTML = btOptions.map((o,i) => `<option value="${o}"${_profile.brokerage_type === o ? ' selected' : ''}>${i === 0 ? 'Select type...' : o}</option>`).join('');
+  btSelect.addEventListener('change', e => { _profile.brokerage_type = e.target.value; });
+  btWrap.appendChild(btSelect);
+  st.appendChild(btWrap);
+  card.appendChild(st);
+
+  // Agents + transactions
+  const ag = el('div', 'pp-grid2');
+  ag.appendChild(makeField('Number of Agents', 'agent_count', 'number', 'e.g. 25', false));
+  ag.appendChild(makeField('Annual Transactions', 'annual_transactions', 'number', 'e.g. 300', false));
+  card.appendChild(ag);
+
+  // CTA
+  const btn = el('button', 'pp-btn', 'Continue to Stack Builder →');
+  btn.id = 'step1-btn';
+  btn.disabled = !profileComplete();
+  if (!profileComplete()) btn.classList.add('disabled');
+  btn.addEventListener('click', () => { if (profileComplete()) { _step = 2; render(); window.scrollTo(0,0); }});
+  card.appendChild(btn);
+
+  return card;
+}
+
+function makeLabel(text, required) {
+  const l = el('label', 'pp-label');
+  l.textContent = text;
+  if (required) { const r = el('span', 'req', ' *'); l.appendChild(r); }
+  return l;
+}
+function makeInput(field, type, placeholder) {
+  const inp = el('input', 'pp-input');
+  inp.id = 'field-' + field;
+  inp.type = type || 'text';
+  inp.placeholder = placeholder || '';
+  inp.value = _profile[field] || '';
+  inp.addEventListener('input', e => {
+    _profile[field] = e.target.value;
+    updateStep1Btn();
+  });
+  return inp;
+}
+function makeField(label, field, type, placeholder, required) {
+  const wrap = el('div', 'pp-field');
+  wrap.appendChild(makeLabel(label, required));
+  wrap.appendChild(makeInput(field, type, placeholder));
+  return wrap;
+}
+function profileComplete() {
+  return _profile.first_name.trim() && _profile.last_name.trim() &&
+         _profile.company_name.trim() && _profile.state;
+}
+function updateStep1Btn() {
+  const btn = $('step1-btn');
+  if (!btn) return;
+  const ok = profileComplete();
+  btn.disabled = !ok;
+  ok ? btn.classList.remove('disabled') : btn.classList.add('disabled');
+}
+
+// ── STEP 2: STACK ─────────────────────────────────────────────────────────────
+function renderStep2() {
+  const wrap = document.createDocumentFragment();
+  const card = el('div', 'pp-card');
+
+  card.appendChild(el('div', 'pp-card-title', 'Select your current tools'));
+  card.appendChild(el('div', 'pp-card-sub', 'Check every tool your brokerage currently pays for. You can adjust the actual monthly cost below.'));
+
+  // Filter pills
+  const filterBar = el('div', 'pp-filter-bar');
+  CATS.forEach(cat => {
+    const pill = el('button', 'pp-filter-pill' + (cat === _filterCat ? ' active' : ''), cat);
+    pill.addEventListener('click', () => { _filterCat = cat; renderToolGrid(); renderFilterPills(); });
+    filterBar.appendChild(pill);
+  });
+  filterBar.id = 'filter-bar';
+  card.appendChild(filterBar);
+
+  // Tool grid
+  const grid = el('div', 'pp-tool-grid');
+  grid.id = 'tool-grid';
+  card.appendChild(grid);
+  renderToolGrid();
+
+  // Selected stack summary
+  const summaryWrap = el('div');
+  summaryWrap.id = 'stack-summary-wrap';
+  card.appendChild(summaryWrap);
+  renderStackSummary();
+
+  // Buttons
+  const btnRow = el('div', 'pp-btn-row');
+  const backBtn = el('button', 'pp-btn-ghost', '← Back');
+  backBtn.addEventListener('click', () => { _step = 1; render(); window.scrollTo(0,0); });
+  btnRow.appendChild(backBtn);
+
+  const nextBtn = el('button', 'pp-btn', '');
+  nextBtn.id = 'step2-btn';
+  nextBtn.style.flex = '1';
+  updateStep2Btn(nextBtn);
+  nextBtn.addEventListener('click', () => {
+    if (_tools.length > 0) { _step = 3; render(); window.scrollTo(0,0); }
+  });
+  btnRow.appendChild(nextBtn);
+  card.appendChild(btnRow);
+
+  wrap.appendChild(card);
+  return wrap;
+}
+
+function renderFilterPills() {
+  const bar = $('filter-bar');
+  if (!bar) return;
+  bar.querySelectorAll('.pp-filter-pill').forEach(p => {
+    p.classList.toggle('active', p.textContent === _filterCat);
+  });
+}
+function renderToolGrid() {
+  const grid = $('tool-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const filtered = _filterCat === 'All' ? TOOLS : TOOLS.filter(t => t.cat === _filterCat);
+  filtered.forEach(tool => {
+    const sel = isSelected(tool.id);
+    const chip = el('div', 'pp-tool-chip' + (sel ? ' selected' : ''));
+    chip.innerHTML = `
+      <div class="pp-tool-chip-top">
+        <span class="pp-tool-chip-name">${tool.name}</span>
+        <span class="pp-tool-chip-check">${sel ? '✓' : '+'}</span>
+      </div>
+      <span class="pp-tool-chip-cat">${tool.cat}</span>
+      <span class="pp-tool-chip-cost">$${tool.cost}/mo est.</span>
+    `;
+    chip.addEventListener('click', () => toggleTool(tool));
+    grid.appendChild(chip);
+  });
+}
+function toggleTool(tool) {
+  if (isSelected(tool.id)) {
+    _tools = _tools.filter(t => t.id !== tool.id);
+  } else {
+    _tools.push(tool);
+    if (_costs[tool.id] === undefined) _costs[tool.id] = tool.cost;
+  }
+  renderToolGrid();
+  renderStackSummary();
+  updateStep2Btn($('step2-btn'));
+}
+function renderStackSummary() {
+  const wrap = $('stack-summary-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (_tools.length === 0) return;
+
+  const box = el('div', 'pp-stack-summary');
+  box.innerHTML = `<div class="pp-stack-summary-title">Your Stack (${_tools.length} tool${_tools.length !== 1 ? 's' : ''})</div>`;
+
+  _tools.forEach(tool => {
+    const row = el('div', 'pp-stack-row');
+    row.innerHTML = `
+      <div class="pp-stack-row-name">${tool.name}</div>
+      <div class="pp-stack-row-cat">${tool.cat}</div>
+      <div class="pp-cost-input-wrap">
+        <span class="pp-cost-symbol">$</span>
+        <input class="pp-cost-input" type="number" id="cost-${tool.id}" value="${_costs[tool.id] ?? tool.cost}" placeholder="${tool.cost}"/>
+        <span class="pp-cost-mo">/mo</span>
+      </div>
+      <button class="pp-stack-remove" data-id="${tool.id}" title="Remove">×</button>
+    `;
+    box.appendChild(row);
+  });
+
+  const total = totalMonthly();
+  const totRow = el('div', 'pp-stack-total');
+  totRow.innerHTML = `
+    <span class="pp-stack-total-label">Total Monthly</span>
+    <div>
+      <div class="pp-stack-total-val">${fmtDollar(total)}<span style="font-size:13px;font-weight:400;color:var(--muted)">/mo</span></div>
+      <div class="pp-stack-total-annual">${fmtDollar(total * 12)}/year</div>
+    </div>
+  `;
+  box.appendChild(totRow);
+  wrap.appendChild(box);
+
+  // Cost input listeners
+  _tools.forEach(tool => {
+    const inp = $('cost-' + tool.id);
+    if (inp) {
+      inp.addEventListener('input', e => {
+        _costs[tool.id] = parseFloat(e.target.value) || 0;
+        renderStackSummary();
+        updateStep2Btn($('step2-btn'));
+      });
+    }
+  });
+  // Remove listeners
+  wrap.querySelectorAll('.pp-stack-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      _tools = _tools.filter(t => t.id !== id);
+      renderToolGrid();
+      renderStackSummary();
+      updateStep2Btn($('step2-btn'));
+    });
+  });
+}
+function updateStep2Btn(btn) {
+  if (!btn) return;
+  const total = totalMonthly();
+  const ok = _tools.length > 0;
+  btn.disabled = !ok;
+  ok ? btn.classList.remove('disabled') : btn.classList.add('disabled');
+  btn.textContent = ok
+    ? `Analyze My Stack (${_tools.length} tools · ${fmtDollar(total)}/mo) →`
+    : 'Select at least one tool to continue';
+}
+
+// ── STEP 3: EMAIL ─────────────────────────────────────────────────────────────
+function renderStep3() {
+  const card = el('div', 'pp-card');
+
+  card.appendChild(el('div', 'pp-card-title', 'Almost there — where do we send your report?'));
+  card.appendChild(el('div', 'pp-card-sub', 'Your AI analysis generates instantly. No sales calls unless you request one.'));
+
+  // Preview checklist
+  const checklist = el('div', 'pp-checklist');
+  checklist.appendChild(el('div', 'pp-checklist-title', 'Your free analysis will include:'));
+  const items = [
+    'Stack overlap & redundancy analysis with exact tools identified',
+    'Potential annual savings broken down by category',
+    'Recommended optimized stack for your brokerage size',
+    'Gap analysis — categories where you may be underserved',
+    'Quick wins ranked by impact and implementation speed',
+    'Honest assessment of where Paperless Pipeline fits (or doesn\'t)',
+  ];
+  items.forEach(item => {
+    const row = el('div', 'pp-checklist-item');
+    row.innerHTML = `<span class="pp-check-icon">✓</span><span class="pp-check-text">${item}</span>`;
+    checklist.appendChild(row);
+  });
+  card.appendChild(checklist);
+
+  // Email input
+  const emailField = el('div', 'pp-field');
+  emailField.appendChild(makeLabel('Work Email', true));
+  const emailInput = el('input', 'pp-input pp-input-big');
+  emailInput.id = 'email-input';
+  emailInput.type = 'email';
+  emailInput.placeholder = 'you@yourbrokerage.com';
+  emailInput.value = _email;
+  emailInput.addEventListener('input', e => {
+    _email = e.target.value;
+    updateStep3Btn();
+  });
+  emailField.appendChild(emailInput);
+  emailField.appendChild(el('div', 'pp-helper', 'We\'ll never spam you. You can unsubscribe anytime.'));
+  card.appendChild(emailField);
+
+  // Error placeholder
+  const errWrap = el('div');
+  errWrap.id = 'step3-error';
+  card.appendChild(errWrap);
+
+  // Buttons
+  const btnRow = el('div', 'pp-btn-row');
+  const backBtn = el('button', 'pp-btn-ghost', '← Back');
+  backBtn.addEventListener('click', () => { _step = 2; render(); window.scrollTo(0,0); });
+  btnRow.appendChild(backBtn);
+
+  const nextBtn = el('button', 'pp-btn' + (isEmailValid() ? '' : ' disabled'), 'Generate My Free Analysis →');
+  nextBtn.id = 'step3-btn';
+  nextBtn.disabled = !isEmailValid();
+  nextBtn.style.flex = '1';
+  nextBtn.addEventListener('click', () => { if (isEmailValid()) runAnalysis(); });
+  btnRow.appendChild(nextBtn);
+  card.appendChild(btnRow);
+
+  return card;
+}
+function isEmailValid() { return _email.includes('@') && _email.includes('.'); }
+function updateStep3Btn() {
+  const btn = $('step3-btn');
+  if (!btn) return;
+  const ok = isEmailValid();
+  btn.disabled = !ok;
+  ok ? btn.classList.remove('disabled') : btn.classList.add('disabled');
+}
+
+// ── LOADER ────────────────────────────────────────────────────────────────────
+function renderLoader() {
+  const wrap = el('div', 'pp-card pp-loader');
+  wrap.innerHTML = `
+    <div class="pp-loader-ring"></div>
+    <div class="pp-loader-title">Analyzing your stack with AI...</div>
+    <div class="pp-loader-sub">Reviewing ${_tools.length} tools across categories. Identifying overlaps, gaps, and savings opportunities.</div>
+    <div class="pp-loader-tools">
+      ${_tools.slice(0,8).map(t => `<span class="pp-loader-tool">${t.name}</span>`).join('')}
+    </div>
+  `;
+  return wrap;
+}
+
+// ── ANALYSIS ──────────────────────────────────────────────────────────────────
+async function runAnalysis() {
+  _loading = true;
+  render();
+  window.scrollTo(0,0);
+
+  // Save lead first (non-blocking)
+  saveLead();
+
+  const monthly = totalMonthly();
+  const toolList = _tools.map(t =>
+    `- ${t.name} (${t.cat}): $${parseFloat(_costs[t.id]) || t.cost}/mo`
+  ).join('\n');
+
+  const prompt = `You are a neutral, expert real estate technology consultant. Analyze this brokerage's tech stack objectively. Recommend the best tools for their situation — NOT any particular vendor. Only recommend Paperless Pipeline if it genuinely solves a real problem in their stack.
+
+BROKERAGE PROFILE:
+- Name: ${_profile.company_name}
+- Type: ${_profile.brokerage_type || 'Not specified'}
+- State: ${_profile.state}
+- Agents: ${_profile.agent_count || 'Not specified'}
+- Annual Transactions: ${_profile.annual_transactions || 'Not specified'}
+- Role: ${_profile.job_title || 'Not specified'}
+
+CURRENT TECH STACK:
+${toolList}
+
+TOTAL MONTHLY: $${fmt(monthly)} | ANNUAL: $${fmt(monthly * 12)}
+
+Respond ONLY with valid JSON, no other text:
+{
+  "executive_summary": "2-3 sentences summarizing the stack situation honestly",
+  "stack_grade": "A or B or C or D or F",
+  "stack_grade_reason": "One sentence",
+  "total_monthly_current": ${fmt(monthly)},
+  "total_annual_current": ${fmt(monthly * 12)},
+  "estimated_monthly_optimized": <integer>,
+  "estimated_annual_optimized": <integer>,
+  "estimated_monthly_savings": <integer>,
+  "estimated_annual_savings": <integer>,
+  "savings_confidence": "low or medium or high",
+  "overlaps": [{"tools": ["Name A","Name B"], "issue": "what overlaps", "recommendation": "what to do"}],
+  "gaps": [{"category": "Category", "issue": "what is missing or weak", "recommendation": "specific tool and why"}],
+  "quick_wins": [{"action": "specific action", "impact": "what it improves or saves", "priority": "high or medium or low"}],
+  "recommended_stack": [{"tool": "Tool Name", "category": "category", "monthly_cost": <integer>, "why": "reason", "replaces": ["tools replaced"]}],
+  "paperless_pipeline_fit": {
+    "relevant": true or false,
+    "fit_score": <1-10 integer>,
+    "rationale": "honest 2-sentence assessment",
+    "replaces": ["tools PP would replace"],
+    "not_covered": ["things PP does not handle"]
+  }
+}`;
+
+  try {
+    const resp = await fetch('/api/pp-analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!resp.ok) throw new Error('Analysis API returned ' + resp.status);
+    const parsed = await resp.json();
+    if (parsed.error) throw new Error(parsed.error);
+
+    _report = parsed;
+    saveSubmission(parsed);
+    _loading = false;
+    _step = 4;
+    render();
+    window.scrollTo(0,0);
+
+  } catch(err) {
+    console.error('Analysis error:', err);
+    _loading = false;
+    _step = 3;
+    render();
+    const errWrap = $('step3-error');
+    if (errWrap) {
+      errWrap.innerHTML = `<div class="pp-error">Analysis failed: ${err.message}. Please try again.</div>`;
+    }
+  }
+}
+
+async function saveLead() {
+  try {
+    const resp = await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: _email,
+        company: _profile.company_name,
+        role: _profile.job_title || 'Broker/Owner',
+        team_size: _profile.agent_count || '1-10',
+        industry: 'real_estate',
+        state: _profile.state,
+        source_page: 'pp-analyzer'
+      })
+    });
+    const data = await resp.json();
+    _lead_id = data.lead_id || null;
+  } catch(e) {
+    console.warn('Lead save failed (non-blocking):', e.message);
+  }
+}
+
+async function saveSubmission(report) {
+  try {
+    await fetch('/api/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lead_id: _lead_id,
+        email: _email,
+        company: _profile.company_name,
+        tools: _tools.map(t => ({ name:t.name, category:t.cat, monthly_cost: parseFloat(_costs[t.id]) || t.cost })),
+        total_spend: totalMonthly(),
+        potential_savings: report.estimated_monthly_savings || 0,
+        score: report.stack_grade || 'C',
+        industry: 'real_estate',
+        team_size: _profile.agent_count || '',
+        report_data: report,
+        source_page: 'pp-analyzer'
+      })
+    });
+  } catch(e) {
+    console.warn('Report save failed (non-blocking):', e.message);
+  }
+}
+
+// ── REPORT ────────────────────────────────────────────────────────────────────
+function renderReport() {
+  const r = _report;
+  const frag = document.createDocumentFragment();
+
+  // ── Header card
+  const header = el('div', 'pp-report-header');
+  const gradeColor = GRADE_COLORS[r.stack_grade] || '#fff';
+  header.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
+      <div>
+        <div class="pp-report-meta">Stack Analysis Report</div>
+        <div class="pp-report-title">${_profile.company_name}</div>
+        <div class="pp-report-sub">${_profile.first_name} ${_profile.last_name} · ${_profile.state} · ${_tools.length} tools analyzed</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="pp-report-grade" style="color:${gradeColor}">${r.stack_grade}</div>
+        <div class="pp-report-grade-label">Stack Grade</div>
+      </div>
+    </div>
+    <div class="pp-report-summary">${r.executive_summary}</div>
+  `;
+  frag.appendChild(header);
+
+  // ── Savings row
+  const savings = el('div', 'pp-savings-row');
+  [
+    { label:'Current Annual Spend',    val: fmtDollar(r.total_annual_current),      sub: fmtDollar(r.total_monthly_current)+'/mo',    color:'var(--red)' },
+    { label:'Optimized Annual Cost',   val: fmtDollar(r.estimated_annual_optimized), sub: fmtDollar(r.estimated_monthly_optimized)+'/mo', color:'var(--blue)' },
+    { label:'Potential Annual Savings',val: fmtDollar(r.estimated_annual_savings),   sub: (r.savings_confidence||'medium')+' confidence', color:'var(--green)' },
+  ].forEach(item => {
+    const c = el('div', 'pp-savings-card');
+    c.innerHTML = `
+      <div class="pp-savings-label">${item.label}</div>
+      <div class="pp-savings-val" style="color:${item.color}">${item.val}</div>
+      <div class="pp-savings-sub">${item.sub}</div>
+    `;
+    savings.appendChild(c);
+  });
+  frag.appendChild(savings);
+
+  // ── Overlaps
+  if (r.overlaps && r.overlaps.length) {
+    const card = el('div', 'pp-card');
+    card.innerHTML = `<div class="pp-card-title">⚠️ Overlaps & Redundancies</div><div class="pp-card-sub">You may be paying for duplicate functionality across these tools.</div>`;
+    const label = el('div', 'pp-section-label', 'FOUND ' + r.overlaps.length + ' OVERLAP' + (r.overlaps.length > 1 ? 'S' : ''));
+    label.style.color = 'var(--amber)';
+    card.appendChild(label);
+    r.overlaps.forEach(o => {
+      const item = el('div', 'pp-overlap-item');
+      const tags = el('div', 'pp-overlap-tags');
+      (o.tools || []).forEach(t => { tags.appendChild(el('span', 'pp-tag pp-tag-amber', t)); });
+      item.appendChild(tags);
+      item.innerHTML += `<div style="font-size:14px;margin-bottom:5px"><strong>Issue:</strong> ${o.issue}</div>`;
+      item.innerHTML += `<div style="font-size:14px;color:var(--green)"><strong>Recommendation:</strong> ${o.recommendation}</div>`;
+      card.appendChild(item);
+    });
+    frag.appendChild(card);
+  }
+
+  // ── Gaps
+  if (r.gaps && r.gaps.length) {
+    const card = el('div', 'pp-card');
+    card.innerHTML = `<div class="pp-card-title">🔍 Stack Gaps</div><div class="pp-card-sub">Areas where your tech stack may be limiting your brokerage.</div>`;
+    r.gaps.forEach(g => {
+      const item = el('div', 'pp-gap-item');
+      const tag = el('span', 'pp-tag pp-tag-blue', g.category);
+      item.appendChild(tag);
+      item.innerHTML += `<div style="font-size:14px;margin-top:8px;margin-bottom:4px"><strong>Issue:</strong> ${g.issue}</div>`;
+      item.innerHTML += `<div style="font-size:14px;color:var(--blue)"><strong>Recommendation:</strong> ${g.recommendation}</div>`;
+      card.appendChild(item);
+    });
+    frag.appendChild(card);
+  }
+
+  // ── Quick wins
+  if (r.quick_wins && r.quick_wins.length) {
+    const card = el('div', 'pp-card');
+    card.innerHTML = `<div class="pp-card-title">⚡ Quick Wins</div><div class="pp-card-sub">Actions ranked by impact you can take right now.</div>`;
+    r.quick_wins.forEach((w, i) => {
+      const bgColor = w.priority === 'high' ? 'var(--green)' : w.priority === 'medium' ? 'var(--amber)' : 'var(--muted)';
+      const tagCls = w.priority === 'high' ? 'pp-tag pp-tag-green' : w.priority === 'medium' ? 'pp-tag pp-tag-amber' : 'pp-tag pp-tag-muted';
+      const item = el('div', 'pp-win-item');
+      item.innerHTML = `
+        <div class="pp-win-num" style="background:${bgColor}">${i+1}</div>
+        <div class="pp-win-body">
+          <div class="pp-win-action">${w.action}</div>
+          <div class="pp-win-impact">${w.impact}</div>
+        </div>
+        <span class="${tagCls}">${w.priority}</span>
+      `;
+      card.appendChild(item);
+    });
+    frag.appendChild(card);
+  }
+
+  // ── Paperless Pipeline fit
+  if (r.paperless_pipeline_fit && r.paperless_pipeline_fit.relevant) {
+    const fit = r.paperless_pipeline_fit;
+    const fitCard = el('div', 'pp-fit-box');
+    const scoreColor = fit.fit_score >= 7 ? 'var(--blue)' : fit.fit_score >= 5 ? 'var(--amber)' : 'var(--muted)';
+    fitCard.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div class="pp-card-title" style="margin-bottom:4px">Paperless Pipeline — Is It Right For You?</div>
+          <div style="font-size:13px;color:var(--muted)">Honest AI assessment based on your specific stack</div>
+        </div>
+        <div class="pp-fit-score-wrap">
+          <div class="pp-fit-score" style="color:${scoreColor}">${fit.fit_score}<span class="pp-fit-score-denom">/10</span></div>
+          <div class="pp-fit-score-label">fit score</div>
+        </div>
+      </div>
+      <p style="font-size:15px;line-height:1.65;margin-bottom:16px;color:var(--text)">${fit.rationale}</p>
+    `;
+
+    if (fit.replaces && fit.replaces.length) {
+      const rRow = el('div');
+      rRow.innerHTML = `<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:7px">Could replace:</div>`;
+      const tags = el('div', 'pp-overlap-tags');
+      fit.replaces.forEach(t => tags.appendChild(el('span', 'pp-tag pp-tag-green', t)));
+      rRow.appendChild(tags);
+      fitCard.appendChild(rRow);
+    }
+
+    if (fit.not_covered && fit.not_covered.length) {
+      const nRow = el('div');
+      nRow.style.marginTop = '10px';
+      nRow.innerHTML = `<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:7px">Still need separately:</div>`;
+      const tags = el('div', 'pp-overlap-tags');
+      fit.not_covered.forEach(t => tags.appendChild(el('span', 'pp-tag pp-tag-muted', t)));
+      nRow.appendChild(tags);
+      fitCard.appendChild(nRow);
+    }
+
+    const cta = el('a', 'pp-btn');
+    cta.href = 'https://paperlesspipeline.com/demo';
+    cta.target = '_blank';
+    cta.rel = 'noopener';
+    cta.textContent = 'See Paperless Pipeline in Action →';
+    cta.style.marginTop = '20px';
+    fitCard.appendChild(cta);
+
+    frag.appendChild(fitCard);
+  }
+
+  // ── Recommended stack
+  if (r.recommended_stack && r.recommended_stack.length) {
+    const card = el('div', 'pp-card');
+    card.innerHTML = `<div class="pp-card-title">✅ Your Recommended Stack</div><div class="pp-card-sub">Optimized for your brokerage size, budget, and workflow.</div>`;
+    r.recommended_stack.forEach((item, i) => {
+      const row = el('div', 'pp-rec-item');
+      const replacesHtml = item.replaces && item.replaces.length
+        ? `<div class="pp-rec-replaces">Replaces: ${item.replaces.join(', ')}</div>`
+        : '';
+      row.innerHTML = `
+        <div style="flex:1">
+          <div class="pp-rec-name">${item.tool} <span style="font-weight:400;font-size:13px;color:var(--muted)">· ${item.category}</span></div>
+          <div class="pp-rec-why">${item.why}</div>
+          ${replacesHtml}
+        </div>
+        <div class="pp-rec-cost">${fmtDollar(item.monthly_cost)}/mo</div>
+      `;
+      card.appendChild(row);
+    });
+    const total = el('div', 'pp-rec-total');
+    total.innerHTML = `
+      <span class="pp-rec-total-label">Optimized Monthly Total</span>
+      <span class="pp-rec-total-val">${fmtDollar(r.estimated_monthly_optimized)}/mo</span>
+    `;
+    card.appendChild(total);
+    frag.appendChild(card);
+  }
+
+  // ── Footer CTA
+  const footerCta = el('div', 'pp-footer-cta');
+  footerCta.innerHTML = `
+    <div class="pp-footer-cta-title">Want help implementing this?</div>
+    <div class="pp-footer-cta-sub">Our team can walk you through exactly how to optimize your brokerage tech stack — no commitment required.</div>
+    <a href="https://paperlesspipeline.com/demo" class="pp-btn" style="display:inline-block;width:auto;padding:14px 32px;text-decoration:none" target="_blank" rel="noopener">Book a Free 20-Min Strategy Call</a>
+    <div class="pp-footer-cta-note">No commitment. No pressure. Just clarity on your path forward.</div>
+  `;
+  frag.appendChild(footerCta);
+
+  return frag;
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
