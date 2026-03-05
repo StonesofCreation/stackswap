@@ -422,6 +422,153 @@ body{
 .pp-footer-cta-sub{font-size:15px;color:var(--muted);margin-bottom:28px;max-width:440px;margin-left:auto;margin-right:auto}
 .pp-footer-cta-note{font-size:12px;color:var(--muted);margin-top:12px}
 
+/* ── QUICK SEARCH ── */
+.pp-search-wrap{
+  position:relative;margin-bottom:20px;
+}
+.pp-search-icon{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  font-size:15px;pointer-events:none;color:var(--muted);
+}
+.pp-search-input{
+  width:100%;padding:11px 14px 11px 38px;
+  border:1.5px solid var(--blue);border-radius:9px;
+  font-size:14px;font-family:'Inter',sans-serif;color:var(--text);
+  background:#fff;outline:none;
+  box-shadow:0 0 0 3px rgba(24,71,237,0.1);
+}
+.pp-search-input::placeholder{color:var(--muted)}
+.pp-search-suggestions{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#fff;border:1.5px solid var(--border);border-radius:9px;
+  box-shadow:0 8px 24px rgba(11,31,94,0.12);
+  z-index:100;max-height:220px;overflow-y:auto;
+}
+.pp-search-sugg-item{
+  padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--gray);transition:background .12s;
+}
+.pp-search-sugg-item:last-child{border-bottom:none}
+.pp-search-sugg-item:hover,.pp-search-sugg-item.focused{background:var(--surface)}
+.pp-search-sugg-item.selected-item{opacity:.45;cursor:not-allowed}
+.pp-search-sugg-name{font-size:14px;font-weight:600;flex:1}
+.pp-search-sugg-cat{font-size:12px;color:var(--muted)}
+.pp-search-sugg-cost{font-size:12px;color:var(--blue);font-weight:600}
+.pp-search-empty{padding:12px 14px;font-size:13px;color:var(--muted);text-align:center}
+.pp-search-divider{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;
+}
+.pp-search-divider::before,.pp-search-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* ── SWIMLANE FLOW ── */
+.pp-swimlane{
+  background:var(--gray);border-radius:12px;padding:20px;margin-bottom:20px;
+  overflow-x:auto;
+}
+.pp-swimlane-title{
+  font-family:'Sora',sans-serif;font-weight:700;font-size:15px;
+  color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.pp-swimlane-flow{
+  display:flex;align-items:flex-start;gap:0;min-width:max-content;
+}
+.pp-lane{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  min-width:140px;
+}
+.pp-lane-header{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;text-align:center;
+  background:#fff;border:1px solid var(--border);border-radius:20px;
+  padding:3px 10px;white-space:nowrap;
+}
+.pp-lane-tools{
+  display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;
+}
+.pp-lane-tool{
+  padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;
+  text-align:center;width:100%;background:#fff;
+  border:1.5px solid var(--border);color:var(--text);
+  line-height:1.3;
+}
+.pp-lane-tool.has-overlap{
+  border-color:rgba(217,119,6,0.5);background:rgba(217,119,6,0.06);color:var(--amber);
+}
+.pp-lane-tool.solo{
+  border-color:rgba(22,163,74,0.3);background:rgba(22,163,74,0.04);color:var(--green);
+}
+.pp-lane-empty{
+  padding:7px 12px;border-radius:8px;font-size:11px;
+  color:var(--muted);border:1.5px dashed var(--border);
+  text-align:center;width:100%;background:transparent;
+  font-style:italic;
+}
+.pp-lane-arrow{
+  display:flex;align-items:center;padding:0 8px;padding-top:28px;
+  color:var(--border);font-size:18px;font-weight:700;flex-shrink:0;
+}
+.pp-lane-overlap-flag{
+  margin-top:4px;font-size:10px;font-weight:600;color:var(--amber);
+  display:flex;align-items:center;gap:3px;
+}
+.pp-swimlane-legend{
+  display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;
+  font-size:11px;color:var(--muted);
+}
+.pp-swimlane-legend-item{display:flex;align-items:center;gap:5px}
+.pp-swimlane-legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ── SWAP COMPARISON CARDS ── */
+.pp-swap-card{
+  border:1px solid var(--border);border-radius:12px;
+  margin-bottom:12px;overflow:hidden;
+  background:#fff;
+}
+.pp-swap-header{
+  display:flex;align-items:stretch;gap:0;
+}
+.pp-swap-from{
+  flex:1;padding:16px 20px;
+  background:#FEF2F2;border-right:1px solid var(--border);
+}
+.pp-swap-arrow-col{
+  display:flex;align-items:center;padding:0 10px;
+  background:#FFF;border-right:1px solid var(--border);
+  flex-shrink:0;
+}
+.pp-swap-arrow-icon{
+  font-size:18px;font-weight:700;color:var(--blue);
+}
+.pp-swap-to{
+  flex:1;padding:16px 20px;
+  background:rgba(22,163,74,0.04);
+}
+.pp-swap-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:5px;
+}
+.pp-swap-label.from{color:var(--red)}
+.pp-swap-label.to{color:var(--green)}
+.pp-swap-tool-name{
+  font-family:'Sora',sans-serif;font-weight:700;font-size:15px;
+  margin-bottom:3px;
+}
+.pp-swap-tool-cost{font-size:13px;color:var(--muted)}
+.pp-swap-body{
+  padding:12px 20px;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.pp-swap-reason{flex:1;font-size:13px;color:var(--muted);line-height:1.5;min-width:180px}
+.pp-swap-savings-pill{
+  background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);
+  border-radius:20px;padding:5px 14px;
+  font-size:13px;font-weight:700;color:var(--green);
+  white-space:nowrap;flex-shrink:0;
+}
+
 /* ── POWERED BY ── */
 .pp-powered{
   text-align:center;padding:20px;
@@ -558,6 +705,44 @@ const TOOLS = [
 const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 const CATS = ['All', ...new Set(TOOLS.map(t => t.cat))].filter(Boolean);
 const GRADE_COLORS = {A:'#16A34A', B:'#16A34A', C:'#D97706', D:'#EA580C', F:'#DC2626'};
+
+// ── SWIMLANE CONFIG — maps categories to brokerage workflow stages ─────────────
+const SWIMLANES = [
+  { label: 'Lead Gen',      cats: ['Lead Generation','Lead Gen + CRM'] },
+  { label: 'CRM',           cats: ['CRM','CRM + Marketing','CRM + IDX','CRM + Marketing Suite','Enterprise CRM','CRM + Back Office'] },
+  { label: 'Transaction',   cats: ['Transaction Management','Transaction Mgmt + eSign','Transaction + Commission','Back Office Suite'] },
+  { label: 'eSign / Docs',  cats: ['eSign','Remote Notarization','Title + Closing'] },
+  { label: 'Accounting',    cats: ['Transaction + Commission'] }, // secondary lane for accounting tools
+  { label: 'Marketing',     cats: ['Email Marketing','Email Marketing + CRM','Design / Marketing','Commercial RE Marketing'] },
+  { label: 'Operations',    cats: ['Showing Management','CMA Reports','Market Data','MLS','Productivity Suite','Team Communication','Video Conferencing','Automation'] },
+];
+
+// ── OVERLAP PAIRS — for swimlane overlap flags ────────────────────────────────
+const OVERLAP_PAIRS = [
+  ['paperless-pipeline','skyslope'],['paperless-pipeline','dotloop'],['paperless-pipeline','open-to-close'],
+  ['paperless-pipeline','brokermint'],['paperless-pipeline','lone-wolf'],['skyslope','dotloop'],
+  ['skyslope','open-to-close'],['dotloop','open-to-close'],['brokermint','lone-wolf'],
+  ['follow-up-boss','lofty'],['follow-up-boss','kvcore'],['follow-up-boss','sierra-interactive'],
+  ['follow-up-boss','wise-agent'],['lofty','kvcore'],['lofty','sierra-interactive'],
+  ['docusign','dotloop'],['docusign','authentisign'],['docusign','digisign'],
+  ['authentisign','digisign'],['mailchimp','activecampaign'],['google-workspace','microsoft-365'],
+  ['zapier','make'],['showingtime','showing-suite'],
+];
+
+// ── SWAP RECOMMENDATIONS — current tool → better option ──────────────────────
+const SWAPS = {
+  'skyslope':         { to:'Paperless Pipeline', reason:'Simpler interface, lower cost per transaction, strong compliance tracking. Paperless Pipeline scales affordably with your agent count.', save_pct:0.40 },
+  'dotloop':          { to:'Paperless Pipeline + DocuSign', reason:'Dotloop bundles eSign + transaction mgmt but charges for both. Splitting saves money and gives you best-in-class tools for each job.', save_pct:0.30 },
+  'lone-wolf':        { to:'Paperless Pipeline + Brokermint', reason:'Lone Wolf is expensive and complex. PP handles transactions; Brokermint handles commissions — combined cost is typically lower.', save_pct:0.25 },
+  'boomtown':         { to:'Follow Up Boss + Zillow Premier Agent', reason:'BoomTown bundles PPC lead gen and CRM at a premium. Separating gives you more control and usually lower combined cost.', save_pct:0.20 },
+  'lofty':            { to:'Follow Up Boss', reason:'Follow Up Boss is purpose-built for team workflows with better automation and integrations at roughly half the cost.', save_pct:0.35 },
+  'kvcore':           { to:'Follow Up Boss + Market Leader', reason:'kvCORE is comprehensive but expensive. FUB + targeted lead gen is often more cost-effective for independent brokerages.', save_pct:0.30 },
+  'wise-agent':       { to:'Follow Up Boss', reason:'FUB has a stronger ecosystem, better MLS integrations, and superior team automation at a comparable price.', save_pct:0 },
+  'salesforce':       { to:'HubSpot', reason:'Salesforce is built for enterprise. For brokerages under 200 agents, HubSpot delivers equivalent CRM capability at a fraction of the cost.', save_pct:0.60 },
+  'mailchimp':        { to:'ActiveCampaign', reason:'ActiveCampaign includes CRM + automation + email in one platform. More powerful for brokerage drip campaigns at a similar price point.', save_pct:0 },
+  'zapier':           { to:'Make (Integromat)', reason:'Make handles the same automations at roughly 70% lower cost for high-volume workflows.', save_pct:0.65 },
+  'showing-suite':    { to:'ShowingTime', reason:'ShowingTime has broader MLS integration and is the industry standard — better agent adoption.', save_pct:0 },
+};
 
 // ── UTILS ──────────────────────────────────────────────────────────────────────
 function el(tag, cls, html) {
@@ -723,10 +908,74 @@ function renderStep2() {
   const wrap = document.createDocumentFragment();
   const card = el('div', 'pp-card');
 
-  card.appendChild(el('div', 'pp-card-title', 'Select your current tools'));
-  card.appendChild(el('div', 'pp-card-sub', 'Check every tool your brokerage currently pays for. You can adjust the actual monthly cost below.'));
+  card.appendChild(el('div', 'pp-card-title', 'Build your current tech stack'));
+  card.appendChild(el('div', 'pp-card-sub', 'Search by name or browse by category. Add every tool your brokerage currently pays for.'));
 
-  // Filter pills
+  // ── Quick search
+  const searchWrap = el('div', 'pp-search-wrap');
+  searchWrap.id = 'search-wrap';
+  const searchIcon = el('span', 'pp-search-icon', '🔍');
+  const searchInput = el('input', 'pp-search-input');
+  searchInput.id = 'tool-search';
+  searchInput.type = 'text';
+  searchInput.placeholder = 'Search tools — try "SkySlope", "Follow Up Boss", "DocuSign"…';
+  searchInput.autocomplete = 'off';
+  const suggBox = el('div', 'pp-search-suggestions');
+  suggBox.id = 'search-suggestions';
+  suggBox.style.display = 'none';
+  searchWrap.appendChild(searchIcon);
+  searchWrap.appendChild(searchInput);
+  searchWrap.appendChild(suggBox);
+  card.appendChild(searchWrap);
+
+  // Search events
+  let _focusedSuggIdx = -1;
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    _focusedSuggIdx = -1;
+    if (q.length < 1) { suggBox.style.display = 'none'; return; }
+    const matches = TOOLS.filter(t => t.name.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q)).slice(0, 8);
+    if (!matches.length) {
+      suggBox.innerHTML = `<div class="pp-search-empty">No tools found for "${searchInput.value}"</div>`;
+      suggBox.style.display = 'block';
+      return;
+    }
+    suggBox.innerHTML = '';
+    matches.forEach((tool, idx) => {
+      const item = el('div', 'pp-search-sugg-item' + (isSelected(tool.id) ? ' selected-item' : ''));
+      item.dataset.idx = idx;
+      item.innerHTML = `
+        <span class="pp-search-sugg-name">${tool.name}</span>
+        <span class="pp-search-sugg-cat">${tool.cat}</span>
+        <span class="pp-search-sugg-cost">$${tool.cost}/mo</span>
+        ${isSelected(tool.id) ? '<span style="font-size:11px;color:var(--green);font-weight:600">✓ Added</span>' : ''}
+      `;
+      if (!isSelected(tool.id)) {
+        item.addEventListener('mousedown', e => {
+          e.preventDefault();
+          toggleTool(tool);
+          searchInput.value = '';
+          suggBox.style.display = 'none';
+        });
+      }
+      suggBox.appendChild(item);
+    });
+    suggBox.style.display = 'block';
+  });
+  searchInput.addEventListener('keydown', e => {
+    const items = suggBox.querySelectorAll('.pp-search-sugg-item:not(.selected-item)');
+    if (e.key === 'ArrowDown') { e.preventDefault(); _focusedSuggIdx = Math.min(_focusedSuggIdx + 1, items.length - 1); items.forEach((it,i) => it.classList.toggle('focused', i === _focusedSuggIdx)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); _focusedSuggIdx = Math.max(_focusedSuggIdx - 1, 0); items.forEach((it,i) => it.classList.toggle('focused', i === _focusedSuggIdx)); }
+    else if (e.key === 'Enter' && _focusedSuggIdx >= 0 && items[_focusedSuggIdx]) { items[_focusedSuggIdx].dispatchEvent(new MouseEvent('mousedown')); }
+    else if (e.key === 'Escape') { suggBox.style.display = 'none'; searchInput.blur(); }
+  });
+  searchInput.addEventListener('blur', () => { setTimeout(() => { suggBox.style.display = 'none'; }, 120); });
+
+  // ── Divider
+  const divider = el('div', 'pp-search-divider', 'or browse by category');
+  card.appendChild(divider);
+
+  // ── Filter pills
   const filterBar = el('div', 'pp-filter-bar');
   CATS.forEach(cat => {
     const pill = el('button', 'pp-filter-pill' + (cat === _filterCat ? ' active' : ''), cat);
@@ -736,19 +985,19 @@ function renderStep2() {
   filterBar.id = 'filter-bar';
   card.appendChild(filterBar);
 
-  // Tool grid
+  // ── Tool grid
   const grid = el('div', 'pp-tool-grid');
   grid.id = 'tool-grid';
   card.appendChild(grid);
   renderToolGrid();
 
-  // Selected stack summary
+  // ── Selected stack (swimlane + cost editor)
   const summaryWrap = el('div');
   summaryWrap.id = 'stack-summary-wrap';
   card.appendChild(summaryWrap);
   renderStackSummary();
 
-  // Buttons
+  // ── Buttons
   const btnRow = el('div', 'pp-btn-row');
   const backBtn = el('button', 'pp-btn-ghost', '← Back');
   backBtn.addEventListener('click', () => { _step = 1; render(); window.scrollTo(0,0); });
@@ -812,8 +1061,77 @@ function renderStackSummary() {
   wrap.innerHTML = '';
   if (_tools.length === 0) return;
 
+  // ── Detect overlaps in selected tools ──────────────────────────────────────
+  const overlapIds = new Set();
+  OVERLAP_PAIRS.forEach(([a, b]) => {
+    if (isSelected(a) && isSelected(b)) { overlapIds.add(a); overlapIds.add(b); }
+  });
+
+  // ── SWIMLANE DIAGRAM ───────────────────────────────────────────────────────
+  const swimlane = el('div', 'pp-swimlane');
+
+  const swimTitle = el('div', 'pp-swimlane-title');
+  const overlapCount = Math.floor(overlapIds.size / 2);
+  swimTitle.innerHTML = 'Your Brokerage Workflow' +
+    (overlapCount > 0 ? ` <span style="font-size:12px;font-weight:600;color:var(--amber);background:rgba(217,119,6,0.1);padding:2px 9px;border-radius:20px">${overlapCount} overlap${overlapCount > 1 ? 's' : ''} detected</span>` : '');
+  swimlane.appendChild(swimTitle);
+
+  // Build lane → tools mapping (skip empty lanes)
+  const laneData = SWIMLANES.map(lane => {
+    const tools = _tools.filter(t => lane.cats.includes(t.cat));
+    return { ...lane, tools };
+  }).filter(l => l.tools.length > 0);
+
+  if (laneData.length > 0) {
+    const flowRow = el('div', 'pp-swimlane-flow');
+    laneData.forEach((lane, i) => {
+      const laneEl = el('div', 'pp-lane');
+      laneEl.appendChild(el('div', 'pp-lane-header', lane.label));
+      const toolsEl = el('div', 'pp-lane-tools');
+      lane.tools.forEach(tool => {
+        const hasOvlp = overlapIds.has(tool.id);
+        const toolEl = el('div', 'pp-lane-tool' + (hasOvlp ? ' has-overlap' : ' solo'), tool.name);
+        toolEl.title = hasOvlp ? '⚠️ Overlap detected in this category' : '✓ No overlap detected';
+        toolsEl.appendChild(toolEl);
+        if (hasOvlp) {
+          toolsEl.appendChild(el('div', 'pp-lane-overlap-flag', '⚠ overlap'));
+        }
+      });
+      laneEl.appendChild(toolsEl);
+      flowRow.appendChild(laneEl);
+      if (i < laneData.length - 1) {
+        flowRow.appendChild(el('div', 'pp-lane-arrow', '→'));
+      }
+    });
+    swimlane.appendChild(flowRow);
+  }
+
+  // Tools not in any swimlane
+  const lanedIds = new Set(laneData.flatMap(l => l.tools.map(t => t.id)));
+  const unlanedTools = _tools.filter(t => !lanedIds.has(t.id));
+  if (unlanedTools.length > 0) {
+    const otherLane = el('div');
+    otherLane.style.cssText = 'margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center';
+    otherLane.appendChild(Object.assign(el('span', '', 'Other:'), { style: { fontSize:'11px', fontWeight:'600', color:'var(--muted)', marginRight:'4px', textTransform:'uppercase', letterSpacing:'.06em' } }));
+    unlanedTools.forEach(t => {
+      otherLane.appendChild(el('span', 'pp-tag pp-tag-muted', t.name));
+    });
+    swimlane.appendChild(otherLane);
+  }
+
+  // Legend
+  const legend = el('div', 'pp-swimlane-legend');
+  legend.innerHTML = `
+    <div class="pp-swimlane-legend-item"><div class="pp-swimlane-legend-dot" style="background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.3)"></div> No overlap</div>
+    <div class="pp-swimlane-legend-item"><div class="pp-swimlane-legend-dot" style="background:rgba(217,119,6,0.1);border:1px solid rgba(217,119,6,0.4)"></div> Overlap — paying twice</div>
+    <div class="pp-swimlane-legend-item">→ Brokerage workflow order</div>
+  `;
+  swimlane.appendChild(legend);
+  wrap.appendChild(swimlane);
+
+  // ── COST EDITOR ───────────────────────────────────────────────────────────
   const box = el('div', 'pp-stack-summary');
-  box.innerHTML = `<div class="pp-stack-summary-title">Your Stack (${_tools.length} tool${_tools.length !== 1 ? 's' : ''})</div>`;
+  box.innerHTML = `<div class="pp-stack-summary-title">Adjust your actual monthly costs</div>`;
 
   _tools.forEach(tool => {
     const row = el('div', 'pp-stack-row');
@@ -1235,31 +1553,88 @@ function renderReport() {
     frag.appendChild(fitCard);
   }
 
-  // ── Recommended stack
+  // ── Recommended stack — swap comparison cards
   if (r.recommended_stack && r.recommended_stack.length) {
     const card = el('div', 'pp-card');
-    card.innerHTML = `<div class="pp-card-title">✅ Your Recommended Stack</div><div class="pp-card-sub">Optimized for your brokerage size, budget, and workflow.</div>`;
-    r.recommended_stack.forEach((item, i) => {
-      const row = el('div', 'pp-rec-item');
-      const replacesHtml = item.replaces && item.replaces.length
-        ? `<div class="pp-rec-replaces">Replaces: ${item.replaces.join(', ')}</div>`
-        : '';
-      row.innerHTML = `
-        <div style="flex:1">
-          <div class="pp-rec-name">${item.tool} <span style="font-weight:400;font-size:13px;color:var(--muted)">· ${item.category}</span></div>
-          <div class="pp-rec-why">${item.why}</div>
-          ${replacesHtml}
-        </div>
-        <div class="pp-rec-cost">${fmtDollar(item.monthly_cost)}/mo</div>
-      `;
-      card.appendChild(row);
+    card.innerHTML = `<div class="pp-card-title">🔄 Recommended Swaps</div><div class="pp-card-sub">Each card shows what to replace and what to move to — with the reason and estimated savings.</div>`;
+
+    // Build swap cards: match recommended tools against current tools they replace
+    const renderedSwaps = new Set();
+    r.recommended_stack.forEach(rec => {
+      const replaces = rec.replaces || [];
+      if (replaces.length > 0) {
+        replaces.forEach(fromName => {
+          if (renderedSwaps.has(fromName + '→' + rec.tool)) return;
+          renderedSwaps.add(fromName + '→' + rec.tool);
+
+          // Find current tool cost
+          const fromTool = _tools.find(t => t.name.toLowerCase().includes(fromName.toLowerCase()) || fromName.toLowerCase().includes(t.name.toLowerCase()));
+          const fromCost = fromTool ? (parseFloat(_costs[fromTool.id]) || fromTool.cost) : null;
+          const toCost = rec.monthly_cost || 0;
+          const savingsAmt = fromCost && fromCost > toCost ? fromCost - toCost : null;
+
+          const swapCard = el('div', 'pp-swap-card');
+          swapCard.innerHTML = `
+            <div class="pp-swap-header">
+              <div class="pp-swap-from">
+                <div class="pp-swap-label from">Current</div>
+                <div class="pp-swap-tool-name">${fromName}</div>
+                ${fromCost ? `<div class="pp-swap-tool-cost">${fmtDollar(fromCost)}/mo</div>` : ''}
+              </div>
+              <div class="pp-swap-arrow-col">
+                <div class="pp-swap-arrow-icon">→</div>
+              </div>
+              <div class="pp-swap-to">
+                <div class="pp-swap-label to">Recommended</div>
+                <div class="pp-swap-tool-name">${rec.tool}</div>
+                <div class="pp-swap-tool-cost">${fmtDollar(toCost)}/mo</div>
+              </div>
+            </div>
+            <div class="pp-swap-body">
+              <div class="pp-swap-reason">${rec.why}</div>
+              ${savingsAmt && savingsAmt > 0 ? `<div class="pp-swap-savings-pill">Save ~${fmtDollar(savingsAmt)}/mo</div>` : ''}
+            </div>
+          `;
+          card.appendChild(swapCard);
+        });
+      } else {
+        // New addition — no direct swap, render as a simpler add card
+        const addKey = 'add→' + rec.tool;
+        if (renderedSwaps.has(addKey)) return;
+        renderedSwaps.add(addKey);
+        const addCard = el('div', 'pp-swap-card');
+        addCard.innerHTML = `
+          <div class="pp-swap-header">
+            <div class="pp-swap-from" style="background:var(--gray)">
+              <div class="pp-swap-label" style="color:var(--muted)">Gap in your stack</div>
+              <div class="pp-swap-tool-name" style="color:var(--muted)">${rec.category}</div>
+              <div class="pp-swap-tool-cost">Not covered</div>
+            </div>
+            <div class="pp-swap-arrow-col">
+              <div class="pp-swap-arrow-icon">+</div>
+            </div>
+            <div class="pp-swap-to">
+              <div class="pp-swap-label to">Add this</div>
+              <div class="pp-swap-tool-name">${rec.tool}</div>
+              <div class="pp-swap-tool-cost">${fmtDollar(rec.monthly_cost)}/mo</div>
+            </div>
+          </div>
+          <div class="pp-swap-body">
+            <div class="pp-swap-reason">${rec.why}</div>
+          </div>
+        `;
+        card.appendChild(addCard);
+      }
     });
-    const total = el('div', 'pp-rec-total');
-    total.innerHTML = `
-      <span class="pp-rec-total-label">Optimized Monthly Total</span>
-      <span class="pp-rec-total-val">${fmtDollar(r.estimated_monthly_optimized)}/mo</span>
+
+    // Optimized total
+    const totalRow = el('div');
+    totalRow.style.cssText = 'border-top:2px solid var(--navy);padding-top:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;';
+    totalRow.innerHTML = `
+      <span style="font-weight:700;font-size:15px">Optimized Monthly Total</span>
+      <span style="font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:var(--green)">${fmtDollar(r.estimated_monthly_optimized)}/mo</span>
     `;
-    card.appendChild(total);
+    card.appendChild(totalRow);
     frag.appendChild(card);
   }
 
