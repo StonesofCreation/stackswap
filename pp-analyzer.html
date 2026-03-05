@@ -703,7 +703,16 @@ const TOOLS = [
 ];
 
 const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-const CATS = ['All', ...new Set(TOOLS.map(t => t.cat))].filter(Boolean);
+// Workflow stage pills — each maps to swimlane cats
+const WORKFLOW_STAGES = [
+  { label: 'All',          cats: null },
+  { label: 'Lead Gen',     cats: ['Lead Generation','Lead Gen + CRM'] },
+  { label: 'CRM',          cats: ['CRM','CRM + Marketing','CRM + IDX','CRM + Marketing Suite','Enterprise CRM','CRM + Back Office','CRM + Lead Gen'] },
+  { label: 'Transaction',  cats: ['Transaction Management','Transaction Mgmt + eSign','Transaction + Commission','Back Office Suite'] },
+  { label: 'eSign / Docs', cats: ['eSign','Remote Notarization','Title + Closing'] },
+  { label: 'Marketing',    cats: ['Email Marketing','Email Marketing + CRM','Design / Marketing','Commercial RE Marketing'] },
+  { label: 'Operations',   cats: ['Showing Management','CMA Reports','Market Data','MLS','Productivity Suite','Team Communication','Video Conferencing','Automation'] },
+];
 const GRADE_COLORS = {A:'#16A34A', B:'#16A34A', C:'#D97706', D:'#EA580C', F:'#DC2626'};
 
 // ── SWIMLANE CONFIG — maps categories to brokerage workflow stages ─────────────
@@ -975,11 +984,11 @@ function renderStep2() {
   const divider = el('div', 'pp-search-divider', 'or browse by category');
   card.appendChild(divider);
 
-  // ── Filter pills
+  // ── Filter pills — workflow stages
   const filterBar = el('div', 'pp-filter-bar');
-  CATS.forEach(cat => {
-    const pill = el('button', 'pp-filter-pill' + (cat === _filterCat ? ' active' : ''), cat);
-    pill.addEventListener('click', () => { _filterCat = cat; renderToolGrid(); renderFilterPills(); });
+  WORKFLOW_STAGES.forEach(stage => {
+    const pill = el('button', 'pp-filter-pill' + (stage.label === _filterCat ? ' active' : ''), stage.label);
+    pill.addEventListener('click', () => { _filterCat = stage.label; renderToolGrid(); renderFilterPills(); });
     filterBar.appendChild(pill);
   });
   filterBar.id = 'filter-bar';
@@ -1028,7 +1037,8 @@ function renderToolGrid() {
   const grid = $('tool-grid');
   if (!grid) return;
   grid.innerHTML = '';
-  const filtered = _filterCat === 'All' ? TOOLS : TOOLS.filter(t => t.cat === _filterCat);
+  const stage = WORKFLOW_STAGES.find(s => s.label === _filterCat);
+  const filtered = (!stage || !stage.cats) ? TOOLS : TOOLS.filter(t => stage.cats.includes(t.cat));
   filtered.forEach(tool => {
     const sel = isSelected(tool.id);
     const chip = el('div', 'pp-tool-chip' + (sel ? ' selected' : ''));
