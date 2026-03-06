@@ -4337,7 +4337,7 @@ function generateProReport() {
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,sans-serif;font-size:13px;line-height:1.6;color:#1A2340;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-@page{margin:0.55in;size:letter}
+@page{margin:0.45in;size:letter}
 a{color:#1847ED;text-decoration:none}
 
 /* HEADER */
@@ -4655,7 +4655,11 @@ function renderAINarrative(aiData, container) {
       replace:  { color: "#B91C1C", bg: "rgba(224,85,85,0.1)",    border: "rgba(224,85,85,0.35)",  icon: "⟳" },
       evaluate: { color: "#92400E", bg: "rgba(255,200,87,0.12)", border: "rgba(255,200,87,0.35)", icon: "?" },
     };
-    aiData.tool_verdicts.forEach(tv => {
+    const VERDICT_ORDER = { cut: 0, replace: 0, evaluate: 1, keep: 2 };
+    const sortedVerdicts = [...aiData.tool_verdicts].sort((a,b)=>
+      (VERDICT_ORDER[a.verdict]??1)-(VERDICT_ORDER[b.verdict]??1)
+    );
+    sortedVerdicts.forEach(tv => {
       const m = VERDICT_META[tv.verdict] || VERDICT_META.evaluate;
       const card = document.createElement("div");
       card.className = "ai-verdict-card";
@@ -4664,7 +4668,7 @@ function renderAINarrative(aiData, container) {
         '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
           '<div style="font-size:14px;font-weight:700;color:#0B1F5E;font-family:var(--prose);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + tv.tool + '</div>' +
           '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;background:' + m.bg + ';border:1px solid ' + m.border + ';border-radius:4px;padding:2px 7px">' +
-            '<span style="font-size:11px;color:' + m.color + ';font-family:DM Mono,monospace;font-weight:700;letter-spacing:.04em;text-transform:uppercase">' + m.icon + ' ' + tv.verdict + '</span>' +
+            '<span style="font-size:11px;color:' + m.color + ';font-family:DM Mono,monospace;font-weight:700;letter-spacing:.04em;text-transform:uppercase">' + m.icon + ' ' + (tv.verdict==='cut'||tv.verdict==='replace'?'swap':tv.verdict) + '</span>' +
           '</div>' +
         '</div>' +
         '<div style="font-size:12px;color:#374151;line-height:1.6;font-family:var(--prose)">' + (tv.reason || '') + '</div>';
