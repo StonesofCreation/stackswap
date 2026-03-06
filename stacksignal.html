@@ -46,6 +46,17 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .signal-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 16px;text-align:center}
 .signal-stat-val{font-family:DM Mono,monospace;font-size:28px;font-weight:800;line-height:1;margin-bottom:6px}
 .signal-stat-lbl{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+.signal-preview{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(78,205,196,0.15);transition:all .25s ease}
+.signal-preview:hover{border-color:rgba(78,205,196,0.45);box-shadow:0 0 0 1px rgba(78,205,196,0.18),0 10px 40px rgba(78,205,196,0.1);transform:translateY(-2px)}
+.signal-preview-inner{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:28px;filter:blur(4px);user-select:none;pointer-events:none}
+.signal-stat-card{background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.1);border-radius:10px;padding:20px;text-align:center}
+.signal-stat-card:hover{border-color:rgba(78,205,196,0.45);background:rgba(78,205,196,0.07);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(78,205,196,0.2),0 10px 30px rgba(78,205,196,0.1)}
+.signal-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,14,19,0.65);backdrop-filter:blur(2px);text-align:center;padding:32px;gap:12px;z-index:2}
+.signal-overlay-icon{font-size:32px;margin-bottom:4px}
+.signal-overlay-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:700;color:var(--text)}
+.signal-overlay-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:400px}
+.signal-overlay-link{color:var(--teal);font-size:16px;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(78,205,196,0.4);padding-bottom:3px;transition:border-color .2s}
+.signal-overlay-link:hover{border-color:var(--teal)}
 
 /* INDUSTRY FILTER */
 .filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap}
@@ -530,11 +541,9 @@ nav, .page-nav {
 
   <!-- DASHBOARD PREVIEW / WAITLIST -->
   <div class="container" style="padding-bottom:64px">
-    <div class="section-label teal" style="margin-bottom:12px">Intelligence Dashboard</div>
-    <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:800;color:var(--text);line-height:1.1;letter-spacing:-.02em;margin-bottom:12px">Full dashboard unlocks<br>at launch.</h2>
-    <p style="font-size:15px;color:var(--muted);line-height:1.7;max-width:520px;margin-bottom:28px">Industry filtering, switching velocity trends, savings benchmarks, and CSV export — all coming with StackSignal.</p>
+    <div class="section-label teal" style="margin-bottom:16px">Intelligence Dashboard</div>
     <div class="signal-preview">
-      <div class="signal-preview-inner" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:28px;filter:blur(4px);user-select:none;pointer-events:none">
+      <div class="signal-preview-inner">
         <div class="signal-stat-card"><div class="signal-stat-val" id="ss-prev-count">—</div><div class="signal-stat-lbl">Stacks Analyzed</div></div>
         <div class="signal-stat-card"><div class="signal-stat-val" id="ss-prev-savings">—</div><div class="signal-stat-lbl">Savings Identified</div></div>
         <div class="signal-stat-card"><div class="signal-stat-val" id="ss-prev-tools">—</div><div class="signal-stat-lbl">Tools Flagged</div></div>
@@ -543,13 +552,11 @@ nav, .page-nav {
       <div class="signal-overlay">
         <div class="signal-overlay-icon">🔒</div>
         <div class="signal-overlay-title">Full dashboard unlocks at launch.</div>
-        <div class="signal-overlay-sub">Industry filtering, switching velocity, savings benchmarks, and CSV export — coming with StackSignal.</div>
+        <div class="signal-overlay-sub">Industry filtering, switching velocity, savings benchmarks, and CSV export — all coming with StackSignal.</div>
         <a href="#signal-waitlist" class="signal-overlay-link">Join the Intelligence Waitlist →</a>
       </div>
     </div>
   </div>
-
-  <!-- METHODOLOGY -->
 
   <!-- METHODOLOGY -->
   <div class="method-box">
