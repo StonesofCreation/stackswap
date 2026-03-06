@@ -23,6 +23,7 @@ select option{background:#1a1a22;color:#f0ece4}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes nudgeRight{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 .wrap{max-width:740px;margin:0 auto;padding:40px 20px 80px}
 .
@@ -3579,6 +3580,28 @@ function renderResult(r) {
 
   // ── GREEN LEAD MAGNET ─────────────────────────────────────────────────
   body.appendChild(pdfBar);
+
+  // ── PRO REPORT BUTTON ─────────────────────────────────────────────────
+  const proReportBar = document.createElement('div');
+  proReportBar.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 32px 6px';
+  proReportBar.innerHTML =
+    '<button id="ss-pro-report-btn" onclick="generateProReport()" style="' +
+      'display:inline-flex;align-items:center;gap:9px;padding:12px 28px;' +
+      'background:linear-gradient(135deg,#0B1F5E 0%,#1847ED 100%);' +
+      'border:none;border-radius:10px;color:#fff;font-family:Sora,sans-serif;' +
+      'font-weight:700;font-size:14px;cursor:pointer;letter-spacing:-.01em;' +
+      'box-shadow:0 4px 18px rgba(24,71,237,0.3);transition:opacity .2s' +
+    '">' +
+      '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>' +
+      '</svg>' +
+      'Generate StackScan Pro Report' +
+    '</button>' +
+    '<div style="font-size:11px;color:#6B7899;font-family:Inter,sans-serif;letter-spacing:.02em">' +
+      '<span style="text-decoration:line-through;opacity:.6">$99</span>' +
+      '&nbsp;<span style="color:#16A34A;font-weight:700">Free Until Launch</span>' +
+    '</div>';
+  body.appendChild(proReportBar);
   const annualWaste = r.totalSave > 0 ? r.totalSave * 12 : 0;
   const overlapCountFinal = r.overlaps.length + (r.categoryOverlaps||[]).length;
   const legacyCountFinal  = (r.legacyPenalties||[]).length;
@@ -3656,6 +3679,197 @@ async function submitStackAudit() {
   if (success) success.style.display = 'block';
 }
 
+
+async function generateProReport() {
+  const btn = document.getElementById('ss-pro-report-btn');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span>&nbsp; Generating your report…';
+
+  // Collect all available data
+  const _co     = leadData.company || 'Your Company';
+  const _email  = leadData.email || '';
+  const _role   = leadData.role || '';
+  const _ts     = leadData.teamSize || document.getElementById('ctx-teamsize')?.value || 'unknown';
+  const _ind    = document.getElementById('ind')?.value || 'Not specified';
+  const _budget = document.getElementById('bud')?.value || '';
+  const _contract = document.getElementById('ctx-contract')?.value || '';
+  const _tools  = selectedTools.join(', ');
+  const _goals  = selectedGoals.join(', ') || 'general optimization';
+
+  // Grab last analysis result from DOM data we already rendered
+  const _scoreEl = document.querySelector('.ss-score-num');
+  const _score   = _scoreEl ? _scoreEl.textContent : '?';
+
+  // Build financial context
+  const _annualSavings = window._lastAnalysisResult?.totalSave
+    ? (window._lastAnalysisResult.totalSave * 12)
+    : 0;
+  const _monthlySavings = window._lastAnalysisResult?.totalSave || 0;
+  const _overlaps = window._lastAnalysisResult?.overlaps?.length || 0;
+  const _catOverlaps = (window._lastAnalysisResult?.categoryOverlaps||[]).length;
+  const _upgrades = (window._lastAnalysisResult?.upgrades||[]).length;
+  const _actions  = (window._lastAnalysisResult?.actions||[]).map(a=>a.title).join('; ');
+  const _topSwaps = (window._lastAnalysisResult?.overlaps||[]).slice(0,5)
+    .map(o=>`${o.b} → ${o.a} (~$${o.save}/mo)`).join(', ');
+  const _topUpgrades = (window._lastAnalysisResult?.upgrades||[]).slice(0,4)
+    .map(u=>`${u.tool} → ${u.r} (~$${u.save}/mo)`).join(', ');
+  const _legacy = (window._lastAnalysisResult?.legacyPenalties||[])
+    .map(l=>l.tool).join(', ');
+  const _optimizedStack = (window._lastAnalysisResult?.optimized||[]).join(', ');
+
+  const contractCtx = {
+    'month-to-month': 'on month-to-month contracts (can switch immediately)',
+    'annual': 'on annual contracts (switches should align with renewals)',
+    'multi-year': 'on multi-year contracts (prioritize future planning over immediate cuts)',
+    'not-sure': 'with unknown contract terms',
+    '': ''
+  }[_contract] || '';
+
+  const prompt = `You are a senior SaaS cost optimization consultant generating a premium StackScan Pro Decision Document. 
+This is a formal, consultant-grade PDF deliverable. Write with confidence, clarity, and a slightly candid tone.
+Do NOT use generic AI filler language. Be specific, reference actual tool names, and always use ~ before cost/savings estimates.
+Return ONLY valid JSON in this exact shape — no markdown, no backticks, no preamble:
+{"html": "<full self-contained HTML string with inline CSS>"}
+
+The HTML must be a complete document (<!DOCTYPE html>...) with:
+- Embedded Google Fonts (Sora + Inter) from fonts.googleapis.com
+- Print-optimized CSS (@media print + @page margin:0.5in)
+- A premium design: clean white background, navy + blue accent colors, generous spacing, subtle borders
+- Fully self-contained — no external images, no JS
+
+CLIENT DATA:
+Company: ${_co}
+Contact: ${_email}${_role ? ' — ' + _role : ''}
+Team Size: ${_ts}
+Industry: ${_ind}
+Tools (${selectedTools.length} total): ${_tools}
+Monthly Budget: ${_budget ? '~$' + Number(_budget).toLocaleString() + '/mo' : 'not provided'}
+Goals: ${_goals}
+Contract: ${contractCtx || 'not specified'}
+
+ANALYSIS RESULTS:
+Stack Health Score: ${_score}/100
+Tool Overlaps: ${_overlaps + _catOverlaps} detected
+AI Upgrade Opportunities: ${_upgrades}
+Estimated Monthly Savings: ~$${_monthlySavings.toLocaleString()}
+Estimated Annual Savings: ~$${_annualSavings.toLocaleString()}
+Top Overlap Swaps: ${_topSwaps || 'none detected'}
+Top AI Upgrades: ${_topUpgrades || 'none detected'}
+Legacy Tools Flagged: ${_legacy || 'none'}
+Recommended Stack: ${_optimizedStack || selectedTools.join(', ')}
+Priority Actions: ${_actions || 'see recommendations'}
+
+DOCUMENT STRUCTURE — generate all 9 sections:
+
+HEADER:
+- StackScan Pro logo area (navy text, bold)
+- Title: "Stack Decision Document for ${_co}"
+- Subtitle: "A full diagnosis of your current SaaS stack with a prioritized optimization roadmap."
+- Pricing badge: strikethrough $99 in gray, then green "Free Until Launch"
+- Meta: Generated for ${_co} | ${_ts} people | ${_ind} | ${selectedTools.length} tools
+
+SECTION 1 — Executive Diagnosis
+2-3 tight paragraphs. Reference ${_co} by name. Mention team size, tool count, overlap count, estimated savings. 
+Be candid: if overbuilt, say so. If lean, acknowledge it. Tie to their goals: ${_goals}.
+
+SECTION 2 — Current Stack Cost Breakdown
+HTML table with columns: Tool | Primary Function | Est. Monthly Cost | Recommendation (Keep/Replace/Evaluate/Cut)
+Use actual tool names from: ${_tools}
+Use realistic pricing. Show total at bottom (~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4)).toLocaleString() : '?'}/mo estimated current, ~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4) - _monthlySavings).toLocaleString() : '?'}/mo optimized).
+
+SECTION 3 — Overlap Analysis
+For each overlap detected, show: Overlap Area | Tools Involved | Explanation | Recommendation
+Reference: ${_topSwaps || 'analyze tools for overlaps based on: ' + _tools}
+
+SECTION 4 — AI-Native Upgrade Opportunities
+For each upgrade: Current Tool → Recommended Tool | Reasoning (2 sentences, mention ${_co})
+Reference: ${_topUpgrades || 'identify AI-native alternatives for tools in: ' + _tools}
+
+SECTION 5 — Ideal Stack Blueprint
+Group recommended tools by category (CRM, Marketing, Operations, Analytics, Automation, etc.)
+Base on: ${_optimizedStack || selectedTools.join(', ')}
+2-sentence explanation of why this configuration works for ${_co}.
+
+SECTION 6 — Savings Roadmap
+Show: Current Stack Cost | Optimized Stack Cost | Annual Savings | Monthly Savings
+Use ~$${_annualSavings.toLocaleString()}/year total savings estimate.
+Short paragraph referencing ${_co}.
+
+SECTION 7 — 30/60/90 Day Implementation Plan
+Realistic. Reference actual tool names from their stack. 
+30 days: cancel/plan. 60 days: migrate. 90 days: decommission + validate.
+Tailor to ${contractCtx || 'their situation'}.
+
+SECTION 8 — Migration Considerations
+3-5 risk callouts specific to tools in their stack. CRM migration, integration dependencies, contract timing.
+Reference ${_co} by name. Build trust through specificity.
+
+SECTION 9 — Final Recommendation
+One strong closing paragraph. Reference ${_co}. Tie back to goals: ${_goals}. 
+Confident, strategic tone. No hype.
+
+FOOTER:
+- "StackScan Pro — AI-Powered SaaS Stack Intelligence"
+- "Generated for ${_co}"
+- Strikethrough $99, "Free Until Launch"
+- stackswap.io
+
+DESIGN REQUIREMENTS:
+- Navy (#0B1F5E) for headings, #1847ED for accents, #16A34A for positive/savings
+- Section headers: large navy, bold, with a thin blue left border or underline accent  
+- Tables: clean, alternating #F8FAFF rows, navy header row with white text
+- Callout boxes: light blue (#EEF2FF) background with left blue border for recommendations
+- Savings numbers: large, green, bold
+- Font: Sora for headings, Inter for body
+- Page breaks before major sections
+- Professional footer on each page`;
+
+  try {
+    const resp = await fetch('/api/analyze-narrative', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, max_tokens: 4000 })
+    });
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+    const raw = await resp.text();
+    let html = '';
+    try {
+      const parsed = JSON.parse(raw);
+      html = parsed.html || parsed.content?.[0]?.text || raw;
+    } catch(e) {
+      // Try to extract html from the raw text
+      const m = raw.match(/"html"\s*:\s*"([\s\S]+)"(?:\s*\}?\s*$)/);
+      html = m ? m[1].replace(/\\n/g,'\n').replace(/\\"/g,'"').replace(/\\\\/g,'\\') : raw;
+    }
+    // Clean any JSON wrapper if present
+    if (html.startsWith('{')) {
+      try {
+        const j = JSON.parse(html);
+        html = j.html || html;
+      } catch(e) {}
+    }
+    if (!html.includes('<!DOCTYPE') && !html.includes('<html')) {
+      throw new Error('Invalid HTML returned');
+    }
+    const win = window.open('', '_blank');
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => { try { win.print(); } catch(e) {} }, 1200);
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
+  } catch(err) {
+    console.error('Pro report error:', err);
+    btn.disabled = false;
+    btn.innerHTML = '⚠ Generation failed — try again';
+    btn.style.background = 'linear-gradient(135deg,#991B1B,#DC2626)';
+    setTimeout(() => {
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
+      btn.style.background = 'linear-gradient(135deg,#0B1F5E 0%,#1847ED 100%)';
+    }, 3500);
+  }
+}
 
 async function submitAuditWaitlist() {
   const input = document.getElementById('auditCtaEmail');
@@ -4259,6 +4473,7 @@ function renderMain() {
 
     // Run deterministic engine + AI narrative in parallel
     const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals);
+    window._lastAnalysisResult = result; // cache for pro report generator
     const aiData  = await getAINarrative(result, selectedTools, _industry, _budget, selectedGoals, _teamSize, _contract);
 
     // ── Now render the full report ────────────────────────────────
