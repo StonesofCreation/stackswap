@@ -62,7 +62,8 @@ section{position:relative;z-index:1}
 .pos-icon.amber{background:rgba(255,200,87,0.1);border:1px solid rgba(255,200,87,0.2)}
 .pos-text h4{font-size:15px;color:var(--text);font-weight:600;margin-bottom:5px;font-family:'Plus Jakarta Sans',sans-serif}
 .pos-text p{font-size:14px;color:var(--muted);line-height:1.7}
-.pos-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden}
+.pos-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden;transition:all .25s ease}
+.pos-card:hover{border-color:rgba(255,191,71,0.45);background:rgba(255,191,71,0.03);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,191,71,0.18),0 10px 30px rgba(255,191,71,0.08)}
 .pos-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,200,87,0.3),transparent)}
 .vs-row{display:flex;gap:12px;margin-bottom:12px}
 .vs-col{flex:1;border-radius:8px;padding:16px}
@@ -85,7 +86,9 @@ section{position:relative;z-index:1}
 .step-card:last-child::after{display:none}
 .data-section{padding:100px 0}
 .data-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:32px}
-.data-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.data-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .25s ease}
+#card-cuts:hover{border-color:rgba(255,107,107,0.45);background:rgba(255,107,107,0.03);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,107,107,0.18),0 10px 30px rgba(255,107,107,0.08)}
+#card-recs:hover{border-color:rgba(78,205,196,0.45);background:rgba(78,205,196,0.03);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(78,205,196,0.2),0 10px 30px rgba(78,205,196,0.1)}
 .data-card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:600;font-family:'DM Mono',monospace}
 .data-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .data-bar-label{font-size:13px;color:var(--muted);width:110px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -94,9 +97,11 @@ section{position:relative;z-index:1}
 .data-bar-val{font-size:12px;font-weight:600;width:32px;text-align:right;flex-shrink:0;font-family:'DM Mono',monospace}
 .data-note{font-size:13px;color:var(--dim);margin-top:16px;line-height:1.7;border-top:1px solid var(--border);padding-top:12px}
 .signal-section{padding:100px 0;border-top:1px solid var(--border)}
-.signal-preview{margin-top:40px;position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(78,205,196,0.15)}
+.signal-preview{margin-top:40px;position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(78,205,196,0.15);transition:all .25s ease}
+.signal-preview:hover{border-color:rgba(78,205,196,0.45);box-shadow:0 0 0 1px rgba(78,205,196,0.18),0 10px 40px rgba(78,205,196,0.1);transform:translateY(-2px)}
 .signal-preview-inner{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:28px;filter:blur(4px);user-select:none;pointer-events:none}
-.signal-stat-card{background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.1);border-radius:10px;padding:20px;text-align:center}
+.signal-stat-card{background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.1);border-radius:10px;padding:20px;text-align:center;transition:all .25s ease}
+.signal-stat-card:hover{border-color:rgba(78,205,196,0.45);background:rgba(78,205,196,0.07);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(78,205,196,0.2),0 10px 30px rgba(78,205,196,0.1)}
 .signal-stat-val{font-family:'DM Mono',monospace;font-size:28px;color:var(--teal);margin-bottom:6px}
 .signal-stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
 .signal-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,14,19,0.65);backdrop-filter:blur(2px);text-align:center;padding:32px;gap:12px}
@@ -107,10 +112,14 @@ section{position:relative;z-index:1}
 .signal-overlay-link:hover{border-color:var(--teal)}
 .pricing{padding:100px 0;border-top:1px solid var(--border)}
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
-.pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;display:flex;flex-direction:column;position:relative}
+.pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;display:flex;flex-direction:column;position:relative;transition:all .25s ease}
 .pricing-card.amber-card{border-color:rgba(255,200,87,0.25);background:rgba(255,200,87,0.025)}
+.pricing-card.amber-card:hover{border-color:rgba(255,191,71,0.55);background:rgba(255,191,71,0.04);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,191,71,0.2),0 10px 36px rgba(255,191,71,0.1)}
 .pricing-card.green-card{border-color:rgba(57,255,133,0.25);background:rgba(57,255,133,0.025)}
+.pricing-card.wl-card{border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.025)}
+.pricing-card.wl-card:hover{border-color:rgba(167,139,250,0.55);background:rgba(167,139,250,0.04);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(167,139,250,0.2),0 10px 36px rgba(167,139,250,0.1)}
 .pricing-card.teal-card{border-color:rgba(78,205,196,0.2);background:rgba(78,205,196,0.02)}
+.pricing-card.teal-card:hover{border-color:rgba(78,205,196,0.55);background:rgba(78,205,196,0.04);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(78,205,196,0.2),0 10px 36px rgba(78,205,196,0.1)}
 .card-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:12px;width:fit-content}
 .badge-green{background:var(--green);color:#0f0e13}
 .badge-teal{background:var(--teal);color:#0f0e13}
@@ -347,42 +356,15 @@ nav,
     <h2 class="section-h2">Aggregate data from<br>every stack analyzed.</h2>
     <p class="section-sub">See which tools are winning, losing, and being replaced — by industry. Updated in real time. No vendor bias. No paid placements.</p>
     <div class="data-grid fade-up">
-      <div class="data-card">
+      <div class="data-card" id="card-cuts">
         <div class="data-card-label" style="color:var(--red)">Most Flagged for Removal</div>
-        <div class="data-bar-row"><span class="data-bar-label">ZoomInfo</span><div class="data-bar-track"><div class="data-bar-fill" style="width:92%;background:#ff6b6b"></div></div><span class="data-bar-val" style="color:#ff6b6b">92%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">Drift</span><div class="data-bar-track"><div class="data-bar-fill" style="width:78%;background:#ff6b6b"></div></div><span class="data-bar-val" style="color:#ff6b6b">78%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">Marketo</span><div class="data-bar-track"><div class="data-bar-fill" style="width:71%;background:#ff6b6b"></div></div><span class="data-bar-val" style="color:#ff6b6b">71%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">Hootsuite</span><div class="data-bar-track"><div class="data-bar-fill" style="width:65%;background:#ff6b6b"></div></div><span class="data-bar-val" style="color:#ff6b6b">65%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">Jasper</span><div class="data-bar-track"><div class="data-bar-fill" style="width:58%;background:#ff6b6b"></div></div><span class="data-bar-val" style="color:#ff6b6b">58%</span></div>
+        <div id="hm-cuts-bars"></div>
         <div class="data-note">Based on AI analysis of anonymized stacks. No vendor has paid for or influenced these rankings.</div>
       </div>
-      <div class="data-card">
+      <div class="data-card" id="card-recs">
         <div class="data-card-label" style="color:var(--teal)">Rising Replacements</div>
-        <div class="data-bar-row"><span class="data-bar-label">Apollo.io</span><div class="data-bar-track"><div class="data-bar-fill" style="width:88%;background:#4ecdc4"></div></div><span class="data-bar-val" style="color:#4ecdc4">88%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">HubSpot Chat</span><div class="data-bar-track"><div class="data-bar-fill" style="width:74%;background:#4ecdc4"></div></div><span class="data-bar-val" style="color:#4ecdc4">74%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">HubSpot Mktg</span><div class="data-bar-track"><div class="data-bar-fill" style="width:68%;background:#4ecdc4"></div></div><span class="data-bar-val" style="color:#4ecdc4">68%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">Buffer</span><div class="data-bar-track"><div class="data-bar-fill" style="width:62%;background:#4ecdc4"></div></div><span class="data-bar-val" style="color:#4ecdc4">62%</span></div>
-        <div class="data-bar-row"><span class="data-bar-label">MS Clarity</span><div class="data-bar-track"><div class="data-bar-fill" style="width:55%;background:#4ecdc4"></div></div><span class="data-bar-val" style="color:#4ecdc4">55%</span></div>
+        <div id="hm-recs-bars"></div>
         <div class="data-note">Recommendations generated by pattern-matching 50+ overlap rules. Updated with each analysis.</div>
-      </div>
-    </div>
-
-    <div style="margin-top:48px;padding-top:48px;border-top:1px solid var(--border)">
-      <div class="section-label teal" style="margin-bottom:12px">StackSignal Intelligence</div>
-      <p style="font-size:15px;color:var(--muted);line-height:1.7;max-width:520px;margin-bottom:28px">The intelligence layer behind the rankings. Full industry filtering, switching velocity trends, and CSV export — coming at launch.</p>
-      <div class="signal-preview fade-up">
-        <div class="signal-preview-inner">
-          <div class="signal-stat-card"><div class="signal-stat-val">—</div><div class="signal-stat-lbl">Stacks Analyzed</div></div>
-          <div class="signal-stat-card"><div class="signal-stat-val">—</div><div class="signal-stat-lbl">Savings Identified</div></div>
-          <div class="signal-stat-card"><div class="signal-stat-val">—</div><div class="signal-stat-lbl">Tools Flagged</div></div>
-          <div class="signal-stat-card"><div class="signal-stat-val">—</div><div class="signal-stat-lbl">Industries</div></div>
-        </div>
-        <div class="signal-overlay">
-          <div class="signal-overlay-icon">🔒</div>
-          <div class="signal-overlay-title">Full dashboard unlocks at launch.</div>
-          <div class="signal-overlay-sub">Industry filtering, switching velocity, savings benchmarks, and CSV export — coming with StackSignal.</div>
-          <a href="stacksignal.html" class="signal-overlay-link">Join the Intelligence Waitlist →</a>
-        </div>
       </div>
     </div>
 
@@ -413,25 +395,7 @@ nav,
         <a href="analyze.html" class="card-cta amber-cta">Run Free StackScan →</a>
       </div>
 
-      <!-- 2. STACKSCAN EMBED -->
-      <div class="pricing-card wl-card">
-        <div class="card-badge badge-wl">For B2B Marketers</div>
-        <div class="card-tier">Lead Generation</div>
-        <div class="card-name" style="color:#a78bfa">StackScan Embed</div>
-        <div class="card-cadence" style="color:rgba(167,139,250,0.55);margin-bottom:16px">Pricing on request</div>
-        <p class="card-desc">Embed StackScan as your own branded stack audit tool to generate qualified inbound leads.</p>
-        <ul class="card-features">
-          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Embedded StackScan experience</li>
-          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Custom domain or iframe embed</li>
-          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Logo + brand colors</li>
-          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Custom recommendation rules</li>
-          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Lead capture integrations</li>
-          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Client-branded PDF exports</li>
-        </ul>
-        <span class="card-cta wl-cta" style="opacity:.5;cursor:default;pointer-events:none;text-align:center;display:block">Coming Soon</span>
-      </div>
-
-      <!-- 3. STACKSIGNAL -->
+      <!-- 2. STACKSIGNAL -->
       <div class="pricing-card teal-card">
         <div class="card-badge badge-teal">For RevOps &amp; GTM</div>
         <div class="card-tier">Market Intelligence</div>
@@ -447,6 +411,24 @@ nav,
           <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Monthly intelligence digest</li>
         </ul>
         <a href="stacksignal.html" class="card-cta teal-cta">Join Early Access →</a>
+      </div>
+
+      <!-- 3. STACKSCAN EMBED -->
+      <div class="pricing-card wl-card">
+        <div class="card-badge badge-wl">For B2B Marketers</div>
+        <div class="card-tier">Lead Generation</div>
+        <div class="card-name" style="color:#a78bfa">StackScan Embed</div>
+        <div class="card-cadence" style="color:rgba(167,139,250,0.55);margin-bottom:16px">Pricing on request</div>
+        <p class="card-desc">Embed StackScan as your own branded stack audit tool to generate qualified inbound leads.</p>
+        <ul class="card-features">
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Embedded StackScan experience</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Custom domain or iframe embed</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Logo + brand colors</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Custom recommendation rules</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Lead capture integrations</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Client-branded PDF exports</li>
+        </ul>
+        <span class="card-cta wl-cta" style="opacity:.5;cursor:default;pointer-events:none;text-align:center;display:block">Coming Soon</span>
       </div>
 
     </div>
@@ -543,6 +525,51 @@ document.querySelectorAll('.fade-up').forEach(el => {
     requestAnimationFrame(step);
   }
 
+  // ── Seed data mirrors stacksignal.html exactly ──────────────────────
+  var SEED_CUTS = [
+    ["ZoomInfo",91],["Drift",76],["Marketo",69],["Jasper",62],
+    ["Hootsuite",58],["Outreach",50],["Gong",44],["Chorus",38],
+    ["Salesloft",33],["Tableau",28]
+  ];
+  var SEED_RECS = [
+    ["Apollo.io",78],["Clay",65],["Notion AI",60],["HubSpot Chat",55],
+    ["Microsoft Clarity",50],["Buffer",44],["Loom",38],["Linear",34],
+    ["Avoma",28],["Smartlead",24]
+  ];
+
+  function renderHomeBars(containerId, items, color) {
+    var el = document.getElementById(containerId);
+    if (!el || !items.length) return;
+    var max = items[0][1] || 1;
+    var total = items.reduce(function(s,r){ return s + r[1]; }, 0);
+    el.innerHTML = items.slice(0,5).map(function(row) {
+      var name = row[0], val = row[1];
+      var w = ((val/max)*100).toFixed(0);
+      var pct = total > 0 ? ((val/total)*100).toFixed(0) : val;
+      return '<div class="data-bar-row">' +
+        '<span class="data-bar-label">' + name + '</span>' +
+        '<div class="data-bar-track"><div class="data-bar-fill" style="width:' + w + '%;background:' + color + '"></div></div>' +
+        '<span class="data-bar-val" style="color:' + color + '">' + pct + '%</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function populateBars(d) {
+    var real = d && d.count > 0;
+    // Cuts — use real freq map if available, seed otherwise
+    var cutsArr = SEED_CUTS;
+    if (real && d.cuts && d.cuts.length) {
+      var freq = {};
+      d.cuts.forEach(function(t){ freq[t] = (freq[t]||0) + 1; });
+      var sorted = Object.entries(freq).sort(function(a,b){ return b[1]-a[1]; });
+      if (sorted.length >= 3) cutsArr = sorted;
+    }
+    // Recs — use real recs if available, seed otherwise
+    var recsArr = (real && d.recs && d.recs.length >= 3) ? d.recs : SEED_RECS;
+    renderHomeBars('hm-cuts-bars', cutsArr, '#ff6b6b');
+    renderHomeBars('hm-recs-bars', recsArr, '#4ecdc4');
+  }
+
   function populate(v) {
     animNum(document.getElementById('hm-stacks'),    v.stacks);
     animNum(document.getElementById('hm-tools'),     v.tools);
@@ -562,8 +589,12 @@ document.querySelectorAll('.fade-up').forEach(el => {
         swaps:      real ? (d.cuts ? d.cuts.length : SEED.swaps)  : SEED.swaps,
         industries: real ? Object.keys(d.byIndustry||{}).length   : SEED.industries
       });
+      populateBars(d);
     })
-    .catch(function(){ populate(SEED); });
+    .catch(function(){
+      populate(SEED);
+      populateBars(null);
+    });
 })();
 </script>
 </body>
