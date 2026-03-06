@@ -5350,10 +5350,20 @@ function generateProReport() {
     `, 'Per-tool cost estimates based on your team size, contract type, and published list pricing.');
 
     // ── SECTION 3: Overlap Analysis ──────────────────────────────────────
-    const allOverlaps = [
-      ...overlaps.map(o=>({toolsLabel: o.a + ' + ' + o.b, keep: o.a, save: o.save, area: 'Direct overlap', why: o.msg || 'These tools share significant functional overlap.'})),
-      ...catOvlps.map(o=>({toolsLabel: (o.tools||[]).join(' + '), keep: (o.tools||[])[0]||'', save: o.save||0, area: o.category || 'Category overlap', why: o.msg || 'Duplicate tools in the same category.'}))
-    ];
+    // Deduplicate: if the same tool pair appears in both direct overlaps and category overlaps, keep category (more specific)
+    const _seenToolPairs = new Set();
+    const catOvlpRows = catOvlps.map(o => {
+      const key = (o.tools||[]).sort().join('|').toLowerCase();
+      _seenToolPairs.add(key);
+      return {toolsLabel: (o.tools||[]).join(' + '), keep: (o.tools||[])[0]||'', save: o.save||0, area: o.category || 'Category overlap', why: o.msg || 'Duplicate tools in the same category.'};
+    });
+    const directOvlpRows = overlaps.map(o => {
+      const key = [o.a, o.b].sort().join('|').toLowerCase();
+      if (_seenToolPairs.has(key)) return null; // already covered by category overlap
+      _seenToolPairs.add(key);
+      return {toolsLabel: o.a + ' + ' + o.b, keep: o.a, save: o.save, area: 'Direct overlap', why: o.msg || 'These tools share significant functional overlap.'};
+    }).filter(Boolean);
+    const allOverlaps = [...directOvlpRows, ...catOvlpRows];
     const s3 = section(3, 'Overlap Analysis', '#DC2626', allOverlaps.length > 0 ? `
       ${table(
         ['Overlap Area','Tools in Conflict','Impact','Recommendation'],
