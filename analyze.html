@@ -2579,6 +2579,418 @@ const BLUEPRINTS = {
   }
 };
 
+// ══════════════════════════════════════════════════════════════════════════════
+// StackScan Recommendation Engine — 10-Category Scoring Model
+// ══════════════════════════════════════════════════════════════════════════════
+// This engine is the decision-making core. The 10 categories ARE the logic
+// layer — not presentation sections. Every recommendation is scored, weighted,
+// and assembled through this framework.
+
+const ENGINE_CATEGORIES = [
+  {id:'cost',         label:'Cost Efficiency',          icon:'💰', desc:'Reduces spend relative to alternatives'},
+  {id:'overlap',      label:'Overlap Reduction',        icon:'🔄', desc:'Consolidates redundant tools and features'},
+  {id:'ai',           label:'AI Readiness',             icon:'🤖', desc:'Modern AI-native capabilities vs legacy'},
+  {id:'integration',  label:'Integration Fit',          icon:'🔗', desc:'Native connections with the rest of the stack'},
+  {id:'complexity',   label:'Implementation Complexity', icon:'⚙️', desc:'Migration effort and switching cost'},
+  {id:'teamfit',      label:'Team-Size Fit',            icon:'👥', desc:'Appropriate for actual team size and budget'},
+  {id:'industry',     label:'Industry Fit',             icon:'🏢', desc:'Purpose-built for the user\'s vertical'},
+  {id:'lockin',       label:'Vendor Lock-In Risk',      icon:'🔒', desc:'Dependency depth and exit difficulty'},
+  {id:'reporting',    label:'Reporting & Visibility',   icon:'📊', desc:'Analytics, dashboards, operational insight'},
+  {id:'adoption',     label:'Adoption & Simplicity',    icon:'✅', desc:'Ease of use, learning curve, team uptake'},
+];
+
+// ── CATEGORY WEIGHTS: Context-Adaptive ─────────────────────────────────────
+// Returns {cost: 0.15, overlap: 0.12, ...} — weights sum to 1.0
+function calcEngineWeights(goals, teamSize, industry, stackSize) {
+  // Base weights (equal starting point)
+  const w = {cost:10, overlap:10, ai:10, integration:10, complexity:10, teamfit:10, industry:10, lockin:10, reporting:10, adoption:10};
+
+  // Goal-driven weight adjustments
+  const goalBoosts = {
+    'Reduce monthly spend':          {cost:8, overlap:5},
+    'Consolidate overlapping tools':  {overlap:8, cost:4, adoption:3},
+    'Find AI-native replacements':    {ai:10, cost:3},
+    'Improve team adoption':          {adoption:8, complexity:5, teamfit:3},
+    'Scale without adding tools':     {overlap:5, integration:5, teamfit:4},
+    'Eliminate redundant features':   {overlap:8, cost:3, adoption:2},
+  };
+  (goals || []).forEach(g => {
+    const boost = goalBoosts[g];
+    if (boost) Object.entries(boost).forEach(([k,v]) => { w[k] += v; });
+  });
+
+  // Team size adjustments
+  const ts = getTeamSizeNum(teamSize);
+  if (ts <= 5)  { w.adoption += 6; w.complexity += 5; w.cost += 4; w.reporting -= 3; }
+  if (ts <= 15) { w.adoption += 3; w.complexity += 3; }
+  if (ts >= 50) { w.reporting += 5; w.integration += 4; w.lockin += 3; }
+  if (ts >= 100){ w.reporting += 3; w.lockin += 3; w.integration += 2; }
+
+  // Industry adjustments
+  if (industry === 'Real Estate')      { w.industry += 6; w.adoption += 3; }
+  if (industry === 'SaaS / Tech')      { w.ai += 4; w.integration += 3; }
+  if (industry === 'Marketing Agency') { w.ai += 3; w.adoption += 2; }
+  if (industry === 'E-commerce')       { w.integration += 4; w.cost += 3; }
+  if (industry === 'Finance / Fintech'){ w.lockin += 4; w.reporting += 4; }
+  if (industry === 'Healthcare / MedTech'){w.lockin += 5; w.reporting += 3; }
+
+  // Stack complexity adjustments
+  if (stackSize >= 12) { w.overlap += 4; w.integration += 3; }
+  if (stackSize >= 20) { w.overlap += 3; w.complexity += 3; }
+
+  // Normalize to sum = 1.0
+  const total = Object.values(w).reduce((s,v) => s + Math.max(v, 0), 0);
+  const normalized = {};
+  Object.keys(w).forEach(k => { normalized[k] = Math.max(w[k], 0) / total; });
+  return normalized;
+}
+
+// ── TOOL SCORING: Evaluate any tool on the 10 categories ───────────────────
+// Returns {cost:78, overlap:65, ai:40, ...} — scores 0–100
+
+// Helper: get category median cost
+function getCategoryMedianCost(cat) {
+  const costs = Object.entries(TOOL_CATALOG)
+    .filter(([,v]) => v.cat === cat)
+    .map(([,v]) => v.model === 'per_user' ? v.seat : v.base);
+  if (!costs.length) return 50;
+  costs.sort((a,b) => a - b);
+  return costs[Math.floor(costs.length / 2)] || 50;
+}
+
+// Which tools are AI-native (they appear as RECOMMENDATIONS in AI_SWAPS)
+const _aiNativeTools = new Set();
+Object.values(AI_SWAPS).forEach(s => {
+  (s.r || '').split(/[+,]/).map(t => t.trim().toLowerCase()).filter(Boolean).forEach(t => _aiNativeTools.add(t));
+});
+// Also tools in the 'ai' category
+Object.entries(TOOL_CATALOG).forEach(([k,v]) => { if (v.cat === 'ai' || v.cat === 'ai_sdr') _aiNativeTools.add(k); });
+
+// Which tools are legacy (they appear as KEYS in AI_SWAPS — the ones being replaced)
+const _legacyToolKeys = new Set(Object.keys(AI_SWAPS).map(k => k.toLowerCase()));
+
+// Integration hub tools
+const _integrationHubs = new Set(['hubspot','salesforce','google workspace','microsoft 365','zapier','make']);
+
+// High lock-in tools
+const _highLockIn = new Set(['salesforce','netsuite','sap','oracle','workday','marketo','servicenow','dynamics 365','adobe experience cloud']);
+
+// Reporting-strong categories
+const _reportingCats = new Set(['analytics','data_warehouse','sales_intelligence']);
+
+function scoreToolOnCategories(toolName, context) {
+  const {tools, teamSize, industry, contract, costBreakdown} = context;
+  const tl = toolName.toLowerCase();
+  const catKey = Object.keys(TOOL_CATALOG).find(k => tl === k || tl.includes(k) || k.includes(tl));
+  const catData = catKey ? TOOL_CATALOG[catKey] : null;
+  const scores = {};
+
+  // 1. COST EFFICIENCY — cheaper vs category median = higher score
+  if (catData) {
+    const myCost = catData.model === 'per_user' ? catData.seat : catData.base;
+    const median = getCategoryMedianCost(catData.cat);
+    if (median <= 0 || myCost <= 0) scores.cost = 75; // free tools score well
+    else {
+      const ratio = myCost / median;
+      scores.cost = Math.round(Math.max(10, Math.min(95, 80 - (ratio - 1) * 40)));
+    }
+  } else {
+    scores.cost = 50;
+  }
+
+  // 2. OVERLAP REDUCTION — does this tool consolidate functions?
+  // Tools that appear in all-in-one solutions score higher
+  const overlapCount = OVERLAPS.filter(o =>
+    tl.includes(o.a.toLowerCase()) || o.a.toLowerCase().includes(tl) ||
+    tl.includes(o.b.toLowerCase()) || o.b.toLowerCase().includes(tl)
+  ).length;
+  // More overlap pairs = more potential to consolidate (if it's the winner) or be cut (if it's the loser)
+  const isConsolidator = catData && (catData.cat === 'crm' || catData.cat === 'marketing' || catData.cat === 'project_management');
+  scores.overlap = isConsolidator && overlapCount > 0 ? Math.min(85, 60 + overlapCount * 5) : Math.max(30, 70 - overlapCount * 8);
+
+  // 3. AI READINESS
+  if (_aiNativeTools.has(tl)) scores.ai = 90;
+  else if (_legacyToolKeys.has(tl)) scores.ai = 25;
+  else if (catData && catData.cat === 'ai') scores.ai = 85;
+  else scores.ai = 55; // neutral
+
+  // 4. INTEGRATION FIT — does it connect natively with the rest of the stack?
+  let nativeConnections = 0;
+  // Check if this tool is a hub or in a hub's native list
+  if (_integrationHubs.has(tl)) nativeConnections += 5;
+  // Check INTEGRATION_ECOSYSTEMS (they're inside runAnalysis, so use a simpler heuristic)
+  const popularIntegrators = ['hubspot','salesforce','slack','google workspace','zapier','stripe','zoom'];
+  popularIntegrators.forEach(pi => {
+    if (tl.includes(pi) || tools.some(t => t.toLowerCase().includes(pi))) nativeConnections++;
+  });
+  scores.integration = Math.min(95, 40 + nativeConnections * 8);
+
+  // 5. IMPLEMENTATION COMPLEXITY (inverse — higher = easier to implement)
+  if (catData) {
+    if (catData.model === 'enterprise_license') scores.complexity = 30;
+    else if (catData.model === 'per_workspace') scores.complexity = 80;
+    else if (catData.model === 'usage_based') scores.complexity = 70;
+    else scores.complexity = 65; // per_user
+    if (_highLockIn.has(tl)) scores.complexity -= 15;
+  } else {
+    scores.complexity = 50;
+  }
+
+  // 6. TEAM-SIZE FIT
+  const ts = getTeamSizeNum(teamSize);
+  if (catData) {
+    if (catData.model === 'enterprise_license' && ts < 20) scores.teamfit = 30;
+    else if (catData.model === 'enterprise_license' && ts >= 50) scores.teamfit = 80;
+    else if (catData.model === 'per_workspace' && ts <= 15) scores.teamfit = 85;
+    else if (catData.model === 'per_user' && ts > 100 && catData.seat > 50) scores.teamfit = 45;
+    else scores.teamfit = 70;
+  } else {
+    scores.teamfit = 55;
+  }
+
+  // 7. INDUSTRY FIT
+  const bp = BLUEPRINTS[industry] || BLUEPRINTS["default"];
+  let industryScore = 50;
+  if (bp && bp !== BLUEPRINTS["default"]) {
+    // Check if tool is in coreJobs best list
+    const inBestList = Object.values(bp.coreJobs || {}).some(j => (j.best || []).some(b => tl.includes(b.toLowerCase())));
+    const inRedFlags = (bp.redFlags || []).some(f => (f.trigger || []).some(t => tl.includes(t.toLowerCase())));
+    if (inBestList) industryScore = 90;
+    else if (inRedFlags) industryScore = 20;
+    else industryScore = 55;
+  }
+  scores.industry = industryScore;
+
+  // 8. VENDOR LOCK-IN RISK (inverse — higher = less lock-in = better)
+  if (_highLockIn.has(tl)) scores.lockin = 20;
+  else if (catData && catData.model === 'enterprise_license') scores.lockin = 35;
+  else if (catData && catData.model === 'per_workspace' && catData.base === 0) scores.lockin = 90; // free/OSS
+  else if (catData && catData.model === 'per_workspace') scores.lockin = 75;
+  else scores.lockin = 65;
+
+  // 9. REPORTING / VISIBILITY
+  if (catData && _reportingCats.has(catData.cat)) scores.reporting = 85;
+  else if (tl.includes('hubspot') || tl.includes('salesforce')) scores.reporting = 80; // CRMs with strong reporting
+  else if (catData && (catData.cat === 'crm' || catData.cat === 'marketing')) scores.reporting = 65;
+  else scores.reporting = 45;
+
+  // 10. ADOPTION / SIMPLICITY
+  if (catData) {
+    if (catData.model === 'enterprise_license') scores.adoption = 30;
+    else if (catData.model === 'per_workspace' && catData.base <= 50) scores.adoption = 85;
+    else if (catData.model === 'per_user' && catData.seat <= 20) scores.adoption = 80;
+    else scores.adoption = 60;
+    if (_aiNativeTools.has(tl)) scores.adoption += 5; // modern tools tend to be easier
+  } else {
+    scores.adoption = 50;
+  }
+
+  // Clamp all scores
+  Object.keys(scores).forEach(k => { scores[k] = Math.max(0, Math.min(100, scores[k])); });
+  return scores;
+}
+
+// ── WEIGHTED SCORE: Combine category scores × weights ─────────────────────
+function weightedScore(categoryScores, weights) {
+  let total = 0;
+  Object.keys(weights).forEach(k => { total += (categoryScores[k] || 50) * (weights[k] || 0); });
+  return Math.round(total);
+}
+
+// ── STACK SCORING: Score the full current stack ───────────────────────────
+function scoreCurrentStack(tools, context, weights) {
+  const toolScores = {};
+  const categoryAverages = {};
+  ENGINE_CATEGORIES.forEach(c => { categoryAverages[c.id] = []; });
+
+  tools.forEach(tool => {
+    const scores = scoreToolOnCategories(tool, context);
+    toolScores[tool] = {
+      scores,
+      weighted: weightedScore(scores, weights),
+    };
+    Object.keys(scores).forEach(k => { categoryAverages[k].push(scores[k]); });
+  });
+
+  // Average each category across all tools
+  const stackCategoryScores = {};
+  Object.keys(categoryAverages).forEach(k => {
+    const arr = categoryAverages[k];
+    stackCategoryScores[k] = arr.length ? Math.round(arr.reduce((s,v) => s + v, 0) / arr.length) : 50;
+  });
+
+  const stackWeightedScore = weightedScore(stackCategoryScores, weights);
+
+  // Find weakest categories (bottom 3)
+  const sortedCats = Object.entries(stackCategoryScores).sort((a,b) => a[1] - b[1]);
+  const weakCategories = sortedCats.slice(0, 3).map(([id, score]) => ({
+    id, score,
+    label: ENGINE_CATEGORIES.find(c => c.id === id)?.label || id,
+  }));
+
+  // Find strongest categories (top 3)
+  const strongCategories = sortedCats.slice(-3).reverse().map(([id, score]) => ({
+    id, score,
+    label: ENGINE_CATEGORIES.find(c => c.id === id)?.label || id,
+  }));
+
+  return { toolScores, stackCategoryScores, stackWeightedScore, weakCategories, strongCategories };
+}
+
+// ── CANDIDATE GENERATION: Find better tools for problem areas ─────────────
+function generateCandidates(tools, context, weights, currentToolScores) {
+  const candidates = []; // {current, replacement, scores, weightedDelta, reason}
+
+  tools.forEach(tool => {
+    const currentScores = currentToolScores[tool];
+    if (!currentScores) return;
+    const currentWeighted = currentScores.weighted;
+
+    // Check AI_SWAPS for this tool
+    const swapKey = Object.keys(AI_SWAPS).find(k => tool.toLowerCase().includes(k.toLowerCase()));
+    if (swapKey) {
+      const swap = AI_SWAPS[swapKey];
+      const altTools = swap.r.split(/[+,]/).map(t => t.trim()).filter(Boolean);
+      altTools.forEach(alt => {
+        const altScores = scoreToolOnCategories(alt, context);
+        const altWeighted = weightedScore(altScores, weights);
+        if (altWeighted > currentWeighted) {
+          candidates.push({
+            current: tool,
+            replacement: alt,
+            currentScores: currentScores.scores,
+            replacementScores: altScores,
+            currentWeighted,
+            replacementWeighted: altWeighted,
+            delta: altWeighted - currentWeighted,
+            reason: swap.why,
+            save: swap.save || 0,
+            type: 'ai_upgrade',
+          });
+        }
+      });
+    }
+
+    // Check overlaps — if tool is the 'b' side (the one to cut), suggest keeping 'a'
+    OVERLAPS.forEach(o => {
+      if (!tool.toLowerCase().includes(o.b.toLowerCase()) && !o.b.toLowerCase().includes(tool.toLowerCase())) return;
+      const keepTool = tools.find(t => t.toLowerCase().includes(o.a.toLowerCase()));
+      if (!keepTool) return;
+      const keepScores = scoreToolOnCategories(keepTool, context);
+      const keepWeighted = weightedScore(keepScores, weights);
+      if (keepWeighted >= currentWeighted) {
+        candidates.push({
+          current: tool,
+          replacement: keepTool,
+          currentScores: currentScores.scores,
+          replacementScores: keepScores,
+          currentWeighted,
+          replacementWeighted: keepWeighted,
+          delta: keepWeighted - currentWeighted,
+          reason: o.msg,
+          save: o.save || 0,
+          type: 'overlap_consolidation',
+        });
+      }
+    });
+  });
+
+  // Deduplicate: keep best candidate per current tool
+  const bestPerTool = {};
+  candidates.forEach(c => {
+    if (!bestPerTool[c.current] || c.delta > bestPerTool[c.current].delta) {
+      bestPerTool[c.current] = c;
+    }
+  });
+
+  // Sort by delta descending
+  return Object.values(bestPerTool).sort((a,b) => b.delta - a.delta);
+}
+
+// ── IDEAL STACK ASSEMBLY ──────────────────────────────────────────────────
+function assembleIdealStack(tools, candidates, context, weights) {
+  const ideal = new Set(tools);
+  const changes = []; // {action:'replace'|'remove'|'add', tool, replacement?, reason, scores}
+
+  // Apply candidate replacements
+  candidates.forEach(c => {
+    if (ideal.has(c.current) && c.delta > 3) {
+      const replacementAlreadyInStack = ideal.has(c.replacement);
+      const isConsolidation = c.type === 'overlap_consolidation' || replacementAlreadyInStack;
+      
+      ideal.delete(c.current);
+      if (!isConsolidation) {
+        ideal.add(c.replacement);
+      }
+      changes.push({
+        action: isConsolidation ? 'remove' : 'replace',
+        tool: c.current,
+        replacement: isConsolidation ? (replacementAlreadyInStack ? c.replacement : null) : c.replacement,
+        reason: replacementAlreadyInStack
+          ? c.reason + ' (already in your stack — ' + c.replacement + ' covers this)'
+          : c.reason,
+        delta: c.delta,
+        save: c.save,
+      });
+    }
+  });
+
+  // Score the ideal stack
+  const idealArray = [...ideal];
+  const idealScoring = scoreCurrentStack(idealArray, context, weights);
+
+  return { tools: idealArray, changes, scoring: idealScoring };
+}
+
+// ── ENGINE ORCHESTRATOR ──────────────────────────────────────────────────
+function runRecommendationEngine(tools, teamSize, industry, budget, goals, contract) {
+  const context = {
+    tools,
+    teamSize,
+    industry,
+    contract,
+    costBreakdown: {},
+  };
+  tools.forEach(t => { context.costBreakdown[t] = calcToolCost(t, teamSize, contract); });
+
+  // 1. Calculate context-aware weights
+  const weights = calcEngineWeights(goals, teamSize, industry, tools.length);
+
+  // 2. Score current stack
+  const currentScoring = scoreCurrentStack(tools, context, weights);
+
+  // 3. Generate candidate replacements
+  const candidates = generateCandidates(tools, context, weights, currentScoring.toolScores);
+
+  // 4. Assemble ideal stack
+  const idealStack = assembleIdealStack(tools, candidates, context, weights);
+
+  // 5. Compute improvement delta
+  const currentScore = currentScoring.stackWeightedScore;
+  const idealScore = idealStack.scoring.stackWeightedScore;
+  const improvement = idealScore - currentScore;
+
+  return {
+    categories: ENGINE_CATEGORIES,
+    weights,
+    current: {
+      score: currentScore,
+      categoryScores: currentScoring.stackCategoryScores,
+      toolScores: currentScoring.toolScores,
+      weakCategories: currentScoring.weakCategories,
+      strongCategories: currentScoring.strongCategories,
+    },
+    candidates,
+    ideal: {
+      tools: idealStack.tools,
+      changes: idealStack.changes,
+      score: idealScore,
+      categoryScores: idealStack.scoring.stackCategoryScores,
+    },
+    improvement,
+  };
+}
+
 // ── ANALYSIS ENGINE ───────────────────────────────────────────────────────────
 function runAnalysis(tools, teamSize, industry, budget, goals, contract) {
   const match = t => tools.some(u => u.toLowerCase().includes(t.toLowerCase()));
@@ -2587,6 +2999,9 @@ function runAnalysis(tools, teamSize, industry, budget, goals, contract) {
   // Set active pricing context so PRICING proxy uses real team size + contract
   _activeTeamSize = getTeamSizeNum(teamSize);
   _activeContract = contract || '';
+
+  // ── Run 10-Category Recommendation Engine ──────────────────────────────
+  const engine = runRecommendationEngine(tools, teamSize, industry, budget, goals, contract);
 
   // 1. Find direct overlaps (existing logic)
   const overlaps = OVERLAPS.filter(o => match(o.a) && match(o.b));
@@ -3005,7 +3420,7 @@ function runAnalysis(tools, teamSize, industry, budget, goals, contract) {
   // Gold stack match
   const goldMatch = getGoldStackMatch(tools, industry);
 
-  return {score, overlaps, categoryOverlaps, legacyPenalties, upgrades, consultantFindings, integrationConflicts, orphanedTools, allInOneOpps, glueNote, overspendNote, goldMatch, totalSave, spend, costBreakdown, optimized: [...optimized, ...addToOptimized], toRemove, actions, blueprint: bp};
+  return {score, overlaps, categoryOverlaps, legacyPenalties, upgrades, consultantFindings, integrationConflicts, orphanedTools, allInOneOpps, glueNote, overspendNote, goldMatch, totalSave, spend, costBreakdown, optimized: [...optimized, ...addToOptimized], toRemove, actions, blueprint: bp, engine};
 }
 
 // ── DOM HELPERS ───────────────────────────────────────────────────────────────
@@ -4839,6 +5254,30 @@ function generateProReport() {
 
     // ── SECTION 1: Executive Diagnosis ──────────────────────────────────
     const totalIssues = overlaps.length + catOvlps.length + upgrades.length + legacy.length;
+    const eng = r.engine || {};
+    const engCurrent = eng.current || {};
+    const engCatScores = engCurrent.categoryScores || {};
+    const engWeights = eng.weights || {};
+    const engWeak = engCurrent.weakCategories || [];
+    const engStrong = engCurrent.strongCategories || [];
+    const engIdeal = eng.ideal || {};
+    const engImprovement = eng.improvement || 0;
+
+    // Build category scorecard rows
+    const catScoreRows = (eng.categories || ENGINE_CATEGORIES).map(cat => {
+      const sc = engCatScores[cat.id] || 50;
+      const wt = engWeights[cat.id] || 0.1;
+      const barColor = sc >= 75 ? '#16A34A' : sc >= 55 ? '#D97706' : '#DC2626';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #F4F6FC">
+        <div style="min-width:175px;font-size:12px;font-weight:600;color:#1A2340;font-family:Inter,sans-serif">${cat.icon} ${esc(cat.label)}</div>
+        <div style="flex:1;height:8px;background:#EEF2FF;border-radius:4px;overflow:hidden">
+          <div style="width:${sc}%;height:100%;background:${barColor};border-radius:4px"></div>
+        </div>
+        <div style="min-width:44px;text-align:right;font-size:13px;font-weight:800;color:${barColor};font-family:Sora,sans-serif">${sc}</div>
+        <div style="min-width:40px;text-align:right;font-size:10px;color:#6B7899;font-family:Inter,sans-serif">${(wt*100).toFixed(0)}%</div>
+      </div>`;
+    }).join('');
+
     const s1 = section(1, 'Executive Diagnosis', '#0B1F5E', `
       <p>${esc(_co)} is running <strong>${selectedTools.length} tools</strong> for a ${$(_ts,'—')}-person team in ${esc(_ind)}.
       ${totalIssues > 0
@@ -4851,6 +5290,22 @@ function generateProReport() {
         ? `At ${money(monthly)}/mo in recoverable savings, this document identifies exactly where to act and in what sequence.`
         : `No major cost overlaps were detected, but AI-native upgrade opportunities exist that could improve workflow efficiency.'`}</p>
       ${_role ? `<p>Prepared for: <strong>${esc(_role)}</strong>${_email?' — '+esc(_email):''}</p>` : ''}
+
+      <div style="margin-top:20px;padding:20px;background:#F8FAFC;border:1px solid #EEF2FF;border-radius:12px">
+        <div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#0B1F5E;margin-bottom:4px">10-Category Engine Scorecard</div>
+        <div style="font-size:12px;color:#6B7899;font-family:Inter,sans-serif;margin-bottom:14px">Your stack scored against the StackScan Recommendation Engine. Weights are adapted to your goals, team size, and industry.</div>
+        ${catScoreRows}
+        <div style="display:flex;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid #DDE3F5">
+          <div style="flex:1">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#DC2626;margin-bottom:4px;font-family:Inter,sans-serif">Weakest Areas</div>
+            <div style="font-size:13px;color:#1A2340;font-family:Inter,sans-serif">${engWeak.map(c => c.label + ' (' + c.score + ')').join(', ')}</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#16A34A;margin-bottom:4px;font-family:Inter,sans-serif">Strongest Areas</div>
+            <div style="font-size:13px;color:#1A2340;font-family:Inter,sans-serif">${engStrong.map(c => c.label + ' (' + c.score + ')').join(', ')}</div>
+          </div>
+        </div>
+      </div>
     `, 'High-level health assessment of your current stack based on tool count, team size, and spending patterns.');
 
     // ── SECTION 2: Cost Breakdown ────────────────────────────────────────
@@ -5091,6 +5546,10 @@ function generateProReport() {
     `, 'High-risk migrations that require extra planning, data backups, or team retraining.');
 
     // ── SECTION 9: Final Recommendation ──────────────────────────────────
+    const engChanges = (engIdeal.changes || []).filter(c => c.delta > 0);
+    const engIdealScore = engIdeal.score || score;
+    const topCandidate = (eng.candidates || [])[0];
+
     const s10 = section(10, 'Final Recommendation', '#0B1F5E', `
       <p>${esc(_co)}'s ${selectedTools.length}-tool stack ${
         score < 55 ? 'has significant structural issues that are costing real money and introducing operational friction'
@@ -5101,9 +5560,25 @@ function generateProReport() {
           ? `consolidate ${allOverlaps.length > 0 ? allOverlaps.length + ' identified overlap' + (allOverlaps.length!==1?'s':'') + ', ' : ''}${upgrades.length > 0 ? 'adopt ' + upgrades.length + ' AI-native replacement' + (upgrades.length!==1?'s':'') + ', ' : ''}and recover <strong class="green">${money(annual)}/year</strong> in the process.`
           : `the stack is lean — focus on the AI-native upgrade opportunities to increase efficiency without increasing spend.`
       }</p>
-      <p>Given the goals of <em>${esc(_goals)}</em>, the highest-leverage move is: <strong>${
-        actions.length > 0 ? esc(actions[0].title) : 'begin with the overlap consolidation identified in Section 3'
+
+      ${engChanges.length > 0 ? `
+      <div style="margin-top:18px;padding:18px;background:#F8FAFC;border:1px solid #EEF2FF;border-radius:10px">
+        <div style="font-family:Sora,sans-serif;font-weight:700;font-size:13px;color:#0B1F5E;margin-bottom:12px">Engine-Recommended Changes (${engChanges.length})</div>
+        ${engChanges.map((c,i) => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i < engChanges.length-1 ? 'border-bottom:1px solid #EEF2FF' : ''}">
+          <span style="font-size:12px;font-weight:800;color:#DC2626;min-width:90px;font-family:Inter,sans-serif">${c.action === 'remove' ? '✕ Remove' : '→ Replace'}</span>
+          <span style="font-size:13px;color:#1A2340;font-weight:600;font-family:Inter,sans-serif;flex:1">${esc(c.tool)}${c.replacement && c.action !== 'remove' ? ' → <span style="color:#16A34A">' + esc(c.replacement) + '</span>' : ''}</span>
+          <span style="font-size:12px;font-weight:700;color:#16A34A;font-family:Inter,sans-serif">${c.save > 0 ? '~$'+c.save+'/mo' : ''}</span>
+          <span style="font-size:11px;color:#6B7899;font-family:Inter,sans-serif">+${c.delta} pts</span>
+        </div>`).join('')}
+        ${engImprovement > 0 ? `<div style="margin-top:12px;padding-top:10px;border-top:1px solid #DDE3F5;font-size:12px;color:#1847ED;font-weight:600;font-family:Inter,sans-serif">Projected improvement: ${engCurrent.score || score} → ${engIdealScore} (+${engImprovement} points across 10-category model)</div>` : ''}
+      </div>` : ''}
+
+      <p style="margin-top:16px">Given the goals of <em>${esc(_goals)}</em>, the highest-leverage move is: <strong>${
+        topCandidate ? esc(topCandidate.current) + ' → ' + esc(topCandidate.replacement) + ' (+' + topCandidate.delta + ' engine points, ~$' + topCandidate.save + '/mo savings)'
+        : actions.length > 0 ? esc(actions[0].title)
+        : 'begin with the overlap consolidation identified in Section 3'
       }</strong>.</p>
+      <p>This recommended stack was selected because it performed best across the <strong>10-category StackScan Recommendation Engine</strong> for ${esc(_co)}'s specific context — ${$(_ts,'—')}-person team, ${esc(_ind)} vertical, with goals focused on ${esc(_goals)}.</p>
       <p>This document is designed to support internal conversations about stack optimization — whether that's with your leadership team, IT, or Finance. The analysis is data-backed, the savings are grounded in published pricing, and the 30/60/90 plan gives a clear execution path without disrupting operations.</p>
       ${actions.length > 1 ? `
       <div style="margin-top:16px"><strong>Priority Action List:</strong></div>
