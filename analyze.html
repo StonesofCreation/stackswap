@@ -4336,7 +4336,9 @@ function generateProReport() {
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,sans-serif;font-size:13px;line-height:1.6;color:#1A2340;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:Inter,sans-serif;font-size:13px;line-height:1.6;color:#1A2340;background:#F4F6FC;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.doc-wrap{max-width:740px;margin:0 auto;background:#fff;border:1px solid #DDE3F5;border-radius:16px;overflow:hidden;margin-top:32px;margin-bottom:32px;box-shadow:0 4px 24px rgba(11,31,94,0.08)}
+@media print{body{background:#fff!important}.doc-wrap{max-width:none!important;margin:0!important;border:none!important;border-radius:0!important;box-shadow:none!important}}
 @page{margin:0.45in;size:letter}
 a{color:#1847ED;text-decoration:none}
 
@@ -4431,7 +4433,7 @@ tr.odd{background:#fff}
 </head>
 <body>
 
-<div class="doc-header">
+<div class="doc-wrap"><div class="doc-header">
   <div class="doc-logo">StackScan Pro &nbsp;·&nbsp; AI-Powered SaaS Stack Intelligence</div>
   <div class="doc-title">Stack Decision Document<br>${esc(_co)}</div>
   <div class="doc-sub">A complete diagnosis of your SaaS stack with a prioritized optimization roadmap.</div>
@@ -4483,7 +4485,7 @@ tr.odd{background:#fff}
     StackScan Pro &nbsp;·&nbsp; AI-Powered SaaS Stack Intelligence &nbsp;·&nbsp; stackswap.io &nbsp;·&nbsp;
     Generated for ${esc(_co)} &nbsp;·&nbsp; ${_date}
   </div>
-</div>
+</div></div>
 
 </body>
 </html>`;
