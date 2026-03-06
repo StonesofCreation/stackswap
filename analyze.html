@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>StackScan — Free Stack Analysis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -68,7 +68,7 @@ h1 .accent{color:#ffc857}
 .cta.ready{background:linear-gradient(135deg,#ffc857,#ff9a3c);cursor:pointer;color:#0f0e13;box-shadow:0 0 40px rgba(255,200,87,.2)}
 .spinner{width:14px;height:14px;border:2px solid rgba(0,0,0,.15);border-top:2px solid #0f0e13;border-radius:50%;animation:spin .7s linear infinite}
 
-.result{display:none;background:rgba(255,255,255,0.015);border:1px solid rgba(255,200,87,.15);border-radius:14px;padding:24px 20px;margin-top:24px;animation:fadeUp .4s ease}
+.result{display:none;background:#fff;border:1px solid #DDE3F5;border-radius:16px;padding:0;margin-top:24px;animation:fadeUp .4s ease;overflow:hidden;box-shadow:0 4px 24px rgba(11,31,94,0.08)}
 @media(min-width:480px){.result{padding:28px}}
 .res-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05)}
 .res-glow{width:9px;height:9px;border-radius:50%;background:#ffc857;box-shadow:0 0 14px #ffc857;flex-shrink:0}
@@ -327,6 +327,126 @@ nav,
 .ai-loading-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#f0ece4;letter-spacing:-.01em}
 .ai-loading-sub{font-size:14px;color:#7a7670;font-family:var(--prose);line-height:1.6;max-width:320px}
 @keyframes aiPulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+
+/* ═══════════════════════════════════════════════════
+   SS REPORT — PP Analyzer clean white design system
+   ═══════════════════════════════════════════════════ */
+
+/* Report header (dark navy gradient) */
+.ss-report-header{background:linear-gradient(135deg,#0B1F5E 0%,#071040 100%);padding:32px;position:relative;overflow:hidden}
+.ss-report-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% -10%,rgba(24,71,237,0.35) 0%,transparent 70%);pointer-events:none}
+.ss-report-meta{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:6px;font-family:'Inter',sans-serif;position:relative;z-index:1}
+.ss-report-title{font-family:'Sora',sans-serif;font-weight:800;font-size:24px;color:#fff;margin-bottom:4px;letter-spacing:-.02em;position:relative;z-index:1}
+.ss-report-sub{font-size:13px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;position:relative;z-index:1}
+.ss-report-grade{font-family:'Sora',sans-serif;font-weight:800;font-size:46px;line-height:1;letter-spacing:-.03em;position:relative;z-index:1}
+.ss-report-grade-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-top:2px;text-align:right;font-family:'Inter',sans-serif;position:relative;z-index:1}
+.ss-report-summary{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:15px;color:rgba(255,255,255,0.8);line-height:1.65;font-family:'Inter',sans-serif;position:relative;z-index:1}
+
+/* Metrics row (3 columns) */
+.ss-metrics-row{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #DDE3F5}
+.ss-metric-card{padding:22px 20px;border-right:1px solid #DDE3F5;text-align:center}
+.ss-metric-card:last-child{border-right:none}
+.ss-metric-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7899;margin-bottom:8px;font-family:'Inter',sans-serif}
+.ss-metric-val{font-family:'Sora',sans-serif;font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1.1}
+.ss-metric-sub{font-size:12px;color:#6B7899;margin-top:4px;font-family:'Inter',sans-serif}
+
+/* Report body */
+.ss-report-body{padding:32px;display:flex;flex-direction:column;gap:20px;background:#F4F6FC}
+
+/* Cards */
+.ss-card{background:#fff;border:1px solid #DDE3F5;border-radius:14px;padding:26px;box-shadow:0 2px 8px rgba(11,31,94,0.04);animation:fadeUp .35s ease both}
+.ss-card-title{font-family:'Sora',sans-serif;font-weight:700;font-size:18px;color:#0B1F5E;margin-bottom:4px}
+.ss-card-sub{font-size:13px;color:#6B7899;margin-bottom:18px;line-height:1.5;font-family:'Inter',sans-serif}
+
+/* Section label */
+.ss-section-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;font-family:'Inter',sans-serif;color:#6B7899}
+
+/* Score */
+.ss-score-row{display:flex;align-items:center;gap:18px}
+.ss-score-num{font-family:'Sora',sans-serif;font-weight:800;font-size:60px;line-height:1;letter-spacing:-.03em;flex-shrink:0}
+.ss-score-right{flex:1}
+.ss-score-label{font-family:'Sora',sans-serif;font-weight:700;font-size:17px;margin-bottom:5px}
+.ss-score-desc{font-size:14px;color:#6B7899;line-height:1.6;font-family:'Inter',sans-serif;margin-bottom:10px}
+.ss-score-bar{height:6px;background:#EEF2FF;border-radius:3px;overflow:hidden}
+.ss-score-fill{height:100%;border-radius:3px;transition:width 1s ease;width:0}
+
+/* Stack match */
+.ss-match-bar{height:8px;background:#EEF2FF;border-radius:4px;overflow:hidden;margin:14px 0 8px}
+.ss-match-fill{height:100%;border-radius:4px;transition:width 1.2s ease;width:0}
+
+/* Finding rows */
+.ss-finding{border:1px solid #DDE3F5;border-radius:10px;padding:16px;margin-bottom:8px;border-left:3px solid #D97706;background:#fff}
+.ss-finding:last-child{margin-bottom:0}
+.ss-finding-miss{border-left-color:#1847ED}
+.ss-finding-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.ss-finding-title{font-size:14px;font-weight:600;color:#1A2340;line-height:1.4;font-family:'Inter',sans-serif;flex:1}
+.ss-finding-pill{background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:#16A34A;font-size:12px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap;font-family:'Inter',sans-serif;flex-shrink:0}
+.ss-finding-body{font-size:13px;color:#6B7899;line-height:1.65;font-family:'Inter',sans-serif}
+
+/* Priority actions */
+.ss-action-item{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-bottom:1px solid #F4F6FC}
+.ss-action-item:last-child{border-bottom:none;padding-bottom:0}
+.ss-action-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:14px;flex-shrink:0;color:#fff;margin-top:1px}
+.ss-action-body{flex:1}
+.ss-action-title{font-size:15px;font-weight:700;color:#1A2340;font-family:'Sora',sans-serif;margin-bottom:4px}
+.ss-action-text{font-size:13px;color:#6B7899;line-height:1.6;font-family:'Inter',sans-serif}
+
+/* Dream stack */
+.ss-dream-row{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #F4F6FC}
+.ss-dream-row:last-child{border-bottom:none}
+.ss-dream-size{font-size:11px;font-weight:700;color:#6B7899;text-transform:uppercase;letter-spacing:.06em;min-width:80px;padding-top:3px;font-family:'Inter',sans-serif;flex-shrink:0}
+.ss-dream-text{font-size:14px;color:#1A2340;line-height:1.6;font-family:'Inter',sans-serif}
+
+/* Tags */
+.ss-tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif}
+.ss-tag-amber{background:rgba(217,119,6,0.1);color:#D97706;border:1px solid rgba(217,119,6,0.2)}
+.ss-tag-green{background:rgba(22,163,74,0.1);color:#16A34A;border:1px solid rgba(22,163,74,0.2)}
+.ss-tag-blue{background:rgba(24,71,237,0.08);color:#1847ED;border:1px solid rgba(24,71,237,0.15)}
+
+/* Green lead magnet */
+.ss-lead-magnet{background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border:1px solid rgba(22,163,74,0.25);border-radius:14px;padding:36px;text-align:center;position:relative;overflow:hidden}
+.ss-lead-magnet::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#16A34A,#4ade80,#16A34A)}
+.ss-lead-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#16A34A;margin-bottom:10px;font-family:'Inter',sans-serif}
+.ss-lead-title{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:#0B1F5E;margin-bottom:8px;letter-spacing:-.01em;line-height:1.25}
+.ss-lead-title span{color:#16A34A}
+.ss-lead-sub{font-size:15px;color:#374151;margin-bottom:22px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6;font-family:'Inter',sans-serif}
+.ss-lead-hooks{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.ss-lead-hook{display:flex;align-items:center;gap:7px;font-size:13px;color:#374151;font-family:'Inter',sans-serif}
+.ss-lead-hook-icon{width:20px;height:20px;background:#16A34A;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;font-family:'Sora',sans-serif}
+.ss-lead-form{display:flex;gap:8px;max-width:460px;margin:0 auto 10px;flex-wrap:wrap}
+.ss-lead-input{flex:1;min-width:200px;padding:13px 16px;border:1.5px solid rgba(22,163,74,0.3);border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:#1A2340;background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
+.ss-lead-input:focus{border-color:#16A34A;box-shadow:0 0 0 3px rgba(22,163,74,0.12)}
+.ss-lead-btn{background:linear-gradient(135deg,#16A34A,#15803d);color:#fff;border:none;border-radius:10px;padding:13px 24px;font-size:14px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;white-space:nowrap;transition:opacity .2s;box-shadow:0 4px 14px rgba(22,163,74,0.28)}
+.ss-lead-btn:hover{opacity:.9}
+.ss-lead-success{display:none;font-size:14px;color:#16A34A;font-weight:600;font-family:'Inter',sans-serif;margin-bottom:8px}
+.ss-lead-note{font-size:12px;color:#6B7899;font-family:'Inter',sans-serif}
+
+/* Loading state */
+.ss-loading-wrap{padding:72px 32px 80px;text-align:center;background:#fff}
+.ss-loading-spinner{width:44px;height:44px;border:3px solid #DDE3F5;border-top:3px solid #1847ED;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 24px}
+.ss-loading-live{display:inline-flex;align-items:center;gap:6px;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:4px 12px;margin-bottom:14px}
+.ss-loading-dot{width:6px;height:6px;border-radius:50%;background:#16A34A;box-shadow:0 0 6px rgba(22,163,74,0.7);animation:pulse-dot 2s infinite}
+.ss-loading-live-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#16A34A;font-family:'Inter',sans-serif}
+.ss-loading-title{font-family:'Sora',sans-serif;font-weight:800;font-size:24px;color:#0B1F5E;margin-bottom:8px;letter-spacing:-.01em}
+.ss-loading-sub{font-size:14px;color:#6B7899;font-family:'Inter',sans-serif;line-height:1.65;max-width:360px;margin:0 auto 28px}
+.ss-loading-checks{display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto}
+.ss-loading-check{display:flex;align-items:center;gap:10px;font-size:13px;color:#6B7899;font-family:'Inter',sans-serif}
+.ss-loading-check-icon{width:22px;height:22px;border-radius:50%;border:2px solid #DDE3F5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .3s}
+.ss-loading-check-icon.done{background:#16A34A;border-color:#16A34A;color:#fff}
+.ss-loading-check-icon.active{border-color:#1847ED;background:#EEF2FF;color:#1847ED;animation:spin 1s linear infinite}
+
+/* Mobile adjustments */
+@media(max-width:640px){
+  .ss-metrics-row{grid-template-columns:1fr}
+  .ss-metric-card{border-right:none;border-bottom:1px solid #DDE3F5}
+  .ss-metric-card:last-child{border-bottom:none}
+  .ss-report-body{padding:16px;gap:14px}
+  .ss-report-header{padding:22px}
+  .ss-card{padding:18px}
+  .ss-lead-magnet{padding:24px}
+  .ss-loading-wrap{padding:48px 20px 56px}
+  .ss-score-num{font-size:46px}
+}
 
 /* ── PAGE NAV ── */
 .page-nav{
@@ -1995,348 +2115,386 @@ function renderResult(r) {
   box.innerHTML = "";
   box.style.display = "block";
 
-  // Resolve context vars — use leadData if available, fall back to DOM
   const teamSize = leadData.teamSize || document.getElementById("ctx-teamsize")?.value || "";
   const industry = document.getElementById("ind")?.value || "";
 
-  // Header
-  const hd = div("res-hd");
-  hd.appendChild(div("res-glow"));
-  hd.appendChild(span("res-lbl","Stack Analysis Complete"));
-  box.appendChild(hd);
+  // ── Grade + colors ────────────────────────────────────────────────────
+  const scoreColor = r.score>=75?"#16A34A":r.score>=55?"#D97706":"#DC2626";
+  const gradeLetter = r.score>=90?"A+":r.score>=80?"A":r.score>=70?"B+":r.score>=60?"B":r.score>=50?"C":"D";
+  const gradeLabel = r.score>=75?"Healthy Stack":r.score>=55?"Needs Attention":"Needs Work";
+  const gradeDesc = r.score>=75?"Solid foundation — a few optimizations could save you money."
+    :r.score>=55?"You\u2019re leaving money on the table. Overlaps and legacy tools are costing you."
+    :"Your stack is working against you. Redundant tools, wasted spend, and integration debt — all fixable.";
 
-  // ── Score — horizontal layout, number left, label+bar right ──
-  const color = r.score>=75?"#4ecdc4":r.score>=55?"#ffc857":"#d96060";
-  const label = r.score>=75?"Healthy Stack":r.score>=55?"Needs Attention":"Needs Work";
-  const desc  = r.score>=75?"Solid foundation — a few optimizations could save you money."
-               :r.score>=55?"You're leaving money on the table. Overlaps and legacy tools are costing you."
-               :"Your stack is working against you. Redundant tools, wasted spend, and integration debt — all fixable.";
-  const ring = div("score-ring");
-  const sn = div("score-num", r.score+""); sn.style.color=color;
-  const sr = div("score-right");
-  sr.innerHTML=`<div class="score-sub">${label}</div><div class="score-desc">${desc}</div>`;
-  const hbar=div("health-bar"); const hfill=div("health-fill");
-  hfill.style.background=color; hbar.appendChild(hfill); sr.appendChild(hbar);
-  ring.appendChild(sn); ring.appendChild(sr);
-  box.appendChild(ring);
-  setTimeout(()=>hfill.style.width=r.score+"%",120);
+  // ── HEADER card (dark navy) ───────────────────────────────────────────
+  const header = document.createElement('div');
+  header.className = 'ss-report-header';
+  const issueCount = r.overlaps.length + (r.categoryOverlaps||[]).length + (r.upgrades||[]).length;
+  header.innerHTML =
+    '<div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">' +
+      '<div>' +
+        '<div class="ss-report-meta">Stack Analysis Complete</div>' +
+        '<div class="ss-report-title">' + (industry ? industry + ' Stack' : 'Your Tech Stack') + '</div>' +
+        '<div class="ss-report-sub">' + selectedTools.length + ' tools analyzed' + (teamSize ? ' \u00b7 ' + teamSize + '-person team' : '') + (industry ? ' \u00b7 ' + industry : '') + '</div>' +
+      '</div>' +
+      '<div style="text-align:right;flex-shrink:0">' +
+        '<div class="ss-report-grade" style="color:' + scoreColor + '">' + gradeLetter + '</div>' +
+        '<div class="ss-report-grade-label">Stack Grade</div>' +
+      '</div>' +
+    '</div>' +
+    (issueCount > 0
+      ? '<div class="ss-report-summary">' + issueCount + ' issue' + (issueCount!==1?'s':'') + ' found across your stack' + (r.totalSave>0?' — estimated $'+r.totalSave.toLocaleString()+'/mo in savings.':'.') + ' See recommendations below.</div>'
+      : '<div class="ss-report-summary">No major issues detected. Your stack is well-optimized for your size and industry.</div>');
+  box.appendChild(header);
 
-  // Consultant Take is now rendered inside the AI Analysis box (renderAINarrative)
+  // ── METRICS ROW (3 stats) ─────────────────────────────────────────────
+  const metricsRow = document.createElement('div');
+  metricsRow.className = 'ss-metrics-row';
+  [
+    { label:'Stack Health Score', val: r.score + '/100', sub: gradeLabel, color: scoreColor },
+    { label:'Potential Monthly Savings', val: r.totalSave > 0 ? '$'+r.totalSave.toLocaleString() : '\u2014', sub: r.totalSave > 0 ? '$'+(r.totalSave*12).toLocaleString()+'/yr annualized' : 'Stack looks lean', color: r.totalSave > 0 ? '#16A34A' : '#6B7899' },
+    { label:'Issues Detected', val: issueCount || '\u2713', sub: (r.overlaps.length+(r.categoryOverlaps||[]).length) + ' overlaps \u00b7 ' + (r.upgrades||[]).length + ' upgrades', color: issueCount > 0 ? '#D97706' : '#16A34A' },
+  ].forEach(item => {
+    const c = document.createElement('div');
+    c.className = 'ss-metric-card';
+    c.innerHTML = '<div class="ss-metric-label">' + item.label + '</div>' +
+      '<div class="ss-metric-val" style="color:' + item.color + '">' + item.val + '</div>' +
+      '<div class="ss-metric-sub">' + item.sub + '</div>';
+    metricsRow.appendChild(c);
+  });
+  box.appendChild(metricsRow);
 
-  // ── Helper: render a finding card ──
-  function findingCard(type, titleHtml, body, save) {
-    const card = div("finding " + (type === "missing" ? "finding-missing" : "finding-opp"));
-    const top = div("finding-top");
-    const left = div("finding-left");
-    left.innerHTML = `<div class="finding-title">${titleHtml}</div>`;
-    top.appendChild(left);
+  // ── BODY WRAPPER (gray bg, holds all cards) ───────────────────────────
+  const body = document.createElement('div');
+  body.className = 'ss-report-body';
+  box.appendChild(body);
+
+  // ── Helpers ───────────────────────────────────────────────────────────
+  function ssCard(titleHtml, subHtml) {
+    const c = document.createElement('div');
+    c.className = 'ss-card';
+    if (titleHtml) {
+      const t = document.createElement('div');
+      t.className = 'ss-card-title';
+      t.innerHTML = titleHtml;
+      c.appendChild(t);
+    }
+    if (subHtml !== undefined && subHtml !== null) {
+      const s = document.createElement('div');
+      s.className = 'ss-card-sub';
+      s.innerHTML = subHtml;
+      c.appendChild(s);
+    }
+    return c;
+  }
+
+  function ssFinding(isOpportunity, titleHtml, bodyHtml, save) {
+    const f = document.createElement('div');
+    f.className = 'ss-finding' + (isOpportunity ? '' : ' ss-finding-miss');
+    const head = document.createElement('div');
+    head.className = 'ss-finding-head';
+    const t = document.createElement('div');
+    t.className = 'ss-finding-title';
+    t.innerHTML = titleHtml;
+    head.appendChild(t);
     if (save > 0) {
-      const pill = div("finding-pill", "$" + save + "/mo");
-      top.appendChild(pill);
+      const pill = document.createElement('div');
+      pill.className = 'ss-finding-pill';
+      pill.textContent = '$'+save+'/mo';
+      head.appendChild(pill);
     }
-    card.appendChild(top);
-    if (body) { const b = div("finding-body", body); card.appendChild(b); }
-    return card;
-  }
-
-  // ── Wrong-industry tools ──
-  const wrongFindings=(r.consultantFindings||[]).filter(f=>f.type==="wrong"||f.type==="wrong_tool");
-  if(wrongFindings.length){
-    box.appendChild(div("sec","Wrong tools for your industry"));
-    wrongFindings.forEach(f=>box.appendChild(findingCard("wrong",f.title,f.msg,f.save)));
-  }
-
-  // ── Tool overlaps (pairwise + category clusters) ──
-  const redundantFindings=(r.consultantFindings||[]).filter(f=>f.type==="redundant");
-  const hasOverlaps = r.overlaps.length || redundantFindings.length || (r.categoryOverlaps&&r.categoryOverlaps.length);
-  box.appendChild(div("sec","Tool overlaps"));
-  if(!hasOverlaps){
-    box.appendChild(div("no-issues","No major overlaps detected — your tools serve distinct functions."));
-  } else {
-    // Section AI summary
-    const overlapCount = r.overlaps.length + (r.categoryOverlaps||[]).length + redundantFindings.length;
-    const overlapSavePotential = [...r.overlaps, ...(r.categoryOverlaps||[])].reduce((s,o)=>s+(o.save||0),0);
-    const sectionSummary1 = document.createElement('div');
-    sectionSummary1.className = 'section-summary';
-    const _overlapMsg = overlapCount > 2
-      ? 'You have <strong>' + overlapCount + ' overlap' + (overlapCount!==1?'s':'') + '</strong> — this is the biggest drag on your stack efficiency.' + (overlapSavePotential > 0 ? ' Cutting redundant tools here alone saves an estimated <span class="hl-amber">$' + overlapSavePotential.toLocaleString() + '/mo</span>.' : '') + ' Pick one tool per job and standardize.'
-      : 'You have ' + overlapCount + ' overlap' + (overlapCount!==1?'s':'') + '.' + (overlapSavePotential > 0 ? ' Resolving ' + (overlapCount===1?'it':'them') + ' saves ~<span class="hl-amber">$' + overlapSavePotential.toLocaleString() + '/mo</span>.' : '') + ' These are quick wins.';
-    sectionSummary1.innerHTML = '<div class="section-summary-label">Overlap Analysis</div><div class="section-summary-body">' + _overlapMsg + '</div>';
-    box.appendChild(sectionSummary1);
-    // Category cluster overlaps first (higher signal)
-    (r.categoryOverlaps||[]).forEach(o=>{
-      const toolList = o.tools.join(" + ");
-      box.appendChild(findingCard("opp",
-        `<span style="color:#d96060;font-weight:700">${o.category} overlap:</span> ${toolList}`,
-        o.msg, o.save));
-    });
-    redundantFindings.forEach(f=>box.appendChild(findingCard("opp",`<span class="cut">${f.title}</span>`,f.msg,f.save)));
-    r.overlaps.forEach(o=>{
-      const ta=selectedTools.find(t=>t.toLowerCase().includes(o.a.toLowerCase()))||o.a;
-      const tb=selectedTools.find(t=>t.toLowerCase().includes(o.b.toLowerCase()))||o.b;
-      box.appendChild(findingCard("opp",
-        `Cut <span class="cut">${tb}</span><span class="arrow">→</span>Keep <span class="keep">${ta}</span>`,
-        o.msg, o.save));
-    });
-  }
-
-  // ── AI-native upgrades ──
-  box.appendChild(div("sec","AI-native upgrades"));
-  if(!r.upgrades.length){
-    box.appendChild(div("no-issues","Your stack already includes modern AI-native tools."));
-  } else {
-    const upgradeSummary = document.createElement('div');
-    upgradeSummary.className = 'section-summary';
-    const upgradeNames = r.upgrades.slice(0,3).map(u=>u.tool).join(', ');
-    const upgradeSave = r.upgrades.slice(0,3).reduce((s,u)=>s+u.save,0);
-    upgradeSummary.innerHTML = '<div class="section-summary-label">Modernization Opportunities</div><div class="section-summary-body">Running <strong>' + r.upgrades.length + ' legacy tool' + (r.upgrades.length!==1?'s':'') + '</strong> (' + upgradeNames + ') where AI-native alternatives deliver better results at lower cost. Swapping these saves an estimated <span class="hl-amber">$' + upgradeSave.toLocaleString() + '/mo</span> while reducing manual work.</div>';
-    box.appendChild(upgradeSummary);
-    r.upgrades.slice(0,3).forEach(u=>{
-      const trend = getTrendSignal(u.tool);
-      let trendNote = "";
-      if (trend && trend.signal === "high") {
-        const liveStr = trend.liveCount ? ` (${trend.liveCount} of ${trend.liveTotal} StackSwap analyses flagged this)` : "";
-        trendNote = ` <span style="color:#d96060;font-size:11px;font-family:DM Mono,monospace">&#9650; High exit rate${liveStr} — ${trend.reason}</span>`;
-      } else if (trend && trend.signal === "medium") {
-        trendNote = ` <span style="color:#ffc857;font-size:11px;font-family:DM Mono,monospace">&#9654; Trending out — ${trend.reason}</span>`;
-      }
-      box.appendChild(findingCard("opp",
-        `Swap <span class="cut">${u.tool}</span><span class="arrow">→</span><span class="keep">${u.r}</span>${trendNote}`,
-        u.why, u.save));
-    });
-  }
-
-  // ── Integration health ──
-  const hasIntegrationIssues = (r.integrationConflicts&&r.integrationConflicts.length) || (r.orphanedTools&&r.orphanedTools.length) || r.glueNote;
-  if(hasIntegrationIssues) {
-    box.appendChild(div("sec","Integration health"));
-    // Integration AI summary
-    const intConflictCount = (r.integrationConflicts||[]).length;
-    const orphanCount = (r.orphanedTools||[]).length;
-    const intSummary = document.createElement('div');
-    intSummary.className = 'section-summary';
-    const intLines = [];
-    if (intConflictCount > 0) intLines.push('<strong>' + intConflictCount + ' integration conflict' + (intConflictCount!==1?'s':'') + '</strong> detected — these tools actively work against each other, creating data sync issues and split records.');
-    if (orphanCount > 0) intLines.push('<strong>' + orphanCount + ' isolated tool' + (orphanCount!==1?'s':'') + '</strong> with no native connections — likely relying on Zapier or manual exports to function.');
-    if (r.glueNote) intLines.push('Automation dependency suggests your stack lacks native integration coverage.');
-    intSummary.innerHTML = '<div class="section-summary-label">Integration Assessment</div><div class="section-summary-body">' + intLines.join(' ') + ' A well-integrated stack passes data automatically — no Zapier, no manual exports, no lost context.</div>';
-    box.appendChild(intSummary);
-    (r.integrationConflicts||[]).forEach(ic=>{
-      const toolBadges = ic.tools.map(t=>`<span class="cut">${t}</span>`).join('<span class="arrow"> + </span>');
-      box.appendChild(findingCard("opp", `Integration conflict: ${toolBadges}`, ic.issue, 0));
-    });
-    if(r.orphanedTools&&r.orphanedTools.length>0) {
-      box.appendChild(findingCard("opp",
-        `Isolated tools: <span class="cut">${r.orphanedTools.join(", ")}</span>`,
-        `These tools have no detected native integrations with the rest of your stack. You're likely relying on Zapier or manual exports to move data — or these tools are siloed entirely. Audit whether they're worth keeping.`,
-        0));
+    f.appendChild(head);
+    if (bodyHtml) {
+      const b = document.createElement('div');
+      b.className = 'ss-finding-body';
+      b.innerHTML = bodyHtml;
+      f.appendChild(b);
     }
-    if(r.glueNote) {
-      box.appendChild(findingCard("opp", "Zapier dependency detected", r.glueNote, 0));
-    }
+    return f;
   }
 
-  // ── All-in-one consolidation opportunities ──
-  if(r.allInOneOpps&&r.allInOneOpps.length) {
-    box.appendChild(div("sec","Consolidation opportunities"));
-    r.allInOneOpps.forEach(opp=>{
-      box.appendChild(findingCard("opp",
-        `Consider: <span class="keep">${opp.recommendation}</span> — replaces ${opp.replaces.filter(t=>selectedTools.some(u=>u.toLowerCase().includes(t.toLowerCase()))).join(" + ")}`,
-        opp.why, opp.save));
-    });
-  }
+  // ── HEALTH SCORE card ─────────────────────────────────────────────────
+  const scoreCard = ssCard(null, null);
+  const scoreRow = document.createElement('div');
+  scoreRow.className = 'ss-score-row';
+  scoreRow.innerHTML =
+    '<div class="ss-score-num" style="color:' + scoreColor + '">' + r.score + '</div>' +
+    '<div class="ss-score-right">' +
+      '<div class="ss-score-label" style="color:' + scoreColor + '">' + gradeLabel + '</div>' +
+      '<div class="ss-score-desc">' + gradeDesc + '</div>' +
+      '<div class="ss-score-bar"><div class="ss-score-fill" id="ss-score-fill" style="background:' + scoreColor + '"></div></div>' +
+    '</div>';
+  scoreCard.appendChild(scoreRow);
+  body.appendChild(scoreCard);
+  setTimeout(() => { const f = document.getElementById('ss-score-fill'); if(f) f.style.width = r.score+'%'; }, 150);
 
-  // ── StackMatch ──
-  if(r.goldMatch) {
+  // ── STACK MATCH card ──────────────────────────────────────────────────
+  if (r.goldMatch) {
     const gs = r.goldMatch;
     const matchPct = Math.round(gs.matchPct * 100);
+    const matchColor = matchPct >= 80 ? '#16A34A' : matchPct >= 60 ? '#D97706' : '#DC2626';
     const missingTools = gs.tools.filter(t => !selectedTools.some(u => u.toLowerCase().includes(t.toLowerCase())));
-    const matchColor = matchPct >= 80 ? '#4ecdc4' : matchPct >= 60 ? '#ffc857' : '#e05555';
-
-    // Dynamic cost estimate based on user's actual team size
     const userSize = parseInt(teamSize) || null;
-    let estimateStr;
+    let estimateStr = '';
     if (userSize && gs.perSeatLow && gs.perSeatHigh) {
-      const low  = Math.round((gs.baseCostLow  + (Math.max(0, userSize - gs.baseTeamSize) * gs.perSeatLow))  / 50) * 50;
-      const high = Math.round((gs.baseCostHigh + (Math.max(0, userSize - gs.baseTeamSize) * gs.perSeatHigh)) / 50) * 50;
-      estimateStr = low === high
-        ? `~$${low.toLocaleString()}/mo for your ${userSize}-person team`
-        : `~$${low.toLocaleString()}–$${high.toLocaleString()}/mo for your ${userSize}-person team`;
+      const low  = Math.round((gs.baseCostLow  + (Math.max(0,userSize-gs.baseTeamSize)*gs.perSeatLow))  /50)*50;
+      const high = Math.round((gs.baseCostHigh + (Math.max(0,userSize-gs.baseTeamSize)*gs.perSeatHigh)) /50)*50;
+      estimateStr = low===high ? '~$'+low.toLocaleString()+'/mo for your '+userSize+'-person team' : '~$'+low.toLocaleString()+'\u2013$'+high.toLocaleString()+'/mo';
     } else {
-      // Fallback: compute from base
-      estimateStr = `$${gs.baseCostLow.toLocaleString()}–$${gs.baseCostHigh.toLocaleString()}/mo`;
+      estimateStr = '$'+gs.baseCostLow.toLocaleString()+'\u2013$'+gs.baseCostHigh.toLocaleString()+'/mo';
     }
 
-    const gs_section = div("sec");
-    gs_section.innerHTML = `<span style="color:${matchColor};font-family:DM Mono,monospace;font-size:22px;font-weight:700;letter-spacing:-.02em">${matchPct}%</span>&nbsp;StackMatch`;
-    box.appendChild(gs_section);
-
-    const gsCard = document.createElement("div");
-    gsCard.style.cssText = `background:rgba(78,205,196,0.03);border:1px solid rgba(78,205,196,0.14);border-radius:12px;padding:20px 22px;margin-bottom:12px`;
-    gsCard.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div style="font-size:32px;font-weight:800;color:${matchColor};font-family:DM Mono,monospace;letter-spacing:-.02em;line-height:1">${matchPct}%</div>
-        <div>
-          <div style="font-size:14px;font-weight:700;color:#f0ece4;font-family:'Plus Jakarta Sans',sans-serif">StackMatch — ${gs.name}</div>
-          <div style="font-size:12px;color:#7a7670;font-family:DM Mono,monospace;margin-top:2px">${estimateStr}</div>
-        </div>
-      </div>
-      <div style="font-size:14px;color:#e8e4dc;line-height:1.75;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${gs.why}</div>
-      <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:10px">
-        <div style="height:100%;width:${matchPct}%;background:${matchColor};border-radius:3px;transition:width 1s ease"></div>
-      </div>
-      ${missingTools.length > 0
-        ? `<div style="font-size:13px;color:#e8e4dc">To reach 100% StackMatch, consider adding: <span style="color:#4ecdc4;font-weight:600">${missingTools.join(", ")}</span></div>`
-        : `<div style="font-size:13px;color:#39ff85;font-weight:600">✓ Your stack fully covers this pattern</div>`}
-    `;
-    box.appendChild(gsCard);
+    const matchCard = ssCard(
+      '<span style="color:' + matchColor + ';font-size:22px">' + matchPct + '%</span> Stack Match \u2014 ' + gs.name,
+      'How closely your current stack aligns with the ideal pattern for your industry \u00b7 ' + estimateStr
+    );
+    const matchBarWrap = document.createElement('div');
+    matchBarWrap.className = 'ss-match-bar';
+    const matchFill = document.createElement('div');
+    matchFill.className = 'ss-match-fill';
+    matchFill.style.background = matchColor;
+    matchBarWrap.appendChild(matchFill);
+    matchCard.appendChild(matchBarWrap);
+    setTimeout(() => matchFill.style.width = matchPct+'%', 200);
+    if (gs.why) {
+      const why = document.createElement('div');
+      why.style.cssText = 'font-size:14px;color:#374151;line-height:1.65;font-family:Inter,sans-serif;margin-top:12px';
+      why.textContent = gs.why;
+      matchCard.appendChild(why);
+    }
+    const missDiv = document.createElement('div');
+    missDiv.style.cssText = 'font-size:13px;margin-top:10px;font-family:Inter,sans-serif';
+    if (missingTools.length > 0) {
+      missDiv.style.color = '#6B7899';
+      missDiv.innerHTML = 'To reach 100%: consider adding <strong style="color:#1847ED">' + missingTools.join(', ') + '</strong>';
+    } else {
+      missDiv.style.cssText += 'color:#16A34A;font-weight:600';
+      missDiv.textContent = '\u2713 Your stack fully covers this pattern';
+    }
+    matchCard.appendChild(missDiv);
+    body.appendChild(matchCard);
   }
 
-  // ── Trend intelligence note ──
-  if(trendDataLoaded) {
-    const trendNote = div("");
-    trendNote.style.cssText = "font-size:10px;color:var(--dim);margin-bottom:16px;font-family:DM Mono,monospace;letter-spacing:.03em";
-    trendNote.textContent = "\u25b2 Exit rates informed by real StackSwap submission data";
-    box.appendChild(trendNote);
-  }
+  // ── OVERLAPS card ─────────────────────────────────────────────────────
+  const wrongFindings = (r.consultantFindings||[]).filter(f=>f.type==="wrong"||f.type==="wrong_tool");
+  const redundantFindings = (r.consultantFindings||[]).filter(f=>f.type==="redundant");
+  const hasOverlaps = r.overlaps.length || redundantFindings.length || (r.categoryOverlaps&&r.categoryOverlaps.length) || wrongFindings.length;
 
-  // ── Gaps worth filling ──
-  const missing=(r.consultantFindings||[]).filter(f=>f.type==="missing");
-  if(missing.length){
-    box.appendChild(div("sec","Gaps worth filling"));
-    missing.forEach(f=>box.appendChild(findingCard("missing",
-      `<span class="keep">${f.title}</span>`,f.msg,0)));
-  }
-
-  // ── Savings ──
-  if(r.totalSave>0){
-    box.appendChild(div("sec","Estimated savings"));
-    const sb=div("sav-box");
-    const monthly = r.totalSave.toLocaleString();
-    const annual  = (r.totalSave*12).toLocaleString();
-    // Build with string concat — avoids template literal escaping issues
-    sb.innerHTML =
-      '<div class="sav-item"><div class="sav-val">$' + monthly + '</div><div class="sav-lbl">Per Month</div></div>' +
-      '<div class="sav-item"><div class="sav-val">$' + annual  + '</div><div class="sav-lbl">Per Year</div></div>';
-    box.appendChild(sb);
-
-    // Insight subtext — contextualise the savings
-    const insight = document.createElement('div');
-    insight.className = 'sav-insight';
-    const topDriver = r.overlaps.length > 0
-      ? 'tool overlaps' : r.upgrades && r.upgrades.length > 0
-      ? 'legacy tool replacements' : 'stack optimizations';
-    const teamCtx = leadData.teamSize ? ' for a ' + leadData.teamSize + '-person team' : '';
-    insight.textContent = 'Driven primarily by ' + topDriver + teamCtx + '. Assumes you act on the top 2–3 recommendations below.';
-    box.appendChild(insight);
-  }
-
-  // ── Ideal stack ──
-  if(r.blueprint&&r.blueprint.dreamStack&&Object.keys(r.blueprint.dreamStack).length){
-    box.appendChild(div("sec","Ideal stack for your context"));
-    const ds=div("dream-box");
-    Object.entries(r.blueprint.dreamStack).forEach(([size,stack])=>{
-      ds.innerHTML+=`<div class="dream-row"><div class="dream-size">${size} team</div><div class="dream-text">${stack}</div></div>`;
+  if (hasOverlaps) {
+    const overlapCount = r.overlaps.length + (r.categoryOverlaps||[]).length + redundantFindings.length + wrongFindings.length;
+    const overlapCard = ssCard(
+      '\u26a0\ufe0f Overlaps & Redundancies',
+      'You may be paying for duplicate functionality across these tools.'
+    );
+    const lbl = document.createElement('div');
+    lbl.className = 'ss-section-label';
+    lbl.style.color = '#D97706';
+    lbl.textContent = 'FOUND ' + overlapCount + ' OVERLAP' + (overlapCount!==1?'S':'');
+    overlapCard.appendChild(lbl);
+    wrongFindings.forEach(f => overlapCard.appendChild(ssFinding(true, f.title, f.msg, f.save||0)));
+    (r.categoryOverlaps||[]).forEach(o => {
+      overlapCard.appendChild(ssFinding(true, '<strong style="color:#D97706">' + o.category + ' overlap:</strong> ' + o.tools.join(' + '), o.msg, o.save||0));
     });
-    box.appendChild(ds);
+    redundantFindings.forEach(f => overlapCard.appendChild(ssFinding(true, '<span style="text-decoration:line-through;color:#6B7899">' + f.title + '</span>', f.msg, f.save||0)));
+    r.overlaps.forEach(o => {
+      const ta = selectedTools.find(t=>t.toLowerCase().includes(o.a.toLowerCase()))||o.a;
+      const tb = selectedTools.find(t=>t.toLowerCase().includes(o.b.toLowerCase()))||o.b;
+      overlapCard.appendChild(ssFinding(true,
+        'Cut <span style="color:#DC2626;text-decoration:line-through">' + tb + '</span> \u2192 Keep <strong style="color:#16A34A">' + ta + '</strong>',
+        o.msg, o.save||0));
+    });
+    body.appendChild(overlapCard);
+  } else {
+    const cleanCard = ssCard('\u2705 No Overlaps Detected', null);
+    const msg = document.createElement('div');
+    msg.style.cssText = 'font-size:14px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.6';
+    msg.textContent = 'Your tools serve distinct functions. No redundant spend detected.';
+    cleanCard.appendChild(msg);
+    body.appendChild(cleanCard);
   }
 
-  // ── Action plan ──
-  box.appendChild(div("sec","Priority actions"));
-  r.actions.slice(0,3).forEach((a,i)=>{
-    const step=div("step");
-    const n=div("step-n",(i+1)+"");
-    const t=div("step-t");
-    t.innerHTML=`<span class="step-title">${a.title}</span>${a.text}`;
-    step.appendChild(n); step.appendChild(t);
-    box.appendChild(step);
+  // ── AI-NATIVE UPGRADES card ───────────────────────────────────────────
+  if (r.upgrades && r.upgrades.length) {
+    const upgCard = ssCard('\ud83d\udd04 AI-Native Upgrades', 'Legacy tools where AI-native alternatives deliver better results at lower cost.');
+    r.upgrades.slice(0,3).forEach(u => {
+      const trend = getTrendSignal(u.tool);
+      let trendBadge = '';
+      if (trend && trend.signal === 'high') trendBadge = ' <span class="ss-tag ss-tag-amber">\u25b2 High exit rate</span>';
+      else if (trend && trend.signal === 'medium') trendBadge = ' <span class="ss-tag ss-tag-amber">\u25b6 Trending out</span>';
+      upgCard.appendChild(ssFinding(true,
+        'Swap <span style="color:#DC2626;text-decoration:line-through">' + u.tool + '</span> \u2192 <strong style="color:#1847ED">' + u.r + '</strong>' + trendBadge,
+        u.why, u.save||0));
+    });
+    body.appendChild(upgCard);
+  }
+
+  // ── INTEGRATION HEALTH card ───────────────────────────────────────────
+  const hasIntIssues = (r.integrationConflicts&&r.integrationConflicts.length) || (r.orphanedTools&&r.orphanedTools.length) || r.glueNote;
+  if (hasIntIssues) {
+    const intCard = ssCard('\ud83d\udd17 Integration Health', 'How well your tools talk to each other — data silos cost more than you think.');
+    (r.integrationConflicts||[]).forEach(ic => {
+      const toolBadges = ic.tools.map(t=>'<span style="font-weight:600">'+t+'</span>').join(' + ');
+      intCard.appendChild(ssFinding(true, 'Integration conflict: ' + toolBadges, ic.issue, 0));
+    });
+    if (r.orphanedTools && r.orphanedTools.length) {
+      intCard.appendChild(ssFinding(true,
+        'Isolated tools: <span style="color:#6B7899">' + r.orphanedTools.join(', ') + '</span>',
+        'These tools have no detected native integrations with the rest of your stack. You\u2019re likely relying on Zapier or manual exports to move data.', 0));
+    }
+    if (r.glueNote) intCard.appendChild(ssFinding(true, 'Zapier dependency detected', r.glueNote, 0));
+    body.appendChild(intCard);
+  }
+
+  // ── CONSOLIDATION OPPORTUNITIES ───────────────────────────────────────
+  if (r.allInOneOpps && r.allInOneOpps.length) {
+    const conCard = ssCard('\ud83d\udce6 Consolidation Opportunities', 'Replace multiple tools with a single platform to cut cost and complexity.');
+    r.allInOneOpps.forEach(opp => {
+      const activeReplaces = opp.replaces.filter(t=>selectedTools.some(u=>u.toLowerCase().includes(t.toLowerCase())));
+      conCard.appendChild(ssFinding(true,
+        'Consider: <strong style="color:#1847ED">' + opp.recommendation + '</strong> \u2014 replaces ' + activeReplaces.join(' + '),
+        opp.why, opp.save||0));
+    });
+    body.appendChild(conCard);
+  }
+
+  // ── GAPS card ─────────────────────────────────────────────────────────
+  const missing = (r.consultantFindings||[]).filter(f=>f.type==="missing");
+  if (missing.length) {
+    const gapCard = ssCard('\ud83d\udd0d Gaps Worth Filling', 'Areas where adding the right tool could meaningfully improve your workflow.');
+    missing.forEach(f => gapCard.appendChild(ssFinding(false, '<strong style="color:#1847ED">' + f.title + '</strong>', f.msg, 0)));
+    body.appendChild(gapCard);
+  }
+
+  // ── ESTIMATED SAVINGS card ────────────────────────────────────────────
+  if (r.totalSave > 0) {
+    const savCard = ssCard('\ud83d\udcb0 Estimated Savings', null);
+    const savGrid = document.createElement('div');
+    savGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px';
+    [
+      { label:'Per Month', val:'$'+r.totalSave.toLocaleString(), color:'#16A34A' },
+      { label:'Per Year',  val:'$'+(r.totalSave*12).toLocaleString(), color:'#1847ED' },
+    ].forEach(item => {
+      const c = document.createElement('div');
+      c.style.cssText = 'background:#F4F6FC;border-radius:10px;padding:20px;text-align:center';
+      c.innerHTML = '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:32px;color:'+item.color+';letter-spacing:-.02em;line-height:1">'+item.val+'</div>' +
+        '<div style="font-size:11px;color:#6B7899;margin-top:6px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:Inter,sans-serif">'+item.label+'</div>';
+      savGrid.appendChild(c);
+    });
+    savCard.appendChild(savGrid);
+    const topDriver = r.overlaps.length > 0 ? 'tool overlaps' : r.upgrades&&r.upgrades.length > 0 ? 'legacy tool replacements' : 'stack optimizations';
+    const teamCtx = leadData.teamSize ? ' for a ' + leadData.teamSize + '-person team' : '';
+    const insight = document.createElement('div');
+    insight.style.cssText = 'font-size:13px;color:#6B7899;line-height:1.6;font-family:Inter,sans-serif';
+    insight.textContent = 'Driven primarily by ' + topDriver + teamCtx + '. Assumes you act on the top 2\u20133 recommendations.';
+    savCard.appendChild(insight);
+    body.appendChild(savCard);
+  }
+
+  // ── IDEAL STACK card ──────────────────────────────────────────────────
+  if (r.blueprint && r.blueprint.dreamStack && Object.keys(r.blueprint.dreamStack).length) {
+    const idealCard = ssCard('\u2728 Ideal Stack for Your Context', 'Optimized tool mix based on your team size and industry.');
+    Object.entries(r.blueprint.dreamStack).forEach(([size, stack]) => {
+      const row = document.createElement('div');
+      row.className = 'ss-dream-row';
+      row.innerHTML = '<div class="ss-dream-size">' + size + ' team</div><div class="ss-dream-text">' + stack + '</div>';
+      idealCard.appendChild(row);
+    });
+    body.appendChild(idealCard);
+  }
+
+  // ── PRIORITY ACTIONS card ─────────────────────────────────────────────
+  const actCard = ssCard('\u26a1 Priority Actions', 'Your highest-leverage moves, ranked by impact.');
+  const actionColors = ['#16A34A','#1847ED','#D97706'];
+  r.actions.slice(0,3).forEach((a, i) => {
+    const item = document.createElement('div');
+    item.className = 'ss-action-item';
+    item.innerHTML =
+      '<div class="ss-action-num" style="background:' + actionColors[i] + '">' + (i+1) + '</div>' +
+      '<div class="ss-action-body">' +
+        '<div class="ss-action-title">' + a.title + '</div>' +
+        '<div class="ss-action-text">' + a.text + '</div>' +
+      '</div>';
+    actCard.appendChild(item);
   });
+  body.appendChild(actCard);
 
-  // ── Optimized stack ──
-  const optSecLabel = div("sec");
-  optSecLabel.innerHTML = "Your optimized stack";
-  box.appendChild(optSecLabel);
+  // ── OPTIMIZED STACK card ──────────────────────────────────────────────
+  const optCard = ssCard('\u2705 Your Optimized Stack',
+    '<strong style="color:#0B1F5E">' + r.optimized.length + ' tools</strong> \u2014 arrows show native data flow. ' +
+    '<span style="color:#1847ED">Blue</span> = connected. <span style="color:#D97706">Amber</span> = conflict. Gray = unconnected.');
+  renderStackFlow(optCard, r.optimized, r.integrationConflicts || []);
+  body.appendChild(optCard);
 
-  // Context note above the flow
-  const optNote = document.createElement('div');
-  optNote.style.cssText = 'font-size:14px;color:#9a9690;line-height:1.7;margin-bottom:12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
-  optNote.innerHTML = `<strong style="color:#e0dcd4">${r.optimized.length} tools</strong> — arrows show native data flow direction. <span style="color:#4ecdc4">Teal</span> = natively connected. <span style="color:#ffc857">Amber</span> = integration conflict. Gray = unconnected.`;
-  box.appendChild(optNote);
+  // ── GREEN LEAD MAGNET ─────────────────────────────────────────────────
+  const annualWaste = r.totalSave > 0 ? r.totalSave * 12 : 0;
+  const overlapCountFinal = r.overlaps.length + (r.categoryOverlaps||[]).length;
+  const legacyCountFinal  = (r.legacyPenalties||[]).length;
 
-  renderStackFlow(box, r.optimized, r.integrationConflicts || []);
-
-
-  // ── Urgency data — used in teaser + CTA ─────────────────────────
-  const overlapCount  = r.overlaps.length + (r.categoryOverlaps||[]).length;
-  const legacyCount   = (r.legacyPenalties||[]).length;
-  const orphanCount   = (r.orphanedTools||[]).length;
-  const conflictCount = (r.integrationConflicts||[]).length;
-
-  // ── StackAudit upgrade CTA — urgency-first ──────────────────────
-  const upgradeCta = document.createElement('div');
-  upgradeCta.className = 'upgrade-cta';
-
-  // Build specific urgency hooks from actual result data
-  const teamSizeNum  = parseInt(teamSize) || 0;
-  const benchmarkTools = teamSizeNum <= 5 ? 6 : teamSizeNum <= 15 ? 9 : teamSizeNum <= 50 ? 14 : 20;
-  const toolCount    = selectedTools.length;
-  const annualWaste  = r.totalSave > 0 ? r.totalSave * 12 : 0;
-
-  // Pick the 3 most alarming hooks for THIS specific stack
-  const hooks = [];
-  if (annualWaste > 0)
-    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">💸</span><div><div class="audit-hook-val">$${annualWaste.toLocaleString()}/yr</div><div class="audit-hook-label">estimated waste in your current stack</div></div></div>`);
-  if (overlapCount > 0)
-    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">⚠️</span><div><div class="audit-hook-val">${overlapCount} overlap${overlapCount!==1?'s':''} detected</div><div class="audit-hook-label">you're paying for the same capability ${overlapCount!==1?'multiple times':'twice'}</div></div></div>`);
-  if (legacyCount > 0)
-    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">🔄</span><div><div class="audit-hook-val">${legacyCount} legacy tool${legacyCount!==1?'s':''}</div><div class="audit-hook-label">AI-native replacements exist at a fraction of the cost</div></div></div>`);
-  if (toolCount > benchmarkTools && teamSizeNum > 0)
-    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">📊</span><div><div class="audit-hook-val">${toolCount} tools vs. ${benchmarkTools} average</div><div class="audit-hook-label">companies your size typically run ${benchmarkTools} tools</div></div></div>`);
-  if (conflictCount > 0)
-    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">🔗</span><div><div class="audit-hook-val">${conflictCount} integration conflict${conflictCount!==1?'s':''}</div><div class="audit-hook-label">your tools are creating data sync problems right now</div></div></div>`);
-  if (orphanCount > 0)
-    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">👻</span><div><div class="audit-hook-val">${orphanCount} isolated tool${orphanCount!==1?'s':''}</div><div class="audit-hook-label">no native connections — you're probably using Zapier to hold them together</div></div></div>`);
-
-  // Fallback if no specific data
-  if (!hooks.length)
-    hooks.push(`<div class="audit-hook"><span class="audit-hook-icon">🔍</span><div><div class="audit-hook-val">Full cost breakdown locked</div><div class="audit-hook-label">StackAudit shows exact per-tool cost vs. what you should be paying</div></div></div>`);
-
-  const hooksHtml = hooks.slice(0,3).join('');
-
-  // Headline varies by score severity
   const urgencyLine = r.score < 40
-    ? `This stack has <span>serious problems</span> that are costing you every month.`
+    ? 'This stack has <span>serious problems</span> costing you every month.'
     : r.score < 60
-    ? `This stack has <span>${overlapCount + legacyCount} fixable issues</span> bleeding money quietly.`
-    : `This stack is close — <span>a few targeted swaps</span> would make it efficient.`;
+    ? 'This stack is <span>bleeding money</span> quietly \u2014 let\u2019s fix it.'
+    : 'Your stack is close \u2014 <span>a few targeted swaps</span> make it efficient.';
 
-  // What StackAudit unlocks — framed as answers to questions the report raised
-  const unlocks = [];
-  if (overlapCount > 0) unlocks.push("Which tools to cut first — and which to keep");
-  if (legacyCount > 0)  unlocks.push("Exact swap recommendations with pricing comparison");
-  unlocks.push("30/60/90 day implementation plan");
-  unlocks.push("Migration risk flags for each change");
-  if (annualWaste > 0)  unlocks.push(`Full breakdown of the $${annualWaste.toLocaleString()} savings`);
-  unlocks.push("Shareable executive summary PDF");
+  const hooks = [];
+  if (annualWaste > 0) hooks.push(['$'+annualWaste.toLocaleString()+'/yr', 'estimated waste identified']);
+  if (overlapCountFinal > 0) hooks.push([overlapCountFinal+' overlap'+(overlapCountFinal!==1?'s':''), 'paying for duplicate capability']);
+  if ((r.upgrades||[]).length > 0) hooks.push([(r.upgrades.length)+' upgrade'+(r.upgrades.length!==1?'s':''), 'AI-native alternatives available']);
+  if (!hooks.length) hooks.push(['Full audit', 'exact per-tool cost breakdown'], ['30/60/90 plan', 'step-by-step implementation'], ['PDF report', 'shareable with your team']);
 
-  upgradeCta.innerHTML = `
-    <div class="upgrade-cta-eyebrow">StackAudit — Early Access</div>
-    <div class="upgrade-cta-h">${urgencyLine}</div>
-    <div class="audit-hooks">${hooksHtml}</div>
-    <div class="audit-divider">StackAudit answers what this report can't:</div>
-    <div class="audit-unlocks">
-      ${unlocks.map(u => `<div class="audit-unlock-item"><span style="color:#39ff85;margin-right:8px">→</span>${u}</div>`).join('')}
-    </div>
-    <div class="upgrade-cta-form">
-      <input type="email" class="upgrade-cta-input" id="auditCtaEmail" placeholder="your@email.com"/>
-      <button class="upgrade-cta-btn" onclick="submitAuditWaitlist()">Get Early Access →</button>
-    </div>
-    <div class="upgrade-cta-success" id="auditCtaSuccess">✓ You're on the list. We'll email you when StackAudit launches.</div>
-    <div class="upgrade-cta-note">No spam. One email at launch. Early access pricing locked in at signup.</div>
-  `;
-  box.appendChild(upgradeCta);
+  const leadMagnet = document.createElement('div');
+  leadMagnet.className = 'ss-lead-magnet';
+  leadMagnet.innerHTML =
+    '<div class="ss-lead-eyebrow">StackAudit \u2014 Early Access</div>' +
+    '<div class="ss-lead-title">' + urgencyLine + '</div>' +
+    '<div class="ss-lead-sub">Get a complete StackAudit: exact pricing comparisons, migration risk flags, and a step-by-step implementation plan built for your stack.</div>' +
+    '<div class="ss-lead-hooks">' +
+      hooks.slice(0,3).map(([val,lbl]) =>
+        '<div class="ss-lead-hook"><div class="ss-lead-hook-icon">\u2713</div><div><strong style="color:#0B1F5E;font-family:Sora,sans-serif">'+val+'</strong><br/><span style="font-size:12px">'+lbl+'</span></div></div>'
+      ).join('') +
+    '</div>' +
+    '<div class="ss-lead-form">' +
+      '<input type="email" class="ss-lead-input" id="ssLeadEmail" placeholder="your@email.com"/>' +
+      '<button class="ss-lead-btn" onclick="submitStackAudit()">Get Early Access \u2192</button>' +
+    '</div>' +
+    '<div class="ss-lead-success" id="ssLeadSuccess">\u2713 You\u2019re on the list. We\u2019ll be in touch when StackAudit launches.</div>' +
+    '<div class="ss-lead-note">No spam. One email at launch. Early access pricing locked in at signup.</div>';
+  body.appendChild(leadMagnet);
 
+  // ── AI narrative placeholder (injected after by getAINarrative) ───────
   box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+
+
+async function submitStackAudit() {
+  const input = document.getElementById('ssLeadEmail');
+  const email = input?.value?.trim();
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = 'rgba(220,38,38,0.5)';
+    setTimeout(() => input.style.borderColor = '', 1500);
+    return;
+  }
+  const btn = document.querySelector('.ss-lead-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+  try {
+    await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        waitlist_type: 'stackaudit',
+        source_page: 'stackscan_report',
+        context: { company: leadData.company||'', role: leadData.role||'', lead_id: leadData.lead_id||'' }
+      })
+    });
+  } catch(e) {}
+  const form = input?.closest('.ss-lead-form');
+  if (form) form.style.display = 'none';
+  const success = document.getElementById('ssLeadSuccess');
+  if (success) success.style.display = 'block';
+  const note = document.querySelector('.ss-lead-note');
+  if (note) note.style.display = 'none';
 }
 
 
@@ -2371,6 +2529,8 @@ async function submitAuditWaitlist() {
   document.getElementById('auditCtaSuccess').style.display = 'block';
   document.querySelector('.upgrade-cta-note').style.display = 'none';
 }
+
+
 
 
 // ── AI NARRATIVE (Claude API) ─────────────────────────────────────────────────
@@ -2876,22 +3036,30 @@ function renderMain() {
     const _budget   = document.getElementById("bud")?.value||"";
     const _teamSize = leadData.teamSize || document.getElementById("ctx-teamsize")?.value || "";
 
-    // ── Show big loading state in result box immediately ──────────
+    // ── Show clean loading state in result box immediately ──────────
     const _rb = document.getElementById("result-box");
     _rb.style.display = "block";
     _rb.innerHTML = `
-      <div class="res-hd">
-        <div class="res-glow"></div>
-        <span class="res-lbl">Stack Analysis Complete</span>
-      </div>
-      <div id="ai-loading-full" style="padding:48px 24px 56px;text-align:center">
-        <div class="ai-loading-dots" style="justify-content:center;margin-bottom:24px">
-          <div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>
+      <div class="ss-loading-wrap">
+        <div class="ss-loading-live">
+          <div class="ss-loading-dot"></div>
+          <span class="ss-loading-live-label">Analyzing</span>
         </div>
-        <div class="ai-loading-title">Claude is analyzing your stack</div>
-        <div class="ai-loading-sub" style="margin:10px auto 0">Reading overlaps, pricing signals, and integration patterns across your ${selectedTools.length} tools...</div>
+        <div class="ss-loading-spinner"></div>
+        <div class="ss-loading-title">Claude is analyzing your stack</div>
+        <div class="ss-loading-sub">Reading overlaps, pricing signals, and integration patterns across your ${selectedTools.length} tools...</div>
+        <div class="ss-loading-checks" id="ss-loading-checks">
+          <div class="ss-loading-check"><div class="ss-loading-check-icon done">✓</div><span>Stack submitted (${selectedTools.length} tools)</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon active">↻</div><span>Detecting overlaps & redundancies</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon" id="lc3">⋯</div><span>Calculating savings opportunities</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon" id="lc4">⋯</div><span>Generating AI narrative</span></div>
+        </div>
       </div>`;
     _rb.scrollIntoView({behavior:"smooth", block:"start"});
+
+    // Animate loading checks
+    setTimeout(() => { const e = document.getElementById('lc3'); if(e){e.classList.add('active');e.textContent='↻'} }, 1200);
+    setTimeout(() => { const e = document.getElementById('lc3'); if(e){e.classList.remove('active');e.classList.add('done');e.textContent='✓'} const e2 = document.getElementById('lc4'); if(e2){e2.classList.add('active');e2.textContent='↻'} }, 2400);
 
     // Run deterministic engine + AI narrative in parallel
     const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals);
