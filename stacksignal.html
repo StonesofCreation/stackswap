@@ -693,7 +693,8 @@ const SEED_RISING = [
 ];
 const SEED_CUTS = [
   ["ZoomInfo", 91], ["Drift", 76], ["Marketo", 69], ["Jasper", 62],
-  ["Hootsuite", 58], ["Outreach", 50], ["Gong", 44], ["Chorus", 38]
+  ["Hootsuite", 58], ["Outreach", 50], ["Gong", 44], ["Chorus", 38],
+  ["Salesloft", 33], ["Tableau", 28]
 ];
 const SEED_REPS = {
   "ZoomInfo": "Apollo.io", "Drift": "HubSpot Chat", "Marketo": "HubSpot Mktg Hub",
@@ -779,7 +780,19 @@ function renderBars(containerId, items, color, usePct = true) {
 function renderExitList(cuts, reps, reasons) {
   const exitEl = document.getElementById('exit-list');
   if (!exitEl) return;
-  const withRep = cuts.filter(([tool]) => reps[tool]);
+  // Filter to tools with known replacements, then pad with seed data to always hit 10
+  let withRep = cuts.filter(([tool]) => reps[tool]);
+  if (withRep.length < 10) {
+    const existing = new Set(withRep.map(([t]) => t));
+    for (const entry of SEED_CUTS) {
+      if (withRep.length >= 10) break;
+      if (!existing.has(entry[0]) && reps[entry[0]]) {
+        withRep.push(entry);
+        existing.add(entry[0]);
+      }
+    }
+  }
+  withRep = withRep.slice(0, 10);
   exitEl.innerHTML = withRep.map(([tool], i) => {
     const reason = (reasons || {})[tool] || null;
     return `<div class="exit-row">
