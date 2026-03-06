@@ -6,11 +6,11 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  // Parse body
-  let prompt;
+  let prompt, mode;
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
     prompt = body?.prompt;
+    mode   = body?.mode || "json"; // "html" = raw HTML response, "json" = legacy
   } catch(e) {
     return res.status(400).json({ error: "Could not parse request body" });
   }
@@ -41,19 +41,29 @@ module.exports = async function handler(req, res) {
 
     if (!response.ok) {
       console.error("Anthropic error:", response.status, rawText);
-      return res.status(502).json({
-        error: "Anthropic API error",
-        status: response.status,
-        detail: rawText.slice(0, 500)
-      });
+      return res.status(502).json({ error: "Anthropic API error", status: response.status, detail: rawText.slice(0, 500) });
     }
 
     const data = JSON.parse(rawText);
-    const text = data.content?.[0]?.text || "";
-    const clean = text.replace(/```json\s*|```\s*/g, "").trim();
-    const parsed = JSON.parse(clean);
+    const text = (data.content?.[0]?.text || "").replace(/^```html\s*/i, "").replace(/```\s*$/, "").trim();
 
-    return res.status(200).json(parsed);
+    if (mode === "html") {
+      // Return raw HTML directly — no JSON escaping overhead
+      return res.status(200).json({ html: text });
+    }
+
+    // Legacy JSON mode — try to parse, fallback to wrapping
+    try {
+      const clean = text.replace(/```json\s*|```\s*/g, "").trim();
+      const parsed = JSON.parse(clean);
+      return res.status(200).json(parsed);
+    } catch(e) {
+      // If Claude returned HTML directly instead of JSON, wrap it
+      if (text.includes("<html") || text.includes("<!DOCTYPE")) {
+        return res.status(200).json({ html: text });
+      }
+      return res.status(200).json({ narrative: text });
+    }
 
   } catch(e) {
     console.error("Proxy error:", e.message);
