@@ -1801,6 +1801,171 @@ const TOOL_CATALOG = {
   'grist':                {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'project_management'},
   'nocodb':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'project_management'},
   'baserow':              {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'project_management'},
+
+// ── REMAINING TOOLS — FINAL GAP FILL ──────────────────────────────
+
+  // ── No-Code / App Builders ────────────────────────────────────────
+  'adalo':                {model:'per_workspace', seat:0,   base:45,   typical:1,  variance:0.25,cat:'devtools'},
+  'bravo studio':         {model:'per_workspace', seat:0,   base:19,   typical:1,  variance:0.2, cat:'devtools'},
+  'draftbit':             {model:'per_workspace', seat:0,   base:19,   typical:1,  variance:0.2, cat:'devtools'},
+  'dronahq':              {model:'per_user',      seat:10,  base:0,    typical:5,  variance:0.25,cat:'devtools'},
+  'flutterflow':          {model:'per_workspace', seat:0,   base:30,   typical:1,  variance:0.25,cat:'devtools'},
+  'thunkable':            {model:'per_workspace', seat:0,   base:13,   typical:1,  variance:0.2, cat:'devtools'},
+  'weweb':                {model:'per_workspace', seat:0,   base:19,   typical:1,  variance:0.2, cat:'devtools'},
+  'coefficient':          {model:'per_workspace', seat:0,   base:49,   typical:1,  variance:0.25,cat:'devtools'},
+
+  // ── Video / Creative ──────────────────────────────────────────────
+  'adobe premiere rush':  {model:'per_user',      seat:10,  base:0,    typical:3,  variance:0.15,cat:'design'},
+  'wondershare filmora':  {model:'per_user',      seat:7,   base:0,    typical:2,  variance:0.2, cat:'design'},
+  'invision':             {model:'per_user',      seat:8,   base:0,    typical:5,  variance:0.2, cat:'design'},
+
+  // ── AI Models / Generators ────────────────────────────────────────
+  'kling':                {model:'per_workspace', seat:0,   base:5,    typical:1,  variance:0.3, cat:'ai'},
+  'pika':                 {model:'per_workspace', seat:0,   base:8,    typical:1,  variance:0.3, cat:'ai'},
+  'sora':                 {model:'per_user',      seat:20,  base:0,    typical:2,  variance:0.3, cat:'ai'},
+  'phind':                {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'ai'},
+  'cody':                 {model:'per_user',      seat:9,   base:0,    typical:5,  variance:0.2, cat:'ai'},
+  'continue':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'ai'},
+
+  // ── Podcasting / Recording ────────────────────────────────────────
+  'alitu':                {model:'per_workspace', seat:0,   base:38,   typical:1,  variance:0.15,cat:'collaboration'},
+  'squadcast':            {model:'per_workspace', seat:0,   base:20,   typical:1,  variance:0.2, cat:'collaboration'},
+  'zencastr':             {model:'per_workspace', seat:0,   base:20,   typical:1,  variance:0.2, cat:'collaboration'},
+
+  // ── Events ────────────────────────────────────────────────────────
+  'heysummit':            {model:'per_workspace', seat:0,   base:49,   typical:1,  variance:0.25,cat:'collaboration'},
+  'run the world':        {model:'per_workspace', seat:0,   base:99,   typical:1,  variance:0.3, cat:'collaboration'},
+
+  // ── Ad Platforms ──────────────────────────────────────────────────
+  'linkedin campaign manager':{model:'usage_based',seat:0,  base:0,    typical:1,  variance:0.8, cat:'advertising'},
+  'meta ads manager':     {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.8, cat:'advertising'},
+  'pinterest ads':        {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.8, cat:'advertising'},
+  'snapchat ads':         {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.8, cat:'advertising'},
+  'reddit ads':           {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.8, cat:'advertising'},
+  'twitter/x ads':        {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.8, cat:'advertising'},
+
+  // ── E-commerce Tools ──────────────────────────────────────────────
+  'bazaarvoice':          {model:'enterprise_license',seat:0,base:1000,typical:1,  variance:0.4, cat:'ecommerce'},
+  'beprofit':             {model:'per_workspace', seat:0,   base:20,   typical:1,  variance:0.25,cat:'ecommerce'},
+  'boost commerce':       {model:'per_workspace', seat:0,   base:19,   typical:1,  variance:0.25,cat:'ecommerce'},
+  'constructor.io':       {model:'enterprise_license',seat:0,base:1500,typical:1,  variance:0.4, cat:'ecommerce'},
+  'emotive':              {model:'usage_based',   seat:0,   base:200,  typical:1,  variance:0.4, cat:'ecommerce'},
+  'gelato':               {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'ecommerce'},
+  'gooten':               {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'ecommerce'},
+  'lifetimely':           {model:'per_workspace', seat:0,   base:19,   typical:1,  variance:0.25,cat:'analytics'},
+  'opencart':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'ecommerce'},
+  'pagefly':              {model:'per_workspace', seat:0,   base:24,   typical:1,  variance:0.2, cat:'ecommerce'},
+  'reconvert':            {model:'per_workspace', seat:0,   base:5,    typical:1,  variance:0.3, cat:'ecommerce'},
+  'searchspring':         {model:'enterprise_license',seat:0,base:600, typical:1,  variance:0.35,cat:'ecommerce'},
+  'shogun':               {model:'per_workspace', seat:0,   base:39,   typical:1,  variance:0.25,cat:'ecommerce'},
+  'smsbump':              {model:'usage_based',   seat:0,   base:19,   typical:1,  variance:0.5, cat:'ecommerce'},
+  'spod':                 {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'ecommerce'},
+  'swiftype':             {model:'per_workspace', seat:0,   base:79,   typical:1,  variance:0.3, cat:'ecommerce'},
+  'zipify':               {model:'per_workspace', seat:0,   base:67,   typical:1,  variance:0.25,cat:'ecommerce'},
+
+  // ── CMS / Website ────────────────────────────────────────────────
+  'buttondown':           {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.3, cat:'cms'},
+  'craft cms':            {model:'per_workspace', seat:0,   base:35,   typical:1,  variance:0.2, cat:'cms'},
+  'drupal':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'cms'},
+  'joomla':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'cms'},
+  'kirby':                {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.1, cat:'cms'},
+  'statamic':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'cms'},
+
+  // ── CDN / Infrastructure ──────────────────────────────────────────
+  'akamai':               {model:'enterprise_license',seat:0,base:1500,typical:1,  variance:0.5, cat:'devtools'},
+  'bunny.net':            {model:'usage_based',   seat:0,   base:1,    typical:1,  variance:0.6, cat:'devtools'},
+  'keycdn':               {model:'usage_based',   seat:0,   base:4,    typical:1,  variance:0.5, cat:'devtools'},
+
+  // ── CI/CD / DevOps ───────────────────────────────────────────────
+  'argocd':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'devtools'},
+  'codefresh':            {model:'per_workspace', seat:0,   base:75,   typical:1,  variance:0.3, cat:'devtools'},
+  'flux':                 {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'devtools'},
+  'travis ci':            {model:'per_workspace', seat:0,   base:69,   typical:1,  variance:0.3, cat:'devtools'},
+  'ansible':              {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'devtools'},
+  'chef':                 {model:'enterprise_license',seat:0,base:500, typical:1,  variance:0.4, cat:'devtools'},
+  'puppet':               {model:'enterprise_license',seat:0,base:500, typical:1,  variance:0.4, cat:'devtools'},
+
+  // ── Observability / Monitoring ────────────────────────────────────
+  'checkly':              {model:'per_workspace', seat:0,   base:30,   typical:1,  variance:0.3, cat:'devtools'},
+  'freshping':            {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'devtools'},
+  'jaeger':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'devtools'},
+  'loggly':               {model:'usage_based',   seat:0,   base:79,   typical:1,  variance:0.4, cat:'devtools'},
+  'opentelemetry':        {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'devtools'},
+  'statuscake':           {model:'per_workspace', seat:0,   base:21,   typical:1,  variance:0.2, cat:'devtools'},
+  'zipkin':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'devtools'},
+  'opensearch':           {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'devtools'},
+
+  // ── Auth / Identity ──────────────────────────────────────────────
+  'fusionauth':           {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.4, cat:'security'},
+  'magic':                {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'security'},
+  'ping identity':        {model:'per_user',      seat:3,   base:0,    typical:15, variance:0.3, cat:'security'},
+  'stytch':               {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'security'},
+  'workos':               {model:'usage_based',   seat:0,   base:0,    typical:1,  variance:0.5, cat:'security'},
+
+  // ── Security ──────────────────────────────────────────────────────
+  'aqua security':        {model:'enterprise_license',seat:0,base:2000,typical:1,  variance:0.4, cat:'security'},
+  'carbon black':         {model:'per_user',      seat:10,  base:0,    typical:15, variance:0.3, cat:'security'},
+  'cylance':              {model:'per_user',      seat:8,   base:0,    typical:15, variance:0.3, cat:'security'},
+  'lacework':             {model:'enterprise_license',seat:0,base:2500,typical:1,  variance:0.4, cat:'security'},
+  'malwarebytes':         {model:'per_user',      seat:4,   base:0,    typical:15, variance:0.2, cat:'security'},
+  'orca security':        {model:'enterprise_license',seat:0,base:2000,typical:1,  variance:0.4, cat:'security'},
+  'tugboat logic':        {model:'per_workspace', seat:0,   base:500,  typical:1,  variance:0.3, cat:'security'},
+
+  // ── Data Pipelines ───────────────────────────────────────────────
+  'hevo data':            {model:'per_workspace', seat:0,   base:239,  typical:1,  variance:0.35,cat:'data_warehouse'},
+  'matillion':            {model:'per_workspace', seat:0,   base:500,  typical:1,  variance:0.4, cat:'data_warehouse'},
+  'meltano':              {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'data_warehouse'},
+  'portable':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'data_warehouse'},
+  'rivery':               {model:'per_workspace', seat:0,   base:240,  typical:1,  variance:0.35,cat:'data_warehouse'},
+  'starburst':            {model:'enterprise_license',seat:0,base:2000,typical:1,  variance:0.4, cat:'data_warehouse'},
+  'treasure data':        {model:'enterprise_license',seat:0,base:3000,typical:1,  variance:0.4, cat:'data_warehouse'},
+  'cube.dev':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'data_warehouse'},
+
+  // ── Spreadsheet / Data Tools ─────────────────────────────────────
+  'seatable':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'project_management'},
+  'teable':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'project_management'},
+
+  // ── Revenue Intelligence / Sales Tools ────────────────────────────
+  'collective[i]':        {model:'enterprise_license',seat:0,base:1000,typical:1,  variance:0.35,cat:'sales_intelligence'},
+  'evaluagent':           {model:'per_user',      seat:30,  base:0,    typical:8,  variance:0.25,cat:'sales_intelligence'},
+  'linkedin sales insights':{model:'enterprise_license',seat:0,base:1500,typical:1,variance:0.35,cat:'data_provider'},
+  'refract':              {model:'per_user',      seat:40,  base:0,    typical:5,  variance:0.25,cat:'sales_intelligence'},
+  'lagrowthm':            {model:'per_user',      seat:60,  base:0,    typical:3,  variance:0.25,cat:'sales_engagement'},
+
+  // ── HR / Engagement ──────────────────────────────────────────────
+  'reflektive':           {model:'per_user',      seat:6,   base:0,    typical:15, variance:0.25,cat:'hr'},
+  'saasoptics':           {model:'per_workspace', seat:0,   base:500,  typical:1,  variance:0.3, cat:'finance'},
+
+  // ── Feedback / Product ────────────────────────────────────────────
+  'cachet':               {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'devtools'},
+  'craft.io':             {model:'per_user',      seat:39,  base:0,    typical:5,  variance:0.2, cat:'project_management'},
+  'frill':                {model:'per_workspace', seat:0,   base:25,   typical:1,  variance:0.2, cat:'project_management'},
+  'hellonext':            {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.2, cat:'project_management'},
+  'sleekplan':            {model:'per_workspace', seat:0,   base:13,   typical:1,  variance:0.2, cat:'project_management'},
+  'zeda.io':              {model:'per_user',      seat:49,  base:0,    typical:5,  variance:0.25,cat:'project_management'},
+  'userlane':             {model:'enterprise_license',seat:0,base:500, typical:1,  variance:0.35,cat:'customer_support'},
+
+  // ── Community / Social ────────────────────────────────────────────
+  'tribe':                {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'collaboration'},
+  'telegram':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'collaboration'},
+  'when2meet':            {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'collaboration'},
+  'sessioncam':           {model:'enterprise_license',seat:0,base:500, typical:1,  variance:0.35,cat:'analytics'},
+  'clicktale':            {model:'enterprise_license',seat:0,base:500, typical:1,  variance:0.35,cat:'analytics'},
+
+  // ── AI SDR (expanded) ─────────────────────────────────────────────
+  'jazon by lyzr':        {model:'per_workspace', seat:0,   base:500,  typical:1,  variance:0.3, cat:'ai_sdr'},
+
+  // ── Real Estate (expanded) ────────────────────────────────────────
+  'agentloop':            {model:'per_workspace', seat:0,   base:49,   typical:1,  variance:0.2, cat:'real_estate'},
+  'command (keller williams)':{model:'per_workspace',seat:0, base:0,   typical:1,  variance:0,   cat:'real_estate'},
+  'contactually':         {model:'per_user',      seat:69,  base:0,    typical:3,  variance:0.2, cat:'crm'},
+  'monday crm':           {model:'per_user',      seat:24,  base:0,    typical:8,  variance:0.25,cat:'crm'},
+
+  // ── Link Building / SEO ──────────────────────────────────────────
+  'linkwhisper':          {model:'per_workspace', seat:0,   base:6,    typical:1,  variance:0.1, cat:'marketing'},
+
+  // ── Newsletters ──────────────────────────────────────────────────
+  'revue':                {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'marketing'},
 };
 
 /**
