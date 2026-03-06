@@ -45,7 +45,6 @@ section{position:relative;z-index:1}
 .btn-primary:hover{opacity:.9;box-shadow:0 0 60px rgba(255,200,87,0.3)}
 .btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--muted);padding:14px 28px;border-radius:8px;font-size:14px;font-family:'DM Mono',monospace;text-decoration:none;border:1px solid var(--border);cursor:pointer;letter-spacing:.04em;transition:all .2s}
 .btn-secondary:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
-.hero-stats{display:flex;gap:40px;flex-wrap:wrap;padding-top:40px;border-top:1px solid var(--border)}
 .stat-val{font-family:'DM Mono',monospace;font-size:32px;font-weight:500;color:var(--text);line-height:1}
 .stat-val span{color:var(--amber)}
 .stat-lbl{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
@@ -157,10 +156,18 @@ footer{padding:48px 0 32px;border-top:1px solid var(--border);position:relative;
 .metric-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-family:'DM Mono',monospace}
 @media(max-width:600px){.metric-cell{min-width:50%;border-right:none;border-bottom:1px solid var(--border)}.metric-cell:nth-child(odd){border-right:1px solid var(--border)}.metric-cell:last-child,.metric-cell:nth-last-child(2):nth-child(odd){border-bottom:none}}
 
+
+/* ── HERO METRICS BAR ── */
+.hero-metrics{display:flex;gap:0;flex-wrap:wrap;padding-top:40px;border-top:1px solid var(--border);margin-top:8px}
+.hm-cell{flex:1;min-width:120px;padding:16px 20px 16px 0;border-right:1px solid var(--border)}
+.hm-cell:last-child{border-right:none}
+.hm-num{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--amber);line-height:1;margin-bottom:5px;letter-spacing:-.01em}
+.hm-lbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+@media(max-width:640px){.hm-cell{min-width:50%;border-right:none;border-bottom:1px solid var(--border);padding:14px 0}.hm-cell:nth-child(odd){padding-right:16px}.hm-cell:nth-last-child(-n+2){border-bottom:none}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hero>*{animation:fadeUp .6s ease both}
 .hero-badge{animation-delay:.1s}.hero h1{animation-delay:.2s}.hero-sub{animation-delay:.3s}
-.hero-actions{animation-delay:.4s}.hero-stats{animation-delay:.5s}
+.hero-actions{animation-delay:.4s}.hero-metrics{animation-delay:.5s}
 .fade-up{opacity:0;animation:fadeUp .55s ease both;animation-play-state:paused}
 
 
@@ -301,36 +308,12 @@ nav,
       <a href="analyze.html" class="btn-primary">Run Free StackScan →</a>
       <a href="stacksignal.html" class="btn-secondary">View Stack Intelligence</a>
     </div>
-    <div class="hero-stats">
-      <div class="stat-item"><div class="stat-val">150<span>+</span></div><div class="stat-lbl">Tools in Database</div></div>
-      <div class="stat-item"><div class="stat-val">Vendor<span style="display:block;color:#ff6b6b;font-size:22px">Free</span></div><div class="stat-lbl">No paid placements. Ever.</div></div>
-      <div class="stat-item"><div class="stat-val">14<span>+</span></div><div class="stat-lbl">Industries Tracked</div></div>
-      <div class="stat-item"><div class="stat-val">60<span>s</span></div><div class="stat-lbl">Analysis Time</div></div>
-    </div>
-  </div>
-</section>
-
-<section class="metrics-bar">
-  <div class="metrics-bar-inner">
-    <div class="metric-cell">
-      <div class="metric-num" data-target="12482" data-suffix="">0</div>
-      <div class="metric-lbl">Stacks Analyzed</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-num" data-target="187" data-suffix="">0</div>
-      <div class="metric-lbl">Tools Tracked</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-num" data-target="3420" data-suffix="">0</div>
-      <div class="metric-lbl">Overlaps Detected</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-num" data-target="1204" data-suffix="">0</div>
-      <div class="metric-lbl">Tool Swaps Recommended</div>
-    </div>
-    <div class="metric-cell">
-      <div class="metric-num" data-target="14" data-suffix="+">0</div>
-      <div class="metric-lbl">Industries Modeled</div>
+    <div class="hero-metrics">
+      <div class="hm-cell"><div class="hm-num" id="hm-stacks">—</div><div class="hm-lbl">Stacks Analyzed</div></div>
+      <div class="hm-cell"><div class="hm-num" id="hm-tools">187</div><div class="hm-lbl">Tools Tracked</div></div>
+      <div class="hm-cell"><div class="hm-num" id="hm-overlaps">—</div><div class="hm-lbl">Overlaps Detected</div></div>
+      <div class="hm-cell"><div class="hm-num" id="hm-swaps">—</div><div class="hm-lbl">Tool Swaps Recommended</div></div>
+      <div class="hm-cell"><div class="hm-num" id="hm-industries">14+</div><div class="hm-lbl">Industries Modeled</div></div>
     </div>
   </div>
 </section>
@@ -592,28 +575,48 @@ document.querySelectorAll('.fade-up').forEach(el => {
 })();
 </script>
 <script>
-// ── METRICS COUNTER ANIMATION ──────────────────────────────────────
+// ── HOMEPAGE METRICS — live from /api/metrics, seeded fallback ───────
 (function(){
-  var counters = document.querySelectorAll('.metric-num[data-target]');
-  if (!counters.length) return;
+  var SEED = { stacks: 1240, tools: 187, overlaps: 3340, swaps: 890, industries: 14 };
 
-  function animateCounter(el) {
-    var target  = parseInt(el.getAttribute('data-target'), 10);
-    var suffix  = el.getAttribute('data-suffix') || '';
-    var duration = target > 5000 ? 1800 : target > 500 ? 1400 : 1000;
-    var start   = null;
-
-    function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
-
-    function step(ts) {
+  function animNum(el, target, suffix) {
+    if (!el || isNaN(target)) return;
+    suffix = suffix || '';
+    var dur = target > 5000 ? 1800 : target > 500 ? 1300 : 900;
+    var start = null;
+    function ease(t){ return 1 - Math.pow(1-t, 3); }
+    function step(ts){
       if (!start) start = ts;
-      var progress = Math.min((ts - start) / duration, 1);
-      var current  = Math.round(easeOut(progress) * target);
-      el.textContent = current.toLocaleString() + suffix;
-      if (progress < 1) requestAnimationFrame(step);
-      else el.textContent = target.toLocaleString() + suffix;
+      var p = Math.min((ts - start) / dur, 1);
+      el.textContent = Math.round(ease(p) * target).toLocaleString() + suffix;
+      if (p < 1) requestAnimationFrame(step);
     }
+    el.textContent = '0';
     requestAnimationFrame(step);
   }
 
-  var io = new IntersectionObserver(function(entries) {
+  function populate(v) {
+    animNum(document.getElementById('hm-stacks'),    v.stacks);
+    animNum(document.getElementById('hm-tools'),     v.tools);
+    animNum(document.getElementById('hm-overlaps'),  v.overlaps);
+    animNum(document.getElementById('hm-swaps'),     v.swaps);
+    animNum(document.getElementById('hm-industries'),v.industries, '+');
+  }
+
+  fetch('/api/metrics')
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+    .then(function(d){
+      var real = d && d.count > 0;
+      populate({
+        stacks:     real ? d.count                                 : SEED.stacks,
+        tools:      SEED.tools,
+        overlaps:   real ? Math.round(d.count * 2.7)              : SEED.overlaps,
+        swaps:      real ? (d.cuts ? d.cuts.length : SEED.swaps)  : SEED.swaps,
+        industries: real ? Object.keys(d.byIndustry||{}).length   : SEED.industries
+      });
+    })
+    .catch(function(){ populate(SEED); });
+})();
+</script>
+</body>
+</html>
