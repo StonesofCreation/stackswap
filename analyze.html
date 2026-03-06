@@ -2980,7 +2980,8 @@ function renderResult(r) {
         <path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
       </svg>
       Download One Pager (PDF)
-    </button>`;
+    </button>
+    <div style="font-size:11px;color:#6B7899;font-family:Inter,sans-serif;margin-top:6px;text-align:center">Export the full StackScan report as a clean PDF.</div>`;
   // pdfBar appended before upsell — see below
   const body = document.createElement('div');
   body.className = 'ss-report-body';
@@ -3247,7 +3248,7 @@ function renderResult(r) {
     upgHdr.style.cssText = 'display:flex;align-items:center;padding:0 8px 10px;border-bottom:2px solid #EEF2FF;margin-bottom:2px';
     upgHdr.innerHTML = '<div style="min-width:26px"></div>' +
       '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">BEING SWAPPED</div>' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#CBD5E1;font-family:Inter,sans-serif;margin:0 12px">\u2192</div>' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8B5CF6;font-family:Inter,sans-serif;margin:0 12px">\u2192</div>' +
       '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">REPLACED BY</div>' +
       '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif;min-width:64px;text-align:right">SAVES</div>';
     upgCard.appendChild(upgHdr);
@@ -3270,13 +3271,13 @@ function renderResult(r) {
       from.textContent = u.tool;
 
       const arrow = document.createElement('div');
-      arrow.style.cssText = 'font-size:15px;color:#CBD5E1;margin:0 12px;flex-shrink:0';
+      arrow.style.cssText = 'font-size:15px;color:#8B5CF6;margin:0 12px;flex-shrink:0';
       arrow.textContent = '\u2192';
 
       const toWrap = document.createElement('div');
       toWrap.style.cssText = 'flex:1;display:flex;align-items:center;gap:6px';
       const toName = document.createElement('span');
-      toName.style.cssText = 'font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#1847ED';
+      toName.style.cssText = 'font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#8B5CF6';
       toName.textContent = u.r;
       toWrap.appendChild(toName);
       if (trend && trend.signal === 'high') {
@@ -3392,17 +3393,33 @@ function renderResult(r) {
         (cost ? '<div style="font-size:12px;font-weight:600;color:#6B7899;font-family:Inter,sans-serif">' + cost + '</div>' : '');
       row.appendChild(left);
 
-      // Center: stack tools — large and bold
+      // Center: stack tools — split cost from tool list, render separately
       const center = document.createElement('div');
-      center.style.cssText = 'font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#0B1F5E;line-height:1.65;letter-spacing:-.01em';
-      // Parse comma-separated tools into individual pills
-      const tools = stack.split(/[,+·•]/).map(t => t.trim()).filter(Boolean);
-      if (tools.length > 1) {
-        center.innerHTML = tools.map(t =>
-          '<span style="display:inline-block;margin:2px 4px 2px 0;padding:3px 10px;background:rgba(24,71,237,0.06);border:1px solid rgba(24,71,237,0.12);border-radius:6px;font-size:13px;font-weight:600;color:#0B1F5E;font-family:Inter,sans-serif">' + t + '</span>'
-        ).join('');
-      } else {
-        center.textContent = stack;
+      center.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+
+      // Extract inline cost estimate if present (e.g. "Tool A + Tool B — ~$500/mo for a 10-person team")
+      const emDashIdx = stack.indexOf(' — ');
+      const toolPart  = emDashIdx > -1 ? stack.slice(0, emDashIdx) : stack;
+      const costPart  = emDashIdx > -1 ? stack.slice(emDashIdx + 3) : '';
+
+      // Tool pills
+      const pillWrap = document.createElement('div');
+      pillWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px 6px;align-items:flex-start';
+      const tools = toolPart.split(/[,+·•]/).map(t => t.trim()).filter(Boolean);
+      tools.forEach(t => {
+        const pill = document.createElement('span');
+        pill.style.cssText = 'display:inline-block;padding:3px 10px;background:rgba(24,71,237,0.06);border:1px solid rgba(24,71,237,0.12);border-radius:6px;font-size:13px;font-weight:600;color:#0B1F5E;font-family:Inter,sans-serif';
+        pill.textContent = t;
+        pillWrap.appendChild(pill);
+      });
+      center.appendChild(pillWrap);
+
+      // Cost summary line — only if extracted
+      if (costPart) {
+        const costLine = document.createElement('div');
+        costLine.style.cssText = 'display:flex;align-items:center;gap:5px;font-size:12px;color:#6B7899;font-family:Inter,sans-serif;font-weight:500;margin-top:2px';
+        costLine.innerHTML = '<span style="color:' + color + ';font-weight:700;font-size:11px">✓</span> Estimated stack cost: ' + costPart;
+        center.appendChild(costLine);
       }
       row.appendChild(center);
 
@@ -4027,13 +4044,10 @@ DESIGN REQUIREMENTS:
     btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
   } catch(err) {
     console.error('Pro report error:', err);
+    // Fallback: use print dialog on the current report page
+    try { window.print(); } catch(e) {}
     btn.disabled = false;
-    btn.innerHTML = '⚠ Generation failed — try again';
-    btn.style.background = 'linear-gradient(135deg,#991B1B,#DC2626)';
-    setTimeout(() => {
-      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
-      btn.style.background = 'linear-gradient(135deg,#0B1F5E 0%,#1847ED 100%)';
-    }, 3500);
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
   }
 }
 
