@@ -76,7 +76,8 @@ section{position:relative;z-index:1}
 .vs-item.strike{text-decoration:line-through;color:var(--dim)}
 .how{padding:100px 0;background:rgba(255,255,255,0.01);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:64px}
-.step-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;position:relative;transition:all .25s ease}
+.step-card:hover{border-color:rgba(255,191,71,0.45);background:rgba(255,191,71,0.03);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,191,71,0.18),0 10px 30px rgba(255,191,71,0.08)}
 .step-num{font-family:'DM Mono',monospace;font-size:48px;font-weight:500;color:rgba(255,200,87,0.12);line-height:1;margin-bottom:20px}
 .step-title{font-size:16px;color:var(--text);font-weight:700;margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif}
 .step-desc{font-size:14px;color:var(--muted);line-height:1.75}
