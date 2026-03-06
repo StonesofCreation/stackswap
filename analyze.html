@@ -4775,12 +4775,13 @@ function generateProReport() {
     const $   = (v,fb='—') => v || fb;
     const money = n => n > 0 ? '~$'+Number(n).toLocaleString() : '—';
 
-    function section(num, title, color, content) {
+    function section(num, title, color, content, subtitle) {
       color = color || '#0B1F5E';
       return `<div class="section" style="page-break-inside:avoid">
         <div class="sec-hd" style="border-left-color:${color}">
           <span class="sec-num">${num}</span>${esc(title)}
         </div>
+        ${subtitle ? `<div style="font-size:13px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.6;margin:-8px 0 16px;padding-left:2px">${subtitle}</div>` : ''}
         ${content}
       </div>`;
     }
@@ -4850,7 +4851,7 @@ function generateProReport() {
         ? `At ${money(monthly)}/mo in recoverable savings, this document identifies exactly where to act and in what sequence.`
         : `No major cost overlaps were detected, but AI-native upgrade opportunities exist that could improve workflow efficiency.'`}</p>
       ${_role ? `<p>Prepared for: <strong>${esc(_role)}</strong>${_email?' — '+esc(_email):''}</p>` : ''}
-    `);
+    `, 'High-level health assessment of your current stack based on tool count, team size, and spending patterns.');
 
     // ── SECTION 2: Cost Breakdown ────────────────────────────────────────
     let currentTotal = 0;
@@ -4891,7 +4892,7 @@ function generateProReport() {
         <div class="cost-cell"><div class="cost-lbl">Optimized Stack</div><div class="cost-val green">${money(optimizedTotal)}/mo</div></div>
         <div class="cost-cell highlight"><div class="cost-lbl">Monthly Savings</div><div class="cost-val green">${money(monthly > 0 ? monthly : savingsDelta)}/mo</div></div>
       </div>
-    `);
+    `, 'Per-tool cost estimates based on your team size, contract type, and published list pricing.');
 
     // ── SECTION 3: Overlap Analysis ──────────────────────────────────────
     const allOverlaps = [
@@ -4909,7 +4910,7 @@ function generateProReport() {
         ])
       )}
       ${callout(`<strong>${allOverlaps.length} overlap${allOverlaps.length!==1?'s':''} detected</strong> across ${esc(_co)}'s stack. Total recoverable: <strong class="green">${money(allOverlaps.reduce((s,o)=>s+(o.save||0),0))}/mo</strong>.`,'info')}
-    ` : `<p class="muted">No significant overlaps detected. The stack is reasonably consolidated for a ${$(_ts,'—')}-person team.</p>`);
+    ` : `<p class="muted">No significant overlaps detected. The stack is reasonably consolidated for a ${$(_ts,'—')}-person team.</p>`, 'Tools with overlapping functionality that create redundant spend and data fragmentation.');
 
     // ── SECTION 4: AI-Native Upgrades ────────────────────────────────────
     const s4 = section(4, 'AI-Native Upgrade Opportunities', '#7C3AED', upgrades.length > 0 ? `
@@ -4922,7 +4923,7 @@ function generateProReport() {
           esc(u.why || `${u.r} is purpose-built for modern AI-assisted workflows and reduces manual overhead significantly.`)
         ])
       )}
-    ` : `<p class="muted">No AI upgrade opportunities flagged for the current tool set. The stack already includes modern tooling in key categories.</p>`);
+    ` : `<p class="muted">No AI upgrade opportunities flagged for the current tool set. The stack already includes modern tooling in key categories.</p>`, 'Legacy tools that can be replaced with modern AI-native alternatives at lower cost.');
 
     // ── SECTION 5: Ideal Stack Blueprint ─────────────────────────────────
     const categories = {};
@@ -4959,7 +4960,7 @@ function generateProReport() {
         'Current tooling retained with overlaps consolidated.'
       }</p>
       <div class="blueprint">${catHTML}</div>
-    `);
+    `, 'The recommended tool configuration for your industry, team size, and stated goals.');
 
     // ── SECTION 6: Savings Roadmap ────────────────────────────────────────
     const estCurrent = _budget ? Number(_budget) : (currentTotal > 0 ? currentTotal : monthly * 2.5);
@@ -4972,7 +4973,7 @@ function generateProReport() {
         <div class="savings-card highlight"><div class="savings-lbl">Annual Savings</div><div class="savings-val green">${money(annual)}</div></div>
       </div>
       ${monthly > 0 ? callout(`At ${money(monthly)}/mo, ${esc(_co)} recovers <strong>${money(annual)}/year</strong> — enough to fund ${Math.floor(annual/2000)} months of additional headcount, infrastructure investment, or demand gen at current burn rates. Savings estimates are based on published list pricing and may exceed actual contract rates.`, 'success') : ''}
-    `);
+    `, 'Projected financial impact of implementing the top recommendations from this report.');
 
     // ── SECTION 7: Stack Lock-In Risk ───────────────────────────────────────
     const lockInScore = lockIn.score;
@@ -5017,7 +5018,7 @@ function generateProReport() {
         lockInRows
       )}
       ${lockInScore < 65 ? callout(`<strong>Migration planning recommended.</strong> Before switching any high-lock-in tools, export all historical data, document existing integrations, and validate that replacement tools have compatible import flows.`, 'warn') : callout('Stack portability is healthy. Migration paths exist for all tools — standard change management practices apply.', 'success')}
-    `);
+    `, 'How dependent your stack is on hard-to-migrate platforms and long-term vendor contracts.');
 
     // ── SECTION 8: 30/60/90 Day Plan ─────────────────────────────────────
     const contractTimingNote = _contract === 'annual' ? 'Annual contract holders: sequence tool cancellations around renewal dates to avoid early termination fees.'
@@ -5059,7 +5060,7 @@ function generateProReport() {
         </div>
       </div>
       ${contractTimingNote ? callout(contractTimingNote, 'warn') : ''}
-    `);
+    `, 'A phased action plan to implement changes with minimal disruption to your team.');
 
     // ── SECTION 8: Migration Risk Callouts ───────────────────────────────
     const HIGH_LOCK = ['salesforce','hubspot','netsuite','sap','oracle','workday','zendesk','marketo'];
@@ -5087,7 +5088,7 @@ function generateProReport() {
           .map(r=>[esc(r.risk), r.likelihood==='High'?'<span style="color:#DC2626;font-weight:700">High</span>':r.likelihood==='Medium'?'<span style="color:#D97706;font-weight:700">Medium</span>':'<span style="color:#16A34A;font-weight:700">Low</span>', esc(r.mitigation)])
       )}
       ${callout('In most organizations, tool decisions require alignment across multiple stakeholders. This document is structured to support those conversations — share it with IT, Finance, and Operations leads before beginning migrations.','info')}
-    `);
+    `, 'High-risk migrations that require extra planning, data backups, or team retraining.');
 
     // ── SECTION 9: Final Recommendation ──────────────────────────────────
     const s10 = section(10, 'Final Recommendation', '#0B1F5E', `
@@ -5109,7 +5110,7 @@ function generateProReport() {
       <ol style="margin-top:10px;padding-left:20px">
         ${actions.slice(0,5).map(a=>`<li style="margin-bottom:8px"><strong>${esc(a.title)}</strong>${a.text?` — ${esc(a.text)}`:''}</li>`).join('')}
       </ol>` : ''}
-    `);
+    `, 'The single most impactful action to take based on everything in this report.');
 
     // ── BUILD FULL HTML DOC ──────────────────────────────────────────────
     const html = `<!DOCTYPE html>
