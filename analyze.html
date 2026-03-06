@@ -2898,6 +2898,29 @@ function renderNetworkMap(container, tools, conflicts, orphaned, glueNote) {
 }
 
 
+// ── STACK LOCK-IN RISK ───────────────────────────────────────────────────────
+// High score = easy to swap (low risk). 0 = deeply embedded (high risk).
+function calcLockInRisk(tools) {
+  const HIGH_LOCK = ['Salesforce','HubSpot','SAP','Oracle','Workday','ServiceNow','Dynamics 365','Netsuite','Zendesk','Marketo','Pardot'];
+  const MED_LOCK  = ['Slack','Notion','Asana','Monday.com','Jira','Confluence','Intercom','Gong','Outreach','Salesloft','Zoho'];
+  const LOW_LOCK  = ['Buffer','Hootsuite','Loom','Calendly','Typeform','Hotjar','Zapier','Stripe','DocuSign','Canva','Figma'];
+  let risk = 0;
+  tools.forEach(t => {
+    const tl = t.toLowerCase();
+    if (HIGH_LOCK.some(h => tl.includes(h.toLowerCase()))) risk += 3;
+    else if (MED_LOCK.some(m => tl.includes(m.toLowerCase()))) risk += 2;
+    else if (LOW_LOCK.some(l => tl.includes(l.toLowerCase()))) risk += 1;
+    else risk += 1.5;
+  });
+  const avg = risk / tools.length;
+  const score = Math.max(0, Math.min(100, Math.round(100 - ((avg - 1) / 2) * 100)));
+  const label = score >= 70 ? 'Low Risk — Stack is portable' :
+                score >= 40 ? 'Medium Risk — Some dependencies' :
+                              'High Risk — Deeply embedded';
+  const color = score >= 70 ? '#16A34A' : score >= 40 ? '#D97706' : '#DC2626';
+  return { score, label, color };
+}
+
 // ── RENDER RESULT ─────────────────────────────────────────────────────────────
 function renderResult(r) {
   const box = document.getElementById("result-box");
@@ -3804,29 +3827,7 @@ async function generateProReport() {
     '': ''
   }[_contract] || '';
 
-  // ── STACK LOCK-IN RISK (multi-tool only) ────────────────────────────────
-  // High score = easy to swap (low risk). Low score = deeply embedded (high risk).
-  function calcLockInRisk(tools) {
-    const HIGH_LOCK = ['Salesforce','HubSpot','SAP','Oracle','Workday','ServiceNow','Dynamics 365','Netsuite','Zendesk','Marketo','Pardot'];
-    const MED_LOCK  = ['Slack','Notion','Asana','Monday.com','Jira','Confluence','Intercom','Gong','Outreach','Salesloft','Zoho'];
-    const LOW_LOCK  = ['Buffer','Hootsuite','Loom','Calendly','Typeform','Hotjar','Zapier','Stripe','DocuSign','Canva','Figma'];
-    let risk = 0;
-    tools.forEach(t => {
-      const tl = t.toLowerCase();
-      if (HIGH_LOCK.some(h => tl.includes(h.toLowerCase()))) risk += 3;
-      else if (MED_LOCK.some(m => tl.includes(m.toLowerCase()))) risk += 2;
-      else if (LOW_LOCK.some(l => tl.includes(l.toLowerCase()))) risk += 1;
-      else risk += 1.5; // unknown = medium assumption
-    });
-    const avg = risk / tools.length;
-    // Scale to 0-100 where 100 = easily swappable, 0 = deeply locked
-    const score = Math.max(0, Math.min(100, Math.round(100 - ((avg - 1) / 2) * 100)));
-    const label = score >= 70 ? 'Low Risk — Stack is portable' :
-                  score >= 40 ? 'Medium Risk — Some dependencies' :
-                                'High Risk — Deeply embedded';
-    const color = score >= 70 ? '#16A34A' : score >= 40 ? '#D97706' : '#DC2626';
-    return { score, label, color };
-  }
+
 
   // ── ROLE CLASSIFIER ──────────────────────────────────────────────────
   const _roleLower = _role.toLowerCase();
@@ -4345,7 +4346,7 @@ function renderMain() {
     selectedTools.forEach((t,i)=>{
       const tag=div("tag",t);
       const x=el("button","tag-x","×");
-      x.addEventListener("click",()=>{selectedTools.splice(i,1);renderTags();updateCTA();markDot(1,selectedTools.length>0);if(typeof updateContractVsLockIn==="function")updateContractVsLockIn();});
+      x.addEventListener("click",()=>{selectedTools.splice(i,1);renderTags();updateCTA();markDot(1,selectedTools.length>0)});
       tag.appendChild(x); tagsDiv.appendChild(tag);
     });
   }
@@ -4368,7 +4369,7 @@ function renderMain() {
     });
     toolInput.value = "";
     suggBox.classList.remove("show");
-    if (added > 0) { renderTags(); updateCTA(); markDot(1, selectedTools.length > 0); if(typeof updateContractVsLockIn==='function') updateContractVsLockIn(); }
+    if (added > 0) { renderTags(); updateCTA(); markDot(1, selectedTools.length > 0); }
   }
   toolInput.addEventListener("input", () => {
     // Only show suggestions if no comma in input (single tool mode)
@@ -4427,42 +4428,9 @@ function renderMain() {
   ctW.style.display = selectedTools.length <= 1 ? '' : 'none';
   tsRow.appendChild(ctW);
 
-  // Lock-In Risk info card (shown for multi-tool, hidden for single)
-  const lockInWrap = div("field-wrap"); lockInWrap.id = 'ctx-lockin-wrap';
-  lockInWrap.innerHTML = '<label class="lbl">Stack Lock-In Risk</label>';
-  const lockInDisplay = document.createElement('div');
-  lockInDisplay.id = 'ctx-lockin-display';
-  lockInDisplay.style.cssText = 'font-size:13px;color:var(--muted);line-height:1.6;padding:10px 0 4px';
-  lockInDisplay.textContent = 'Add multiple tools to calculate.';
-  lockInWrap.appendChild(lockInDisplay);
-  lockInWrap.appendChild(div("field-hint","how hard it would be to migrate away from this stack"));
-  lockInWrap.style.display = selectedTools.length > 1 ? '' : 'none';
-  tsRow.appendChild(lockInWrap);
 
-  function updateContractVsLockIn() {
-    const multi = selectedTools.length > 1;
-    const cw = document.getElementById('ctx-contract-wrap');
-    const lw = document.getElementById('ctx-lockin-wrap');
-    const ld = document.getElementById('ctx-lockin-display');
-    if (cw) cw.style.display = multi ? 'none' : '';
-    if (lw) lw.style.display = multi ? '' : 'none';
-    if (ld && multi) {
-      const HIGH_LOCK = ['Salesforce','HubSpot','SAP','Oracle','Workday','ServiceNow','Dynamics 365','Netsuite','Zendesk','Marketo','Pardot'];
-      const MED_LOCK  = ['Slack','Notion','Asana','Monday.com','Jira','Confluence','Intercom','Gong','Outreach','Salesloft','Zoho'];
-      let risk = 0;
-      selectedTools.forEach(t => {
-        const tl = t.toLowerCase();
-        if (HIGH_LOCK.some(h => tl.includes(h.toLowerCase()))) risk += 3;
-        else if (MED_LOCK.some(m => tl.includes(m.toLowerCase()))) risk += 2;
-        else risk += 1.5;
-      });
-      const avg = risk / selectedTools.length;
-      const score = Math.max(0, Math.min(100, Math.round(100 - ((avg - 1) / 2) * 100)));
-      const label = score >= 70 ? 'Low Risk' : score >= 40 ? 'Medium Risk' : 'High Risk';
-      const color = score >= 70 ? '#39ff85' : score >= 40 ? '#ffc857' : '#ff6b6b';
-      ld.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:22px;font-weight:500;color:' + color + '">' + score + '/100</span> <span style="color:' + color + ';font-size:13px">' + label + '</span><div style="font-size:12px;color:#9a9690;margin-top:4px">Measures portability of your current stack based on integrations and dependencies. High = easy to swap tools.</div>';
-    }
-  }
+
+
   // Budget — with smart auto-estimate (last field, logically)
   const budW = div("field-wrap"); budW.innerHTML='<label class="lbl">Monthly SaaS Spend ($)</label>';
   const budIn = el("input","field"); budIn.type="text"; budIn.inputMode="numeric"; budIn.pattern="[0-9]*"; budIn.placeholder="e.g. 2500"; budIn.id="bud";
