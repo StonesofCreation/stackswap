@@ -756,9 +756,6 @@ nav,
   <a href="analyze.html" class="nav-drawer-cta">Run Free StackScan →</a>
 </div>
 
-  <a href="analyze.html" class="nav-drawer-cta">Run Free StackScan →</a>
-</div>
-
 <div id="app"></div>
 <!-- Small Stack Warning Modal -->
 <div class="ss-modal-backdrop" id="ssModalBackdrop">
@@ -3726,7 +3723,86 @@ async function generateProReport() {
     '': ''
   }[_contract] || '';
 
-  const prompt = `You are a senior SaaS cost optimization consultant generating a premium StackScan Pro Decision Document. 
+  // ── ROLE CLASSIFIER ──────────────────────────────────────────────────
+  const _roleLower = _role.toLowerCase();
+  const _persona = (() => {
+    if (/ceo|coo|cfo|founder|owner|president|principal|partner|exec/i.test(_roleLower))
+      return 'founder';
+    if (/ops|operations|revops|rev ops|revenue ops|systems|process|admin/i.test(_roleLower))
+      return 'ops';
+    if (/market|growth|demand|content|brand|campaign|seo|paid|social/i.test(_roleLower))
+      return 'marketing';
+    if (/it|infra|engineer|developer|architect|tech|devops|security|sysadmin/i.test(_roleLower))
+      return 'technical';
+    if (/analyst|data|bi |reporting|intelligence|research/i.test(_roleLower))
+      return 'analyst';
+    if (/sales|account|bdr|sdr|ae |closing|rep /i.test(_roleLower))
+      return 'sales';
+    return 'ic'; // individual contributor default
+  })();
+
+  const _personaProfiles = {
+    founder: {
+      label: 'Founder / Executive',
+      tone: 'Lead with financial impact and executive brevity. Prioritize ~$X savings, fewer tools, faster decisions. Skip technical detail. Frame everything as ROI and operational leverage. Speak to time, money, and competitive clarity.',
+      execSummaryFocus: 'Financial impact first. How much is being wasted, and what does fixing it unlock for the business.',
+      sectionEmphasis: 'Sections 1, 6, and 9 should feel like an executive briefing. Keep language simple and outcome-focused.',
+      advocacyLine: 'This document is designed to support internal alignment conversations. It can be shared directly with your leadership team or board when evaluating SaaS consolidation.',
+      closingTone: 'Frame the final recommendation around business velocity and financial efficiency.'
+    },
+    ops: {
+      label: 'Operations / RevOps',
+      tone: 'Lead with process efficiency and operational clarity. Focus on tool overlap, workflow redundancy, and maintenance burden. Use precise, process-oriented language. Acknowledge the complexity of managing multiple systems.',
+      execSummaryFocus: 'Operational complexity and its downstream effects on workflows, data integrity, and team maintenance overhead.',
+      sectionEmphasis: 'Sections 3, 7, and 8 are highest priority. Migration risks and overlap analysis are the core value for this reader.',
+      advocacyLine: 'This document can serve as a starting point for internal discussions around stack consolidation. It is structured to support cross-functional alignment when presenting to leadership.',
+      closingTone: 'Frame the final recommendation around operational simplicity and reduced system maintenance.'
+    },
+    marketing: {
+      label: 'Marketing / Growth',
+      tone: 'Lead with automation capability, campaign efficiency, and data quality. Focus on segmentation, analytics, and the quality of marketing workflows. Emphasize how the recommended stack improves targeting and reduces manual effort.',
+      execSummaryFocus: 'How the current stack limits marketing automation, data quality, and campaign performance — and what a cleaner stack enables.',
+      sectionEmphasis: 'Section 4 (AI upgrades) and Section 5 (ideal stack) are highest value. Focus on marketing toolchain quality.',
+      advocacyLine: 'This analysis can be shared with your marketing leadership or operations team to support a case for modernizing the marketing tech stack.',
+      closingTone: 'Frame the final recommendation around better campaign performance and cleaner marketing data infrastructure.'
+    },
+    technical: {
+      label: 'Technical / IT',
+      tone: 'Lead with integration architecture and system maintainability. Focus on unnecessary integration points, API dependencies, data sync complexity, and security surface area. Use precise technical framing without jargon overload.',
+      execSummaryFocus: 'Integration complexity and the architectural cost of maintaining redundant or legacy systems.',
+      sectionEmphasis: 'Sections 3, 8, and 7 are highest priority. Integration risk and migration considerations are the core value for this reader.',
+      advocacyLine: 'This document is structured to support internal technical review conversations. It can be shared with engineering leads or IT leadership when evaluating infrastructure simplification.',
+      closingTone: 'Frame the final recommendation around architectural clarity, reduced integration surface area, and system reliability.'
+    },
+    analyst: {
+      label: 'Analyst / Data',
+      tone: 'Lead with data quality, reporting accuracy, and the cost of fragmented analytics. Focus on how tool consolidation improves data reliability and simplifies reporting workflows. Use evidence-based framing.',
+      execSummaryFocus: 'Data fragmentation across tools and how it increases reporting complexity and reduces confidence in business metrics.',
+      sectionEmphasis: 'Sections 2, 6, and 5 are highest priority. Cost breakdown accuracy and the ideal stack configuration are the core value here.',
+      advocacyLine: 'This analysis is designed to be shareable with leadership as a data-backed case for stack optimization. The savings estimates and cost breakdown can anchor internal budget discussions.',
+      closingTone: 'Frame the final recommendation around cleaner data infrastructure and improved reporting reliability.'
+    },
+    sales: {
+      label: 'Sales / Revenue',
+      tone: 'Lead with revenue efficiency and pipeline velocity. Focus on how tool consolidation reduces friction in the sales process, improves CRM hygiene, and frees up rep time. Keep language grounded in outcomes.',
+      execSummaryFocus: 'How the current stack introduces friction into the sales process and what a leaner stack enables for revenue operations.',
+      sectionEmphasis: 'Sections 1, 4, and 9 are highest priority. Focus on tools that directly impact pipeline and revenue workflows.',
+      advocacyLine: 'This document can support a conversation with sales leadership or RevOps about simplifying the revenue tech stack and improving rep efficiency.',
+      closingTone: 'Frame the final recommendation around sales efficiency, CRM reliability, and pipeline velocity.'
+    },
+    ic: {
+      label: 'Individual Contributor',
+      tone: 'Lead with day-to-day workflow impact. Focus on how the current stack creates unnecessary manual steps, tool switching, and process friction. Frame recommendations as practical improvements to how work gets done.',
+      execSummaryFocus: 'Where the current stack creates friction in daily work and what a cleaner stack enables for team productivity.',
+      sectionEmphasis: 'Section 7 (implementation plan) and Section 9 (final recommendation) should feel practical and actionable.',
+      advocacyLine: 'This document is designed to help you present these findings internally. It can be shared with your manager or operations team as a structured case for stack changes.',
+      closingTone: 'Frame the final recommendation around reduced operational friction and improved day-to-day workflow efficiency.'
+    }
+  };
+
+  const _pCtx = _personaProfiles[_persona];
+
+  const prompt = `You are a senior SaaS cost optimization consultant generating a premium StackScan Pro Decision Document.
 This is a formal, consultant-grade PDF deliverable. Write with confidence, clarity, and a slightly candid tone.
 Do NOT use generic AI filler language. Be specific, reference actual tool names, and always use ~ before cost/savings estimates.
 Return ONLY valid JSON in this exact shape — no markdown, no backticks, no preamble:
@@ -3741,6 +3817,7 @@ The HTML must be a complete document (<!DOCTYPE html>...) with:
 CLIENT DATA:
 Company: ${_co}
 Contact: ${_email}${_role ? ' — ' + _role : ''}
+Reader Persona: ${_pCtx.label}
 Team Size: ${_ts}
 Industry: ${_ind}
 Tools (${selectedTools.length} total): ${_tools}
@@ -3760,6 +3837,29 @@ Legacy Tools Flagged: ${_legacy || 'none'}
 Recommended Stack: ${_optimizedStack || selectedTools.join(', ')}
 Priority Actions: ${_actions || 'see recommendations'}
 
+━━━ PERSONA-AWARE WRITING INSTRUCTIONS ━━━
+
+Reader role: ${_pCtx.label}
+Tone direction: ${_pCtx.tone}
+Executive summary focus: ${_pCtx.execSummaryFocus}
+Section emphasis: ${_pCtx.sectionEmphasis}
+Closing tone: ${_pCtx.closingTone}
+
+INTERNAL ADVOCACY — include this naturally in the document (do not quote it verbatim, adapt it to context):
+"${_pCtx.advocacyLine}"
+
+COMMITTEE REALITY — weave this framing in naturally somewhere in Section 8 or 9:
+"In many organizations, tool decisions involve multiple stakeholders. A clear savings roadmap and structured migration plan helps teams align more quickly on high-impact changes. This document is designed to support those conversations."
+
+TONE GUARDRAILS:
+- Never use dismissive, sarcastic, or cynical language
+- Do not criticize internal stakeholders or decision-making processes
+- Position the report as a clarity tool, not an indictment
+- The reader may not be the final decision maker — write to empower them, not embarrass them
+- Confident and practical, never condescending
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 DOCUMENT STRUCTURE — generate all 9 sections:
 
 HEADER:
@@ -3768,46 +3868,51 @@ HEADER:
 - Subtitle: "A full diagnosis of your current SaaS stack with a prioritized optimization roadmap."
 - Pricing badge: strikethrough $99 in gray, then green "Free Until Launch"
 - Meta: Generated for ${_co} | ${_ts} people | ${_ind} | ${selectedTools.length} tools
+- Small label: "Prepared for ${_role || 'internal review'}" in muted gray
 
 SECTION 1 — Executive Diagnosis
-2-3 tight paragraphs. Reference ${_co} by name. Mention team size, tool count, overlap count, estimated savings. 
+2-3 tight paragraphs. Reference ${_co} by name. Mention team size, tool count, overlap count, estimated savings.
+Focus: ${_pCtx.execSummaryFocus}
 Be candid: if overbuilt, say so. If lean, acknowledge it. Tie to their goals: ${_goals}.
 
 SECTION 2 — Current Stack Cost Breakdown
-HTML table with columns: Tool | Primary Function | Est. Monthly Cost | Recommendation (Keep/Replace/Evaluate/Cut)
+HTML table: Tool | Primary Function | Est. Monthly Cost | Recommendation (Keep/Replace/Evaluate/Cut)
 Use actual tool names from: ${_tools}
-Use realistic pricing. Show total at bottom (~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4)).toLocaleString() : '?'}/mo estimated current, ~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4) - _monthlySavings).toLocaleString() : '?'}/mo optimized).
+Show total at bottom (~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4)).toLocaleString() : '?'}/mo current, ~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4) - _monthlySavings).toLocaleString() : '?'}/mo optimized).
 
 SECTION 3 — Overlap Analysis
-For each overlap detected, show: Overlap Area | Tools Involved | Explanation | Recommendation
-Reference: ${_topSwaps || 'analyze tools for overlaps based on: ' + _tools}
+For each overlap: Overlap Area | Tools Involved | Explanation | Recommendation
+Emphasis for this reader: ${_persona === 'technical' ? 'integration complexity and API surface area' : _persona === 'marketing' ? 'campaign workflow redundancy and data fragmentation' : 'operational cost and workflow duplication'}
+Reference: ${_topSwaps || 'analyze tools for overlaps: ' + _tools}
 
 SECTION 4 — AI-Native Upgrade Opportunities
-For each upgrade: Current Tool → Recommended Tool | Reasoning (2 sentences, mention ${_co})
-Reference: ${_topUpgrades || 'identify AI-native alternatives for tools in: ' + _tools}
+For each upgrade: Current Tool → Recommended Tool | 2-sentence reasoning mentioning ${_co}
+Emphasis: ${_persona === 'marketing' ? 'automation quality and segmentation capability' : _persona === 'technical' ? 'maintainability and integration simplicity' : 'cost reduction and workflow efficiency'}
+Reference: ${_topUpgrades || 'identify AI-native alternatives for: ' + _tools}
 
 SECTION 5 — Ideal Stack Blueprint
-Group recommended tools by category (CRM, Marketing, Operations, Analytics, Automation, etc.)
-Base on: ${_optimizedStack || selectedTools.join(', ')}
-2-sentence explanation of why this configuration works for ${_co}.
+Group recommended tools by category. Base on: ${_optimizedStack || selectedTools.join(', ')}
+2-sentence explanation framed for ${_pCtx.label} — why this configuration serves ${_co} specifically.
 
 SECTION 6 — Savings Roadmap
-Show: Current Stack Cost | Optimized Stack Cost | Annual Savings | Monthly Savings
-Use ~$${_annualSavings.toLocaleString()}/year total savings estimate.
-Short paragraph referencing ${_co}.
+Current Stack Cost | Optimized Stack Cost | Annual Savings | Monthly Savings
+Use ~$${_annualSavings.toLocaleString()}/year. Short paragraph referencing ${_co}.
+${_persona === 'founder' ? 'Lead with ROI. Frame savings in terms of what the money could fund instead.' : _persona === 'analyst' ? 'Show the math clearly. Include a note on confidence level of estimates.' : 'Keep it clear and direct.'}
 
 SECTION 7 — 30/60/90 Day Implementation Plan
-Realistic. Reference actual tool names from their stack. 
+Realistic. Reference actual tools. Tailor to: ${contractCtx || 'their situation'}.
+${_persona === 'ops' || _persona === 'technical' ? 'Include dependency mapping and data validation steps.' : _persona === 'ic' ? 'Focus on day-to-day workflow transitions, not just IT tasks.' : 'Keep steps practical and outcome-focused.'}
 30 days: cancel/plan. 60 days: migrate. 90 days: decommission + validate.
-Tailor to ${contractCtx || 'their situation'}.
 
 SECTION 8 — Migration Considerations
-3-5 risk callouts specific to tools in their stack. CRM migration, integration dependencies, contract timing.
-Reference ${_co} by name. Build trust through specificity.
+3-5 risk callouts specific to their stack. Reference ${_co}.
+${_persona === 'technical' ? 'Emphasize API dependencies, data sync risks, and integration testing requirements.' : _persona === 'ops' ? 'Emphasize workflow continuity, training requirements, and rollback planning.' : 'Focus on business continuity and practical switching risks.'}
+Include the committee/stakeholder framing naturally here.
 
 SECTION 9 — Final Recommendation
-One strong closing paragraph. Reference ${_co}. Tie back to goals: ${_goals}. 
-Confident, strategic tone. No hype.
+One strong closing paragraph. Reference ${_co}. Tie to goals: ${_goals}.
+${_pCtx.closingTone}
+End with the internal advocacy line naturally woven in — not as a quote, but as a closing thought.
 
 FOOTER:
 - "StackScan Pro — AI-Powered SaaS Stack Intelligence"
@@ -3816,14 +3921,14 @@ FOOTER:
 - stackswap.io
 
 DESIGN REQUIREMENTS:
-- Navy (#0B1F5E) for headings, #1847ED for accents, #16A34A for positive/savings
-- Section headers: large navy, bold, with a thin blue left border or underline accent  
-- Tables: clean, alternating #F8FAFF rows, navy header row with white text
-- Callout boxes: light blue (#EEF2FF) background with left blue border for recommendations
-- Savings numbers: large, green, bold
-- Font: Sora for headings, Inter for body
+- Navy (#0B1F5E) headings, #1847ED accents, #16A34A for savings/positive
+- Section headers: large navy bold with thin blue left border accent
+- Tables: alternating #F8FAFF rows, navy header with white text
+- Recommendation callout boxes: #EEF2FF background with left #1847ED border
+- Savings figures: large, #16A34A, bold
+- Fonts: Sora headings, Inter body
 - Page breaks before major sections
-- Professional footer on each page`;
+- Repeating professional footer`;
 
   try {
     const resp = await fetch('/api/analyze-narrative', {
