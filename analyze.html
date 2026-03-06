@@ -3851,292 +3851,11 @@ ${clone.outerHTML}
   setTimeout(() => { try { win.print(); } catch(e) {} }, 1200);
 }
 
-async function generateProReport() {
+function generateProReport() {
   const btn = document.getElementById('ss-pro-report-btn');
   if (!btn) return;
   btn.disabled = true;
-  btn.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span>&nbsp; Generating your report…';
-
-  // Collect all available data
-  const _co     = leadData.company || 'Your Company';
-  const _email  = leadData.email || '';
-  const _role   = leadData.role || '';
-  const _ts     = leadData.teamSize || document.getElementById('ctx-teamsize')?.value || 'unknown';
-  const _ind    = document.getElementById('ind')?.value || 'Not specified';
-  const _budget = document.getElementById('bud')?.value || '';
-  const _contract = document.getElementById('ctx-contract')?.value || '';
-  const _tools  = selectedTools.join(', ');
-  const _goals  = selectedGoals.join(', ') || 'general optimization';
-
-  // Grab last analysis result from DOM data we already rendered
-  const _scoreEl = document.querySelector('.ss-score-num');
-  const _score   = _scoreEl ? _scoreEl.textContent : '?';
-
-  // Build financial context
-  const _annualSavings = window._lastAnalysisResult?.totalSave
-    ? (window._lastAnalysisResult.totalSave * 12)
-    : 0;
-  const _monthlySavings = window._lastAnalysisResult?.totalSave || 0;
-  const _overlaps = window._lastAnalysisResult?.overlaps?.length || 0;
-  const _catOverlaps = (window._lastAnalysisResult?.categoryOverlaps||[]).length;
-  const _upgrades = (window._lastAnalysisResult?.upgrades||[]).length;
-  const _actions  = (window._lastAnalysisResult?.actions||[]).map(a=>a.title).join('; ');
-  const _topSwaps = (window._lastAnalysisResult?.overlaps||[]).slice(0,5)
-    .map(o=>`${o.b} → ${o.a} (~$${o.save}/mo)`).join(', ');
-  const _topUpgrades = (window._lastAnalysisResult?.upgrades||[]).slice(0,4)
-    .map(u=>`${u.tool} → ${u.r} (~$${u.save}/mo)`).join(', ');
-  const _legacy = (window._lastAnalysisResult?.legacyPenalties||[])
-    .map(l=>l.tool).join(', ');
-  const _optimizedStack = (window._lastAnalysisResult?.optimized||[]).join(', ');
-
-  const contractCtx = {
-    'month-to-month': 'on month-to-month contracts (can switch immediately)',
-    'annual': 'on annual contracts (switches should align with renewals)',
-    'multi-year': 'on multi-year contracts (prioritize future planning over immediate cuts)',
-    'not-sure': 'with unknown contract terms',
-    '': ''
-  }[_contract] || '';
-
-
-
-  // ── ROLE CLASSIFIER ──────────────────────────────────────────────────
-  const _roleLower = _role.toLowerCase();
-  const _persona = (() => {
-    if (/ceo|coo|cfo|founder|owner|president|principal|partner|exec/i.test(_roleLower))
-      return 'founder';
-    if (/ops|operations|revops|rev ops|revenue ops|systems|process|admin/i.test(_roleLower))
-      return 'ops';
-    if (/market|growth|demand|content|brand|campaign|seo|paid|social/i.test(_roleLower))
-      return 'marketing';
-    if (/it|infra|engineer|developer|architect|tech|devops|security|sysadmin/i.test(_roleLower))
-      return 'technical';
-    if (/analyst|data|bi |reporting|intelligence|research/i.test(_roleLower))
-      return 'analyst';
-    if (/sales|account|bdr|sdr|ae |closing|rep /i.test(_roleLower))
-      return 'sales';
-    return 'ic'; // individual contributor default
-  })();
-
-  const _personaProfiles = {
-    founder: {
-      label: 'Founder / Executive',
-      tone: 'Lead with financial impact and executive brevity. Prioritize ~$X savings, fewer tools, faster decisions. Skip technical detail. Frame everything as ROI and operational leverage. Speak to time, money, and competitive clarity.',
-      execSummaryFocus: 'Financial impact first. How much is being wasted, and what does fixing it unlock for the business.',
-      sectionEmphasis: 'Sections 1, 6, and 9 should feel like an executive briefing. Keep language simple and outcome-focused.',
-      advocacyLine: 'This document is designed to support internal alignment conversations. It can be shared directly with your leadership team or board when evaluating SaaS consolidation.',
-      closingTone: 'Frame the final recommendation around business velocity and financial efficiency.'
-    },
-    ops: {
-      label: 'Operations / RevOps',
-      tone: 'Lead with process efficiency and operational clarity. Focus on tool overlap, workflow redundancy, and maintenance burden. Use precise, process-oriented language. Acknowledge the complexity of managing multiple systems.',
-      execSummaryFocus: 'Operational complexity and its downstream effects on workflows, data integrity, and team maintenance overhead.',
-      sectionEmphasis: 'Sections 3, 7, and 8 are highest priority. Migration risks and overlap analysis are the core value for this reader.',
-      advocacyLine: 'This document can serve as a starting point for internal discussions around stack consolidation. It is structured to support cross-functional alignment when presenting to leadership.',
-      closingTone: 'Frame the final recommendation around operational simplicity and reduced system maintenance.'
-    },
-    marketing: {
-      label: 'Marketing / Growth',
-      tone: 'Lead with automation capability, campaign efficiency, and data quality. Focus on segmentation, analytics, and the quality of marketing workflows. Emphasize how the recommended stack improves targeting and reduces manual effort.',
-      execSummaryFocus: 'How the current stack limits marketing automation, data quality, and campaign performance — and what a cleaner stack enables.',
-      sectionEmphasis: 'Section 4 (AI upgrades) and Section 5 (ideal stack) are highest value. Focus on marketing toolchain quality.',
-      advocacyLine: 'This analysis can be shared with your marketing leadership or operations team to support a case for modernizing the marketing tech stack.',
-      closingTone: 'Frame the final recommendation around better campaign performance and cleaner marketing data infrastructure.'
-    },
-    technical: {
-      label: 'Technical / IT',
-      tone: 'Lead with integration architecture and system maintainability. Focus on unnecessary integration points, API dependencies, data sync complexity, and security surface area. Use precise technical framing without jargon overload.',
-      execSummaryFocus: 'Integration complexity and the architectural cost of maintaining redundant or legacy systems.',
-      sectionEmphasis: 'Sections 3, 8, and 7 are highest priority. Integration risk and migration considerations are the core value for this reader.',
-      advocacyLine: 'This document is structured to support internal technical review conversations. It can be shared with engineering leads or IT leadership when evaluating infrastructure simplification.',
-      closingTone: 'Frame the final recommendation around architectural clarity, reduced integration surface area, and system reliability.'
-    },
-    analyst: {
-      label: 'Analyst / Data',
-      tone: 'Lead with data quality, reporting accuracy, and the cost of fragmented analytics. Focus on how tool consolidation improves data reliability and simplifies reporting workflows. Use evidence-based framing.',
-      execSummaryFocus: 'Data fragmentation across tools and how it increases reporting complexity and reduces confidence in business metrics.',
-      sectionEmphasis: 'Sections 2, 6, and 5 are highest priority. Cost breakdown accuracy and the ideal stack configuration are the core value here.',
-      advocacyLine: 'This analysis is designed to be shareable with leadership as a data-backed case for stack optimization. The savings estimates and cost breakdown can anchor internal budget discussions.',
-      closingTone: 'Frame the final recommendation around cleaner data infrastructure and improved reporting reliability.'
-    },
-    sales: {
-      label: 'Sales / Revenue',
-      tone: 'Lead with revenue efficiency and pipeline velocity. Focus on how tool consolidation reduces friction in the sales process, improves CRM hygiene, and frees up rep time. Keep language grounded in outcomes.',
-      execSummaryFocus: 'How the current stack introduces friction into the sales process and what a leaner stack enables for revenue operations.',
-      sectionEmphasis: 'Sections 1, 4, and 9 are highest priority. Focus on tools that directly impact pipeline and revenue workflows.',
-      advocacyLine: 'This document can support a conversation with sales leadership or RevOps about simplifying the revenue tech stack and improving rep efficiency.',
-      closingTone: 'Frame the final recommendation around sales efficiency, CRM reliability, and pipeline velocity.'
-    },
-    ic: {
-      label: 'Individual Contributor',
-      tone: 'Lead with day-to-day workflow impact. Focus on how the current stack creates unnecessary manual steps, tool switching, and process friction. Frame recommendations as practical improvements to how work gets done.',
-      execSummaryFocus: 'Where the current stack creates friction in daily work and what a cleaner stack enables for team productivity.',
-      sectionEmphasis: 'Section 7 (implementation plan) and Section 9 (final recommendation) should feel practical and actionable.',
-      advocacyLine: 'This document is designed to help you present these findings internally. It can be shared with your manager or operations team as a structured case for stack changes.',
-      closingTone: 'Frame the final recommendation around reduced operational friction and improved day-to-day workflow efficiency.'
-    }
-  };
-
-  const _pCtx = _personaProfiles[_persona];
-
-  // ── Lock-in risk score ────────────────────────────────────────────────
-  const _lockIn = calcLockInRisk(selectedTools);
-
-  const prompt = `You are a senior SaaS cost optimization consultant.
-Generate a premium, consultant-grade StackScan Pro Decision Document as a complete standalone HTML page.
-
-OUTPUT RULES — CRITICAL:
-- Return ONLY the raw HTML document. Start with <!DOCTYPE html>. No markdown. No backticks. No preamble.
-- All CSS must be inline in a <style> tag in <head>.
-- No external images. No JavaScript. Fully self-contained.
-- Use Google Fonts (Sora + Inter) via @import in the style block.
-- Print-optimized: @page { margin: 0.6in; } and @media print rules.
-- This document will be printed to PDF — make every section count.
-
-━━━ CLIENT DATA ━━━
-Company: ${_co}
-Contact: ${_email}${_role ? ' — ' + _role : ''}
-Reader Persona: ${_pCtx.label}
-Team Size: ${_ts}
-Industry: ${_ind}
-Tools (${selectedTools.length} total): ${_tools}
-Monthly Budget: ${_budget ? '~$' + Number(_budget).toLocaleString() + '/mo' : 'not provided'}
-Goals: ${_goals}
-Contract terms: ${contractCtx || 'not specified'}
-
-━━━ ANALYSIS RESULTS ━━━
-Stack Health Score: ${_score}/100
-Tool Overlaps Detected: ${_overlaps + _catOverlaps}
-AI Upgrade Opportunities: ${_upgrades}
-Estimated Monthly Savings: ~$${_monthlySavings.toLocaleString()}
-Estimated Annual Savings: ~$${_annualSavings.toLocaleString()}
-Top Overlap Swaps: ${_topSwaps || 'analyze tools listed above'}
-Top AI Upgrades: ${_topUpgrades || 'identify from tools listed above'}
-Legacy Tools Flagged: ${_legacy || 'none detected'}
-Recommended Stack: ${_optimizedStack || selectedTools.join(', ')}
-Priority Actions: ${_actions || 'see analysis'}
-Stack Lock-In Risk: ${_lockIn.label} (${_lockIn.score}/100)
-
-━━━ PERSONA INSTRUCTIONS ━━━
-Tone: ${_pCtx.tone}
-Executive summary focus: ${_pCtx.execSummaryFocus}
-Section emphasis: ${_pCtx.sectionEmphasis}
-Closing tone: ${_pCtx.closingTone}
-Internal advocacy (weave in naturally, not verbatim): "${_pCtx.advocacyLine}"
-
-TONE GUARDRAILS:
-- Confident and candid, never sarcastic or condescending
-- Always reference ${_co} by name throughout
-- Use ~ before all cost/savings estimates
-- Never use generic AI filler. Be specific about actual tools.
-
-━━━ DOCUMENT STRUCTURE ━━━
-
-HEADER BLOCK:
-- Logo: "StackScan Pro" in navy, bold, large. Tagline: "AI-Powered SaaS Stack Intelligence"
-- Title: "Stack Decision Document — ${_co}"
-- Subtitle: "A complete diagnosis of your current SaaS stack with a prioritized optimization roadmap."
-- Meta strip: ${_ts} people | ${_ind} | ${selectedTools.length} tools analyzed | Generated ${new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}
-- Pricing badge: Strikethrough $99 in gray next to bold green "Free Until Launch"
-- Prepared for: "${_role || 'internal review'}" in muted small text
-
-SECTION 1 — Executive Diagnosis
-Bold header with blue left border accent.
-2–3 tight paragraphs. Reference ${_co} directly. Cite team size, tool count, overlap count, and savings.
-Be candid: if the stack is overbuilt for the team size, say so clearly. If reasonably lean, acknowledge it.
-Tie findings to their stated goals: ${_goals}.
-Focus: ${_pCtx.execSummaryFocus}
-
-SECTION 2 — Current Stack Cost Breakdown
-HTML table with 4 columns: Tool | Primary Function | Est. Monthly Cost | Recommendation
-Use ALL tools from: ${_tools}
-Recommendations: Keep / Replace / Evaluate / Cut
-Show a total row at the bottom. Current total ~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4)).toLocaleString() : 'est.'}/mo. Optimized total.
-Style: alternating row shading, navy header row, bold total row.
-
-SECTION 3 — Overlap Analysis
-For each overlap detected, a row or callout card:
-Overlap Area | Tools in Conflict | Why It's a Problem | What to Do
-Emphasis: ${_persona === 'technical' ? 'integration complexity and API duplication' : _persona === 'marketing' ? 'data fragmentation and campaign workflow redundancy' : 'operational cost and duplicated workflows'}
-Reference: ${_topSwaps || 'analyze from: ' + _tools}
-If no overlaps detected, write a brief note confirming the stack is clean in this area.
-
-SECTION 4 — AI-Native Upgrade Opportunities
-For each upgrade, a styled card or table row:
-Current Tool → AI-Native Alternative | Monthly Savings | Why the Switch Makes Sense for ${_co}
-2 focused sentences per upgrade — no filler.
-Emphasis: ${_persona === 'marketing' ? 'automation quality and attribution accuracy' : _persona === 'technical' ? 'API simplicity and maintenance overhead' : 'cost reduction and workflow speed'}
-Reference: ${_topUpgrades || 'identify opportunities from: ' + _tools}
-
-SECTION 5 — Ideal Stack Blueprint
-Group the recommended tools by category (CRM, Outreach, Analytics, Ops, Content, etc.).
-Present as a clean visual grid or categorized list.
-2 sentences at the top explaining why this configuration is the right fit for ${_co} at ${_ts} people.
-Highlight any tools being removed and their replacements.
-
-SECTION 6 — Savings Roadmap
-A prominent financial summary block:
-- Current monthly cost | Optimized monthly cost | Monthly savings | Annual savings
-- Use large, bold green ($16A34A) for savings figures
-- Short paragraph tying savings to ${_co}'s goals and reinvestment potential
-${_persona === 'founder' ? 'Frame the savings as what the business could do with that capital instead.' : _persona === 'analyst' ? 'Show the math clearly. Note the confidence level of the estimates (list pricing basis).' : 'Keep it direct and outcome-focused.'}
-
-SECTION 7 — Stack Lock-In Risk Assessment
-Lock-In Score: ${_lockIn.score}/100 — ${_lockIn.label}
-Explain what this score means for ${_co}.
-3–4 specific callouts about which tools carry the highest switching complexity and why.
-${_persona === 'technical' ? 'Include API dependency notes and data migration requirements per tool.' : _persona === 'ops' ? 'Focus on workflow continuity risk and rollback planning.' : 'Focus on business continuity and realistic switching timelines.'}
-
-SECTION 8 — 30/60/90 Day Implementation Plan
-A three-phase plan in a styled timeline or table:
-30 Days: Immediate actions — cancel, plan, notify vendors
-60 Days: Migration — move workflows, set up replacements
-90 Days: Decommission — validate, confirm savings, close accounts
-Tailor to: ${contractCtx || 'their situation'}
-Reference actual tool names. Make it specific and actionable, not generic.
-${_persona === 'ops' || _persona === 'technical' ? 'Include data export, validation, and integration testing steps.' : ''}
-Weave in naturally: "In many organizations, tool decisions involve multiple stakeholders. A clear savings roadmap and structured migration plan helps teams align more quickly on high-impact changes."
-
-SECTION 9 — Migration Risk Callouts
-3–5 specific risks for this exact stack. Reference actual tool names and ${_co}.
-For each risk: Risk | Likelihood | Mitigation
-${_persona === 'technical' ? 'Emphasize API dependencies, data sync risks, and integration testing.' : _persona === 'ops' ? 'Emphasize training, rollback plans, and workflow continuity.' : 'Focus on business continuity and practical switching friction.'}
-
-SECTION 10 — Final Recommendation
-One strong closing page. Reference ${_co} by name.
-Tie back to their goals: ${_goals}.
-${_pCtx.closingTone}
-End with the internal advocacy line naturally woven in as a closing thought — not as a quote.
-
-FOOTER (on every page via CSS):
-"StackScan Pro — AI-Powered SaaS Stack Intelligence  |  stackswap.io  |  Generated for ${_co}"
-Strikethrough $99 | Free Until Launch (in green)
-
-━━━ DESIGN SPECIFICATION ━━━
-Color palette:
-- Navy headings: #0B1F5E
-- Blue accent: #1847ED
-- Savings/positive: #16A34A
-- Warning/cut: #DC2626
-- Evaluate: #D97706
-- Background: #FFFFFF
-- Section bg tint: #F8FAFF
-- Muted text: #64748B
-- Borders: #E2E8F0
-
-Typography:
-- Headings: Sora, 700–800 weight
-- Body: Inter, 400–500 weight
-- Monospace figures: use tabular-nums
-
-Layout:
-- Section headers: large navy bold, thin #1847ED left-border accent (4px), padding-left 16px
-- Tables: alternating #F8FAFF/#FFFFFF rows, navy #0B1F5E header with white text, 1px #E2E8F0 borders
-- Callout boxes: #EEF2FF background, 4px left border #1847ED, rounded corners 6px
-- Warning boxes: #FEF2F2 background, 4px left border #DC2626
-- Savings figures: font-size 28px+, #16A34A, bold
-- Page breaks: before Sections 1, 5, 8, 10
-- Generous whitespace — this is a premium document
-- Print: hide any screen-only UI, ensure tables don't break mid-row`;
+  btn.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span>&nbsp; Building your Pro Report…';
 
   const RESET_BTN = () => {
     btn.disabled = false;
@@ -4144,53 +3863,501 @@ Layout:
   };
 
   try {
-    // Call Anthropic API directly from browser
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const r = window._lastAnalysisResult;
+    if (!r) { alert('Run an analysis first.'); RESET_BTN(); return; }
+
+    const _co        = leadData.company || 'Your Company';
+    const _email     = leadData.email || '';
+    const _role      = leadData.role || '';
+    const _ts        = leadData.teamSize || document.getElementById('ctx-teamsize')?.value || '';
+    const _ind       = document.getElementById('ind')?.value || 'Not specified';
+    const _budget    = document.getElementById('bud')?.value || '';
+    const _contract  = document.getElementById('ctx-contract')?.value || '';
+    const _goals     = selectedGoals.join(', ') || 'cost optimization and operational efficiency';
+    const _date      = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+    const monthly    = r.totalSave || 0;
+    const annual     = monthly * 12;
+    const overlaps   = r.overlaps || [];
+    const catOvlps   = r.categoryOverlaps || [];
+    const upgrades   = r.upgrades || [];
+    const actions    = r.actions || [];
+    const optimized  = r.optimized || selectedTools;
+    const legacy     = r.legacyPenalties || [];
+    const findings   = r.consultantFindings || [];
+    const score      = r.score || 0;
+    const scoreColor = score>=75?'#16A34A':score>=55?'#D97706':'#DC2626';
+    const gradeLetter= score>=90?'A+':score>=80?'A':score>=70?'B+':score>=60?'B':score>=50?'C':'D';
+
+    const lockIn     = calcLockInRisk(selectedTools);
+
+    const contractLabel = {
+      'month-to-month': 'Month-to-month (can switch immediately)',
+      'annual': 'Annual contracts (align switches with renewals)',
+      'multi-year': 'Multi-year contracts (plan ahead)',
+      'not-sure': 'Contract terms unknown'
+    }[_contract] || 'Not specified';
+
+    // ── Helpers ─────────────────────────────────────────────────────────────
+    const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const $   = (v,fb='—') => v || fb;
+    const money = n => n > 0 ? '~$'+Number(n).toLocaleString() : '—';
+
+    function section(num, title, color, content) {
+      color = color || '#0B1F5E';
+      return `<div class="section" style="page-break-inside:avoid">
+        <div class="sec-hd" style="border-left-color:${color}">
+          <span class="sec-num">${num}</span>${esc(title)}
+        </div>
+        ${content}
+      </div>`;
+    }
+    function table(headers, rows, note) {
+      const ths = headers.map(h=>`<th>${esc(h)}</th>`).join('');
+      const trs = rows.map((row,i)=>`<tr class="${i%2===0?'even':'odd'}">${row.map(cell=>`<td>${cell}</td>`).join('')}</tr>`).join('');
+      return `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>${note?`<div class="tbl-note">${note}</div>`:''}`;
+    }
+    function callout(text, type) {
+      // type: info | warn | success
+      const colors = {info:'#EEF2FF|#1847ED',warn:'#FEF9EC|#D97706',success:'#F0FDF4|#16A34A',red:'#FEF2F2|#DC2626'};
+      const [bg,border] = (colors[type]||colors.info).split('|');
+      return `<div class="callout" style="background:${bg};border-left-color:${border}">${text}</div>`;
+    }
+    function chip(text, color) {
+      return `<span class="chip" style="background:${color}22;color:${color};border:1px solid ${color}44">${esc(text)}</span>`;
+    }
+    function verdictChip(v) {
+      const map = {keep:['Keep','#16A34A'],replace:['Replace','#DC2626'],cut:['Cut','#DC2626'],evaluate:['Evaluate','#D97706']};
+      const [label,col] = map[v]||['—','#9CA3AF'];
+      return chip(label, col);
+    }
+
+    // ── Tool verdicts from findings ──────────────────────────────────────
+    const toolVerdicts = {};
+    selectedTools.forEach(t => { toolVerdicts[t] = 'keep'; });
+    overlaps.forEach(o => { toolVerdicts[o.b] = 'replace'; });
+    catOvlps.forEach(o => { if(o.b) toolVerdicts[o.b] = 'evaluate'; });
+    upgrades.forEach(u => { toolVerdicts[u.tool] = 'evaluate'; });
+    legacy.forEach(l => { toolVerdicts[l.tool] = 'replace'; });
+    findings.filter(f=>f.type==='wrong'||f.type==='wrong_tool').forEach(f => {
+      const t = f.title.split('—')[0].trim().split('+')[0].trim();
+      if (toolVerdicts[t] !== undefined) toolVerdicts[t] = 'replace';
     });
 
-    if (!resp.ok) {
-      const errText = await resp.text();
-      throw new Error('API error ' + resp.status + ': ' + errText.slice(0, 200));
+    // Tool cost estimates (list pricing approximations)
+    const TOOL_COSTS = {
+      'salesforce':300,'hubspot':500,'marketo':900,'pardot':400,'outreach':150,'salesloft':125,
+      'gong':150,'chorus':120,'zoominfo':250,'clearbit':200,'6sense':300,'demandbase':400,
+      'slack':12,'teams':6,'notion':16,'confluence':10,'asana':13,'monday':12,'jira':8,'linear':8,
+      'intercom':120,'drift':200,'zendesk':90,'freshdesk':30,'helpscout':25,
+      'hootsuite':100,'buffer':20,'sproutsocial':200,'semrush':150,'ahrefs':100,
+      'google analytics':0,'mixpanel':60,'amplitude':60,'heap':80,'hotjar':20,'clarity':0,
+      'zapier':50,'make':20,'workato':300,'n8n':0,
+      'stripe':0,'quickbooks':50,'xero':40,
+      'loom':12,'zoom':20,'calendly':12,'typeform':50,'docusign':25,
+      'figma':45,'canva':15,'adobe':80,
+      'github':4,'gitlab':19,'jira':8,
+      'apollo':100,'clay':250,'smartlead':40,'lemlist':50,
+      'netsuite':999,'sap':0,'oracle':0,'workday':0
+    };
+    function toolCost(name) {
+      const key = name.toLowerCase();
+      for (const [k,v] of Object.entries(TOOL_COSTS)) {
+        if (key.includes(k)) return v;
+      }
+      return 50; // default estimate
     }
 
-    const data = await resp.json();
-    let html = (data.content?.[0]?.text || '')
-      .replace(/^```html\s*/i, '')
-      .replace(/```\s*$/, '')
-      .trim();
+    // ── SECTION 1: Executive Diagnosis ──────────────────────────────────
+    const totalIssues = overlaps.length + catOvlps.length + upgrades.length + legacy.length;
+    const s1 = section(1, 'Executive Diagnosis', '#0B1F5E', `
+      <p>${esc(_co)} is running <strong>${selectedTools.length} tools</strong> for a ${$(_ts,'—')}-person team in ${esc(_ind)}.
+      ${totalIssues > 0
+        ? `The analysis identified <strong>${totalIssues} optimization opportunities</strong> with estimated savings of <strong class="green">${money(monthly)}/mo</strong> (${money(annual)}/yr).`
+        : 'The stack is reasonably lean with limited overlap detected.'}
+      ${score < 55 ? `With a stack health score of <strong style="color:${scoreColor}">${score}/100</strong>, this is a high-priority situation — the tools are working against each other.`
+        : score < 75 ? `The stack health score of <strong style="color:${scoreColor}">${score}/100</strong> indicates real opportunity without crisis.`
+        : `The stack health score of <strong style="color:${scoreColor}">${score}/100</strong> reflects a solid baseline.`}</p>
+      <p>Primary goals: <em>${esc(_goals)}</em>. ${monthly > 0
+        ? `At ${money(monthly)}/mo in recoverable savings, this document identifies exactly where to act and in what sequence.`
+        : `No major cost overlaps were detected, but AI-native upgrade opportunities exist that could improve workflow efficiency.'`}</p>
+      ${_role ? `<p>Prepared for: <strong>${esc(_role)}</strong>${_email?' — '+esc(_email):''}</p>` : ''}
+    `);
 
-    if (!html) throw new Error('Empty response from API');
-    if (!html.includes('<!DOCTYPE') && !html.includes('<html')) {
-      throw new Error('API returned non-HTML content');
+    // ── SECTION 2: Cost Breakdown ────────────────────────────────────────
+    let currentTotal = 0;
+    let optimizedTotal = 0;
+    const costRows = selectedTools.map(tool => {
+      const cost = toolCost(tool);
+      const verdict = toolVerdicts[tool] || 'keep';
+      currentTotal += cost;
+      if (verdict !== 'cut' && verdict !== 'replace') optimizedTotal += cost;
+      const overlap = overlaps.find(o=>o.b===tool||o.a===tool);
+      const upg = upgrades.find(u=>u.tool===tool);
+      const fn = overlap ? `Overlaps with ${esc(overlap.b===tool?overlap.a:overlap.b)}` :
+                 upg ? `AI-native alt: ${esc(upg.r)}` :
+                 verdict === 'keep' ? 'No conflicts detected' : 'Review recommended';
+      return [`<strong>${esc(tool)}</strong>`, fn, cost > 0 ? `~$${cost}/mo/seat` : 'Free / variable', verdictChip(verdict)];
+    });
+    const savingsDelta = currentTotal - optimizedTotal;
+    const s2 = section(2, 'Current Stack Cost Breakdown', '#1847ED', `
+      ${table(
+        ['Tool','Primary Function / Note','Est. Seat Cost','Recommendation'],
+        costRows,
+        'Pricing based on published list rates per seat. Actual contract rates may differ. "Variable" tools priced at usage-based tiers.'
+      )}
+      <div class="cost-summary">
+        <div class="cost-cell"><div class="cost-lbl">Current Stack</div><div class="cost-val">${money(currentTotal)}/mo</div></div>
+        <div class="cost-arrow">→</div>
+        <div class="cost-cell"><div class="cost-lbl">Optimized Stack</div><div class="cost-val green">${money(optimizedTotal)}/mo</div></div>
+        <div class="cost-cell highlight"><div class="cost-lbl">Monthly Savings</div><div class="cost-val green">${money(monthly > 0 ? monthly : savingsDelta)}/mo</div></div>
+      </div>
+    `);
+
+    // ── SECTION 3: Overlap Analysis ──────────────────────────────────────
+    const allOverlaps = [...overlaps.map(o=>({a:o.a,b:o.b,save:o.save,area:o.area||'Feature overlap',why:o.why||'These tools share significant functional overlap.'})),
+                         ...catOvlps.map(o=>({a:o.a||'',b:o.b||'',save:o.save||0,area:o.area||'Category overlap',why:o.why||'Duplicate tools in the same category.'}))];
+    const s3 = section(3, 'Overlap Analysis', '#DC2626', allOverlaps.length > 0 ? `
+      ${table(
+        ['Overlap Area','Tools in Conflict','Impact','Recommendation'],
+        allOverlaps.map(o=>[
+          esc(o.area),
+          `<strong>${esc(o.a)}</strong> + <strong>${esc(o.b)}</strong>`,
+          o.save > 0 ? `<span class="green">~$${o.save}/mo recoverable</span>` : 'Operational overhead',
+          `Consolidate to ${esc(o.a)} — it covers the primary use case for ${esc(_co)}'s team size.`
+        ])
+      )}
+      ${callout(`<strong>${allOverlaps.length} overlap${allOverlaps.length!==1?'s':''} detected</strong> across ${esc(_co)}'s stack. Total recoverable: <strong class="green">${money(overlaps.reduce((s,o)=>s+o.save,0))}/mo</strong>.`,'info')}
+    ` : `<p class="muted">No significant overlaps detected. The stack is reasonably consolidated for a ${$(_ts,'—')}-person team.</p>`);
+
+    // ── SECTION 4: AI-Native Upgrades ────────────────────────────────────
+    const s4 = section(4, 'AI-Native Upgrade Opportunities', '#7C3AED', upgrades.length > 0 ? `
+      ${table(
+        ['Current Tool','AI-Native Alternative','Monthly Savings','Why Switch'],
+        upgrades.map(u=>[
+          `<strong>${esc(u.tool)}</strong>`,
+          `<strong style="color:#7C3AED">${esc(u.r)}</strong>`,
+          u.save > 0 ? `<span class="green">~$${u.save}/mo</span>` : 'Efficiency gain',
+          esc(u.why || `${u.r} is purpose-built for modern AI-assisted workflows and reduces manual overhead significantly.`)
+        ])
+      )}
+    ` : `<p class="muted">No AI upgrade opportunities flagged for the current tool set. The stack already includes modern tooling in key categories.</p>`);
+
+    // ── SECTION 5: Ideal Stack Blueprint ─────────────────────────────────
+    const categories = {};
+    (optimized.length > 0 ? optimized : selectedTools).forEach(tool => {
+      const tl = tool.toLowerCase();
+      const cat =
+        /salesforce|hubspot|zoho|pipedrive|crm/.test(tl) ? 'CRM' :
+        /outreach|salesloft|apollo|lemlist|clay|smartlead|lemlist|instantly/.test(tl) ? 'Outreach & Sequencing' :
+        /slack|teams|loom|zoom|meet/.test(tl) ? 'Communication' :
+        /notion|confluence|coda|slab|guru/.test(tl) ? 'Knowledge & Docs' :
+        /asana|monday|jira|linear|clickup|trello/.test(tl) ? 'Project Management' :
+        /marketo|pardot|mailchimp|klaviyo|brevo|sendgrid|campaign/.test(tl) ? 'Marketing Automation' :
+        /gong|chorus|avoma|fireflies|otter/.test(tl) ? 'Conversation Intelligence' :
+        /google analytics|mixpanel|amplitude|heap|clarity|hotjar|segment/.test(tl) ? 'Analytics' :
+        /zapier|make|workato|n8n|tray/.test(tl) ? 'Automation' :
+        /stripe|quickbooks|xero|netsuite|bill/.test(tl) ? 'Finance' :
+        /github|gitlab|figma|linear|jira|vercel|netlify/.test(tl) ? 'Product & Eng' :
+        /hootsuite|buffer|sprout|later/.test(tl) ? 'Social Media' :
+        'Other Tools';
+      if (!categories[cat]) categories[cat] = [];
+      categories[cat].push(tool);
+    });
+    const catHTML = Object.entries(categories).map(([cat, tools]) =>
+      `<div class="bp-row"><div class="bp-cat">${esc(cat)}</div><div class="bp-tools">${tools.map(t=>chip(t,'#1847ED')).join(' ')}</div></div>`
+    ).join('');
+    const s5 = section(5, 'Ideal Stack Blueprint', '#1847ED', `
+      <p style="margin-bottom:16px">Recommended configuration for <strong>${esc(_co)}</strong> — ${$(_ts,'—')}-person team, ${esc(_ind)} vertical. ${
+        legacy.length > 0 ? `Legacy tools (${legacy.map(l=>l.tool).join(', ')}) have been removed.` :
+        upgrades.length > 0 ? 'AI-native alternatives substituted where applicable.' :
+        'Current tooling retained with overlaps consolidated.'
+      }</p>
+      <div class="blueprint">${catHTML}</div>
+    `);
+
+    // ── SECTION 6: Savings Roadmap ────────────────────────────────────────
+    const estCurrent = _budget ? Number(_budget) : (currentTotal > 0 ? currentTotal : monthly * 2.5);
+    const estOptimized = estCurrent - monthly;
+    const s6 = section(6, 'Savings Roadmap', '#16A34A', `
+      <div class="savings-grid">
+        <div class="savings-card"><div class="savings-lbl">Current Monthly</div><div class="savings-val" style="color:#DC2626">${money(estCurrent)}</div></div>
+        <div class="savings-card"><div class="savings-lbl">Optimized Monthly</div><div class="savings-val" style="color:#D97706">${money(estOptimized > 0 ? estOptimized : 0)}</div></div>
+        <div class="savings-card highlight"><div class="savings-lbl">Monthly Savings</div><div class="savings-val green">${money(monthly)}</div></div>
+        <div class="savings-card highlight"><div class="savings-lbl">Annual Savings</div><div class="savings-val green">${money(annual)}</div></div>
+      </div>
+      ${monthly > 0 ? callout(`At ${money(monthly)}/mo, ${esc(_co)} recovers <strong>${money(annual)}/year</strong> — enough to fund ${Math.floor(annual/2000)} months of additional headcount, infrastructure investment, or demand gen at current burn rates. Savings estimates are based on published list pricing and may exceed actual contract rates.`, 'success') : ''}
+    `);
+
+    // ── SECTION 7: 30/60/90 Day Plan ─────────────────────────────────────
+    const contractNote = _contract === 'annual' ? 'Annual contract holders: sequence tool cancellations around renewal dates to avoid early termination fees.'
+      : _contract === 'multi-year' ? 'Multi-year contracts: migrations should be planned now and executed at the next renewal window.'
+      : _contract === 'month-to-month' ? 'Month-to-month contracts: all changes can begin immediately with 30 days notice.'
+      : '';
+    const cuts = overlaps.map(o=>o.b).concat(legacy.map(l=>l.tool));
+    const adds = upgrades.map(u=>u.r);
+    const s7 = section(7, '30 / 60 / 90 Day Implementation Plan', '#0B1F5E', `
+      <div class="timeline">
+        <div class="tl-phase">
+          <div class="tl-header blue">30 Days — Audit &amp; Plan</div>
+          <ul>
+            <li>Export all data from tools flagged for removal: <strong>${cuts.slice(0,3).map(esc).join(', ')||'see overlap list'}</strong></li>
+            <li>Notify vendors of non-renewal for month-to-month contracts</li>
+            <li>Identify internal champions for replacement tools</li>
+            <li>Map current workflows that depend on flagged tools</li>
+            ${_budget ? `<li>Confirm SaaS spend baseline: current ${money(estCurrent)}/mo vs target ${money(estOptimized > 0 ? estOptimized : 0)}/mo</li>` : ''}
+          </ul>
+        </div>
+        <div class="tl-phase">
+          <div class="tl-header amber">60 Days — Migrate</div>
+          <ul>
+            ${adds.length > 0 ? `<li>Provision and onboard replacement tools: <strong>${adds.slice(0,3).map(esc).join(', ')}</strong></li>` : ''}
+            <li>Run parallel workflows for 2 weeks minimum before decommissioning</li>
+            <li>Migrate automations and integrations to new stack</li>
+            <li>Team training on any net-new tools</li>
+            <li>Validate data integrity across CRM, email, and analytics pipelines</li>
+          </ul>
+        </div>
+        <div class="tl-phase">
+          <div class="tl-header green">90 Days — Decommission &amp; Validate</div>
+          <ul>
+            <li>Cancel contracts for: <strong>${cuts.map(esc).join(', ')||'all flagged tools'}</strong></li>
+            <li>Confirm savings landed: target ${money(monthly)}/mo reduction</li>
+            <li>Document new stack configuration for onboarding future team members</li>
+            <li>Re-run StackScan to validate clean baseline</li>
+          </ul>
+        </div>
+      </div>
+      ${contractNote ? callout(contractNote, 'warn') : ''}
+    `);
+
+    // ── SECTION 8: Migration Risk Callouts ───────────────────────────────
+    const HIGH_LOCK = ['salesforce','hubspot','netsuite','sap','oracle','workday','zendesk','marketo'];
+    const risks = [];
+    selectedTools.forEach(t => {
+      const tl = t.toLowerCase();
+      if (HIGH_LOCK.some(h => tl.includes(h))) {
+        risks.push({risk:`Data migration from ${esc(t)}`,likelihood:'High',mitigation:`Export full data backup before any changes. Verify all integrations have a migration path. Allow 4–6 weeks minimum.`});
+      }
+    });
+    if (overlaps.length > 0) {
+      risks.push({risk:'Workflow disruption during tool transition',likelihood:'Medium',mitigation:'Run parallel workflows for minimum 2 weeks. Assign a migration lead per tool. Document all automation rules before shutdown.'});
     }
+    if (adds.length > 0) {
+      risks.push({risk:`Team adoption of new tools: ${adds.slice(0,2).map(esc).join(', ')}`,likelihood:'Medium',mitigation:'Schedule dedicated onboarding sessions. Identify internal champions. Set a 30-day adoption review checkpoint.'});
+    }
+    risks.push({risk:'Vendor lock-in during multi-tool consolidation',likelihood:lockIn.score < 50 ? 'High' : 'Low',mitigation:`Stack portability score is ${lockIn.score}/100 (${lockIn.label}). ${lockIn.score < 50 ? 'Prioritize data exports and integration documentation before beginning any migrations.' : 'Stack is reasonably portable. Standard migration procedures apply.'}`});
+    if (_ind === 'SaaS / Tech' || _ind === 'Healthcare' || _ind === 'Finance') {
+      risks.push({risk:'Compliance requirements during data migration',likelihood:'Medium',mitigation:`Ensure ${esc(_ind)} compliance requirements (SOC2, HIPAA, etc.) are validated for replacement tools before provisioning.`});
+    }
+    const s8 = section(8, 'Migration Risk Callouts', '#DC2626', `
+      ${table(
+        ['Risk','Likelihood','Mitigation'],
+        (risks.length > 0 ? risks : [{risk:'No high-risk migrations detected',likelihood:'Low',mitigation:'Standard change management practices apply.'}])
+          .map(r=>[esc(r.risk), r.likelihood==='High'?'<span style="color:#DC2626;font-weight:700">High</span>':r.likelihood==='Medium'?'<span style="color:#D97706;font-weight:700">Medium</span>':'<span style="color:#16A34A;font-weight:700">Low</span>', esc(r.mitigation)])
+      )}
+      ${callout('In most organizations, tool decisions require alignment across multiple stakeholders. This document is structured to support those conversations — share it with IT, Finance, and Operations leads before beginning migrations.','info')}
+    `);
+
+    // ── SECTION 9: Final Recommendation ──────────────────────────────────
+    const s9 = section(9, 'Final Recommendation', '#0B1F5E', `
+      <p>${esc(_co)}'s ${selectedTools.length}-tool stack ${
+        score < 55 ? 'has significant structural issues that are costing real money and introducing operational friction'
+        : score < 75 ? 'is functional but carrying unnecessary overhead that\'s slowing the team down'
+        : 'is well-positioned, with targeted optimizations available'
+      }. The path forward is clear: ${
+        monthly > 0
+          ? `consolidate ${allOverlaps.length > 0 ? allOverlaps.length + ' identified overlap' + (allOverlaps.length!==1?'s':'') + ', ' : ''}${upgrades.length > 0 ? 'adopt ' + upgrades.length + ' AI-native replacement' + (upgrades.length!==1?'s':'') + ', ' : ''}and recover <strong class="green">${money(annual)}/year</strong> in the process.`
+          : `the stack is lean — focus on the AI-native upgrade opportunities to increase efficiency without increasing spend.`
+      }</p>
+      <p>Given the goals of <em>${esc(_goals)}</em>, the highest-leverage move is: <strong>${
+        actions.length > 0 ? esc(actions[0].title) : 'begin with the overlap consolidation identified in Section 3'
+      }</strong>.</p>
+      <p>This document is designed to support internal conversations about stack optimization — whether that's with your leadership team, IT, or Finance. The analysis is data-backed, the savings are grounded in published pricing, and the 30/60/90 plan gives a clear execution path without disrupting operations.</p>
+      ${actions.length > 1 ? `
+      <div style="margin-top:16px"><strong>Priority Action List:</strong></div>
+      <ol style="margin-top:10px;padding-left:20px">
+        ${actions.slice(0,5).map(a=>`<li style="margin-bottom:8px"><strong>${esc(a.title)}</strong>${a.text?` — ${esc(a.text)}`:''}</li>`).join('')}
+      </ol>` : ''}
+    `);
+
+    // ── BUILD FULL HTML DOC ──────────────────────────────────────────────
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StackScan Pro — ${esc(_co)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;font-size:13px;line-height:1.6;color:#1A2340;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{margin:0.55in;size:letter}
+a{color:#1847ED;text-decoration:none}
+
+/* HEADER */
+.doc-header{background:linear-gradient(135deg,#0B1F5E 0%,#1847ED 100%);color:#fff;padding:36px 40px 28px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.doc-logo{font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:8px}
+.doc-title{font-family:Sora,sans-serif;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:6px}
+.doc-sub{font-size:13px;opacity:.75;margin-bottom:16px}
+.doc-meta-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.doc-meta-pill{background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:11px;font-family:Sora,sans-serif;font-weight:600;letter-spacing:.02em}
+.doc-grade-row{display:flex;align-items:center;gap:14px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.15)}
+.doc-grade-box{width:64px;height:64px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-size:32px;font-weight:800;color:#fff;flex-shrink:0}
+.doc-grade-info{flex:1}
+.doc-grade-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;opacity:.6;font-family:Sora,sans-serif;font-weight:700;margin-bottom:4px}
+.doc-grade-score{font-family:Sora,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.doc-summary{margin-top:16px;background:rgba(255,255,255,0.1);border-radius:8px;padding:12px 16px;font-size:13px;line-height:1.55}
+.doc-price{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:12px}
+.doc-price-old{text-decoration:line-through;opacity:.5}
+.doc-price-free{background:#16A34A;color:#fff;border-radius:4px;padding:2px 8px;font-weight:700;font-size:11px}
+
+/* BODY */
+.doc-body{padding:0 40px 40px}
+
+/* SECTIONS */
+.section{margin-top:32px;padding-top:4px}
+.section:first-child{margin-top:24px}
+.sec-hd{font-family:Sora,sans-serif;font-size:16px;font-weight:800;color:#0B1F5E;border-left:4px solid #1847ED;padding-left:14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em;page-break-after:avoid}
+.sec-num{font-size:10px;background:#0B1F5E;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-family:Sora,sans-serif}
+p{margin-bottom:10px;line-height:1.65}
+p.muted{color:#6B7899;font-style:italic}
+strong{font-weight:700}
+.green{color:#16A34A;font-weight:700}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px}
+thead tr{background:#0B1F5E;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+th{padding:9px 12px;text-align:left;font-family:Sora,sans-serif;font-weight:700;font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+td{padding:8px 12px;vertical-align:top;border-bottom:1px solid #EEF2FF}
+tr.even{background:#F8FAFF}
+tr.odd{background:#fff}
+.tbl-note{font-size:10px;color:#9CA3AF;font-style:italic;margin-top:4px;margin-bottom:12px}
+
+/* CALLOUT */
+.callout{border-left:4px solid #1847ED;background:#EEF2FF;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13px;line-height:1.55}
+
+/* CHIPS */
+.chip{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;margin:2px}
+
+/* COST SUMMARY */
+.cost-summary{display:flex;align-items:center;gap:12px;margin-top:14px;background:#F8FAFF;border:1px solid #DDE3F5;border-radius:10px;padding:16px 20px;flex-wrap:wrap}
+.cost-cell{flex:1;min-width:100px;text-align:center}
+.cost-cell.highlight{background:#F0FDF4;border-radius:8px;padding:8px;border:1px solid #BBF7D0}
+.cost-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#6B7899;font-family:Sora,sans-serif;font-weight:700;margin-bottom:4px}
+.cost-val{font-family:Sora,sans-serif;font-size:20px;font-weight:800;color:#0B1F5E}
+.cost-arrow{font-size:20px;color:#9CA3AF;flex-shrink:0}
+
+/* SAVINGS GRID */
+.savings-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.savings-card{background:#F8FAFF;border:1px solid #DDE3F5;border-radius:10px;padding:16px;text-align:center}
+.savings-card.highlight{background:#F0FDF4;border-color:#BBF7D0}
+.savings-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#6B7899;font-family:Sora,sans-serif;font-weight:700;margin-bottom:6px}
+.savings-val{font-family:Sora,sans-serif;font-size:22px;font-weight:800;color:#0B1F5E;line-height:1}
+
+/* BLUEPRINT */
+.blueprint{background:#F8FAFF;border:1px solid #DDE3F5;border-radius:10px;padding:16px}
+.bp-row{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid #EEF2FF}
+.bp-row:last-child{border-bottom:none;padding-bottom:0}
+.bp-cat{font-family:Sora,sans-serif;font-weight:700;font-size:11px;color:#6B7899;text-transform:uppercase;letter-spacing:.06em;min-width:130px;padding-top:4px;flex-shrink:0}
+.bp-tools{flex:1;flex-wrap:wrap;display:flex;gap:4px}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:12px}
+.tl-phase{border:1px solid #DDE3F5;border-radius:10px;overflow:hidden}
+.tl-header{padding:10px 16px;font-family:Sora,sans-serif;font-weight:800;font-size:13px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.tl-header.blue{background:#EEF2FF;color:#1847ED}
+.tl-header.amber{background:#FEF9EC;color:#D97706}
+.tl-header.green{background:#F0FDF4;color:#16A34A}
+.tl-phase ul{padding:12px 16px 12px 30px;list-style:disc}
+.tl-phase li{margin-bottom:6px;font-size:12px;line-height:1.55}
+
+/* FOOTER */
+.doc-footer{margin-top:40px;padding-top:12px;border-top:1px solid #EEF2FF;text-align:center;font-size:10px;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;font-family:Sora,sans-serif}
+
+@media print{
+  .section{page-break-inside:avoid}
+  .tl-phase{page-break-inside:avoid}
+  table{page-break-inside:auto}
+  tr{page-break-inside:avoid}
+  .doc-header{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="doc-logo">StackScan Pro &nbsp;·&nbsp; AI-Powered SaaS Stack Intelligence</div>
+  <div class="doc-title">Stack Decision Document<br>${esc(_co)}</div>
+  <div class="doc-sub">A complete diagnosis of your SaaS stack with a prioritized optimization roadmap.</div>
+  <div class="doc-meta-strip">
+    ${_ts ? `<div class="doc-meta-pill">${esc(_ts)}-person team</div>` : ''}
+    ${_ind !== 'Not specified' ? `<div class="doc-meta-pill">${esc(_ind)}</div>` : ''}
+    <div class="doc-meta-pill">${selectedTools.length} tools analyzed</div>
+    <div class="doc-meta-pill">Generated ${_date}</div>
+    ${_role ? `<div class="doc-meta-pill">Prepared for ${esc(_role)}</div>` : ''}
+  </div>
+  <div class="doc-grade-row">
+    <div class="doc-grade-box" style="color:${scoreColor}">${gradeLetter}</div>
+    <div class="doc-grade-info">
+      <div class="doc-grade-label">Stack Grade</div>
+      <div class="doc-grade-score" style="color:${scoreColor}">${score}/100</div>
+    </div>
+    ${monthly > 0 ? `<div style="text-align:right">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:4px">Recoverable Savings</div>
+      <div style="font-family:Sora,sans-serif;font-size:22px;font-weight:800">${money(monthly)}<span style="font-size:13px;opacity:.7">/mo</span></div>
+      <div style="font-size:11px;opacity:.6">${money(annual)}/yr</div>
+    </div>` : ''}
+  </div>
+  <div class="doc-summary">
+    ${totalIssues > 0
+      ? `<strong>${totalIssues} optimization issue${totalIssues!==1?'s':''}</strong> found across ${esc(_co)}'s ${selectedTools.length}-tool stack. ${monthly > 0 ? `Estimated savings: <strong>${money(monthly)}/mo (${money(annual)}/yr)</strong>.` : ''}`
+      : `✓ No major issues detected. Stack is well-optimized for a ${$(_ts,'—')}-person ${esc(_ind)} team.`
+    }
+  </div>
+  <div class="doc-price">
+    <span class="doc-price-old">$99</span>
+    <span class="doc-price-free">Free Until Launch</span>
+    <span style="opacity:.6;font-size:11px">One-time purchase · No subscription</span>
+  </div>
+</div>
+
+<div class="doc-body">
+  ${s1}
+  ${s2}
+  ${s3}
+  ${s4}
+  ${s5}
+  ${s6}
+  ${s7}
+  ${s8}
+  ${s9}
+
+  <div class="doc-footer">
+    StackScan Pro &nbsp;·&nbsp; AI-Powered SaaS Stack Intelligence &nbsp;·&nbsp; stackswap.io &nbsp;·&nbsp;
+    Generated for ${esc(_co)} &nbsp;·&nbsp; ${_date}
+  </div>
+</div>
+
+</body>
+</html>`;
 
     const win = window.open('', '_blank');
-    if (!win) { alert('Please allow popups for this site to open your report.'); RESET_BTN(); return; }
+    if (!win) { alert('Please allow popups to open your report.'); RESET_BTN(); return; }
     win.document.open();
     win.document.write(html);
     win.document.close();
-    setTimeout(() => { try { win.print(); } catch(e) {} }, 1500);
+    setTimeout(() => { try { win.print(); } catch(e) {} }, 1200);
     RESET_BTN();
 
   } catch(err) {
     console.error('Pro report error:', err);
-    // Show error in button — don't silently print the wrong thing
-    btn.disabled = false;
-    btn.textContent = '⚠ Report generation failed — check console';
-    setTimeout(RESET_BTN, 4000);
+    alert('Could not generate report: ' + err.message);
+    RESET_BTN();
   }
 }
+
 
 async function submitAuditWaitlist() {
   const input = document.getElementById('auditCtaEmail');
