@@ -435,7 +435,27 @@ nav,
 .ss-loading-check-icon.done{background:#16A34A;border-color:#16A34A;color:#fff}
 .ss-loading-check-icon.active{border-color:#1847ED;background:#EEF2FF;color:#1847ED;animation:spin 1s linear infinite}
 
-/* Mobile adjustments */
+/* Download PDF button */
+.ss-pdf-bar{display:flex;justify-content:center;padding:16px 32px;background:#fff;border-bottom:1px solid #DDE3F5}
+.ss-pdf-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;background:#fff;border:1.5px solid #1847ED;border-radius:9px;color:#1847ED;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;letter-spacing:-.01em}
+.ss-pdf-btn:hover{background:#1847ED;color:#fff;box-shadow:0 4px 14px rgba(24,71,237,0.25)}
+.ss-pdf-btn svg{flex-shrink:0;transition:transform .2s}
+.ss-pdf-btn:hover svg{transform:translateY(2px)}
+
+/* Print / PDF styles */
+@media print {
+  body{background:#fff!important;color:#1A2340!important}
+  .page-nav,.nav-hamburger,.nav-drawer,.wrap > *:not(#result-box){display:none!important}
+  .ss-pdf-bar{display:none!important}
+  .result{display:block!important;border:none!important;box-shadow:none!important;margin:0!important}
+  .ss-report-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ss-metrics-row{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ss-lead-magnet{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ss-score-fill,.ss-match-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ss-card{break-inside:avoid;page-break-inside:avoid}
+  .ss-action-item,.ss-finding,.ss-dream-row{break-inside:avoid}
+  @page{margin:0.5in}
+}
 @media(max-width:640px){
   .ss-metrics-row{grid-template-columns:1fr}
   .ss-metric-card{border-right:none;border-bottom:1px solid #DDE3F5}
@@ -2164,7 +2184,17 @@ function renderResult(r) {
   });
   box.appendChild(metricsRow);
 
-  // ── BODY WRAPPER (gray bg, holds all cards) ───────────────────────────
+  // ── PDF DOWNLOAD BAR ──────────────────────────────────────────────────
+  const pdfBar = document.createElement('div');
+  pdfBar.className = 'ss-pdf-bar';
+  pdfBar.innerHTML = `
+    <button class="ss-pdf-btn" onclick="window.print()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
+      </svg>
+      Download Report (PDF)
+    </button>`;
+  box.appendChild(pdfBar);
   const body = document.createElement('div');
   body.className = 'ss-report-body';
   box.appendChild(body);
