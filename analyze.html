@@ -519,9 +519,9 @@ nav,
 .ss-swap-row:last-child{border-bottom:none}
 .ss-swap-row:hover{background:#F8FAFC}
 .ss-swap-num{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#CBD5E1;min-width:28px;flex-shrink:0}
-.ss-swap-from{font-family:'DM Mono',monospace;font-weight:600;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.4);flex-shrink:0}
+.ss-swap-from{font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.4);flex-shrink:0}
 .ss-swap-arrow{color:#CBD5E1;font-size:16px;margin:0 10px;flex-shrink:0}
-.ss-swap-to{font-family:'DM Mono',monospace;font-weight:700;font-size:14px;color:#16A34A;flex:1;min-width:0}
+.ss-swap-to{font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#16A34A;flex:1;min-width:0}
 .ss-swap-save{font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;white-space:nowrap;flex-shrink:0;font-family:Inter,sans-serif}
 .ss-swap-why{font-size:13px;color:#6B7899;line-height:1.55;font-family:Inter,sans-serif;margin-top:3px;padding-left:28px}
 .ss-swap-details{display:none;font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.6;padding:8px 10px 10px 28px;border-top:1px solid #F4F6FC;margin-top:-1px}
@@ -737,7 +737,6 @@ nav,
   <div class="page-nav-links">
     <a href="index.html" class="page-nav-link">Home</a>
     <a href="analyze.html" class="page-nav-link active">StackScan</a>
-    <a href="pro.html" class="page-nav-link">StackScan Pro</a>
     <a href="stacksignal.html" class="page-nav-link">StackSignal</a>
     <a href="pricing.html" class="page-nav-link">Pricing</a>
     <a href="analyze.html" class="page-nav-cta">Run Free StackScan</a>
@@ -749,7 +748,6 @@ nav,
 <div class="nav-drawer" id="ss-nav-drawer">
   <a href="index.html" class="nav-drawer-link">Home</a>
   <a href="analyze.html" class="nav-drawer-link active">StackScan</a>
-  <a href="pro.html" class="nav-drawer-link">StackScan Pro</a>
   <a href="stacksignal.html" class="nav-drawer-link">StackSignal</a>
   <a href="pricing.html" class="nav-drawer-link">Pricing</a>
   <div class="nav-drawer-divider"></div>
@@ -2981,7 +2979,7 @@ function renderResult(r) {
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
       </svg>
-      Download Free Report (PDF)
+      Download One Pager (PDF)
     </button>`;
   // pdfBar appended before upsell — see below
   const body = document.createElement('div');
@@ -3197,7 +3195,7 @@ function renderResult(r) {
       num.textContent = idx + 1;
 
       const from = document.createElement('div');
-      from.style.cssText = 'flex:1;font-family:DM Mono,monospace;font-weight:600;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.35)';
+      from.style.cssText = 'flex:1;font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.4)';
       from.textContent = row.from;
 
       const arrow = document.createElement('div');
@@ -3205,7 +3203,7 @@ function renderResult(r) {
       arrow.textContent = '\u2192';
 
       const to = document.createElement('div');
-      to.style.cssText = 'flex:1;font-family:DM Mono,monospace;font-weight:700;font-size:14px;color:#16A34A';
+      to.style.cssText = 'flex:1;font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#16A34A';
       to.textContent = row.to;
 
       const saveDiv = document.createElement('div');
@@ -3221,34 +3219,12 @@ function renderResult(r) {
       mainRow.appendChild(saveDiv);
       wrap.appendChild(mainRow);
 
-      // Why line — short, always shown; full text in expandable
+      // Why line — always fully visible, no dropdown
       if (row.why) {
-        const whyShort = row.why.length > 90 ? row.why.slice(0, 87) + '\u2026' : row.why;
         const whyEl = document.createElement('div');
-        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.5;padding:0 8px 8px 34px';
-        whyEl.textContent = whyShort;
+        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.55;padding:0 8px 10px 34px';
+        whyEl.textContent = row.why;
         wrap.appendChild(whyEl);
-
-        if (row.why.length > 90) {
-          const detId = 'od-' + idx;
-          const moreBtn = document.createElement('div');
-          moreBtn.style.cssText = 'padding:0 8px 10px 34px;font-size:11px;font-weight:600;color:#1847ED;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:3px';
-          moreBtn.innerHTML = '+ Why? <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          moreBtn.onclick = function(e) {
-            e.stopPropagation();
-            const det = document.getElementById(detId);
-            const open = det.style.display !== 'none';
-            det.style.display = open ? 'none' : 'block';
-            moreBtn.innerHTML = (open ? '+ Why?' : '\u2212 Close') + ' <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          };
-          wrap.appendChild(moreBtn);
-
-          const fullWhy = document.createElement('div');
-          fullWhy.id = detId;
-          fullWhy.style.cssText = 'display:none;font-size:12px;color:#475569;font-family:Inter,sans-serif;line-height:1.6;padding:8px 12px 10px 34px;background:#F8FAFC;border-radius:0 0 8px 8px;border-top:1px solid #EEF2FF;margin-top:-2px';
-          fullWhy.textContent = row.why;
-          wrap.appendChild(fullWhy);
-        }
       }
       overlapCard.appendChild(wrap);
     });
@@ -3290,7 +3266,7 @@ function renderResult(r) {
       num.textContent = idx + 1;
 
       const from = document.createElement('div');
-      from.style.cssText = 'flex:1;font-family:DM Mono,monospace;font-weight:600;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.35)';
+      from.style.cssText = 'flex:1;font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.4)';
       from.textContent = u.tool;
 
       const arrow = document.createElement('div');
@@ -3300,7 +3276,7 @@ function renderResult(r) {
       const toWrap = document.createElement('div');
       toWrap.style.cssText = 'flex:1;display:flex;align-items:center;gap:6px';
       const toName = document.createElement('span');
-      toName.style.cssText = 'font-family:DM Mono,monospace;font-weight:700;font-size:14px;color:#1847ED';
+      toName.style.cssText = 'font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#1847ED';
       toName.textContent = u.r;
       toWrap.appendChild(toName);
       if (trend && trend.signal === 'high') {
@@ -3324,31 +3300,10 @@ function renderResult(r) {
       wrap.appendChild(mainRow);
 
       if (u.why) {
-        const whyShort = u.why.length > 90 ? u.why.slice(0, 87) + '\u2026' : u.why;
         const whyEl = document.createElement('div');
-        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.5;padding:0 8px 8px 34px';
-        whyEl.textContent = whyShort;
+        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.55;padding:0 8px 10px 34px';
+        whyEl.textContent = u.why;
         wrap.appendChild(whyEl);
-
-        if (u.why.length > 90) {
-          const detId = 'ud-' + idx;
-          const moreBtn = document.createElement('div');
-          moreBtn.style.cssText = 'padding:0 8px 10px 34px;font-size:11px;font-weight:600;color:#1847ED;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:3px';
-          moreBtn.innerHTML = '+ Why? <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          moreBtn.onclick = function(e) {
-            e.stopPropagation();
-            const det = document.getElementById(detId);
-            const open = det.style.display !== 'none';
-            det.style.display = open ? 'none' : 'block';
-            moreBtn.innerHTML = (open ? '+ Why?' : '\u2212 Close') + ' <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-          };
-          wrap.appendChild(moreBtn);
-          const fullWhy = document.createElement('div');
-          fullWhy.id = detId;
-          fullWhy.style.cssText = 'display:none;font-size:12px;color:#475569;font-family:Inter,sans-serif;line-height:1.6;padding:8px 12px 10px 34px;background:#F8FAFC;border-radius:0 0 8px 8px;border-top:1px solid #EEF2FF';
-          fullWhy.textContent = u.why;
-          wrap.appendChild(fullWhy);
-        }
       }
       upgCard.appendChild(wrap);
     });
@@ -3401,15 +3356,73 @@ function renderResult(r) {
     body.appendChild(savCard);
   }
 
-  // ── IDEAL STACK card ──────────────────────────────────────────────────
+  // ── IDEAL STACK card — revelation moment, vertical blueprint ────────
   if (r.blueprint && r.blueprint.dreamStack && Object.keys(r.blueprint.dreamStack).length) {
-    const idealCard = ssCard('\u2728 Ideal Stack for Your Context', 'Optimized tool mix based on your team size and industry.');
-    Object.entries(r.blueprint.dreamStack).forEach(([size, stack]) => {
+    const idealCard = ssCard('\u2728 Ideal Stack for Your Context', 'The right tools for your size and industry \u2014 no overlap, no waste.');
+
+    const tierColors  = { 'small':'#16A34A', 'medium':'#1847ED', 'large':'#7C3AED' };
+    const tierLabels  = { 'small':'Small Team', 'medium':'Medium Team', 'large':'Large Team' };
+    const tierCostMap = { 'small':'~$300\u2013$600/mo', 'medium':'~$800\u2013$1,800/mo', 'large':'~$2,000\u2013$5,000/mo' };
+
+    const tierWrap = document.createElement('div');
+    tierWrap.style.cssText = 'display:flex;flex-direction:column;gap:0;margin-top:8px;border-radius:14px;overflow:hidden;border:1.5px solid #EEF2FF';
+
+    Object.entries(r.blueprint.dreamStack).forEach(([size, stack], i, arr) => {
+      const sKey   = size.toLowerCase();
+      const color  = tierColors[sKey]  || '#475569';
+      const label  = tierLabels[sKey]  || (size.charAt(0).toUpperCase() + size.slice(1) + ' Team');
+      const cost   = tierCostMap[sKey] || '';
+      const isLast = i === arr.length - 1;
+
       const row = document.createElement('div');
-      row.className = 'ss-dream-row';
-      row.innerHTML = '<div class="ss-dream-size">' + size + ' team</div><div class="ss-dream-text">' + stack + '</div>';
-      idealCard.appendChild(row);
+      row.style.cssText = 'display:grid;grid-template-columns:130px 1fr auto;align-items:start;gap:20px;padding:22px 24px;' +
+        (isLast ? '' : 'border-bottom:1px solid #EEF2FF;') +
+        'background:#fff;transition:background .12s';
+      row.onmouseenter = () => row.style.background = '#F8FAFF';
+      row.onmouseleave = () => row.style.background = '#fff';
+
+      // Left: tier label + dot
+      const left = document.createElement('div');
+      left.style.cssText = 'padding-top:3px';
+      left.innerHTML =
+        '<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">' +
+          '<div style="width:8px;height:8px;border-radius:50%;background:' + color + ';flex-shrink:0"></div>' +
+          '<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:' + color + ';font-family:Inter,sans-serif">' + label + '</div>' +
+        '</div>' +
+        (cost ? '<div style="font-size:12px;font-weight:600;color:#6B7899;font-family:Inter,sans-serif">' + cost + '</div>' : '');
+      row.appendChild(left);
+
+      // Center: stack tools — large and bold
+      const center = document.createElement('div');
+      center.style.cssText = 'font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#0B1F5E;line-height:1.65;letter-spacing:-.01em';
+      // Parse comma-separated tools into individual pills
+      const tools = stack.split(/[,+·•]/).map(t => t.trim()).filter(Boolean);
+      if (tools.length > 1) {
+        center.innerHTML = tools.map(t =>
+          '<span style="display:inline-block;margin:2px 4px 2px 0;padding:3px 10px;background:rgba(24,71,237,0.06);border:1px solid rgba(24,71,237,0.12);border-radius:6px;font-size:13px;font-weight:600;color:#0B1F5E;font-family:Inter,sans-serif">' + t + '</span>'
+        ).join('');
+      } else {
+        center.textContent = stack;
+      }
+      row.appendChild(center);
+
+      // Right: small check
+      const right = document.createElement('div');
+      right.style.cssText = 'font-size:16px;padding-top:2px;flex-shrink:0';
+      right.textContent = '\u2713';
+      right.style.color = color;
+      row.appendChild(right);
+
+      tierWrap.appendChild(row);
     });
+
+    idealCard.appendChild(tierWrap);
+
+    const note = document.createElement('div');
+    note.style.cssText = 'margin-top:14px;font-size:12px;color:#9CA3AF;font-family:Inter,sans-serif;line-height:1.55';
+    note.textContent = 'Configurations tailored to your industry and team size. Cost estimates assume standard plan pricing.';
+    idealCard.appendChild(note);
+
     body.appendChild(idealCard);
   }
 
@@ -3519,13 +3532,38 @@ function renderResult(r) {
 
     recCard.appendChild(grid);
 
-    // Conflict callouts below grid
+    // Conflict callouts — numbered, prioritized by severity
     if (r.integrationConflicts && r.integrationConflicts.length) {
-      const conflictNote = document.createElement('div');
-      conflictNote.style.cssText = 'margin-top:16px;padding:12px 16px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:13px;color:#991B1B;font-family:Inter,sans-serif;line-height:1.55';
-      conflictNote.innerHTML = '<strong>\u26A0\uFE0F Heads up:</strong> ' +
-        r.integrationConflicts.map(ic => ic.tools.join(' + ') + ' conflict — ' + (ic.issue||'pick one').slice(0,80)).join('<br>');
-      recCard.appendChild(conflictNote);
+      const conflictWrap = document.createElement('div');
+      conflictWrap.style.cssText = 'margin-top:18px;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;overflow:hidden';
+
+      const conflictHdr = document.createElement('div');
+      conflictHdr.style.cssText = 'padding:12px 16px 10px;border-bottom:1px solid #FECACA;display:flex;align-items:center;gap:7px';
+      conflictHdr.innerHTML = '<span style="font-size:14px">\u26A0\uFE0F</span>' +
+        '<span style="font-family:Sora,sans-serif;font-weight:700;font-size:13px;color:#7F1D1D">Heads Up \u2014 Conflicts Detected</span>';
+      conflictWrap.appendChild(conflictHdr);
+
+      // Sort by impact — conflicts with cost save first
+      const sorted = [...r.integrationConflicts].sort((a,b) => (b.save||0)-(a.save||0));
+      sorted.forEach((ic, i) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;gap:12px;align-items:flex-start;padding:12px 16px;' +
+          (i < sorted.length-1 ? 'border-bottom:1px solid rgba(254,202,202,0.5)' : '');
+        row.innerHTML =
+          '<div style="min-width:20px;height:20px;border-radius:50%;background:#DC2626;color:#fff;' +
+          'font-size:11px;font-weight:800;font-family:Sora,sans-serif;display:flex;align-items:center;' +
+          'justify-content:center;flex-shrink:0;margin-top:1px">' + (i+1) + '</div>' +
+          '<div>' +
+            '<div style="font-size:13px;font-weight:700;color:#7F1D1D;font-family:Inter,sans-serif;margin-bottom:3px">' +
+              ic.tools.join(' + ') + ' conflict' +
+            '</div>' +
+            '<div style="font-size:12px;color:#991B1B;font-family:Inter,sans-serif;line-height:1.55">' +
+              (ic.issue || 'These tools overlap in function \u2014 consider consolidating to one.') +
+            '</div>' +
+          '</div>';
+        conflictWrap.appendChild(row);
+      });
+      recCard.appendChild(conflictWrap);
     }
 
     body.appendChild(recCard);
@@ -3575,72 +3613,95 @@ function renderResult(r) {
     body.appendChild(lockedCard);
   }
 
-  // ── GREEN LEAD MAGNET ─────────────────────────────────────────────────
+  // ── PDF + PRO REPORT UPSELL ──────────────────────────────────────────
   body.appendChild(pdfBar);
 
-  // ── PRO REPORT BUTTON ─────────────────────────────────────────────────
-  const proReportBar = document.createElement('div');
-  proReportBar.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 32px 6px';
-  proReportBar.innerHTML =
-    '<button id="ss-pro-report-btn" onclick="generateProReport()" style="' +
-      'display:inline-flex;align-items:center;gap:9px;padding:12px 28px;' +
-      'background:linear-gradient(135deg,#0B1F5E 0%,#1847ED 100%);' +
-      'border:none;border-radius:10px;color:#fff;font-family:Sora,sans-serif;' +
-      'font-weight:700;font-size:14px;cursor:pointer;letter-spacing:-.01em;' +
-      'box-shadow:0 4px 18px rgba(24,71,237,0.3);transition:opacity .2s' +
-    '">' +
-      '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-        '<path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>' +
-      '</svg>' +
-      'Generate StackScan Pro Report' +
-    '</button>' +
-    '<div style="font-size:11px;color:#6B7899;font-family:Inter,sans-serif;letter-spacing:.02em">' +
-      '<span style="text-decoration:line-through;opacity:.6">$99</span>' +
-      '&nbsp;<span style="color:#16A34A;font-weight:700">Free Until Launch</span>' +
-    '</div>';
-  body.appendChild(proReportBar);
-  const annualWaste = r.totalSave > 0 ? r.totalSave * 12 : 0;
+  const annualWaste    = r.totalSave > 0 ? r.totalSave * 12 : 0;
   const overlapCountFinal = r.overlaps.length + (r.categoryOverlaps||[]).length;
-  const legacyCountFinal  = (r.legacyPenalties||[]).length;
-
-  const urgencyLine = r.score < 40
-    ? 'This stack has <span>serious problems</span> costing you every month.'
-    : r.score < 60
-    ? 'This stack is <span>bleeding money</span> quietly \u2014 let\u2019s fix it.'
-    : 'Your stack is close \u2014 <span>a few targeted swaps</span> make it efficient.';
-
-  const hooks = [];
-  if (annualWaste > 0) hooks.push(['~$'+annualWaste.toLocaleString()+'/yr', 'estimated waste identified']);
-  if (overlapCountFinal > 0) hooks.push([overlapCountFinal+' overlap'+(overlapCountFinal!==1?'s':''), 'paying for duplicate capability']);
-  if ((r.upgrades||[]).length > 0) hooks.push([(r.upgrades.length)+' upgrade'+(r.upgrades.length!==1?'s':''), 'AI-native alternatives available']);
-  if (!hooks.length) hooks.push(['Full audit', 'exact per-tool cost breakdown'], ['30/60/90 plan', 'step-by-step implementation'], ['PDF report', 'shareable with your team']);
+  const monthlyRecovery   = r.totalSave > 0 ? Math.round(r.totalSave) : 0;
 
   const leadMagnet = document.createElement('div');
   leadMagnet.className = 'ss-lead-magnet';
 
-  // ROI recovery line — monthly savings estimate
-  const monthlyRecovery = annualWaste > 0 ? Math.round(annualWaste / 12) : 0;
-  const roiLine = monthlyRecovery > 0
-    ? 'Most teams recover this in the first month of savings (~$' + monthlyRecovery.toLocaleString() + '/mo).'
-    : 'One report. Instant clarity on exactly where your money is going.';
+  // Eyebrow
+  const lmEyebrow = document.createElement('div');
+  lmEyebrow.className = 'ss-lead-eyebrow';
+  lmEyebrow.textContent = 'StackScan Pro';
+  leadMagnet.appendChild(lmEyebrow);
 
-  leadMagnet.innerHTML =
-    '<div class="ss-lead-eyebrow">StackScan Pro</div>' +
-    '<div class="ss-lead-title">This stack is leaking money every month.</div>' +
-    '<div class="ss-lead-hooks">' +
-      hooks.slice(0,3).map(([val,lbl]) =>
-        '<div class="ss-lead-hook"><div class="ss-lead-hook-icon">\u2713</div><div><strong style="color:#0B1F5E;font-family:Sora,sans-serif">'+val+'</strong><br/><span style="font-size:12px">'+lbl+'</span></div></div>'
-      ).join('') +
-    '</div>' +
-    '<div style="margin:22px auto 0;text-align:center">' +
-      '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:26px;color:#0B1F5E;letter-spacing:-.02em;line-height:1.1">StackScan Pro \u2014 $99</div>' +
-      '<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;margin-top:6px;line-height:1.5">' + roiLine + '</div>' +
-    '</div>' +
-    '<div style="margin:18px auto 0;text-align:center;max-width:320px">' +
-      '<button class="ss-lead-btn" style="width:100%;font-size:15px;padding:15px 24px" onclick="submitStackAudit()">Get My StackScan Pro Plan \u2192</button>' +
-      '<div style="font-size:12px;color:#6B7899;font-family:Inter,sans-serif;margin-top:9px">One-time purchase. Instant access.</div>' +
-    '</div>' +
-    '<div class="ss-lead-success" id="ssLeadSuccess">\u2713 You\u2019re on the list \u2014 we\u2019ll reach out when StackScan Pro launches.</div>';
+  // Headline
+  const lmTitle = document.createElement('div');
+  lmTitle.className = 'ss-lead-title';
+  lmTitle.innerHTML = 'This stack is leaking money every month.';
+  leadMagnet.appendChild(lmTitle);
+
+  // Stats row — 3 cells
+  const stats = [];
+  if (annualWaste > 0)
+    stats.push({ big: '~$' + annualWaste.toLocaleString(), unit: '/yr', lbl: 'potential annual waste' });
+  if (overlapCountFinal > 0)
+    stats.push({ big: String(overlapCountFinal), unit: overlapCountFinal !== 1 ? ' overlaps' : ' overlap', lbl: 'duplicate tools found' });
+  if ((r.upgrades||[]).length > 0)
+    stats.push({ big: String(r.upgrades.length), unit: '', lbl: (r.upgrades.length !== 1 ? 'AI-native upgrades' : 'AI-native upgrade') + ' available' });
+  while (stats.length < 3) stats.push({ big: '\u2713', unit: '', lbl: 'detailed breakdown included' });
+
+  const statRow = document.createElement('div');
+  statRow.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0 18px';
+  stats.slice(0,3).forEach(s => {
+    const cell = document.createElement('div');
+    cell.style.cssText = 'background:rgba(255,255,255,0.6);border-radius:12px;border:1px solid rgba(22,163,74,0.15);padding:16px 10px;text-align:center';
+    cell.innerHTML =
+      '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:24px;color:#0B1F5E;letter-spacing:-.03em;line-height:1.1">' +
+        s.big + '<span style="font-size:13px;font-weight:600;color:#16A34A;letter-spacing:0">' + s.unit + '</span>' +
+      '</div>' +
+      '<div style="font-size:11px;color:#374151;font-family:Inter,sans-serif;margin-top:5px;line-height:1.3;font-weight:500">' + s.lbl + '</div>';
+    statRow.appendChild(cell);
+  });
+  leadMagnet.appendChild(statRow);
+
+  // ROI line
+  if (monthlyRecovery > 0) {
+    const roiEl = document.createElement('div');
+    roiEl.style.cssText = 'font-size:13px;color:#374151;font-family:Inter,sans-serif;margin-bottom:20px;line-height:1.5';
+    roiEl.textContent = 'Most teams recover the $99 cost in the first month of savings (~$' + monthlyRecovery.toLocaleString() + '/mo recovered).';
+    leadMagnet.appendChild(roiEl);
+  }
+
+  // Primary CTA — Pro Report button
+  const proBtn = document.createElement('button');
+  proBtn.id = 'ss-pro-report-btn';
+  proBtn.setAttribute('onclick', 'generateProReport()');
+  proBtn.style.cssText =
+    'display:inline-flex;align-items:center;justify-content:center;gap:9px;' +
+    'width:100%;max-width:380px;padding:16px 24px;margin-bottom:10px;' +
+    'background:linear-gradient(135deg,#0B1F5E 0%,#1847ED 100%);border:none;border-radius:11px;' +
+    'color:#fff;font-family:Sora,sans-serif;font-weight:700;font-size:15px;' +
+    'cursor:pointer;letter-spacing:-.01em;box-shadow:0 4px 20px rgba(24,71,237,0.28)';
+  proBtn.innerHTML =
+    '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">' +
+      '<path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>' +
+    '</svg>Generate StackScan Pro Report';
+  leadMagnet.appendChild(proBtn);
+
+  // Price badge
+  const priceBadge = document.createElement('div');
+  priceBadge.style.cssText = 'font-size:12px;font-family:Inter,sans-serif;margin-bottom:6px';
+  priceBadge.innerHTML = '<span style="text-decoration:line-through;color:#9CA3AF">$99</span>&nbsp;<span style="color:#16A34A;font-weight:700">Free Until Launch</span>';
+  leadMagnet.appendChild(priceBadge);
+
+  // Reassurance
+  const reassure = document.createElement('div');
+  reassure.className = 'ss-lead-note';
+  reassure.textContent = 'One-time purchase. No subscription. Instant access upon launch.';
+  leadMagnet.appendChild(reassure);
+
+  // Success message (hidden)
+  const successMsg = document.createElement('div');
+  successMsg.className = 'ss-lead-success';
+  successMsg.id = 'ssLeadSuccess';
+  successMsg.textContent = '\u2713 You\u2019re on the list \u2014 we\u2019ll reach out when StackScan Pro launches.';
+  leadMagnet.appendChild(successMsg);
+
   body.appendChild(leadMagnet);
 
   // ── AI narrative placeholder (injected after by getAINarrative) ───────
