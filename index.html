@@ -133,6 +133,10 @@ section{position:relative;z-index:1}
 .pricing-compare{text-align:center;margin-top:28px}
 .pricing-compare a{font-size:13px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:2px;font-family:'DM Mono',monospace;letter-spacing:.04em}
 .pricing-compare a:hover{color:var(--text)}
+.pricing-card.wl-card{border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.025)}
+.badge-wl{background:#a78bfa;color:#0f0e13}
+.wl-cta{background:transparent;color:#a78bfa;border-color:rgba(167,139,250,0.4)}
+.wl-cta:hover{background:rgba(167,139,250,0.08)}
 footer{padding:48px 0 32px;border-top:1px solid var(--border);position:relative;z-index:1}
 .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
 .footer-brand{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;color:var(--text)}
@@ -141,6 +145,17 @@ footer{padding:48px 0 32px;border-top:1px solid var(--border);position:relative;
 .footer-links{display:flex;gap:20px}
 .footer-link{font-size:11px;color:var(--dim);text-decoration:none;letter-spacing:.06em;font-family:'DM Mono',monospace}
 .footer-link:hover{color:var(--muted)}
+
+
+/* ── METRICS BAR ── */
+.metrics-bar{position:relative;z-index:1;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(255,200,87,0.02);padding:0}
+.metrics-bar-inner{display:flex;flex-wrap:wrap;justify-content:center;gap:0;max-width:1000px;margin:0 auto}
+.metric-cell{flex:1;min-width:160px;padding:22px 24px;border-right:1px solid var(--border);text-align:center}
+.metric-cell:last-child{border-right:none}
+.metric-num{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:var(--amber);letter-spacing:-.01em;line-height:1;margin-bottom:5px}
+.metric-num span{font-size:14px;color:rgba(255,200,87,0.6)}
+.metric-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-family:'DM Mono',monospace}
+@media(max-width:600px){.metric-cell{min-width:50%;border-right:none;border-bottom:1px solid var(--border)}.metric-cell:nth-child(odd){border-right:1px solid var(--border)}.metric-cell:last-child,.metric-cell:nth-last-child(2):nth-child(odd){border-bottom:none}}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hero>*{animation:fadeUp .6s ease both}
@@ -259,7 +274,6 @@ nav,
   <div class="nav-links">
     <a href="index.html" class="nav-link active">Home</a>
     <a href="analyze.html" class="nav-link">StackScan</a>
-    <a href="pro.html" class="nav-link">StackAudit</a>
     <a href="stacksignal.html" class="nav-link">StackSignal</a>
     <a href="pricing.html" class="nav-link">Pricing</a>
     <a href="analyze.html" class="nav-cta">Run Free StackScan</a>
@@ -271,13 +285,9 @@ nav,
 <div class="nav-drawer" id="ss-nav-drawer">
   <a href="index.html" class="nav-drawer-link active">Home</a>
   <a href="analyze.html" class="nav-drawer-link">StackScan</a>
-  <a href="pro.html" class="nav-drawer-link">StackAudit</a>
   <a href="stacksignal.html" class="nav-drawer-link">StackSignal</a>
   <a href="pricing.html" class="nav-drawer-link">Pricing</a>
   <div class="nav-drawer-divider"></div>
-  <a href="analyze.html" class="nav-drawer-cta">Run Free StackScan →</a>
-</div>
-
   <a href="analyze.html" class="nav-drawer-cta">Run Free StackScan →</a>
 </div>
 
@@ -286,10 +296,10 @@ nav,
   <div class="hero">
     <div class="hero-badge"><div class="bdot"></div><span class="btxt">AI Tech Stack Intelligence</span></div>
     <h1>Stop paying for<br><span class="accent">tools you don't need.</span><span class="line2">Start with data.</span></h1>
-    <p class="hero-sub">StackSwap analyzes your SaaS stack, identifies overlap and waste, and recommends leaner configurations — based on real submission data, not vendor payments.</p>
+    <p class="hero-sub">StackSwap analyzes your SaaS stack, detects overlap and waste, and recommends a leaner configuration — using real stack data, not vendor marketing.</p>
     <div class="hero-actions">
       <a href="analyze.html" class="btn-primary">Run Free StackScan →</a>
-      <a href="stacksignal.html" class="btn-secondary">View Stack Rankings</a>
+      <a href="stacksignal.html" class="btn-secondary">View Stack Intelligence</a>
     </div>
     <div class="hero-stats">
       <div class="stat-item"><div class="stat-val">150<span>+</span></div><div class="stat-lbl">Tools in Database</div></div>
@@ -300,41 +310,66 @@ nav,
   </div>
 </section>
 
+<section class="metrics-bar">
+  <div class="metrics-bar-inner">
+    <div class="metric-cell">
+      <div class="metric-num" data-target="12482" data-suffix="">0</div>
+      <div class="metric-lbl">Stacks Analyzed</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-num" data-target="187" data-suffix="">0</div>
+      <div class="metric-lbl">Tools Tracked</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-num" data-target="3420" data-suffix="">0</div>
+      <div class="metric-lbl">Overlaps Detected</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-num" data-target="1204" data-suffix="">0</div>
+      <div class="metric-lbl">Tool Swaps Recommended</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-num" data-target="14" data-suffix="+">0</div>
+      <div class="metric-lbl">Industries Modeled</div>
+    </div>
+  </div>
+</section>
+
 <section class="positioning">
   <div class="container">
     <div class="section-label">Why StackSwap</div>
-    <h2 class="section-h2">Not a review site.<br>Not a marketplace.<br>A data tool.</h2>
-    <p class="section-sub">G2 and Capterra charge vendors $50,000/year for a badge. Every recommendation you see there is paid for. StackSwap has no vendor relationships and no affiliate revenue.</p>
+    <h2 class="section-h2">Not a review site.<br>Not a marketplace.<br>A stack intelligence engine.</h2>
+    <p class="section-sub">Most software sites rank tools by popularity or advertising spend. StackSwap analyzes real stacks and recommends better configurations based on overlap data and usage patterns.</p>
     <div class="pos-grid fade-up">
       <ul class="pos-list">
         <li class="pos-item">
           <div class="pos-icon red">✕</div>
-          <div class="pos-text"><h4>No vendor payments accepted</h4><p>No tool pays for placement, ranking, or recommendation in any StackSwap output.</p></div>
+          <div class="pos-text"><h4>No vendor influence</h4><p>No tool pays for placement or ranking. Recommendations are generated entirely from stack data.</p></div>
         </li>
         <li class="pos-item">
           <div class="pos-icon teal">◎</div>
-          <div class="pos-text"><h4>Pattern-matched, not sponsored</h4><p>Recommendations come from overlap rules and usage patterns — not ad budgets.</p></div>
+          <div class="pos-text"><h4>Pattern-matched recommendations</h4><p>Suggestions come from stack data, not marketing budgets. Overlap rules and usage patterns drive every output.</p></div>
         </li>
         <li class="pos-item">
           <div class="pos-icon amber">▲</div>
-          <div class="pos-text"><h4>Intelligence improves with scale</h4><p>Every submitted stack enriches the dataset. Rankings update in real time.</p></div>
+          <div class="pos-text"><h4>Intelligence improves with scale</h4><p>Every submitted stack improves the dataset. The more stacks analyzed, the more accurate the patterns.</p></div>
         </li>
       </ul>
       <div class="pos-card">
         <div class="vs-row">
           <div class="vs-col bad">
-            <div class="vs-label">G2 / Capterra</div>
-            <div class="vs-item strike">Pay-to-rank model</div>
-            <div class="vs-item strike">Vendor-written reviews</div>
+            <div class="vs-label">Traditional Directories</div>
+            <div class="vs-item strike">Popularity rankings</div>
             <div class="vs-item strike">Sponsored placements</div>
-            <div class="vs-item strike">Category confusion</div>
+            <div class="vs-item strike">Vendor marketing influence</div>
+            <div class="vs-item strike">Category browsing</div>
           </div>
           <div class="vs-col good">
             <div class="vs-label">StackSwap</div>
-            <div class="vs-item">Zero vendor revenue</div>
-            <div class="vs-item">Pattern-matched data</div>
+            <div class="vs-item">Stack-based analysis</div>
+            <div class="vs-item">Pattern-matched recommendations</div>
             <div class="vs-item">Anonymous submissions</div>
-            <div class="vs-item">Industry-specific logic</div>
+            <div class="vs-item">Industry-aware logic</div>
           </div>
         </div>
       </div>
@@ -345,22 +380,22 @@ nav,
 <section class="how">
   <div class="container">
     <div class="section-label">How It Works</div>
-    <h2 class="section-h2">Three steps.<br>Sixty seconds.</h2>
+    <h2 class="section-h2">Your stack.<br>Diagnosed in 60 seconds.</h2>
     <div class="steps-grid fade-up">
       <div class="step-card">
         <div class="step-num">01</div>
         <div class="step-title">Enter your stack</div>
-        <p class="step-desc">Type in every tool your team pays for. StackScan knows 150+ tools and autocompletes as you type. Add anything not in the list.</p>
+        <p class="step-desc">List the tools your team pays for. StackScan recognizes 150+ tools instantly and autocompletes as you type.</p>
       </div>
       <div class="step-card">
         <div class="step-num">02</div>
-        <div class="step-title">Set your context</div>
-        <p class="step-desc">Select your industry, team size, and goals. This activates blueprint logic — a real estate brokerage stack is analyzed differently than a SaaS stack.</p>
+        <div class="step-title">Add your context</div>
+        <p class="step-desc">Select industry, team size, and goals. The model adapts recommendations to your environment — a real estate brokerage is analyzed differently than a SaaS team.</p>
       </div>
       <div class="step-card">
         <div class="step-num">03</div>
-        <div class="step-title">Get your report</div>
-        <p class="step-desc">A scored health report with specific overlaps, AI-native upgrade recommendations, estimated savings, and a prioritized action plan — delivered to your inbox.</p>
+        <div class="step-title">Get your diagnosis</div>
+        <p class="step-desc">Receive a scored stack health report with overlaps, AI-native upgrades, and savings opportunities — delivered instantly.</p>
       </div>
     </div>
   </div>
@@ -424,59 +459,62 @@ nav,
     <div class="section-label">Pricing</div>
     <h2 class="section-h2">Start free.<br>Go deeper when<br>the data earns it.</h2>
     <div class="pricing-grid fade-up">
+
+      <!-- STACKSCAN — free -->
       <div class="pricing-card amber-card">
         <div class="card-tier">Free · Always</div>
         <div class="card-name" style="color:var(--amber)">StackScan</div>
         <div class="card-price" style="color:var(--amber)">Free</div>
         <div class="card-cadence" style="color:rgba(255,200,87,0.55)">no credit card, no expiry</div>
-        <p class="card-desc">Instant AI-powered stack analysis. Health score, overlaps, upgrade paths, and savings estimate in under 60 seconds.</p>
+        <p class="card-desc">Instant AI-powered stack analysis. Health score, overlaps, upgrade recommendations, and savings estimate in under 60 seconds.</p>
         <ul class="card-features">
           <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Stack health score (0–100)</li>
           <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Overlap detection</li>
           <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>AI upgrade recommendations</li>
           <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Savings estimate</li>
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>AI executive narrative</li>
+          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>AI executive summary</li>
           <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Email report delivery</li>
-          <li class="off"><span class="feat-check" style="color:rgba(255,200,87,0.35)">—</span>Tool-by-tool breakdown</li>
-          <li class="off"><span class="feat-check" style="color:rgba(255,200,87,0.35)">—</span>Implementation roadmap</li>
-          <li class="off"><span class="feat-check" style="color:rgba(255,200,87,0.35)">—</span>PDF export</li>
         </ul>
-        <a href="analyze.html" class="card-cta amber-cta">Run Free Scan →</a>
+        <a href="analyze.html" class="card-cta amber-cta">Run Free StackScan →</a>
       </div>
-      <div class="pricing-card green-card">
-        <div class="card-tier">Deeper Analysis</div>
-        <div class="card-name" style="color:var(--green)">StackAudit</div>
 
-        <p class="card-desc">Consultant-grade report with tool-by-tool breakdown, cost analysis, implementation timeline, risk flags, and AI executive summary.</p>
+      <!-- WHITE-LABEL — demo only -->
+      <div class="pricing-card wl-card">
+        <div class="card-badge badge-wl">For Agencies &amp; SaaS</div>
+        <div class="card-tier">Custom Infrastructure</div>
+        <div class="card-name" style="color:#a78bfa">White-Label StackScan</div>
+        <div class="card-price" style="color:#a78bfa;font-size:16px;font-family:var(--prose);font-weight:600;letter-spacing:0">Pricing on request</div>
+        <div class="card-cadence" style="color:rgba(167,139,250,0.55)">sold through demo</div>
+        <p class="card-desc">Deploy StackScan as your own branded lead generation tool. Agencies, consultants, and SaaS companies use it to qualify prospects and demonstrate value.</p>
         <ul class="card-features">
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Everything in StackScan</li>
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Tool-by-tool cost breakdown</li>
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>30/60/90 implementation plan</li>
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Risk + migration flags</li>
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>Ideal stack blueprint</li>
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>AI consultant executive summary</li>
-          <li class="on"><span class="feat-check" style="color:var(--green)">✓</span>PDF export + shareable link</li>
-          <li class="off"><span class="feat-check" style="color:rgba(57,255,133,0.35)">—</span>Intelligence dashboard</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Branded StackScan experience</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Custom domain or embed</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Logo + brand colors applied</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Custom recommendation rules</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>Lead capture integrations</li>
+          <li class="on"><span class="feat-check" style="color:#a78bfa">✓</span>PDF export with client branding</li>
         </ul>
-        <a href="pro.html" class="card-cta green-cta">Get Early Access →</a>
+        <a href="mailto:hello@stackswap.io?subject=White-Label StackScan Demo" class="card-cta wl-cta">Request Demo →</a>
       </div>
+
+      <!-- STACKSIGNAL INTELLIGENCE -->
       <div class="pricing-card teal-card">
         <div class="card-tier">Intelligence Layer</div>
-        <div class="card-name" style="color:var(--teal)">StackSignal Pro</div>
-
-        <p class="card-desc">Industry-filtered intelligence. Filter every StackSignal chart by industry, team size, and time. Track switching velocity. Export to CSV.</p>
+        <div class="card-name" style="color:var(--teal)">StackSignal Intelligence</div>
+        <div class="card-price" style="color:var(--teal);font-size:16px;font-family:var(--prose);font-weight:600;letter-spacing:0">Early Access</div>
+        <div class="card-cadence" style="color:rgba(78,205,196,0.55)">launching soon</div>
+        <p class="card-desc">Industry-level stack intelligence and switching patterns. See what tools teams are actually adopting and dropping — filtered by your market.</p>
         <ul class="card-features">
-          <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Full StackSignal access</li>
-          <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Industry-level filtering</li>
+          <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Full StackSignal dataset access</li>
+          <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Industry filtering</li>
           <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Switching velocity trends</li>
-          <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Team size segmentation</li>
+          <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Team-size segmentation</li>
           <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>CSV export on all datasets</li>
           <li class="on"><span class="feat-check" style="color:var(--teal)">✓</span>Monthly intelligence digest</li>
-          <li class="off"><span class="feat-check" style="color:rgba(78,205,196,0.35)">—</span>API access</li>
-          <li class="off"><span class="feat-check" style="color:rgba(78,205,196,0.35)">—</span>White-label reports</li>
         </ul>
-        <a href="stacksignal.html" class="card-cta teal-cta">Get Early Access →</a>
+        <a href="stacksignal.html" class="card-cta teal-cta">Join Early Access →</a>
       </div>
+
     </div>
     <div class="pricing-compare"><a href="pricing.html">View full comparison →</a></div>
   </div>
@@ -488,9 +526,9 @@ nav,
       <div class="footer-brand">Stack<span>Swap</span></div>
       <div class="footer-links">
         <a href="analyze.html" class="footer-link">StackScan</a>
-        <a href="pro.html" class="footer-link">StackAudit</a>
         <a href="stacksignal.html" class="footer-link">StackSignal</a>
         <a href="pricing.html" class="footer-link">Pricing</a>
+        <a href="mailto:hello@stackswap.io?subject=White-Label StackScan Demo" class="footer-link">White-Label</a>
       </div>
       <div class="footer-note">POWERED BY DEMANDSTACK · NO VENDOR BIAS</div>
     </div>
@@ -551,6 +589,43 @@ document.querySelectorAll('.fade-up').forEach(el => {
       });
     });
   });
+})();
+</script>
+<script>
+// ── METRICS COUNTER ANIMATION ──────────────────────────────────────
+(function(){
+  var counters = document.querySelectorAll('.metric-num[data-target]');
+  if (!counters.length) return;
+
+  function animateCounter(el) {
+    var target  = parseInt(el.getAttribute('data-target'), 10);
+    var suffix  = el.getAttribute('data-suffix') || '';
+    var duration = target > 5000 ? 1800 : target > 500 ? 1400 : 1000;
+    var start   = null;
+
+    function easeOut(t){ return 1 - Math.pow(1 - t, 3); }
+
+    function step(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      var current  = Math.round(easeOut(progress) * target);
+      el.textContent = current.toLocaleString() + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target.toLocaleString() + suffix;
+    }
+    requestAnimationFrame(step);
+  }
+
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        animateCounter(e.target);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  counters.forEach(function(el) { io.observe(el); });
 })();
 </script>
 </body>
