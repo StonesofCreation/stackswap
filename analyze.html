@@ -300,21 +300,21 @@ nav,
 <style>
 
 /* ── AI NARRATIVE ── */
-.ai-narrative{background:rgba(78,205,196,0.04);border:1px solid rgba(78,205,196,0.15);
+.ai-narrative{background:rgba(78,205,196,0.07);border:1px solid rgba(78,205,196,0.3);
   border-radius:12px;padding:22px 24px;margin-bottom:4px;position:relative;overflow:hidden}
 .ai-narrative::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(78,205,196,0.5),transparent)}
 .ai-narrative-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;
   color:#4ecdc4;margin-bottom:14px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em}
 .ai-narrative-label::after{content:'';flex:1;height:1px;background:rgba(78,205,196,0.15)}
-.ai-narrative-body{font-size:15px;color:#e8e4dc;line-height:1.85;font-family:var(--prose);margin-bottom:0}
-.ai-priority-note{font-size:13px;color:#e8e4dc;line-height:1.7;font-family:var(--prose);
+.ai-narrative-body{font-size:15px;color:#1A2340;line-height:1.85;font-family:var(--prose);margin-bottom:0}
+.ai-priority-note{font-size:13px;color:#374151;line-height:1.7;font-family:var(--prose);
   margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)}
-.ai-biggest-win{background:rgba(255,200,87,0.06);border:1px solid rgba(255,200,87,0.2);
+.ai-biggest-win{background:rgba(255,200,87,0.12);border:1px solid rgba(255,200,87,0.35);
   border-radius:8px;padding:14px 16px;margin-top:14px;display:flex;gap:12px;align-items:flex-start}
 .ai-biggest-win-icon{font-size:18px;flex-shrink:0}
-.ai-biggest-win-text{font-size:15px;color:#d4c890;line-height:1.7;font-family:var(--prose)}
-.ai-spend-note{font-size:13px;color:#e8e4dc;font-family:var(--prose);line-height:1.7;
+.ai-biggest-win-text{font-size:15px;color:#7A5700;line-height:1.7;font-family:var(--prose)}
+.ai-spend-note{font-size:13px;color:#374151;font-family:var(--prose);line-height:1.7;
   margin-top:12px;padding-top:12px;border-top:1px solid rgba(78,205,196,0.08)}
 .ai-spend-label{font-size:10px;color:#4ecdc4;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:4px}
 .ai-subsection{margin-top:16px;padding-top:16px;border-top:1px solid rgba(78,205,196,0.1)}
@@ -327,7 +327,7 @@ nav,
 .ai-dot:nth-child(2){animation-delay:.2s;background:#ffc857}
 .ai-dot:nth-child(3){animation-delay:.4s;background:#4ecdc4}
 .ai-loading-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#f0ece4;letter-spacing:-.01em}
-.ai-loading-sub{font-size:14px;color:#7a7670;font-family:var(--prose);line-height:1.6;max-width:320px}
+.ai-loading-sub{font-size:14px;color:#6B7899;font-family:var(--prose);line-height:1.6;max-width:320px}
 @keyframes aiPulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
 
 /* ═══════════════════════════════════════════════════
@@ -672,6 +672,38 @@ nav,
     letter-spacing:.06em!important;text-transform:uppercase!important;
   }
 }
+
+/* ── PDF GENERATING OVERLAY ── */
+#pdf-gen-overlay{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(11,31,94,0.72);
+  backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;
+  opacity:0;transition:opacity .3s ease;
+}
+#pdf-gen-overlay.active{display:flex}
+#pdf-gen-overlay.visible{opacity:1}
+.pdf-gen-ring{
+  width:64px;height:64px;border-radius:50%;
+  border:4px solid rgba(255,255,255,0.15);
+  border-top-color:#4ecdc4;border-right-color:#ffc857;
+  animation:pdfSpin 1s linear infinite;
+}
+@keyframes pdfSpin{to{transform:rotate(360deg)}}
+.pdf-gen-label{
+  font-family:Sora,sans-serif;font-size:18px;font-weight:800;
+  color:#fff;letter-spacing:-.01em;text-align:center
+}
+.pdf-gen-sub{
+  font-family:Inter,sans-serif;font-size:13px;color:rgba(255,255,255,0.6);
+  text-align:center;max-width:260px;line-height:1.5
+}
+.pdf-gen-steps{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.pdf-gen-step{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,0.5);font-family:Inter,sans-serif;transition:color .3s}
+.pdf-gen-step.done{color:rgba(255,255,255,0.9)}
+.pdf-gen-step .pdf-step-icon{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:background .3s,color .3s}
+.pdf-gen-step.done .pdf-step-icon{background:#4ecdc4;color:#fff}
+
 @media(max-width:640px){
   .ss-metrics-row{grid-template-columns:1fr}
   .ss-metric-card{border-right:none;border-bottom:1px solid #DDE3F5}
@@ -3782,9 +3814,62 @@ async function submitStackAudit() {
 
 
 // ── PRINT FREE REPORT ─────────────────────────────────────────────────────────
+
+// ── PDF GENERATION OVERLAY HELPERS ────────────────────────────────────────────
+function showPdfOverlay(label, sub, steps) {
+  const ov = document.getElementById('pdf-gen-overlay');
+  const lbl = document.getElementById('pdf-gen-label');
+  const sublbl = document.getElementById('pdf-gen-sub');
+  const stepsEl = document.getElementById('pdf-gen-steps');
+  if (!ov) return;
+  if (lbl) lbl.textContent = label || 'Building your report…';
+  if (sublbl) sublbl.textContent = sub || 'Compiling your stack analysis into a clean PDF';
+  // Reset steps
+  ['pgs-1','pgs-2','pgs-3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove('done');
+      const icon = el.querySelector('.pdf-step-icon');
+      if (icon) icon.textContent = i+1;
+      const span = el.querySelector('span');
+      if (span && steps && steps[i]) span.textContent = steps[i];
+    }
+  });
+  ov.classList.add('active');
+  requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('visible')));
+  // Animate steps
+  const delays = [600, 1600, 2800];
+  ['pgs-1','pgs-2','pgs-3'].forEach((id, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('done');
+        const icon = el.querySelector('.pdf-step-icon');
+        if (icon) icon.textContent = '✓';
+      }
+    }, delays[i]);
+  });
+}
+
+function hidePdfOverlay() {
+  const ov = document.getElementById('pdf-gen-overlay');
+  if (!ov) return;
+  ov.classList.remove('visible');
+  setTimeout(() => ov.classList.remove('active'), 350);
+}
+
 function printFreeReport() {
   const box = document.getElementById('result-box');
   if (!box) return;
+
+  showPdfOverlay(
+    'Preparing your free report…',
+    'Formatting overlaps, upgrades, and savings into a print-ready PDF',
+    ['Reading stack analysis', 'Formatting report sections', 'Opening PDF']
+  );
+
+  // Delay actual work so the overlay renders first
+  setTimeout(() => {
 
   // Grab all ss-* CSS from the page's style blocks
   const styleSheets = Array.from(document.styleSheets);
@@ -3843,12 +3928,14 @@ ${clone.outerHTML}
 </body>
 </html>`;
 
-  const win = window.open('', '_blank');
-  if (!win) { alert('Please allow popups to download your report.'); return; }
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  setTimeout(() => { try { win.print(); } catch(e) {} }, 1200);
+    const win = window.open('', '_blank');
+    hidePdfOverlay();
+    if (!win) { alert('Please allow popups to download your report.'); return; }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => { try { win.print(); } catch(e) {} }, 1200);
+  }, 3800); // 3.8s overlay
 }
 
 function generateProReport() {
@@ -3856,6 +3943,14 @@ function generateProReport() {
   if (!btn) return;
   btn.disabled = true;
   btn.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span>&nbsp; Building your Pro Report…';
+
+  showPdfOverlay(
+    'Generating Pro Report…',
+    'Building your 10-section stack decision document',
+    ['Compiling stack intelligence', 'Building 10-section report', 'Preparing PDF']
+  );
+
+  setTimeout(() => {
 
   const RESET_BTN = () => {
     btn.disabled = false;
@@ -4064,9 +4159,13 @@ function generateProReport() {
       if (!categories[cat]) categories[cat] = [];
       categories[cat].push(tool);
     });
-    const catHTML = Object.entries(categories).map(([cat, tools]) =>
-      `<div class="bp-row"><div class="bp-cat">${esc(cat)}</div><div class="bp-tools">${tools.map(t=>chip(t,'#1847ED')).join(' ')}</div></div>`
-    ).join('');
+    const catHTML = Object.entries(categories)
+      .filter(([cat]) => cat !== 'Other Tools')
+      .sort((a, b) => a[1].length - b[1].length)
+      .concat(Object.entries(categories).filter(([cat]) => cat === 'Other Tools'))
+      .map(([cat, tools]) =>
+        `<div class="bp-row"><div class="bp-cat">${esc(cat)}</div><div class="bp-tools">${tools.map(t=>chip(t,'#1847ED')).join(' ')}</div></div>`
+      ).join('');
     const s5 = section(5, 'Ideal Stack Blueprint', '#1847ED', `
       <p style="margin-bottom:16px">Recommended configuration for <strong>${esc(_co)}</strong> — ${$(_ts,'—')}-person team, ${esc(_ind)} vertical. ${
         legacy.length > 0 ? `Legacy tools (${legacy.map(l=>l.tool).join(', ')}) have been removed.` :
@@ -4089,14 +4188,59 @@ function generateProReport() {
       ${monthly > 0 ? callout(`At ${money(monthly)}/mo, ${esc(_co)} recovers <strong>${money(annual)}/year</strong> — enough to fund ${Math.floor(annual/2000)} months of additional headcount, infrastructure investment, or demand gen at current burn rates. Savings estimates are based on published list pricing and may exceed actual contract rates.`, 'success') : ''}
     `);
 
-    // ── SECTION 7: 30/60/90 Day Plan ─────────────────────────────────────
+    // ── SECTION 7: Stack Lock-In Risk ───────────────────────────────────────
+    const lockInScore = lockIn.score;
+    const lockInLabel = lockIn.label;
+    const lockInColor = lockInScore < 40 ? '#DC2626' : lockInScore < 65 ? '#D97706' : '#16A34A';
+    const lockInDesc  = lockInScore < 40
+      ? 'This stack has high dependency risk. Several tools use proprietary data formats, custom integrations, or lack standard export APIs — making migration expensive and time-consuming.'
+      : lockInScore < 65
+      ? 'Moderate lock-in detected. Some tools have switching friction but most data is portable with standard export flows.'
+      : 'Stack is highly portable. Most tools use open standards, offer full data export, and have clear migration paths.';
+
+    const lockInRows = selectedTools.map(tool => {
+      const tl = tool.toLowerCase();
+      const isHigh = /salesforce|hubspot|netsuite|sap|oracle|workday|zendesk|marketo|dynamics/.test(tl);
+      const isMed  = /outreach|salesloft|gong|intercom|freshdesk|monday|asana|confluence|atlassian/.test(tl);
+      const lvl    = isHigh ? 'High' : isMed ? 'Medium' : 'Low';
+      const color  = isHigh ? '#DC2626' : isMed ? '#D97706' : '#16A34A';
+      const note   = isHigh ? 'Proprietary data model / complex integrations — plan 4–8 week migration window'
+                   : isMed  ? 'Standard export available — 2–4 week migration with proper planning'
+                   :          'Portable — switch with minimal friction, standard APIs';
+      return [`<strong>${esc(tool)}</strong>`,
+        `<span style="color:${color};font-weight:700">${lvl}</span>`,
+        note];
+    }).sort((a,b) => {
+      const rank = {'High':0,'Medium':1,'Low':2};
+      const la = a[1].match(/>(High|Medium|Low)</)?.[1]||'Low';
+      const lb = b[1].match(/>(High|Medium|Low)</)?.[1]||'Low';
+      return (rank[la]||2)-(rank[lb]||2);
+    });
+
+    const s7 = section(7, 'Stack Lock-In Risk Assessment', lockInColor, `
+      <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px;background:#F8FAFF;border:1px solid #DDE3F5;border-radius:10px;padding:16px 20px">
+        <div style="text-align:center;flex-shrink:0">
+          <div style="font-family:Sora,sans-serif;font-size:36px;font-weight:800;color:${lockInColor};line-height:1">${lockInScore}</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6B7899;font-family:Sora,sans-serif;font-weight:700;margin-top:4px">Portability Score</div>
+          <div style="font-size:11px;font-weight:700;color:${lockInColor};margin-top:2px">${lockInLabel}</div>
+        </div>
+        <div style="flex:1;font-size:13px;color:#374151;line-height:1.65">${lockInDesc}</div>
+      </div>
+      ${table(
+        ['Tool', 'Lock-In Risk', 'Migration Notes'],
+        lockInRows
+      )}
+      ${lockInScore < 65 ? callout(`<strong>Migration planning recommended.</strong> Before switching any high-lock-in tools, export all historical data, document existing integrations, and validate that replacement tools have compatible import flows.`, 'warn') : callout('Stack portability is healthy. Migration paths exist for all tools — standard change management practices apply.', 'success')}
+    `);
+
+    // ── SECTION 8: 30/60/90 Day Plan ─────────────────────────────────────
     const contractNote = _contract === 'annual' ? 'Annual contract holders: sequence tool cancellations around renewal dates to avoid early termination fees.'
       : _contract === 'multi-year' ? 'Multi-year contracts: migrations should be planned now and executed at the next renewal window.'
       : _contract === 'month-to-month' ? 'Month-to-month contracts: all changes can begin immediately with 30 days notice.'
       : '';
     const cuts = overlaps.map(o=>o.b).concat(legacy.map(l=>l.tool));
     const adds = upgrades.map(u=>u.r);
-    const s7 = section(7, '30 / 60 / 90 Day Implementation Plan', '#0B1F5E', `
+    const s8 = section(8, '30 / 60 / 90 Day Implementation Plan', '#0B1F5E', `
       <div class="timeline">
         <div class="tl-phase">
           <div class="tl-header blue">30 Days — Audit &amp; Plan</div>
@@ -4150,7 +4294,7 @@ function generateProReport() {
     if (_ind === 'SaaS / Tech' || _ind === 'Healthcare' || _ind === 'Finance') {
       risks.push({risk:'Compliance requirements during data migration',likelihood:'Medium',mitigation:`Ensure ${esc(_ind)} compliance requirements (SOC2, HIPAA, etc.) are validated for replacement tools before provisioning.`});
     }
-    const s8 = section(8, 'Migration Risk Callouts', '#DC2626', `
+    const s9 = section(9, 'Migration Risk Callouts', '#DC2626', `
       ${table(
         ['Risk','Likelihood','Mitigation'],
         (risks.length > 0 ? risks : [{risk:'No high-risk migrations detected',likelihood:'Low',mitigation:'Standard change management practices apply.'}])
@@ -4160,7 +4304,7 @@ function generateProReport() {
     `);
 
     // ── SECTION 9: Final Recommendation ──────────────────────────────────
-    const s9 = section(9, 'Final Recommendation', '#0B1F5E', `
+    const s10 = section(10, 'Final Recommendation', '#0B1F5E', `
       <p>${esc(_co)}'s ${selectedTools.length}-tool stack ${
         score < 55 ? 'has significant structural issues that are costing real money and introducing operational friction'
         : score < 75 ? 'is functional but carrying unnecessary overhead that\'s slowing the team down'
@@ -4333,6 +4477,7 @@ tr.odd{background:#fff}
   ${s7}
   ${s8}
   ${s9}
+  ${s10}
 
   <div class="doc-footer">
     StackScan Pro &nbsp;·&nbsp; AI-Powered SaaS Stack Intelligence &nbsp;·&nbsp; stackswap.io &nbsp;·&nbsp;
@@ -4353,9 +4498,11 @@ tr.odd{background:#fff}
 
   } catch(err) {
     console.error('Pro report error:', err);
+    hidePdfOverlay();
     alert('Could not generate report: ' + err.message);
     RESET_BTN();
   }
+  }, 3500); // 3.5s overlay
 }
 
 
@@ -4503,10 +4650,10 @@ function renderAINarrative(aiData, container) {
     const grid = document.createElement("div");
     grid.className = "ai-verdict-grid";
     const VERDICT_META = {
-      keep:     { color: "#4ecdc4", bg: "rgba(78,205,196,0.08)",  border: "rgba(78,205,196,0.2)",  icon: "✓" },
-      cut:      { color: "#e05555", bg: "rgba(224,85,85,0.07)",   border: "rgba(224,85,85,0.2)",   icon: "✕" },
-      replace:  { color: "#e05555", bg: "rgba(224,85,85,0.07)",   border: "rgba(224,85,85,0.2)",   icon: "⟳" },
-      evaluate: { color: "#ffc857", bg: "rgba(255,200,87,0.07)", border: "rgba(255,200,87,0.2)", icon: "?" },
+      keep:     { color: "#0D7C6E", bg: "rgba(78,205,196,0.12)",  border: "rgba(78,205,196,0.35)", icon: "✓" },
+      cut:      { color: "#B91C1C", bg: "rgba(224,85,85,0.1)",    border: "rgba(224,85,85,0.35)",  icon: "✕" },
+      replace:  { color: "#B91C1C", bg: "rgba(224,85,85,0.1)",    border: "rgba(224,85,85,0.35)",  icon: "⟳" },
+      evaluate: { color: "#92400E", bg: "rgba(255,200,87,0.12)", border: "rgba(255,200,87,0.35)", icon: "?" },
     };
     aiData.tool_verdicts.forEach(tv => {
       const m = VERDICT_META[tv.verdict] || VERDICT_META.evaluate;
@@ -4515,12 +4662,12 @@ function renderAINarrative(aiData, container) {
       card.style.cssText = "background:" + m.bg + ";border:1px solid " + m.border + ";border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px";
       card.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
-          '<div style="font-size:14px;font-weight:700;color:#f0ece4;font-family:var(--prose);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + tv.tool + '</div>' +
+          '<div style="font-size:14px;font-weight:700;color:#0B1F5E;font-family:var(--prose);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + tv.tool + '</div>' +
           '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0;background:' + m.bg + ';border:1px solid ' + m.border + ';border-radius:4px;padding:2px 7px">' +
             '<span style="font-size:11px;color:' + m.color + ';font-family:DM Mono,monospace;font-weight:700;letter-spacing:.04em;text-transform:uppercase">' + m.icon + ' ' + tv.verdict + '</span>' +
           '</div>' +
         '</div>' +
-        '<div style="font-size:12px;color:#e8e4dc;line-height:1.6;font-family:var(--prose)">' + (tv.reason || '') + '</div>';
+        '<div style="font-size:12px;color:#374151;line-height:1.6;font-family:var(--prose)">' + (tv.reason || '') + '</div>';
       grid.appendChild(card);
     });
     tvSec.appendChild(grid);
@@ -4889,6 +5036,14 @@ function renderMain() {
     confirmed.innerHTML=`<div class="gate-check">✓</div><span>${email} · ${company} · ${role}</span>`;
     c4.appendChild(confirmed);
     updateCTA();
+
+    // Auto-trigger analysis immediately on gate submit — single click UX
+    if(selectedTools.length >= 1) {
+      setTimeout(async () => {
+        const ctaEl = document.getElementById('cta');
+        if(ctaEl && !ctaEl.disabled) ctaEl.click();
+      }, 300);
+    }
 
     // Lead saved to Supabase via /api/lead above
   });
