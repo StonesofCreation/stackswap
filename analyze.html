@@ -334,8 +334,9 @@ nav,
    ═══════════════════════════════════════════════════ */
 
 /* Report header (dark navy gradient) */
-.ss-report-header{background:linear-gradient(135deg,#0B1F5E 0%,#071040 100%);padding:32px;position:relative;overflow:hidden}
-.ss-report-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% -10%,rgba(24,71,237,0.35) 0%,transparent 70%);pointer-events:none}
+.ss-report-header{background:linear-gradient(135deg,#0d2266 0%,#081545 50%,#040e2e 100%);padding:32px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(4,14,46,0.45),0 1px 0 rgba(255,255,255,0.06) inset}
+.ss-report-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 40% -5%,rgba(24,71,237,0.4) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 90% 100%,rgba(99,102,241,0.15) 0%,transparent 60%);pointer-events:none}
+.ss-report-header::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12) 40%,rgba(255,255,255,0.2) 60%,transparent);pointer-events:none}
 .ss-report-meta{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:6px;font-family:'Inter',sans-serif;position:relative;z-index:1}
 .ss-report-title{font-family:'Sora',sans-serif;font-weight:800;font-size:24px;color:#fff;margin-bottom:4px;letter-spacing:-.02em;position:relative;z-index:1}
 .ss-report-sub{font-size:13px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;position:relative;z-index:1}
@@ -344,7 +345,7 @@ nav,
 .ss-report-summary{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:15px;color:rgba(255,255,255,0.8);line-height:1.65;font-family:'Inter',sans-serif;position:relative;z-index:1}
 
 /* Metrics row (3 columns) */
-.ss-metrics-row{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #DDE3F5}
+.ss-metrics-row{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(203,213,225,0.8);background:rgba(255,255,255,0.98)}
 .ss-metric-card{padding:22px 20px;border-right:1px solid #DDE3F5;text-align:center}
 .ss-metric-card:last-child{border-right:none}
 .ss-metric-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7899;margin-bottom:8px;font-family:'Inter',sans-serif}
@@ -352,10 +353,10 @@ nav,
 .ss-metric-sub{font-size:12px;color:#6B7899;margin-top:4px;font-family:'Inter',sans-serif}
 
 /* Report body */
-.ss-report-body{padding:32px;display:flex;flex-direction:column;gap:20px;background:#F4F6FC}
+.ss-report-body{padding:32px;display:flex;flex-direction:column;gap:20px;background:linear-gradient(180deg,#eef1f9 0%,#F4F6FC 100%)}
 
 /* Cards */
-.ss-card{background:#fff;border:1px solid #DDE3F5;border-radius:14px;padding:26px;box-shadow:0 2px 8px rgba(11,31,94,0.04);animation:fadeUp .35s ease both}
+.ss-card{background:rgba(255,255,255,0.97);border:1px solid rgba(203,213,225,0.7);border-radius:16px;padding:26px;box-shadow:0 1px 3px rgba(11,31,94,0.04),0 4px 16px rgba(11,31,94,0.06),0 0 0 1px rgba(255,255,255,0.8) inset;animation:fadeUp .35s ease both;backdrop-filter:blur(2px)}
 .ss-card-title{font-family:'Sora',sans-serif;font-weight:700;font-size:18px;color:#0B1F5E;margin-bottom:4px}
 .ss-card-sub{font-size:13px;color:#6B7899;margin-bottom:18px;line-height:1.5;font-family:'Inter',sans-serif}
 
@@ -566,7 +567,6 @@ nav,
     border-top:1px solid #EEF2FF!important;font-family:Inter,sans-serif!important;
     letter-spacing:.05em!important;text-transform:uppercase!important;
   }
-}
 }
 @media(max-width:640px){
   .ss-metrics-row{grid-template-columns:1fr}
@@ -2364,33 +2364,75 @@ function renderStackFlow(container, tools, conflicts) {
 
   scrollWrap.appendChild(flow);
 
-  // Scroll fade + hint — shows only when content overflows
-  const fadeCover = document.createElement('div');
-  fadeCover.style.cssText = 'position:absolute;top:0;right:0;bottom:4px;width:56px;background:linear-gradient(to right,transparent,#fff);pointer-events:none;border-radius:0 10px 10px 0;transition:opacity .25s';
-  scrollWrap.style.position = 'relative';
-  scrollWrap.appendChild(fadeCover);
+  // ── Full scroll discoverability system ───────────────────────────
+  scrollWrap.style.cssText = 'overflow-x:auto;padding-bottom:4px;position:relative;-webkit-overflow-scrolling:touch';
 
-  // Hide fade once user has scrolled to the end
-  scrollWrap.addEventListener('scroll', function() {
-    const atEnd = this.scrollLeft + this.clientWidth >= this.scrollWidth - 8;
-    fadeCover.style.opacity = atEnd ? '0' : '1';
-  });
+  // Hint label above
+  const scrollLabel = document.createElement('div');
+  scrollLabel.style.cssText = 'text-align:center;font-size:11px;color:#94A3B8;font-family:Inter,sans-serif;margin-bottom:6px;letter-spacing:.02em;display:none';
+  scrollLabel.textContent = 'Swipe or scroll horizontally to explore your full optimized stack';
 
-  // Only show hint if actually overflowing
-  const hintRow = document.createElement('div');
-  hintRow.style.cssText = 'display:none;align-items:center;justify-content:flex-end;gap:5px;margin-top:8px;font-size:11px;color:#6B7899;font-family:Inter,sans-serif';
-  hintRow.innerHTML = 'Scroll to see full stack &nbsp;<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="animation:nudgeRight 1.6s ease infinite"><path d="M3 8h10M9 4l4 4-4 4" stroke="#6B7899" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // Right fade gradient
+  const fadeRight = document.createElement('div');
+  fadeRight.style.cssText = 'position:absolute;top:0;right:0;bottom:4px;width:72px;background:linear-gradient(to right,transparent,rgba(255,255,255,0.96));pointer-events:none;transition:opacity .25s;z-index:2';
+  // Left fade gradient
+  const fadeLeft = document.createElement('div');
+  fadeLeft.style.cssText = 'position:absolute;top:0;left:0;bottom:4px;width:48px;background:linear-gradient(to left,transparent,rgba(255,255,255,0.96));pointer-events:none;transition:opacity .25s;opacity:0;z-index:2';
 
+  // Right chevron
+  const chevRight = document.createElement('div');
+  chevRight.style.cssText = 'position:absolute;right:4px;top:50%;transform:translateY(-50%);z-index:3;background:rgba(255,255,255,0.92);border:1px solid #DDE3F5;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(11,31,94,0.12);cursor:pointer;transition:opacity .25s;pointer-events:auto';
+  chevRight.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#1847ED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="animation:nudgeRight 1.4s ease infinite"/></svg>';
+  chevRight.onclick = () => { scrollWrap.scrollBy({left:220,behavior:'smooth'}); };
+
+  // Left chevron
+  const chevLeft = document.createElement('div');
+  chevLeft.style.cssText = 'position:absolute;left:4px;top:50%;transform:translateY(-50%);z-index:3;background:rgba(255,255,255,0.92);border:1px solid #DDE3F5;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(11,31,94,0.12);cursor:pointer;transition:opacity .25s;opacity:0;pointer-events:none';
+  chevLeft.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="#1847ED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  chevLeft.onclick = () => { scrollWrap.scrollBy({left:-220,behavior:'smooth'}); };
+
+  scrollWrap.appendChild(fadeRight);
+  scrollWrap.appendChild(fadeLeft);
+  scrollWrap.appendChild(chevRight);
+  scrollWrap.appendChild(chevLeft);
+
+  function updateScrollIndicators() {
+    const sl = scrollWrap.scrollLeft;
+    const maxScroll = scrollWrap.scrollWidth - scrollWrap.clientWidth;
+    const atStart = sl <= 4;
+    const atEnd = sl >= maxScroll - 4;
+    fadeRight.style.opacity = atEnd ? '0' : '1';
+    fadeLeft.style.opacity = atStart ? '0' : '1';
+    chevRight.style.opacity = atEnd ? '0' : '1';
+    chevRight.style.pointerEvents = atEnd ? 'none' : 'auto';
+    chevLeft.style.opacity = atStart ? '0' : '1';
+    chevLeft.style.pointerEvents = atStart ? 'none' : 'auto';
+  }
+
+  scrollWrap.addEventListener('scroll', updateScrollIndicators);
+
+  // Show hint + initial state after layout
   requestAnimationFrame(() => {
-    if (flow.scrollWidth > scrollWrap.clientWidth + 10) {
-      hintRow.style.display = 'flex';
-    } else {
-      fadeCover.style.opacity = '0';
-    }
+    setTimeout(() => {
+      const overflowing = flow.scrollWidth > scrollWrap.clientWidth + 10;
+      if (overflowing) {
+        scrollLabel.style.display = 'block';
+        updateScrollIndicators();
+        // First-load attention nudge on the right chevron
+        chevRight.style.transform = 'translateY(-50%) scale(1.15)';
+        setTimeout(() => { chevRight.style.transform = 'translateY(-50%) scale(1)'; chevRight.style.transition += ',transform .3s'; }, 700);
+      } else {
+        fadeRight.style.opacity = '0';
+        fadeLeft.style.opacity = '0';
+        chevRight.style.opacity = '0';
+      }
+    }, 120);
   });
 
   wrap.appendChild(scrollWrap);
-  wrap.appendChild(hintRow);
+
+  // Scroll label sits above the container — insert before scrollWrap in wrap
+  wrap.insertBefore(scrollLabel, scrollWrap);
 
   // Legend — plain English, no jargon
   const legend = document.createElement('div');
@@ -2793,7 +2835,7 @@ function renderResult(r) {
       '</div>' +
     '</div>' +
     (issueCount > 0
-      ? '<div class="ss-report-summary">' + issueCount + ' issue' + (issueCount!==1?'s':'') + ' found across your stack' + (r.totalSave>0?' — estimated $'+r.totalSave.toLocaleString()+'/mo in savings.':'.') + ' See recommendations below.</div>'
+      ? '<div class="ss-report-summary">' + issueCount + ' issue' + (issueCount!==1?'s':'') + ' found across your stack' + (r.totalSave>0?' — estimated ~$'+r.totalSave.toLocaleString()+'/mo in savings.':'.') + ' See recommendations below.</div>'
       : '<div class="ss-report-summary">No major issues detected. Your stack is well-optimized for your size and industry.</div>');
   box.appendChild(header);
 
@@ -2802,7 +2844,7 @@ function renderResult(r) {
   metricsRow.className = 'ss-metrics-row';
   [
     { label:'Stack Health Score', val: r.score + '/100', sub: gradeLabel, color: scoreColor },
-    { label:'Potential Monthly Savings', val: r.totalSave > 0 ? '$'+r.totalSave.toLocaleString() : '\u2014', sub: r.totalSave > 0 ? '$'+(r.totalSave*12).toLocaleString()+'/yr annualized' : 'Stack looks lean', color: r.totalSave > 0 ? '#16A34A' : '#6B7899' },
+    { label:'Potential Monthly Savings', val: r.totalSave > 0 ? '~$'+r.totalSave.toLocaleString() : '\u2014', sub: r.totalSave > 0 ? '~$'+(r.totalSave*12).toLocaleString()+'/yr annualized' : 'Stack looks lean', color: r.totalSave > 0 ? '#16A34A' : '#6B7899' },
     { label:'Issues Detected', val: issueCount || '\u2713', sub: (r.overlaps.length+(r.categoryOverlaps||[]).length) + ' overlaps \u00b7 ' + (r.upgrades||[]).length + ' upgrades', color: issueCount > 0 ? '#D97706' : '#16A34A' },
   ].forEach(item => {
     const c = document.createElement('div');
@@ -2860,7 +2902,7 @@ function renderResult(r) {
     if (save > 0) {
       const pill = document.createElement('div');
       pill.className = 'ss-finding-pill';
-      pill.textContent = '$'+save+'/mo';
+      pill.textContent = '~$'+save+'/mo';
       head.appendChild(pill);
     }
     f.appendChild(head);
@@ -2991,7 +3033,7 @@ function renderResult(r) {
       const saveDiv = document.createElement('div');
       saveDiv.style.cssText = 'min-width:64px;text-align:right';
       if (row.save > 0) {
-        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">$' + row.save + '/mo</span>';
+        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">~$' + row.save + '/mo</span>';
       }
 
       mainRow.appendChild(num);
@@ -3093,7 +3135,7 @@ function renderResult(r) {
       const saveDiv = document.createElement('div');
       saveDiv.style.cssText = 'min-width:64px;text-align:right';
       if (u.save > 0) {
-        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">$' + u.save + '/mo</span>';
+        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">~$' + u.save + '/mo</span>';
       }
 
       mainRow.appendChild(num);
@@ -3162,8 +3204,8 @@ function renderResult(r) {
     const savGrid = document.createElement('div');
     savGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px';
     [
-      { label:'Per Month', val:'$'+r.totalSave.toLocaleString(), color:'#16A34A' },
-      { label:'Per Year',  val:'$'+(r.totalSave*12).toLocaleString(), color:'#1847ED' },
+      { label:'Per Month', val:'~$'+r.totalSave.toLocaleString(), color:'#16A34A' },
+      { label:'Per Year',  val:'~$'+(r.totalSave*12).toLocaleString(), color:'#1847ED' },
     ].forEach(item => {
       const c = document.createElement('div');
       c.style.cssText = 'background:#F4F6FC;border-radius:10px;padding:20px;text-align:center';
@@ -3233,7 +3275,7 @@ function renderResult(r) {
     : 'Your stack is close \u2014 <span>a few targeted swaps</span> make it efficient.';
 
   const hooks = [];
-  if (annualWaste > 0) hooks.push(['$'+annualWaste.toLocaleString()+'/yr', 'estimated waste identified']);
+  if (annualWaste > 0) hooks.push(['~$'+annualWaste.toLocaleString()+'/yr', 'estimated waste identified']);
   if (overlapCountFinal > 0) hooks.push([overlapCountFinal+' overlap'+(overlapCountFinal!==1?'s':''), 'paying for duplicate capability']);
   if ((r.upgrades||[]).length > 0) hooks.push([(r.upgrades.length)+' upgrade'+(r.upgrades.length!==1?'s':''), 'AI-native alternatives available']);
   if (!hooks.length) hooks.push(['Full audit', 'exact per-tool cost breakdown'], ['30/60/90 plan', 'step-by-step implementation'], ['PDF report', 'shareable with your team']);
@@ -3330,7 +3372,7 @@ async function submitAuditWaitlist() {
 
 
 // ── AI NARRATIVE (Claude API) ─────────────────────────────────────────────────
-async function getAINarrative(result, tools, industry, budget, goals, teamSize) {
+async function getAINarrative(result, tools, industry, budget, goals, teamSize, contract) {
   const overlapSummary = result.overlaps.slice(0,5)
     .map(o=>`Cut ${o.b} → Keep ${o.a} (save $${o.save}/mo)`).join("; ");
   const upgradeSummary = result.upgrades.slice(0,4)
@@ -3339,6 +3381,21 @@ async function getAINarrative(result, tools, industry, budget, goals, teamSize) 
     .filter(f=>f.type==="wrong"||f.type==="wrong_tool").map(f=>f.title).join(", ");
   const goalsList = goals.length ? goals.join(", ") : "general optimization";
   const budgetLine = budget ? `$${Number(budget).toLocaleString()}/mo` : "not provided";
+  const contractLabels = {
+    "month-to-month": "Month-to-month — can switch tools immediately",
+    "annual": "Annual contract — recommend switching at renewal",
+    "multi-year": "Multi-year contract — emphasize future planning over immediate changes",
+    "not-sure": "Contract terms unknown — present recommendations normally",
+    "": "Not provided"
+  };
+  const contractLine = contractLabels[contract] || "Not provided";
+  const contractInstruction = contract === "month-to-month"
+    ? "Since they are on month-to-month contracts, all replacement recommendations can be framed as immediate opportunities."
+    : contract === "annual"
+    ? "Since they are on annual contracts, frame tool replacements as 'switch at renewal' — don't suggest immediate cancellations."
+    : contract === "multi-year"
+    ? "Since they are on multi-year contracts, deprioritize immediate replacements. Focus on optimization within current tools and planning for future renewal windows."
+    : "";
 
   const prompt = `You are a senior SaaS cost optimization consultant. A company just submitted their tech stack for analysis. Be direct, specific, and human. Reference actual tool names. No generic filler.
 
@@ -3346,6 +3403,7 @@ COMPANY CONTEXT:
 - Industry: ${industry || "Not specified"}
 - Team size: ${teamSize || "Not specified"}  
 - Monthly SaaS budget: ${budgetLine}
+- Contract flexibility: ${contractLine}
 - Goals: ${goalsList}
 - Tools submitted: ${tools.join(", ")}
 
@@ -3356,11 +3414,13 @@ WHAT THE ANALYSIS ENGINE FOUND:
 - Wrong tools for industry: ${wrongTools || "None"}
 - Total potential monthly savings: $${result.totalSave}
 
+SWITCHING TIMELINE GUIDANCE: ${contractInstruction || "No contract context provided — present recommendations without timeline assumptions."}
+
 Write a sharp, consultant-grade narrative for the top of their report. Return ONLY a JSON object — no markdown, no extra text, no explanation:
 
 {
   "narrative": "2-3 sentences. What did you find and why does it matter for THIS company specifically? Mention their industry and actual tool names. Not generic.",
-  "biggest_win": "Single sentence. The #1 highest-impact action with specific tool names and dollar amount. Make it feel urgent.",
+  "biggest_win": "Single sentence. The #1 highest-impact action with specific tool names and dollar amount. If on annual/multi-year contract, frame around renewal timing. Make it feel urgent.",
   "spend_assessment": "Single sentence on whether their spend level is appropriate for their size and industry. Return null if budget was not provided.",
   "priority_note": "Single sentence explaining why you ordered the recommendations this way based on their stated goals. Keep it tight.",
   "tool_verdicts": [
@@ -3646,6 +3706,19 @@ function renderMain() {
   tsW.appendChild(tsSel);
   tsW.appendChild(div("field-hint","benchmarks your stack against similar-sized teams"));
   tsRow.appendChild(tsW);
+  // Contract flexibility
+  const ctW = div("field-wrap"); ctW.innerHTML='<label class="lbl">Contract Flexibility</label>';
+  const ctSel = el("select","field"); ctSel.id="ctx-contract";
+  [
+    {v:"", l:"Select..."},
+    {v:"month-to-month", l:"Month-to-month"},
+    {v:"annual", l:"Annual contract"},
+    {v:"multi-year", l:"Multi-year contract"},
+    {v:"not-sure", l:"Not sure"},
+  ].forEach(({v,l})=>{const o=el("option",null,l);o.value=v;ctSel.appendChild(o);});
+  ctW.appendChild(ctSel);
+  ctW.appendChild(div("field-hint","helps AI estimate how easily you can switch tools"));
+  tsRow.appendChild(ctW);
   c2.appendChild(tsRow);
 
   indSel.addEventListener("change",()=>markDot(2,!!(indSel.value||tsSel.value)));
@@ -3831,6 +3904,7 @@ function renderMain() {
     const _industry = document.getElementById("ind")?.value||"";
     const _budget   = document.getElementById("bud")?.value||"";
     const _teamSize = leadData.teamSize || document.getElementById("ctx-teamsize")?.value || "";
+    const _contract = document.getElementById("ctx-contract")?.value || "";
 
     // ── Show clean loading state in result box immediately ──────────
     const _rb = document.getElementById("result-box");
@@ -3842,7 +3916,7 @@ function renderMain() {
           <span class="ss-loading-live-label">Analyzing</span>
         </div>
         <div class="ss-loading-spinner"></div>
-        <div class="ss-loading-title">Claude is analyzing your stack</div>
+        <div class="ss-loading-title">AI is analyzing your stack</div>
         <div class="ss-loading-sub">Reading overlaps, pricing signals, and integration patterns across your ${selectedTools.length} tools...</div>
         <div class="ss-loading-checks" id="ss-loading-checks">
           <div class="ss-loading-check"><div class="ss-loading-check-icon done">✓</div><span>Stack submitted (${selectedTools.length} tools)</span></div>
@@ -3859,7 +3933,7 @@ function renderMain() {
 
     // Run deterministic engine + AI narrative in parallel
     const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals);
-    const aiData  = await getAINarrative(result, selectedTools, _industry, _budget, selectedGoals, _teamSize);
+    const aiData  = await getAINarrative(result, selectedTools, _industry, _budget, selectedGoals, _teamSize, _contract);
 
     // ── Now render the full report ────────────────────────────────
     renderResult(result);
@@ -3941,6 +4015,7 @@ function renderMain() {
           industry: _industry,
           monthly_spend: _budget || null,
           goals: selectedGoals,
+          contract_flexibility: _contract || null,
           stack_score: result.score,
           estimated_savings_monthly: result.totalSave,
           estimated_savings_annual: result.totalSave * 12,
