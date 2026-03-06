@@ -22,6 +22,7 @@ select option{background:#1a1a22;color:#f0ece4}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nudgeRight{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
 
 .wrap{max-width:740px;margin:0 auto;padding:40px 20px 80px}
 .
@@ -442,19 +443,130 @@ nav,
 .ss-pdf-btn svg{flex-shrink:0;transition:transform .2s}
 .ss-pdf-btn:hover svg{transform:translateY(2px)}
 
-/* Print / PDF styles */
+/* ── TOOLTIP ── */
+[data-tooltip]{position:relative;cursor:default}
+[data-tooltip]:hover::after{
+  content:attr(data-tooltip);
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:#0B1F5E;color:#fff;font-size:12px;font-family:Inter,sans-serif;
+  line-height:1.55;padding:10px 14px;border-radius:8px;
+  white-space:normal;width:240px;z-index:200;
+  box-shadow:0 4px 20px rgba(11,31,94,0.2);
+  pointer-events:none;
+}
+[data-tooltip]:hover::before{
+  content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);
+  border:6px solid transparent;border-top-color:#0B1F5E;z-index:200;
+}
+
+/* ── OVERLAP LIST rows (like upgrade list) ── */
+.ss-swap-table{width:100%;border-collapse:collapse}
+.ss-swap-row{display:flex;align-items:center;gap:0;padding:14px 0;border-bottom:1px solid #F4F6FC;cursor:default;transition:background .12s;border-radius:8px;margin:0 -8px;padding-left:8px;padding-right:8px}
+.ss-swap-row:last-child{border-bottom:none}
+.ss-swap-row:hover{background:#F8FAFC}
+.ss-swap-num{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#CBD5E1;min-width:28px;flex-shrink:0}
+.ss-swap-from{font-family:'DM Mono',monospace;font-weight:600;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.4);flex-shrink:0}
+.ss-swap-arrow{color:#CBD5E1;font-size:16px;margin:0 10px;flex-shrink:0}
+.ss-swap-to{font-family:'DM Mono',monospace;font-weight:700;font-size:14px;color:#16A34A;flex:1;min-width:0}
+.ss-swap-save{font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;white-space:nowrap;flex-shrink:0;font-family:Inter,sans-serif}
+.ss-swap-why{font-size:13px;color:#6B7899;line-height:1.55;font-family:Inter,sans-serif;margin-top:3px;padding-left:28px}
+.ss-swap-details{display:none;font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.6;padding:8px 10px 10px 28px;border-top:1px solid #F4F6FC;margin-top:-1px}
+.ss-swap-details.open{display:block}
+.ss-swap-more{font-size:11px;color:#1847ED;cursor:pointer;font-family:Inter,sans-serif;font-weight:600;margin-left:28px;margin-top:4px;display:inline-flex;align-items:center;gap:3px;padding:2px 0}
+.ss-swap-more:hover{text-decoration:underline}
+
+/* Scroll hint for swimlane */
+.ss-scroll-wrap{position:relative}
+.ss-scroll-fade{position:absolute;top:0;right:0;bottom:20px;width:60px;background:linear-gradient(to right,transparent,#fff);pointer-events:none;border-radius:0 12px 12px 0;transition:opacity .3s}
+.ss-scroll-hint{display:flex;align-items:center;gap:5px;font-size:11px;color:#6B7899;font-family:Inter,sans-serif;margin-top:8px;justify-content:flex-end}
+.ss-scroll-hint svg{animation:nudgeRight 1.6s ease infinite}
+@keyframes nudgeRight{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+
+/* ── NETWORK MAP ── */
+.ss-net-wrap{position:relative;margin-top:16px;background:#F8FAFC;border-radius:12px;padding:24px;overflow:hidden}
+.ss-net-svg{width:100%;overflow:visible;display:block}
+.ss-net-node{cursor:default;transition:filter .15s}
+.ss-net-node:hover{filter:brightness(0.94)}
+.ss-net-node rect{rx:8}
+.ss-net-node text{font-family:Inter,sans-serif;font-weight:600;font-size:12px;pointer-events:none}
+.ss-net-conflict-badge{font-family:Inter,sans-serif;font-weight:800;font-size:10px}
+
+/* ── PRINT ONE-PAGER ── */
 @media print {
-  body{background:#fff!important;color:#1A2340!important}
-  .page-nav,.nav-hamburger,.nav-drawer,.wrap > *:not(#result-box){display:none!important}
-  .ss-pdf-bar{display:none!important}
-  .result{display:block!important;border:none!important;box-shadow:none!important;margin:0!important}
-  .ss-report-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .ss-metrics-row{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .ss-lead-magnet{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .ss-score-fill,.ss-match-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .ss-card{break-inside:avoid;page-break-inside:avoid}
-  .ss-action-item,.ss-finding,.ss-dream-row{break-inside:avoid}
-  @page{margin:0.5in}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  @page{margin:0;size:letter portrait}
+
+  /* Nuclear hide — only result box survives */
+  body{margin:0!important;padding:0!important;background:#fff!important}
+  .page-nav,.nav-hamburger,.nav-drawer,
+  .wrap > *:not(#result-box),
+  .ss-pdf-bar,.ss-lead-magnet,.ss-report-body > .ss-card:nth-child(n+6),
+  .ss-scroll-hint,.ss-scroll-fade,.ss-swap-more,.ss-swap-details,
+  .ss-net-wrap,.ss-score-row,.ss-match-bar,.ss-loading-wrap,
+  #result-box > .ss-report-body > .ss-card:last-child{display:none!important}
+
+  /* Result box full bleed */
+  #result-box,.result{
+    display:block!important;border:none!important;
+    box-shadow:none!important;margin:0!important;padding:0!important;width:100%!important;
+  }
+
+  /* ── HEADER — keep gradient, full width ── */
+  .ss-report-header{
+    padding:28px 36px!important;
+    background:linear-gradient(135deg,#0B1F5E 0%,#071040 100%)!important;
+  }
+  .ss-report-title{font-size:28px!important}
+  .ss-report-grade{font-size:64px!important}
+  .ss-report-summary{font-size:15px!important;line-height:1.5!important}
+
+  /* ── METRICS ROW ── */
+  .ss-metrics-row{
+    display:grid!important;grid-template-columns:1fr 1fr 1fr!important;
+    border:none!important;border-bottom:3px solid #0B1F5E!important;
+    background:#F4F6FC!important;
+  }
+  .ss-metric-card{padding:16px 20px!important}
+  .ss-metric-label{font-size:10px!important}
+  .ss-metric-val{font-size:28px!important;line-height:1!important}
+  .ss-metric-sub{font-size:12px!important}
+
+  /* ── REPORT BODY ── */
+  .ss-report-body{
+    padding:20px 28px!important;gap:14px!important;
+    background:#fff!important;display:flex!important;flex-direction:column!important;
+  }
+
+  /* Cards */
+  .ss-card{
+    break-inside:avoid!important;page-break-inside:avoid!important;
+    box-shadow:none!important;border:1.5px solid #DDE3F5!important;
+    padding:16px 20px!important;border-radius:10px!important;
+  }
+  .ss-card-title{font-size:15px!important}
+  .ss-card-sub{font-size:12px!important;margin-bottom:10px!important}
+
+  /* Swap rows — compact */
+  .ss-swap-row{padding:6px 0!important;border-bottom:1px solid #F4F6FC!important}
+  .ss-swap-num{font-size:13px!important}
+  .ss-swap-from,.ss-swap-to{font-size:13px!important}
+  .ss-swap-why{display:block!important;font-size:11px!important;color:#6B7899!important;margin-top:2px!important;padding-left:24px!important}
+  .ss-swap-save{font-size:11px!important}
+
+  /* Priority actions */
+  .ss-action-item{padding:8px 0!important}
+  .ss-action-title{font-size:13px!important}
+  .ss-action-text{font-size:12px!important}
+
+  /* ── BRANDED FOOTER ── */
+  .ss-report-body::after{
+    content:"Generated by StackSwap.io  ·  Free AI-powered tech stack analysis  ·  stackswap.io";
+    display:block!important;font-size:9px!important;color:#9CA3AF!important;
+    text-align:center!important;padding-top:14px!important;margin-top:6px!important;
+    border-top:1px solid #EEF2FF!important;font-family:Inter,sans-serif!important;
+    letter-spacing:.05em!important;text-transform:uppercase!important;
+  }
+}
 }
 @media(max-width:640px){
   .ss-metrics-row{grid-template-columns:1fr}
@@ -2251,7 +2363,34 @@ function renderStackFlow(container, tools, conflicts) {
   });
 
   scrollWrap.appendChild(flow);
+
+  // Scroll fade + hint — shows only when content overflows
+  const fadeCover = document.createElement('div');
+  fadeCover.style.cssText = 'position:absolute;top:0;right:0;bottom:4px;width:56px;background:linear-gradient(to right,transparent,#fff);pointer-events:none;border-radius:0 10px 10px 0;transition:opacity .25s';
+  scrollWrap.style.position = 'relative';
+  scrollWrap.appendChild(fadeCover);
+
+  // Hide fade once user has scrolled to the end
+  scrollWrap.addEventListener('scroll', function() {
+    const atEnd = this.scrollLeft + this.clientWidth >= this.scrollWidth - 8;
+    fadeCover.style.opacity = atEnd ? '0' : '1';
+  });
+
+  // Only show hint if actually overflowing
+  const hintRow = document.createElement('div');
+  hintRow.style.cssText = 'display:none;align-items:center;justify-content:flex-end;gap:5px;margin-top:8px;font-size:11px;color:#6B7899;font-family:Inter,sans-serif';
+  hintRow.innerHTML = 'Scroll to see full stack &nbsp;<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="animation:nudgeRight 1.6s ease infinite"><path d="M3 8h10M9 4l4 4-4 4" stroke="#6B7899" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  requestAnimationFrame(() => {
+    if (flow.scrollWidth > scrollWrap.clientWidth + 10) {
+      hintRow.style.display = 'flex';
+    } else {
+      fadeCover.style.opacity = '0';
+    }
+  });
+
   wrap.appendChild(scrollWrap);
+  wrap.appendChild(hintRow);
 
   // Legend — plain English, no jargon
   const legend = document.createElement('div');
@@ -2270,6 +2409,355 @@ function renderStackFlow(container, tools, conflicts) {
 
   container.appendChild(wrap);
 }
+
+// ── RENDER NETWORK MAP (force-layout word-cloud style) ────────────────────────
+function renderNetworkMap(container, tools, conflicts, orphaned, glueNote) {
+  if (!tools || tools.length === 0) return;
+
+  // ── Integration knowledge base (expanded with real capabilities) ──────
+  const INTEGRATIONS = {
+    // CRM hubs — everything connects through these
+    'HubSpot':        ['Salesforce','Gong','Outreach','Salesloft','Slack','Zoom','Google Workspace','Calendly','Stripe','Intercom','Zapier','Clay','LinkedIn Sales Navigator','Marketo','Mailchimp','Docusign','PandaDoc','Databox','Hotjar','Mixpanel'],
+    'Salesforce':     ['HubSpot','Gong','Outreach','Salesloft','Slack','Zoom','Tableau','Docusign','Stripe','Marketo','Pardot','Zapier','Clay','LinkedIn Sales Navigator','Datadog'],
+    'Pipedrive':      ['Slack','Zoom','Google Workspace','Zapier','Mailchimp','Calendly'],
+    'Follow Up Boss': ['Zapier','Google Workspace','Slack','Mailchimp','BoomTown','kvCORE'],
+    // Conversation intelligence
+    'Gong':           ['HubSpot','Salesforce','Slack','Zoom','Google Meet','Microsoft Teams','Outreach','Salesloft'],
+    'Chorus':         ['Salesforce','HubSpot','Slack','Zoom'],
+    'Avoma':          ['HubSpot','Salesforce','Slack','Zoom','Google Meet'],
+    // Outreach / SEP
+    'Outreach':       ['Salesforce','HubSpot','LinkedIn Sales Navigator','Gong','Slack','Zoom','Gmail'],
+    'Salesloft':      ['Salesforce','HubSpot','LinkedIn Sales Navigator','Gong','Slack','Zoom'],
+    'Apollo.io':      ['HubSpot','Salesforce','Slack','Outreach','Salesloft'],
+    'Instantly':      ['HubSpot','Salesforce','Slack','Zapier'],
+    'Smartlead':      ['HubSpot','Salesforce','Slack','Zapier','Clay'],
+    'Clay':           ['HubSpot','Salesforce','Smartlead','Instantly','Slack','Outreach','Apollo.io'],
+    // Data / enrichment
+    'ZoomInfo':       ['Salesforce','HubSpot','Outreach','Salesloft','Marketo','Slack'],
+    'LinkedIn Sales Navigator': ['Salesforce','HubSpot','Outreach','Salesloft','CRM'],
+    'Clearbit':       ['HubSpot','Salesforce','Slack','Marketo'],
+    // Communication
+    'Slack':          ['HubSpot','Salesforce','Gong','Outreach','Salesloft','Asana','Jira','Linear','Notion','Zoom','Google Workspace','GitHub','Stripe','PagerDuty','Zapier','Datadog'],
+    'Microsoft Teams':['Microsoft 365','Dynamics 365 Sales','Salesforce','Zapier'],
+    'Zoom':           ['HubSpot','Salesforce','Gong','Slack','Google Workspace','Calendly','Marketo'],
+    'Google Workspace':['HubSpot','Salesforce','Slack','Zoom','Asana','Calendly','Zapier','Follow Up Boss'],
+    'Microsoft 365':  ['Microsoft Teams','Salesforce','Zapier','Power BI'],
+    'Calendly':       ['HubSpot','Salesforce','Google Workspace','Zoom','Slack','Zapier'],
+    'Loom':           ['Slack','HubSpot','Notion','Asana'],
+    // Marketing automation
+    'Marketo':        ['Salesforce','HubSpot','Zoom','ZoomInfo','Slack','Google Analytics'],
+    'Pardot':         ['Salesforce','Google Analytics','Slack','Zoom'],
+    'Mailchimp':      ['HubSpot','Salesforce','Pipedrive','Zapier','Google Analytics'],
+    'ActiveCampaign': ['Salesforce','HubSpot','Zapier','Slack'],
+    'Klaviyo':        ['Shopify','Salesforce','HubSpot','Zapier','Slack'],
+    // Analytics
+    'Mixpanel':       ['Salesforce','HubSpot','Slack','Zapier','Segment'],
+    'Amplitude':      ['Salesforce','Slack','Zapier','Segment'],
+    'Google Analytics':['HubSpot','Salesforce','Slack','Zapier','Tableau','Looker'],
+    'Hotjar':         ['HubSpot','Salesforce','Slack','Google Analytics'],
+    'Tableau':        ['Salesforce','Google Analytics','Slack','Snowflake'],
+    'Power BI':       ['Microsoft 365','Salesforce','Slack'],
+    // Support
+    'Intercom':       ['HubSpot','Salesforce','Slack','Stripe','Zapier'],
+    'Zendesk':        ['Salesforce','HubSpot','Slack','Jira','Zapier'],
+    'Freshdesk':      ['Salesforce','HubSpot','Slack','Zapier'],
+    // Productivity
+    'Asana':          ['Slack','Google Workspace','HubSpot','Jira','Zapier','Loom'],
+    'Notion':         ['Slack','Zapier','GitHub','Loom','Figma'],
+    'ClickUp':        ['Slack','Google Workspace','HubSpot','Zapier','GitHub'],
+    'Jira':           ['Slack','GitHub','Confluence','Zendesk','PagerDuty','Datadog'],
+    'Linear':         ['Slack','GitHub','Zapier','Figma'],
+    // Automation
+    'Zapier':         ['HubSpot','Salesforce','Slack','Google Workspace','Mailchimp','Stripe','Asana','ClickUp','Trello','Notion'],
+    'Make':           ['HubSpot','Salesforce','Slack','Google Workspace','Zapier'],
+    // Finance / legal
+    'Stripe':         ['HubSpot','Salesforce','Slack','Zapier','QuickBooks','Xero','Intercom'],
+    'QuickBooks':     ['Stripe','HubSpot','Zapier','Google Workspace'],
+    'Docusign':       ['Salesforce','HubSpot','Slack','Google Workspace'],
+    'PandaDoc':       ['HubSpot','Salesforce','Slack','Stripe'],
+    // RE tools
+    'Paperless Pipeline': ['Follow Up Boss','Zapier','Google Workspace'],
+    'Dotloop':        ['Salesforce','HubSpot','Zapier','Google Workspace'],
+    'BoomTown':       ['Follow Up Boss','Zapier','Google Workspace'],
+    // Dev / infra
+    'GitHub':         ['Slack','Jira','Linear','Notion','Datadog','Sentry','Zapier'],
+    'Datadog':        ['Slack','PagerDuty','Jira','GitHub'],
+    // AI tools
+    'ChatGPT':        ['Zapier','Slack','HubSpot'],
+    'Grammarly':      ['Slack','Google Workspace','Notion'],
+  };
+
+  // Build conflict lookup
+  const conflictPairs = new Map(); // "toolA|||toolB" -> reason
+  const conflictingTools = new Set();
+  conflicts.forEach(ic => {
+    const matched = (ic.tools||[]).map(ct =>
+      tools.find(t => t.toLowerCase().includes(ct.toLowerCase()) || ct.toLowerCase().includes(t.toLowerCase()))
+    ).filter(Boolean);
+    for (let i = 0; i < matched.length; i++) {
+      for (let j = i+1; j < matched.length; j++) {
+        conflictPairs.set(matched[i]+'|||'+matched[j], ic.issue || 'These tools conflict with each other.');
+        conflictPairs.set(matched[j]+'|||'+matched[i], ic.issue || 'These tools conflict with each other.');
+        conflictingTools.add(matched[i]);
+        conflictingTools.add(matched[j]);
+      }
+    }
+  });
+
+  // Build native connection edges between tools in the stack
+  const edges = []; // {a, b, type: 'native'|'conflict'}
+  const addedEdges = new Set();
+  tools.forEach(toolA => {
+    tools.forEach(toolB => {
+      if (toolA === toolB) return;
+      const key = [toolA,toolB].sort().join('|||');
+      if (addedEdges.has(key)) return;
+      // Conflict edge
+      if (conflictPairs.has(toolA+'|||'+toolB)) {
+        edges.push({a:toolA, b:toolB, type:'conflict'});
+        addedEdges.add(key);
+        return;
+      }
+      // Native edge
+      const nativesA = INTEGRATIONS[toolA] || [];
+      const nativesB = INTEGRATIONS[toolB] || [];
+      const connected = nativesA.some(n => toolB.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(toolB.toLowerCase()))
+                     || nativesB.some(n => toolA.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(toolA.toLowerCase()));
+      if (connected) {
+        edges.push({a:toolA, b:toolB, type:'native'});
+        addedEdges.add(key);
+      }
+    });
+  });
+
+  // ── Force-directed layout ─────────────────────────────────────────────
+  const W = 680, H = Math.max(360, Math.ceil(tools.length / 4) * 120 + 80);
+  const NODE_W = 110, NODE_H = 36, PADDING = 20;
+
+  // Seed positions in a rough circle
+  const nodes = tools.map((tool, i) => {
+    const angle = (i / tools.length) * Math.PI * 2;
+    const r = Math.min(W, H) * 0.35;
+    return {
+      tool,
+      x: W/2 + r * Math.cos(angle),
+      y: H/2 + r * Math.sin(angle),
+      vx: 0, vy: 0
+    };
+  });
+
+  const nodeMap = {};
+  nodes.forEach(n => nodeMap[n.tool] = n);
+
+  // Simple force simulation
+  for (let iter = 0; iter < 200; iter++) {
+    // Repulsion between all nodes
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i+1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+        const force = 3200 / (dist * dist);
+        const fx = (dx/dist)*force, fy = (dy/dist)*force;
+        a.vx -= fx; a.vy -= fy;
+        b.vx += fx; b.vy += fy;
+      }
+    }
+    // Attraction along edges
+    edges.forEach(e => {
+      const a = nodeMap[e.a], b = nodeMap[e.b];
+      if (!a || !b) return;
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+      const ideal = 160;
+      const force = (dist - ideal) * 0.025;
+      const fx = (dx/dist)*force, fy = (dy/dist)*force;
+      a.vx += fx; a.vy += fy;
+      b.vx -= fx; b.vy -= fy;
+    });
+    // Center gravity
+    nodes.forEach(n => {
+      n.vx += (W/2 - n.x) * 0.01;
+      n.vy += (H/2 - n.y) * 0.01;
+    });
+    // Apply + dampen
+    nodes.forEach(n => {
+      n.x = Math.max(NODE_W/2+PADDING, Math.min(W-NODE_W/2-PADDING, n.x + n.vx));
+      n.y = Math.max(NODE_H/2+PADDING, Math.min(H-NODE_H/2-PADDING, n.y + n.vy));
+      n.vx *= 0.7; n.vy *= 0.7;
+    });
+  }
+
+  // ── SVG render ────────────────────────────────────────────────────────
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'margin-top:16px;background:#F8FAFC;border-radius:12px;padding:20px;overflow:hidden';
+
+  // Conflict alert banners
+  const shownConflicts = new Set();
+  conflicts.forEach(ic => {
+    const matched = (ic.tools||[]).map(ct =>
+      tools.find(t => t.toLowerCase().includes(ct.toLowerCase()) || ct.toLowerCase().includes(t.toLowerCase()))
+    ).filter(Boolean);
+    if (matched.length < 2) return;
+    const ckey = matched.slice().sort().join('|||');
+    if (shownConflicts.has(ckey)) return;
+    shownConflicts.add(ckey);
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:#FEF2F2;border:1.5px solid #FECACA;border-radius:9px;padding:11px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start';
+    banner.innerHTML = '<span style="font-size:16px;flex-shrink:0;line-height:1.3">\uD83D\uDEAB</span>' +
+      '<div><div style="font-size:12px;font-weight:700;color:#991B1B;font-family:Sora,sans-serif;margin-bottom:2px">' +
+        matched.join(' and ') + ' are doing the same job — you\'re paying twice.</div>' +
+        '<div style="font-size:12px;color:#7F1D1D;font-family:Inter,sans-serif;line-height:1.5">' + ic.issue + '</div>' +
+        '<div style="margin-top:7px;display:inline-flex;align-items:center;gap:5px;background:#DC2626;border-radius:5px;padding:3px 10px">' +
+          '<span style="font-size:11px;font-weight:700;color:#fff;font-family:Sora,sans-serif">Action: Pick one and cancel the other</span>' +
+        '</div></div>';
+    wrap.appendChild(banner);
+  });
+
+  if (orphaned && orphaned.length) {
+    const ob = document.createElement('div');
+    ob.style.cssText = 'background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:9px;padding:10px 14px;margin-bottom:12px;font-size:12px;font-family:Inter,sans-serif;color:#78350F;line-height:1.5';
+    ob.innerHTML = '<strong style="color:#92400E">\u26A0\uFE0F Isolated tools: ' + orphaned.join(', ') + '</strong><br>No native connections detected. You\'re likely using Zapier or manual exports to move data — adding cost and fragility.';
+    wrap.appendChild(ob);
+  }
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.setAttribute('width', '100%');
+  svg.style.cssText = 'display:block;max-height:500px';
+
+  // Defs: arrowheads
+  const defs = document.createElementNS(svgNS, 'defs');
+  ['native:#1847ED', 'conflict:#DC2626'].forEach(s => {
+    const [id, color] = s.split(':');
+    const marker = document.createElementNS(svgNS, 'marker');
+    marker.setAttribute('id', 'arrow-' + id);
+    marker.setAttribute('markerWidth', '8');
+    marker.setAttribute('markerHeight', '8');
+    marker.setAttribute('refX', '6');
+    marker.setAttribute('refY', '3');
+    marker.setAttribute('orient', 'auto');
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', 'M0,0 L0,6 L8,3 z');
+    path.setAttribute('fill', color);
+    path.setAttribute('opacity', '0.8');
+    marker.appendChild(path);
+    defs.appendChild(marker);
+  });
+  svg.appendChild(defs);
+
+  // Edges layer
+  const edgeGroup = document.createElementNS(svgNS, 'g');
+  edges.forEach(e => {
+    const a = nodeMap[e.a], b = nodeMap[e.b];
+    if (!a || !b) return;
+    const isConflict = e.type === 'conflict';
+    const color = isConflict ? '#DC2626' : '#1847ED';
+    const opacity = isConflict ? '0.7' : '0.35';
+
+    // Curved line
+    const mx = (a.x + b.x) / 2;
+    const my = (a.y + b.y) / 2 - 18;
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', `M${a.x},${a.y} Q${mx},${my} ${b.x},${b.y}`);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', isConflict ? '2' : '1.5');
+    path.setAttribute('stroke-opacity', opacity);
+    path.setAttribute('stroke-dasharray', isConflict ? '5,4' : 'none');
+    path.setAttribute('marker-end', 'url(#arrow-' + (isConflict ? 'conflict' : 'native') + ')');
+    edgeGroup.appendChild(path);
+  });
+  svg.appendChild(edgeGroup);
+
+  // Node group
+  const nodeGroup = document.createElementNS(svgNS, 'g');
+  nodes.forEach(n => {
+    const isConflict = conflictingTools.has(n.tool);
+    const isOrphaned = orphaned.includes(n.tool);
+
+    const g = document.createElementNS(svgNS, 'g');
+    g.setAttribute('transform', `translate(${n.x},${n.y})`);
+    g.style.cursor = 'default';
+
+    // Node pill
+    const rx = NODE_W / 2, ry = NODE_H / 2;
+    const rect = document.createElementNS(svgNS, 'rect');
+    rect.setAttribute('x', -rx);
+    rect.setAttribute('y', -ry);
+    rect.setAttribute('width', NODE_W);
+    rect.setAttribute('height', NODE_H);
+    rect.setAttribute('rx', '8');
+    rect.setAttribute('fill', isConflict ? '#FEF2F2' : isOrphaned ? '#F8FAFC' : '#fff');
+    rect.setAttribute('stroke', isConflict ? '#DC2626' : isOrphaned ? '#CBD5E1' : '#C7D2FE');
+    rect.setAttribute('stroke-width', isConflict ? '2' : '1.5');
+    g.appendChild(rect);
+
+    // Label
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('y', isConflict ? '-4' : '0');
+    text.setAttribute('fill', isConflict ? '#DC2626' : isOrphaned ? '#94A3B8' : '#0B1F5E');
+    text.setAttribute('font-size', '11');
+    text.setAttribute('font-weight', '600');
+    text.setAttribute('font-family', 'Inter,sans-serif');
+    // Truncate long names
+    const label = n.tool.length > 14 ? n.tool.slice(0, 13) + '\u2026' : n.tool;
+    text.textContent = label;
+    g.appendChild(text);
+
+    if (isConflict) {
+      const warn = document.createElementNS(svgNS, 'text');
+      warn.setAttribute('text-anchor', 'middle');
+      warn.setAttribute('dominant-baseline', 'middle');
+      warn.setAttribute('y', '9');
+      warn.setAttribute('fill', '#DC2626');
+      warn.setAttribute('font-size', '9');
+      warn.setAttribute('font-weight', '700');
+      warn.setAttribute('font-family', 'Inter,sans-serif');
+      warn.textContent = '\u26A0 REMOVE ONE';
+      g.appendChild(warn);
+    }
+
+    // Hover tooltip via title
+    const conflictReason = conflictPairs.get(n.tool + '|||' + [...conflictingTools].find(ct => ct !== n.tool && conflictPairs.has(n.tool+'|||'+ct)));
+    const tooltipLines = [];
+    if (isConflict && conflictReason) tooltipLines.push('\u26A0\uFE0F CONFLICT: ' + conflictReason.slice(0,120) + (conflictReason.length>120?'…':''));
+    if (isOrphaned) tooltipLines.push('\u26D4 No native integrations detected in your stack');
+    const nativeConnected = edges.filter(e => (e.a===n.tool||e.b===n.tool) && e.type==='native').map(e => e.a===n.tool?e.b:e.a);
+    if (nativeConnected.length) tooltipLines.push('\u2194 Connects natively to: ' + nativeConnected.join(', '));
+    if (tooltipLines.length) {
+      const titleEl = document.createElementNS(svgNS, 'title');
+      titleEl.textContent = tooltipLines.join('\n');
+      g.appendChild(titleEl);
+    }
+
+    nodeGroup.appendChild(g);
+  });
+  svg.appendChild(nodeGroup);
+
+  wrap.appendChild(svg);
+
+  // Legend
+  const legend = document.createElement('div');
+  legend.style.cssText = 'display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid #EEF2FF';
+  [
+    { color:'#1847ED', label:'Native data flow', dashed:false },
+    { color:'#DC2626', label:'Conflict — pick one', dashed:true },
+    { color:'#94A3B8', label:'No detected integration', dashed:false },
+  ].forEach(item => {
+    const li = document.createElement('div');
+    li.style.cssText = 'display:flex;align-items:center;gap:7px;font-size:12px;color:#6B7899;font-family:Inter,sans-serif';
+    li.innerHTML = `<svg width="28" height="12" viewBox="0 0 28 12"><line x1="0" y1="6" x2="24" y2="6" stroke="${item.color}" stroke-width="${item.dashed?2:1.5}" stroke-dasharray="${item.dashed?'5,3':'none'}" opacity="0.8"/><polygon points="20,2 28,6 20,10" fill="${item.color}" opacity="0.8"/></svg>` + item.label;
+    legend.appendChild(li);
+  });
+  wrap.appendChild(legend);
+
+  container.appendChild(wrap);
+}
+
 
 // ── RENDER RESULT ─────────────────────────────────────────────────────────────
 function renderResult(r) {
@@ -2334,7 +2822,7 @@ function renderResult(r) {
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
       </svg>
-      Download Report (PDF)
+      Download One-Page Report (PDF)
     </button>`;
   box.appendChild(pdfBar);
   const body = document.createElement('div');
@@ -2447,34 +2935,104 @@ function renderResult(r) {
     body.appendChild(matchCard);
   }
 
-  // ── OVERLAPS card ─────────────────────────────────────────────────────
+  // ── OVERLAPS card — compact swap-list ────────────────────────────────
   const wrongFindings = (r.consultantFindings||[]).filter(f=>f.type==="wrong"||f.type==="wrong_tool");
   const redundantFindings = (r.consultantFindings||[]).filter(f=>f.type==="redundant");
   const hasOverlaps = r.overlaps.length || redundantFindings.length || (r.categoryOverlaps&&r.categoryOverlaps.length) || wrongFindings.length;
 
   if (hasOverlaps) {
-    const overlapCount = r.overlaps.length + (r.categoryOverlaps||[]).length + redundantFindings.length + wrongFindings.length;
-    const overlapCard = ssCard(
-      '\u26a0\ufe0f Overlaps & Redundancies',
-      'You may be paying for duplicate functionality across these tools.'
-    );
-    const lbl = document.createElement('div');
-    lbl.className = 'ss-section-label';
-    lbl.style.color = '#D97706';
-    lbl.textContent = 'FOUND ' + overlapCount + ' OVERLAP' + (overlapCount!==1?'S':'');
-    overlapCard.appendChild(lbl);
-    wrongFindings.forEach(f => overlapCard.appendChild(ssFinding(true, f.title, f.msg, f.save||0)));
-    (r.categoryOverlaps||[]).forEach(o => {
-      overlapCard.appendChild(ssFinding(true, '<strong style="color:#D97706">' + o.category + ' overlap:</strong> ' + o.tools.join(' + '), o.msg, o.save||0));
-    });
-    redundantFindings.forEach(f => overlapCard.appendChild(ssFinding(true, '<span style="text-decoration:line-through;color:#6B7899">' + f.title + '</span>', f.msg, f.save||0)));
+    const overlapCard = ssCard('\u26a0\ufe0f Overlaps & Redundancies', 'You\u2019re paying for tools that do the same thing. Each row is money you\u2019re wasting right now.');
+
+    // Column header
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'display:flex;align-items:center;padding:0 8px 10px;border-bottom:2px solid #EEF2FF;margin-bottom:2px';
+    hdr.innerHTML = '<div style="min-width:26px"></div>' +
+      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">SWAP OUT</div>' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#CBD5E1;font-family:Inter,sans-serif;margin:0 12px">\u2192</div>' +
+      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">KEEP / USE INSTEAD</div>' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif;min-width:64px;text-align:right">SAVES</div>';
+    overlapCard.appendChild(hdr);
+
+    // Build unified rows
+    const swapItems = [];
+    wrongFindings.forEach(f => swapItems.push({ from: f.title, to: 'Remove it', why: f.msg, save: f.save||0 }));
+    (r.categoryOverlaps||[]).forEach(o => swapItems.push({ from: o.tools.slice(1).join(' + '), to: o.tools[0], why: o.msg, save: o.save||0 }));
+    redundantFindings.forEach(f => swapItems.push({ from: f.title, to: 'Consolidate', why: f.msg, save: f.save||0 }));
     r.overlaps.forEach(o => {
       const ta = selectedTools.find(t=>t.toLowerCase().includes(o.a.toLowerCase()))||o.a;
       const tb = selectedTools.find(t=>t.toLowerCase().includes(o.b.toLowerCase()))||o.b;
-      overlapCard.appendChild(ssFinding(true,
-        'Cut <span style="color:#DC2626;text-decoration:line-through">' + tb + '</span> \u2192 Keep <strong style="color:#16A34A">' + ta + '</strong>',
-        o.msg, o.save||0));
+      swapItems.push({ from: tb, to: ta, why: o.msg, save: o.save||0 });
     });
+
+    swapItems.forEach((row, idx) => {
+      const wrap = document.createElement('div');
+
+      const mainRow = document.createElement('div');
+      mainRow.style.cssText = 'display:flex;align-items:center;padding:11px 8px;border-bottom:1px solid #F8FAFC;cursor:default;border-radius:8px;transition:background .12s';
+      mainRow.onmouseenter = () => mainRow.style.background = '#F8FAFC';
+      mainRow.onmouseleave = () => mainRow.style.background = '';
+
+      const num = document.createElement('div');
+      num.style.cssText = 'min-width:26px;font-family:Sora,sans-serif;font-weight:800;font-size:14px;color:#CBD5E1;flex-shrink:0';
+      num.textContent = idx + 1;
+
+      const from = document.createElement('div');
+      from.style.cssText = 'flex:1;font-family:DM Mono,monospace;font-weight:600;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.35)';
+      from.textContent = row.from;
+
+      const arrow = document.createElement('div');
+      arrow.style.cssText = 'font-size:15px;color:#CBD5E1;margin:0 12px;flex-shrink:0';
+      arrow.textContent = '\u2192';
+
+      const to = document.createElement('div');
+      to.style.cssText = 'flex:1;font-family:DM Mono,monospace;font-weight:700;font-size:14px;color:#16A34A';
+      to.textContent = row.to;
+
+      const saveDiv = document.createElement('div');
+      saveDiv.style.cssText = 'min-width:64px;text-align:right';
+      if (row.save > 0) {
+        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">$' + row.save + '/mo</span>';
+      }
+
+      mainRow.appendChild(num);
+      mainRow.appendChild(from);
+      mainRow.appendChild(arrow);
+      mainRow.appendChild(to);
+      mainRow.appendChild(saveDiv);
+      wrap.appendChild(mainRow);
+
+      // Why line — short, always shown; full text in expandable
+      if (row.why) {
+        const whyShort = row.why.length > 90 ? row.why.slice(0, 87) + '\u2026' : row.why;
+        const whyEl = document.createElement('div');
+        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.5;padding:0 8px 8px 34px';
+        whyEl.textContent = whyShort;
+        wrap.appendChild(whyEl);
+
+        if (row.why.length > 90) {
+          const detId = 'od-' + idx;
+          const moreBtn = document.createElement('div');
+          moreBtn.style.cssText = 'padding:0 8px 10px 34px;font-size:11px;font-weight:600;color:#1847ED;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:3px';
+          moreBtn.innerHTML = '+ Why? <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          moreBtn.onclick = function(e) {
+            e.stopPropagation();
+            const det = document.getElementById(detId);
+            const open = det.style.display !== 'none';
+            det.style.display = open ? 'none' : 'block';
+            moreBtn.innerHTML = (open ? '+ Why?' : '\u2212 Close') + ' <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          };
+          wrap.appendChild(moreBtn);
+
+          const fullWhy = document.createElement('div');
+          fullWhy.id = detId;
+          fullWhy.style.cssText = 'display:none;font-size:12px;color:#475569;font-family:Inter,sans-serif;line-height:1.6;padding:8px 12px 10px 34px;background:#F8FAFC;border-radius:0 0 8px 8px;border-top:1px solid #EEF2FF;margin-top:-2px';
+          fullWhy.textContent = row.why;
+          wrap.appendChild(fullWhy);
+        }
+      }
+      overlapCard.appendChild(wrap);
+    });
+
     body.appendChild(overlapCard);
   } else {
     const cleanCard = ssCard('\u2705 No Overlaps Detected', null);
@@ -2485,37 +3043,98 @@ function renderResult(r) {
     body.appendChild(cleanCard);
   }
 
-  // ── AI-NATIVE UPGRADES card ───────────────────────────────────────────
+  // ── AI-NATIVE UPGRADES card — same swap-list style ──────────────────
   if (r.upgrades && r.upgrades.length) {
-    const upgCard = ssCard('\ud83d\udd04 AI-Native Upgrades', 'Legacy tools where AI-native alternatives deliver better results at lower cost.');
-    r.upgrades.slice(0,3).forEach(u => {
+    const upgCard = ssCard('\ud83d\udd04 AI-Native Upgrades', 'These tools have cheaper, smarter AI-native replacements. Swapping saves money and improves results.');
+
+    const upgHdr = document.createElement('div');
+    upgHdr.style.cssText = 'display:flex;align-items:center;padding:0 8px 10px;border-bottom:2px solid #EEF2FF;margin-bottom:2px';
+    upgHdr.innerHTML = '<div style="min-width:26px"></div>' +
+      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">BEING SWAPPED</div>' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#CBD5E1;font-family:Inter,sans-serif;margin:0 12px">\u2192</div>' +
+      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">REPLACED BY</div>' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif;min-width:64px;text-align:right">SAVES</div>';
+    upgCard.appendChild(upgHdr);
+
+    r.upgrades.slice(0, 5).forEach((u, idx) => {
       const trend = getTrendSignal(u.tool);
-      let trendBadge = '';
-      if (trend && trend.signal === 'high') trendBadge = ' <span class="ss-tag ss-tag-amber">\u25b2 High exit rate</span>';
-      else if (trend && trend.signal === 'medium') trendBadge = ' <span class="ss-tag ss-tag-amber">\u25b6 Trending out</span>';
-      upgCard.appendChild(ssFinding(true,
-        'Swap <span style="color:#DC2626;text-decoration:line-through">' + u.tool + '</span> \u2192 <strong style="color:#1847ED">' + u.r + '</strong>' + trendBadge,
-        u.why, u.save||0));
+      const wrap = document.createElement('div');
+
+      const mainRow = document.createElement('div');
+      mainRow.style.cssText = 'display:flex;align-items:center;padding:11px 8px;border-bottom:1px solid #F8FAFC;cursor:default;border-radius:8px;transition:background .12s';
+      mainRow.onmouseenter = () => mainRow.style.background = '#F8FAFC';
+      mainRow.onmouseleave = () => mainRow.style.background = '';
+
+      const num = document.createElement('div');
+      num.style.cssText = 'min-width:26px;font-family:Sora,sans-serif;font-weight:800;font-size:14px;color:#CBD5E1;flex-shrink:0';
+      num.textContent = idx + 1;
+
+      const from = document.createElement('div');
+      from.style.cssText = 'flex:1;font-family:DM Mono,monospace;font-weight:600;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.35)';
+      from.textContent = u.tool;
+
+      const arrow = document.createElement('div');
+      arrow.style.cssText = 'font-size:15px;color:#CBD5E1;margin:0 12px;flex-shrink:0';
+      arrow.textContent = '\u2192';
+
+      const toWrap = document.createElement('div');
+      toWrap.style.cssText = 'flex:1;display:flex;align-items:center;gap:6px';
+      const toName = document.createElement('span');
+      toName.style.cssText = 'font-family:DM Mono,monospace;font-weight:700;font-size:14px;color:#1847ED';
+      toName.textContent = u.r;
+      toWrap.appendChild(toName);
+      if (trend && trend.signal === 'high') {
+        const badge = document.createElement('span');
+        badge.style.cssText = 'font-size:10px;color:#DC2626;font-family:Inter,sans-serif;font-weight:700';
+        badge.textContent = '\u25b2 trending';
+        toWrap.appendChild(badge);
+      }
+
+      const saveDiv = document.createElement('div');
+      saveDiv.style.cssText = 'min-width:64px;text-align:right';
+      if (u.save > 0) {
+        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">$' + u.save + '/mo</span>';
+      }
+
+      mainRow.appendChild(num);
+      mainRow.appendChild(from);
+      mainRow.appendChild(arrow);
+      mainRow.appendChild(toWrap);
+      mainRow.appendChild(saveDiv);
+      wrap.appendChild(mainRow);
+
+      if (u.why) {
+        const whyShort = u.why.length > 90 ? u.why.slice(0, 87) + '\u2026' : u.why;
+        const whyEl = document.createElement('div');
+        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.5;padding:0 8px 8px 34px';
+        whyEl.textContent = whyShort;
+        wrap.appendChild(whyEl);
+
+        if (u.why.length > 90) {
+          const detId = 'ud-' + idx;
+          const moreBtn = document.createElement('div');
+          moreBtn.style.cssText = 'padding:0 8px 10px 34px;font-size:11px;font-weight:600;color:#1847ED;cursor:pointer;font-family:Inter,sans-serif;display:inline-flex;align-items:center;gap:3px';
+          moreBtn.innerHTML = '+ Why? <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          moreBtn.onclick = function(e) {
+            e.stopPropagation();
+            const det = document.getElementById(detId);
+            const open = det.style.display !== 'none';
+            det.style.display = open ? 'none' : 'block';
+            moreBtn.innerHTML = (open ? '+ Why?' : '\u2212 Close') + ' <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          };
+          wrap.appendChild(moreBtn);
+          const fullWhy = document.createElement('div');
+          fullWhy.id = detId;
+          fullWhy.style.cssText = 'display:none;font-size:12px;color:#475569;font-family:Inter,sans-serif;line-height:1.6;padding:8px 12px 10px 34px;background:#F8FAFC;border-radius:0 0 8px 8px;border-top:1px solid #EEF2FF';
+          fullWhy.textContent = u.why;
+          wrap.appendChild(fullWhy);
+        }
+      }
+      upgCard.appendChild(wrap);
     });
     body.appendChild(upgCard);
   }
 
-  // ── INTEGRATION HEALTH card ───────────────────────────────────────────
-  const hasIntIssues = (r.integrationConflicts&&r.integrationConflicts.length) || (r.orphanedTools&&r.orphanedTools.length) || r.glueNote;
-  if (hasIntIssues) {
-    const intCard = ssCard('\ud83d\udd17 Integration Health', 'How well your tools talk to each other — data silos cost more than you think.');
-    (r.integrationConflicts||[]).forEach(ic => {
-      const toolBadges = ic.tools.map(t=>'<span style="font-weight:600">'+t+'</span>').join(' + ');
-      intCard.appendChild(ssFinding(true, 'Integration conflict: ' + toolBadges, ic.issue, 0));
-    });
-    if (r.orphanedTools && r.orphanedTools.length) {
-      intCard.appendChild(ssFinding(true,
-        'Isolated tools: <span style="color:#6B7899">' + r.orphanedTools.join(', ') + '</span>',
-        'These tools have no detected native integrations with the rest of your stack. You\u2019re likely relying on Zapier or manual exports to move data.', 0));
-    }
-    if (r.glueNote) intCard.appendChild(ssFinding(true, 'Zapier dependency detected', r.glueNote, 0));
-    body.appendChild(intCard);
-  }
 
   // ── CONSOLIDATION OPPORTUNITIES ───────────────────────────────────────
   if (r.allInOneOpps && r.allInOneOpps.length) {
@@ -2576,7 +3195,7 @@ function renderResult(r) {
 
   // ── PRIORITY ACTIONS card ─────────────────────────────────────────────
   const actCard = ssCard('\u26a1 Priority Actions', 'Your highest-leverage moves, ranked by impact.');
-  const actionColors = ['#16A34A','#1847ED','#D97706'];
+  const actionColors = ['#16A34A','#16A34A','#16A34A'];
   r.actions.slice(0,3).forEach((a, i) => {
     const item = document.createElement('div');
     item.className = 'ss-action-item';
@@ -2590,12 +3209,17 @@ function renderResult(r) {
   });
   body.appendChild(actCard);
 
-  // ── OPTIMIZED STACK card ──────────────────────────────────────────────
-  const optCard = ssCard('\u2705 Your Optimized Stack',
-    '<strong style="color:#0B1F5E">' + r.optimized.length + ' tools</strong> \u2014 arrows show native data flow. ' +
-    '<span style="color:#1847ED">Blue</span> = connected. <span style="color:#D97706">Amber</span> = conflict. Gray = unconnected.');
-  renderStackFlow(optCard, r.optimized, r.integrationConflicts || []);
-  body.appendChild(optCard);
+  // ── STACK MAP: Integration Health + Optimized Stack combined ────────
+  {
+    const mapCard = ssCard(
+      '\u2728 Your Optimized Stack Map',
+      '<span style="color:#1847ED;font-weight:600">Blue lines</span> = tools share data natively &nbsp;&middot;&nbsp; ' +
+      '<span style="color:#DC2626;font-weight:600">Red lines</span> = conflict &mdash; these tools fight each other &nbsp;&middot;&nbsp; ' +
+      'Hover any tool for details'
+    );
+    renderNetworkMap(mapCard, r.optimized, r.integrationConflicts || [], r.orphanedTools || [], r.glueNote || '');
+    body.appendChild(mapCard);
+  }
 
   // ── GREEN LEAD MAGNET ─────────────────────────────────────────────────
   const annualWaste = r.totalSave > 0 ? r.totalSave * 12 : 0;
