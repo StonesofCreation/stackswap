@@ -2035,94 +2035,194 @@ const FLOW_CONNECTIONS = [
 function renderStackFlow(container, tools, conflicts) {
   if (!tools || tools.length === 0) return;
 
-  const wrap = document.createElement("div");
-  wrap.style.cssText = "margin-top:12px;padding:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow-x:auto";
-
-  // Find connections within this stack
-  const stackLower = tools.map(t => t.toLowerCase());
-  const findTool = (name) => tools.find(t => t.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(t.toLowerCase()));
-
-  const connections = FLOW_CONNECTIONS.filter(([a, b]) => {
-    return tools.some(t => t.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(t.toLowerCase())) &&
-           tools.some(t => t.toLowerCase().includes(b.toLowerCase()) || b.toLowerCase().includes(t.toLowerCase()));
-  }).map(([a, b]) => [findTool(a), findTool(b)]).filter(([a,b]) => a && b && a !== b);
-
-  // Build adjacency to find connected order
-  const connected = new Set();
-  connections.forEach(([a,b]) => { connected.add(a); connected.add(b); });
-  const isolated = tools.filter(t => !connected.has(t));
-
-  // Render connected tools as flow chain
-  const conflictToolNames = conflicts.flatMap(ic => ic.tools || []);
-  const isConflict = (t) => conflictToolNames.some(c => t.toLowerCase().includes(c.toLowerCase()));
-
-  // Flow nodes
-  const flowDiv = document.createElement("div");
-  flowDiv.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:"+(isolated.length?"16px":"0")+";";
-  
-  const renderedNodes = new Set();
-  const renderNode = (tool) => {
-    if (renderedNodes.has(tool)) return null;
-    renderedNodes.add(tool);
-    const node = document.createElement("div");
-    const conflict = isConflict(tool);
-    node.style.cssText = `display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;font-family:DM Mono,monospace;white-space:nowrap;background:${conflict?'rgba(255,200,87,0.08)':'rgba(78,205,196,0.06)'};border:1px solid ${conflict?'rgba(255,200,87,0.3)':'rgba(78,205,196,0.2)'};color:${conflict?'#ffc857':'#4ecdc4'}`;
-    if (conflict) node.title = "Integration conflict detected";
-    node.textContent = tool;
-    return node;
+  // ── Category map — assign each tool to a workflow stage ──────────────
+  const CAT_MAP = {
+    // Prospecting / Data
+    'ZoomInfo':'Prospecting','Clay':'Prospecting','LinkedIn Sales Navigator':'Prospecting',
+    'Lusha':'Prospecting','Clearbit':'Prospecting','Cognism':'Prospecting','Seamless.ai':'Prospecting',
+    'Hunter.io':'Prospecting','LeadIQ':'Prospecting','Uplead':'Prospecting','6sense':'Prospecting',
+    'Bombora':'Prospecting','Demandbase':'Prospecting','Leadfeeder':'Prospecting','RocketReach':'Prospecting',
+    'Kaspr':'Prospecting','Findymail':'Prospecting','Snov.io':'Prospecting','Phantombuster':'Prospecting',
+    'Apollo.io':'Prospecting','Amplemarket':'Prospecting',
+    // Outreach / Sequencing
+    'Outreach':'Outreach','Salesloft':'Outreach','Instantly':'Outreach','Smartlead':'Outreach',
+    'Lemlist':'Outreach','Reply.io':'Outreach','Mailshake':'Outreach','Woodpecker':'Outreach',
+    'Klenty':'Outreach','Mixmax':'Outreach','Groove':'Outreach','Quickmail':'Outreach',
+    'Lavender':'Outreach','Regie.ai':'Outreach','Nooks':'Outreach','Orum':'Outreach',
+    'Kixie':'Outreach','JustCall':'Outreach',
+    // CRM
+    'HubSpot':'CRM','Salesforce':'CRM','Pipedrive':'CRM','Zoho CRM':'CRM',
+    'Freshsales':'CRM','Close.io':'CRM','Copper':'CRM','Streak':'CRM',
+    'Keap':'CRM','Nutshell':'CRM','Insightly':'CRM','Follow Up Boss':'CRM',
+    'kvCORE':'CRM','LionDesk':'CRM','Wise Agent':'CRM','Propertybase':'CRM',
+    'Dynamics 365 Sales':'CRM','folk':'CRM','Monday CRM':'CRM','Monday Sales CRM':'CRM',
+    // Meetings / Calls
+    'Gong':'Meetings','Chorus':'Meetings','Zoom':'Meetings','Google Meet':'Meetings',
+    'Calendly':'Meetings','Loom':'Meetings','Avoma':'Meetings','Otter.ai':'Meetings',
+    'Fireflies.ai':'Meetings','Wingman':'Meetings','Jiminny':'Meetings','Modjo':'Meetings',
+    // Marketing
+    'Mailchimp':'Marketing','ActiveCampaign':'Marketing','Klaviyo':'Marketing','Marketo':'Marketing',
+    'Pardot':'Marketing','Brevo':'Marketing','ConvertKit':'Marketing','HubSpot Marketing':'Marketing',
+    'GetResponse':'Marketing','Omnisend':'Marketing','MailerLite':'Marketing','Drip':'Marketing',
+    'Buffer':'Marketing','Hootsuite':'Marketing','Sprout Social':'Marketing','Later':'Marketing',
+    'Google Ads':'Marketing','Facebook Ads':'Marketing','LinkedIn Ads':'Marketing',
+    // Analytics
+    'Mixpanel':'Analytics','Amplitude':'Analytics','Heap':'Analytics','Hotjar':'Analytics',
+    'FullStory':'Analytics','Google Analytics':'Analytics','Looker':'Analytics',
+    'Tableau':'Analytics','Power BI':'Analytics','Databox':'Analytics','Klipfolio':'Analytics',
+    'Clari':'Analytics','Boostup':'Analytics','People.ai':'Analytics',
+    // CS / Support
+    'Intercom':'Support','Zendesk':'Support','Freshdesk':'Support','Help Scout':'Support',
+    'Drift':'Support','Front':'Support','Crisp':'Support','Gorgias':'Support',
+    // Operations / Productivity
+    'Slack':'Operations','Microsoft Teams':'Operations','Notion':'Operations','Asana':'Operations',
+    'ClickUp':'Operations','Monday.com':'Operations','Jira':'Operations','Linear':'Operations',
+    'Trello':'Operations','Airtable':'Operations','Zapier':'Operations','Make':'Operations',
+    'n8n':'Operations','Workato':'Operations','Google Workspace':'Operations',
+    'Microsoft 365':'Operations','Dropbox':'Operations','Box':'Operations','Confluence':'Operations',
+    // Finance / Legal
+    'QuickBooks':'Finance','Xero':'Finance','Stripe':'Finance','Docusign':'Finance',
+    'PandaDoc':'Finance','HelloSign':'Finance','Chargebee':'Finance','Recurly':'Finance',
+    // RE-specific
+    'Paperless Pipeline':'Transaction','Dotloop':'Transaction','SkySlope':'Transaction',
+    'Brokermint':'Transaction','Lone Wolf Transactions':'Transaction','BoomTown':'Lead Gen',
+    'CINC':'Lead Gen','Real Geeks':'Lead Gen',
+    // AI
+    'ChatGPT':'AI Tools','Claude':'AI Tools','Jasper':'AI Tools','Copy.ai':'AI Tools',
+    'Writer':'AI Tools','Grammarly':'AI Tools',
   };
 
-  // Render in flow order — try to chain connected tools
-  const rendered = new Set();
-  const chains = [];
-  connections.forEach(([a, b]) => {
-    // Find or create chain containing a
-    let chain = chains.find(ch => ch[ch.length-1] === a);
-    if (!chain) { chain = [a]; chains.push(chain); }
-    if (!chain.includes(b)) chain.push(b);
-  });
-  // Flatten chains, remove dupes
-  const orderedTools = [];
-  chains.forEach(ch => ch.forEach(t => { if (!orderedTools.includes(t)) orderedTools.push(t); }));
-  tools.forEach(t => { if (!orderedTools.includes(t)) orderedTools.push(t); }); // append any remaining
+  // Stage order for left→right workflow display
+  const STAGE_ORDER = ['Prospecting','Outreach','CRM','Meetings','Marketing','Analytics','Support','Finance','Transaction','Lead Gen','Operations','AI Tools'];
+  const STAGE_ICONS = {
+    'Prospecting':'🔍','Outreach':'📧','CRM':'🗂️','Meetings':'📞',
+    'Marketing':'📣','Analytics':'📊','Support':'💬','Finance':'💰',
+    'Transaction':'📋','Lead Gen':'🎯','Operations':'⚙️','AI Tools':'🤖','Other':'📦'
+  };
+  const STAGE_COLORS = {
+    'Prospecting': { bg:'#EFF6FF', border:'#BFDBFE', text:'#1D4ED8', label:'#93C5FD' },
+    'Outreach':    { bg:'#F0FDF4', border:'#BBF7D0', text:'#15803D', label:'#86EFAC' },
+    'CRM':         { bg:'#EEF2FF', border:'#C7D2FE', text:'#4338CA', label:'#A5B4FC' },
+    'Meetings':    { bg:'#FDF4FF', border:'#E9D5FF', text:'#7E22CE', label:'#D8B4FE' },
+    'Marketing':   { bg:'#FFF7ED', border:'#FED7AA', text:'#C2410C', label:'#FDBA74' },
+    'Analytics':   { bg:'#F0FDFA', border:'#99F6E4', text:'#0F766E', label:'#5EEAD4' },
+    'Support':     { bg:'#FFF1F2', border:'#FECDD3', text:'#BE123C', label:'#FDA4AF' },
+    'Finance':     { bg:'#F7FEE7', border:'#D9F99D', text:'#3F6212', label:'#A3E635' },
+    'Transaction': { bg:'#FFF7ED', border:'#FED7AA', text:'#C2410C', label:'#FDBA74' },
+    'Lead Gen':    { bg:'#EFF6FF', border:'#BFDBFE', text:'#1D4ED8', label:'#93C5FD' },
+    'Operations':  { bg:'#F8FAFC', border:'#CBD5E1', text:'#475569', label:'#94A3B8' },
+    'AI Tools':    { bg:'#FDF4FF', border:'#E9D5FF', text:'#7E22CE', label:'#D8B4FE' },
+    'Other':       { bg:'#F8FAFC', border:'#CBD5E1', text:'#475569', label:'#94A3B8' },
+  };
 
-  orderedTools.forEach((tool, i) => {
-    const node = renderNode(tool);
-    if (!node) return;
-    flowDiv.appendChild(node);
-    // Add arrow if this tool connects to the next one
-    const nextTool = orderedTools[i+1];
-    if (nextTool && connections.some(([a,b]) => a === tool && b === nextTool)) {
-      const arrow = document.createElement("span");
-      arrow.style.cssText = "color:#ffc857;font-size:18px;font-weight:700;font-family:DM Mono,monospace;flex-shrink:0;line-height:1";
-      arrow.innerHTML = "→";
-      flowDiv.appendChild(arrow);
+  // Categorize each tool
+  const grouped = {};
+  const conflictSet = new Set(conflicts.flatMap(ic => ic.tools || []).map(t => t.toLowerCase()));
+  tools.forEach(tool => {
+    let cat = 'Other';
+    for (const [key, val] of Object.entries(CAT_MAP)) {
+      if (tool.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(tool.toLowerCase())) {
+        cat = val; break;
+      }
+    }
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(tool);
+  });
+
+  // Sort categories by stage order
+  const orderedCats = [
+    ...STAGE_ORDER.filter(s => grouped[s]),
+    ...(grouped['Other'] ? ['Other'] : [])
+  ];
+
+  // Find which categories have connections between them
+  const catOfTool = {};
+  tools.forEach(tool => {
+    for (const [cat, tlist] of Object.entries(grouped)) {
+      if (tlist.includes(tool)) catOfTool[tool] = cat;
+    }
+  });
+  const connectedCatPairs = new Set();
+  FLOW_CONNECTIONS.forEach(([a, b]) => {
+    const toolA = tools.find(t => t.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(t.toLowerCase()));
+    const toolB = tools.find(t => t.toLowerCase().includes(b.toLowerCase()) || b.toLowerCase().includes(t.toLowerCase()));
+    if (toolA && toolB && catOfTool[toolA] && catOfTool[toolB] && catOfTool[toolA] !== catOfTool[toolB]) {
+      connectedCatPairs.add(catOfTool[toolA] + '|' + catOfTool[toolB]);
     }
   });
 
-  wrap.appendChild(flowDiv);
+  // ── Build swimlane DOM ────────────────────────────────────────────────
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'margin-top:16px;overflow-x:auto;padding-bottom:4px';
 
-  // Isolated tools (no connections in this stack)
-  if (isolated.length > 0) {
-    const isoLabel = document.createElement("div");
-    isoLabel.style.cssText = "font-size:12px;color:#7a7670;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;font-family:DM Mono,monospace";
-    isoLabel.textContent = "No detected integrations";
-    wrap.appendChild(isoLabel);
-    const isoRow = document.createElement("div");
-    isoRow.style.cssText = "display:flex;flex-wrap:wrap;gap:6px";
-    isolated.forEach(tool => {
-      const tag = document.createElement("div");
-      tag.style.cssText = "padding:7px 13px;border-radius:6px;font-size:14px;font-family:DM Mono,monospace;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);color:#7a7670";
-      tag.textContent = tool;
-      isoRow.appendChild(tag);
+  const flow = document.createElement('div');
+  flow.style.cssText = 'display:flex;align-items:stretch;gap:0;min-width:max-content';
+
+  orderedCats.forEach((cat, idx) => {
+    const toolsInCat = grouped[cat];
+    const colors = STAGE_COLORS[cat] || STAGE_COLORS['Other'];
+    const icon = STAGE_ICONS[cat] || '📦';
+
+    // Arrow connector (before each lane except the first)
+    if (idx > 0) {
+      const prevCat = orderedCats[idx - 1];
+      const hasConn = connectedCatPairs.has(prevCat + '|' + cat) || connectedCatPairs.has(cat + '|' + prevCat);
+      const arrow = document.createElement('div');
+      arrow.style.cssText = 'display:flex;align-items:center;padding:0 4px;flex-shrink:0;margin-top:32px';
+      arrow.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink:0">' +
+        '<path d="M5 12h14M13 6l6 6-6 6" stroke="' + (hasConn ? '#1847ED' : '#CBD5E1') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>';
+      flow.appendChild(arrow);
+    }
+
+    // Lane card
+    const lane = document.createElement('div');
+    lane.style.cssText = 'display:flex;flex-direction:column;min-width:148px;max-width:200px;border-radius:12px;overflow:hidden;border:1.5px solid ' + colors.border + ';flex-shrink:0';
+
+    // Lane header
+    const laneHeader = document.createElement('div');
+    laneHeader.style.cssText = 'background:' + colors.bg + ';padding:8px 12px;border-bottom:1.5px solid ' + colors.border + ';display:flex;align-items:center;gap:6px';
+    laneHeader.innerHTML = '<span style="font-size:14px">' + icon + '</span>' +
+      '<span style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:' + colors.text + ';font-family:Inter,sans-serif;line-height:1.3">' + cat + '</span>';
+    lane.appendChild(laneHeader);
+
+    // Tool chips inside lane
+    const laneBody = document.createElement('div');
+    laneBody.style.cssText = 'display:flex;flex-direction:column;gap:6px;padding:10px;background:#fff;flex:1';
+    toolsInCat.forEach(tool => {
+      const isConflict = conflictSet.has(tool.toLowerCase()) || [...conflictSet].some(c => tool.toLowerCase().includes(c));
+      const chip = document.createElement('div');
+      chip.style.cssText = 'padding:8px 10px;border-radius:8px;font-size:12px;font-weight:600;font-family:Inter,sans-serif;line-height:1.3;text-align:center;border:1.5px solid ' +
+        (isConflict ? 'rgba(217,119,6,0.4)' : colors.border) + ';background:' +
+        (isConflict ? 'rgba(217,119,6,0.06)' : colors.bg) + ';color:' +
+        (isConflict ? '#D97706' : colors.text);
+      if (isConflict) {
+        chip.title = 'Integration conflict detected';
+        chip.innerHTML = tool + ' <span style="font-size:10px">⚠️</span>';
+      } else {
+        chip.textContent = tool;
+      }
+      laneBody.appendChild(chip);
     });
-    wrap.appendChild(isoRow);
-  }
+    lane.appendChild(laneBody);
+    flow.appendChild(lane);
+  });
 
-  // Legend
-  const legend = document.createElement("div");
-  legend.style.cssText = "margin-top:14px;font-size:12px;color:#7a7670;font-family:DM Mono,monospace;letter-spacing:.02em";
-  legend.innerHTML = "<span style='color:rgba(78,205,196,0.5)'>teal</span> = native integration · <span style='color:rgba(255,200,87,0.6)'>amber</span> = integration conflict · gray = unconnected · → = data flow direction";
+  wrap.appendChild(flow);
+
+  // ── Legend ─────────────────────────────────────────────────────────────
+  const legend = document.createElement('div');
+  legend.style.cssText = 'display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid #EEF2FF';
+  [
+    { dot:'#1847ED', label:'→ Connected natively' },
+    { dot:'#CBD5E1',  label:'→ No detected integration' },
+    { dot:'#D97706',  label:'⚠️ Integration conflict' },
+  ].forEach(item => {
+    const li = document.createElement('div');
+    li.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;color:#6B7899;font-family:Inter,sans-serif';
+    li.innerHTML = '<span style="font-weight:700;color:' + item.dot + '">' + item.label + '</span>';
+    legend.appendChild(li);
+  });
   wrap.appendChild(legend);
 
   container.appendChild(wrap);
