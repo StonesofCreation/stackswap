@@ -333,20 +333,72 @@ nav,
    SS REPORT — PP Analyzer clean white design system
    ═══════════════════════════════════════════════════ */
 
-/* Report header (dark navy gradient) */
-.ss-report-header{background:linear-gradient(135deg,#0d2266 0%,#081545 50%,#040e2e 100%);padding:32px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(4,14,46,0.45),0 1px 0 rgba(255,255,255,0.06) inset}
-.ss-report-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 40% -5%,rgba(24,71,237,0.4) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 90% 100%,rgba(99,102,241,0.15) 0%,transparent 60%);pointer-events:none}
-.ss-report-header::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12) 40%,rgba(255,255,255,0.2) 60%,transparent);pointer-events:none}
-.ss-report-meta{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:6px;font-family:'Inter',sans-serif;position:relative;z-index:1}
-.ss-report-title{font-family:'Sora',sans-serif;font-weight:800;font-size:24px;color:#fff;margin-bottom:4px;letter-spacing:-.02em;position:relative;z-index:1}
-.ss-report-sub{font-size:13px;color:rgba(255,255,255,0.55);font-family:'Inter',sans-serif;position:relative;z-index:1}
-.ss-report-grade{font-family:'Sora',sans-serif;font-weight:800;font-size:46px;line-height:1;letter-spacing:-.03em;position:relative;z-index:1}
-.ss-report-grade-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-top:2px;text-align:right;font-family:'Inter',sans-serif;position:relative;z-index:1}
-.ss-report-summary{margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:15px;color:rgba(255,255,255,0.8);line-height:1.65;font-family:'Inter',sans-serif;position:relative;z-index:1}
+/* Report header (liquid glass) */
+/* ── LIQUID GLASS REPORT HEADER ── */
+.ss-report-header{
+  position:relative;overflow:hidden;
+  padding:36px 32px 32px;
+  background:linear-gradient(145deg,rgba(248,250,255,0.92) 0%,rgba(237,242,255,0.88) 50%,rgba(228,235,255,0.92) 100%);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-bottom:1px solid rgba(195,210,255,0.5);
+}
+/* Liquid glass glows */
+.ss-report-header::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 65% 80% at 10% 0%,rgba(24,71,237,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 10%,rgba(99,102,241,0.06) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 50% at 50% 100%,rgba(16,163,74,0.04) 0%,transparent 60%);
+}
+/* Top shimmer line */
+.ss-report-header::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,rgba(24,71,237,0.3) 30%,rgba(99,102,241,0.4) 55%,rgba(24,71,237,0.2) 80%,transparent 100%);
+}
+.ss-report-meta{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6B7899;margin-bottom:8px;font-family:'Inter',sans-serif;position:relative;z-index:1;display:flex;align-items:center;gap:6px}
+.ss-report-meta::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#16A34A;box-shadow:0 0 6px rgba(22,163,74,0.6)}
+.ss-report-title{font-family:'Sora',sans-serif;font-weight:800;font-size:26px;color:#0B1F5E;margin-bottom:5px;letter-spacing:-.025em;position:relative;z-index:1;line-height:1.15}
+.ss-report-sub{font-size:12px;color:#6B7899;font-family:'Inter',sans-serif;position:relative;z-index:1;letter-spacing:.01em}
+/* Grade badge — liquid glass pill */
+.ss-report-grade{
+  font-family:'Sora',sans-serif;font-weight:800;font-size:52px;line-height:1;letter-spacing:-.04em;
+  position:relative;z-index:1;
+  width:80px;height:80px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.7);
+  border-radius:24px;
+  box-shadow:0 2px 16px rgba(11,31,94,0.1),0 0 0 1.5px rgba(200,215,255,0.8),0 1px 0 rgba(255,255,255,0.9) inset;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.ss-report-grade-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;margin-top:5px;text-align:center;font-family:'Inter',sans-serif;position:relative;z-index:1}
+/* Summary banner — frosted pill */
+.ss-report-summary{
+  margin-top:18px;padding:14px 18px;
+  background:rgba(255,255,255,0.55);
+  border:1px solid rgba(195,210,255,0.55);
+  border-radius:12px;
+  font-size:14px;color:#1A2340;line-height:1.6;font-family:'Inter',sans-serif;
+  position:relative;z-index:1;
+  box-shadow:0 1px 8px rgba(11,31,94,0.04),0 1px 0 rgba(255,255,255,0.8) inset;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
 
-/* Metrics row (3 columns) */
-.ss-metrics-row{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(203,213,225,0.8);background:rgba(255,255,255,0.98)}
-.ss-metric-card{padding:22px 20px;border-right:1px solid #DDE3F5;text-align:center}
+/* ── METRICS ROW — glass tiles ── */
+.ss-metrics-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  background:rgba(248,250,255,0.95);
+  border-bottom:1px solid rgba(203,213,225,0.6);
+}
+.ss-metric-card{
+  padding:22px 20px;border-right:1px solid rgba(203,213,225,0.5);text-align:center;
+  position:relative;
+  transition:background .15s;
+}
+.ss-metric-card::after{
+  content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;
+  background:linear-gradient(90deg,transparent,currentColor,transparent);
+  opacity:0;transition:opacity .2s;
+  border-radius:2px;
+}
 .ss-metric-card:last-child{border-right:none}
 .ss-metric-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7899;margin-bottom:8px;font-family:'Inter',sans-serif}
 .ss-metric-val{font-family:'Sora',sans-serif;font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1.1}
@@ -497,75 +549,95 @@ nav,
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   @page{margin:0;size:letter portrait}
 
-  /* Nuclear hide — only result box survives */
   body{margin:0!important;padding:0!important;background:#fff!important}
   .page-nav,.nav-hamburger,.nav-drawer,
   .wrap > *:not(#result-box),
-  .ss-pdf-bar,.ss-lead-magnet,.ss-report-body > .ss-card:nth-child(n+6),
+  .ss-pdf-bar,.ss-lead-magnet,
   .ss-scroll-hint,.ss-scroll-fade,.ss-swap-more,.ss-swap-details,
-  .ss-net-wrap,.ss-score-row,.ss-match-bar,.ss-loading-wrap,
-  #result-box > .ss-report-body > .ss-card:last-child{display:none!important}
+  .ss-net-wrap,.ss-match-bar,.ss-loading-wrap{display:none!important}
 
-  /* Result box full bleed */
+  /* Show only first 4 report cards + score */
+  .ss-report-body > .ss-card:nth-child(n+6){display:none!important}
+
   #result-box,.result{
     display:block!important;border:none!important;
     box-shadow:none!important;margin:0!important;padding:0!important;width:100%!important;
   }
 
-  /* ── HEADER — keep gradient, full width ── */
+  /* ── PREMIUM HEADER — glass on white ── */
   .ss-report-header{
-    padding:28px 36px!important;
-    background:linear-gradient(135deg,#0B1F5E 0%,#071040 100%)!important;
+    padding:28px 36px 24px!important;
+    background:linear-gradient(145deg,#f0f4ff 0%,#e8eeff 50%,#ecf1ff 100%)!important;
+    border-bottom:2px solid #c3d2ff!important;
+    box-shadow:none!important;
   }
-  .ss-report-title{font-size:28px!important}
-  .ss-report-grade{font-size:64px!important}
-  .ss-report-summary{font-size:15px!important;line-height:1.5!important}
+  .ss-report-header::before{background:none!important}
+  .ss-report-header::after{background:none!important}
+  .ss-report-meta{font-size:9px!important;letter-spacing:.12em!important;color:#6B7899!important}
+  .ss-report-meta::before{background:#16A34A!important}
+  .ss-report-title{font-size:26px!important;letter-spacing:-.02em!important;color:#0B1F5E!important}
+  .ss-report-sub{font-size:11px!important;color:#6B7899!important}
+  .ss-report-grade{
+    font-size:38px!important;width:64px!important;height:64px!important;
+    border-radius:16px!important;
+    background:#fff!important;
+    box-shadow:0 2px 8px rgba(11,31,94,0.12),0 0 0 1.5px #c3d2ff!important;
+  }
+  .ss-report-summary{
+    font-size:12px!important;line-height:1.55!important;color:#1A2340!important;
+    background:rgba(255,255,255,0.7)!important;
+    border:1px solid #c3d2ff!important;
+    border-radius:8px!important;padding:10px 14px!important;
+    margin-top:12px!important;
+  }
 
   /* ── METRICS ROW ── */
   .ss-metrics-row{
     display:grid!important;grid-template-columns:1fr 1fr 1fr!important;
-    border:none!important;border-bottom:3px solid #0B1F5E!important;
-    background:#F4F6FC!important;
+    border:none!important;border-bottom:2px solid #EEF2FF!important;
+    background:#F8FAFF!important;
   }
-  .ss-metric-card{padding:16px 20px!important}
-  .ss-metric-label{font-size:10px!important}
-  .ss-metric-val{font-size:28px!important;line-height:1!important}
-  .ss-metric-sub{font-size:12px!important}
+  .ss-metric-card{padding:18px 20px!important}
+  .ss-metric-label{font-size:9px!important;letter-spacing:.1em!important}
+  .ss-metric-val{font-size:30px!important;line-height:1!important}
+  .ss-metric-sub{font-size:11px!important}
 
-  /* ── REPORT BODY ── */
+  /* ── BODY ── */
   .ss-report-body{
-    padding:20px 28px!important;gap:14px!important;
+    padding:18px 28px!important;gap:12px!important;
     background:#fff!important;display:flex!important;flex-direction:column!important;
   }
-
-  /* Cards */
   .ss-card{
     break-inside:avoid!important;page-break-inside:avoid!important;
-    box-shadow:none!important;border:1.5px solid #DDE3F5!important;
-    padding:16px 20px!important;border-radius:10px!important;
+    box-shadow:none!important;
+    border:1.5px solid #DDE3F5!important;
+    padding:14px 18px!important;border-radius:10px!important;
+    background:#fff!important;
   }
-  .ss-card-title{font-size:15px!important}
-  .ss-card-sub{font-size:12px!important;margin-bottom:10px!important}
-
-  /* Swap rows — compact */
-  .ss-swap-row{padding:6px 0!important;border-bottom:1px solid #F4F6FC!important}
-  .ss-swap-num{font-size:13px!important}
-  .ss-swap-from,.ss-swap-to{font-size:13px!important}
-  .ss-swap-why{display:block!important;font-size:11px!important;color:#6B7899!important;margin-top:2px!important;padding-left:24px!important}
-  .ss-swap-save{font-size:11px!important}
-
-  /* Priority actions */
-  .ss-action-item{padding:8px 0!important}
-  .ss-action-title{font-size:13px!important}
-  .ss-action-text{font-size:12px!important}
+  .ss-card-title{font-size:14px!important;margin-bottom:3px!important}
+  .ss-card-sub{font-size:11px!important;margin-bottom:8px!important}
+  .ss-score-num{font-size:44px!important}
+  .ss-score-label{font-size:14px!important}
+  .ss-score-desc{font-size:12px!important}
+  .ss-swap-row{padding:5px 0!important;border-bottom:1px solid #F4F6FC!important}
+  .ss-swap-num,.ss-swap-from,.ss-swap-to{font-size:12px!important}
+  .ss-swap-why{display:block!important;font-size:10px!important;color:#6B7899!important;padding-left:22px!important;margin-top:1px!important}
+  .ss-swap-save{font-size:10px!important;padding:2px 8px!important}
+  .ss-action-item{padding:7px 0!important}
+  .ss-action-num{width:26px!important;height:26px!important;font-size:12px!important}
+  .ss-action-title{font-size:12px!important;margin-bottom:2px!important}
+  .ss-action-text{font-size:11px!important}
+  .ss-finding{padding:10px!important;margin-bottom:6px!important}
+  .ss-finding-title{font-size:12px!important}
+  .ss-finding-body{font-size:11px!important}
 
   /* ── BRANDED FOOTER ── */
   .ss-report-body::after{
-    content:"Generated by StackSwap.io  ·  Free AI-powered tech stack analysis  ·  stackswap.io";
+    content:"Powered by StackSwap.io  ·  AI-driven tech stack analysis  ·  stackswap.io";
     display:block!important;font-size:9px!important;color:#9CA3AF!important;
-    text-align:center!important;padding-top:14px!important;margin-top:6px!important;
+    text-align:center!important;padding-top:12px!important;margin-top:4px!important;
     border-top:1px solid #EEF2FF!important;font-family:Inter,sans-serif!important;
-    letter-spacing:.05em!important;text-transform:uppercase!important;
+    letter-spacing:.06em!important;text-transform:uppercase!important;
   }
 }
 @media(max-width:640px){
@@ -2818,25 +2890,41 @@ function renderResult(r) {
     :r.score>=55?"You\u2019re leaving money on the table. Overlaps and legacy tools are costing you."
     :"Your stack is working against you. Redundant tools, wasted spend, and integration debt — all fixable.";
 
-  // ── HEADER card (dark navy) ───────────────────────────────────────────
+  // ── LIQUID GLASS HEADER ──────────────────────────────────────────────
   const header = document.createElement('div');
   header.className = 'ss-report-header';
   const issueCount = r.overlaps.length + (r.categoryOverlaps||[]).length + (r.upgrades||[]).length;
+  const companyName = leadData.company || '';
+  const titleText = companyName
+    ? companyName + (industry ? ' \u2014 ' + industry : '')
+    : industry ? industry + ' Stack' : 'Tech Stack Analysis';
+  const subParts = [
+    companyName,
+    selectedTools.length + ' tools analyzed',
+    teamSize ? teamSize + '-person team' : '',
+    industry || ''
+  ].filter(Boolean);
+  const urgencyIcon = r.score < 50 ? '\uD83D\uDEA8' : r.score < 70 ? '\u26A0\uFE0F' : '\u2705';
+  const summaryHTML = issueCount > 0
+    ? urgencyIcon + '\u00A0 <strong>' + issueCount + ' issue' + (issueCount!==1?'s':'') + '</strong> found across ' +
+      (companyName ? '<strong>' + companyName + '\u2019s</strong> stack' : 'your stack') +
+      (r.totalSave > 0 ? ' \u2014 estimated <strong style="color:#16A34A">~$' + r.totalSave.toLocaleString() + '/mo</strong> in recoverable savings.' : '.') +
+      ' See recommendations below.'
+    : '\u2705\u00A0 No major issues detected. ' + (companyName ? companyName + '\u2019s stack' : 'Your stack') + ' is well-optimized for your size and industry.';
+
   header.innerHTML =
     '<div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">' +
-      '<div>' +
+      '<div style="flex:1;min-width:0">' +
         '<div class="ss-report-meta">Stack Analysis Complete</div>' +
-        '<div class="ss-report-title">' + (industry ? industry + ' Stack' : 'Your Tech Stack') + '</div>' +
-        '<div class="ss-report-sub">' + selectedTools.length + ' tools analyzed' + (teamSize ? ' \u00b7 ' + teamSize + '-person team' : '') + (industry ? ' \u00b7 ' + industry : '') + '</div>' +
+        '<div class="ss-report-title">' + titleText + '</div>' +
+        '<div class="ss-report-sub">' + subParts.join(' \u00b7 ') + '</div>' +
       '</div>' +
-      '<div style="text-align:right;flex-shrink:0">' +
+      '<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center">' +
         '<div class="ss-report-grade" style="color:' + scoreColor + '">' + gradeLetter + '</div>' +
-        '<div class="ss-report-grade-label">Stack Grade</div>' +
+        '<div class="ss-report-grade-label" style="color:' + scoreColor + '">Stack Grade</div>' +
       '</div>' +
     '</div>' +
-    (issueCount > 0
-      ? '<div class="ss-report-summary">' + issueCount + ' issue' + (issueCount!==1?'s':'') + ' found across your stack' + (r.totalSave>0?' — estimated ~$'+r.totalSave.toLocaleString()+'/mo in savings.':'.') + ' See recommendations below.</div>'
-      : '<div class="ss-report-summary">No major issues detected. Your stack is well-optimized for your size and industry.</div>');
+    '<div class="ss-report-summary">' + summaryHTML + '</div>';
   box.appendChild(header);
 
   // ── METRICS ROW (3 stats) ─────────────────────────────────────────────
@@ -2864,7 +2952,7 @@ function renderResult(r) {
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
       </svg>
-      Download One-Page Report (PDF)
+      Download One Pager (PDF)
     </button>`;
   box.appendChild(pdfBar);
   const body = document.createElement('div');
@@ -2997,13 +3085,20 @@ function renderResult(r) {
 
     // Build unified rows
     const swapItems = [];
-    wrongFindings.forEach(f => swapItems.push({ from: f.title, to: 'Remove it', why: f.msg, save: f.save||0 }));
-    (r.categoryOverlaps||[]).forEach(o => swapItems.push({ from: o.tools.slice(1).join(' + '), to: o.tools[0], why: o.msg, save: o.save||0 }));
-    redundantFindings.forEach(f => swapItems.push({ from: f.title, to: 'Consolidate', why: f.msg, save: f.save||0 }));
+    const _seenFrom = new Set();
+    const _addSwap = (item) => {
+      const key = item.from.toLowerCase().trim();
+      if (_seenFrom.has(key)) return; // skip duplicate
+      _seenFrom.add(key);
+      swapItems.push(item);
+    };
+    wrongFindings.forEach(f => _addSwap({ from: f.title, to: 'Remove it', why: f.msg, save: f.save||0 }));
+    (r.categoryOverlaps||[]).forEach(o => _addSwap({ from: o.tools.slice(1).join(' + '), to: o.tools[0], why: o.msg, save: o.save||0 }));
+    redundantFindings.forEach(f => _addSwap({ from: f.title, to: 'Consolidate', why: f.msg, save: f.save||0 }));
     r.overlaps.forEach(o => {
       const ta = selectedTools.find(t=>t.toLowerCase().includes(o.a.toLowerCase()))||o.a;
       const tb = selectedTools.find(t=>t.toLowerCase().includes(o.b.toLowerCase()))||o.b;
-      swapItems.push({ from: tb, to: ta, why: o.msg, save: o.save||0 });
+      _addSwap({ from: tb, to: ta, why: o.msg, save: o.save||0 });
     });
 
     swapItems.forEach((row, idx) => {
@@ -3218,7 +3313,7 @@ function renderResult(r) {
     const teamCtx = leadData.teamSize ? ' for a ' + leadData.teamSize + '-person team' : '';
     const insight = document.createElement('div');
     insight.style.cssText = 'font-size:13px;color:#6B7899;line-height:1.6;font-family:Inter,sans-serif';
-    insight.textContent = 'Driven primarily by ' + topDriver + teamCtx + '. Assumes you act on the top 2\u20133 recommendations.';
+    insight.textContent = (leadData.company ? leadData.company + '\u2019s savings are' : 'Savings are') + ' driven primarily by ' + topDriver + teamCtx + '. Assumes you act on the top 2\u2013 3 recommendations.';
     savCard.appendChild(insight);
     body.appendChild(savCard);
   }
@@ -3251,16 +3346,97 @@ function renderResult(r) {
   });
   body.appendChild(actCard);
 
-  // ── STACK MAP: Integration Health + Optimized Stack combined ────────
+  // ── RECOMMENDED STACK: clean category tiles ─────────────────────────
   {
-    const mapCard = ssCard(
-      '\u2728 Your Optimized Stack Map',
-      '<span style="color:#1847ED;font-weight:600">Blue lines</span> = tools share data natively &nbsp;&middot;&nbsp; ' +
-      '<span style="color:#DC2626;font-weight:600">Red lines</span> = conflict &mdash; these tools fight each other &nbsp;&middot;&nbsp; ' +
-      'Hover any tool for details'
-    );
-    renderNetworkMap(mapCard, r.optimized, r.integrationConflicts || [], r.orphanedTools || [], r.glueNote || '');
-    body.appendChild(mapCard);
+    const CAT_MAP = {
+      'Prospecting':   ['ZoomInfo','Apollo.io','Clay','LinkedIn Sales Navigator','Clearbit','Hunter.io','Lusha','Cognism','Seamless.AI','LeadIQ'],
+      'Outreach':      ['Outreach','Salesloft','Instantly','Smartlead','Lemlist','Mailshake','Woodpecker','QuickMail','Reply.io','Klenty'],
+      'CRM':           ['HubSpot','Salesforce','Pipedrive','Follow Up Boss','Close','Monday CRM','Zoho CRM','Copper','Attio','kvCORE'],
+      'Meetings':      ['Gong','Chorus','Avoma','Zoom','Google Meet','Calendly','Loom','Otter.ai','Fireflies.ai'],
+      'Marketing':     ['Marketo','Pardot','Mailchimp','ActiveCampaign','Klaviyo','Brevo','ConvertKit','Drip'],
+      'Analytics':     ['Mixpanel','Amplitude','Heap','Google Analytics','Hotjar','FullStory','Tableau','Looker','Power BI','Databox'],
+      'Support':       ['Intercom','Zendesk','Freshdesk','Help Scout','Crisp','Drift','Tidio','Gorgias'],
+      'Finance':       ['QuickBooks','Xero','Stripe','Docusign','PandaDoc','Chargebee','Recurly'],
+      'Operations':    ['Slack','Notion','Asana','ClickUp','Jira','Linear','Monday.com','Basecamp','Zapier','Make','Airtable'],
+      'AI Tools':      ['ChatGPT','Claude','Jasper','Copy.ai','Writer','Grammarly','Midjourney','Runway'],
+      'Transaction':   ['Paperless Pipeline','Dotloop','Skyslope','Glide','Brokermint','TransactionDesk'],
+      'Lead Gen':      ['BoomTown','CINC','Real Geeks','Ylopo','Sierra Interactive','kvCORE'],
+    };
+    const catColors = {
+      'Prospecting':'#1847ED','Outreach':'#16A34A','CRM':'#7C3AED','Meetings':'#0891B2',
+      'Marketing':'#EA580C','Analytics':'#0D9488','Support':'#BE123C','Finance':'#65A30D',
+      'Operations':'#475569','AI Tools':'#9333EA','Transaction':'#B45309','Lead Gen':'#0369A1',
+    };
+    const catEmoji = {
+      'Prospecting':'🔍','Outreach':'📧','CRM':'💼','Meetings':'🎙️','Marketing':'📣',
+      'Analytics':'📊','Support':'💬','Finance':'💰','Operations':'⚙️','AI Tools':'🤖',
+      'Transaction':'📋','Lead Gen':'🏠',
+    };
+
+    // Assign each tool to a category
+    const toolToCat = {};
+    r.optimized.forEach(tool => {
+      for (const [cat, catTools] of Object.entries(CAT_MAP)) {
+        if (catTools.some(ct => tool.toLowerCase().includes(ct.toLowerCase()) || ct.toLowerCase().includes(tool.toLowerCase()))) {
+          toolToCat[tool] = cat; break;
+        }
+      }
+      if (!toolToCat[tool]) toolToCat[tool] = 'Other';
+    });
+
+    // Group
+    const grouped = {};
+    r.optimized.forEach(tool => {
+      const cat = toolToCat[tool];
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(tool);
+    });
+
+    const recCard = ssCard('\u2728 Your Recommended Stack', 'The tools ' + (leadData.company ? leadData.company + ' should be using' : 'your team should be using') + ' — organized by function for maximum efficiency.');
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:4px';
+
+    Object.entries(grouped).forEach(([cat, tools]) => {
+      const color = catColors[cat] || '#6B7899';
+      const emoji = catEmoji[cat] || '🔧';
+      const tile = document.createElement('div');
+      tile.style.cssText = `background:linear-gradient(135deg,${color}0d,${color}06);border:1.5px solid ${color}33;border-radius:14px;padding:16px 18px;transition:transform .15s,box-shadow .15s`;
+      tile.onmouseenter = () => { tile.style.transform='translateY(-2px)'; tile.style.boxShadow=`0 6px 20px ${color}22`; };
+      tile.onmouseleave = () => { tile.style.transform=''; tile.style.boxShadow=''; };
+
+      const catLabel = document.createElement('div');
+      catLabel.style.cssText = `font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${color};font-family:Inter,sans-serif;margin-bottom:10px;display:flex;align-items:center;gap:5px`;
+      catLabel.innerHTML = `<span>${emoji}</span><span>${cat}</span>`;
+      tile.appendChild(catLabel);
+
+      tools.forEach(tool => {
+        const pill = document.createElement('div');
+        pill.style.cssText = `font-size:13px;font-weight:600;color:#1A2340;font-family:Inter,sans-serif;padding:5px 0;border-bottom:1px solid ${color}18;line-height:1.4`;
+        pill.textContent = tool;
+        tile.appendChild(pill);
+        // remove last border
+        const observer = new MutationObserver(() => {});
+      });
+      // remove border from last pill
+      tile.querySelectorAll && setTimeout(() => {
+        const pills = tile.querySelectorAll('div + div');
+        if (pills.length) pills[pills.length-1].style.borderBottom='none';
+      }, 0);
+      grid.appendChild(tile);
+    });
+
+    recCard.appendChild(grid);
+
+    // Conflict callouts below grid
+    if (r.integrationConflicts && r.integrationConflicts.length) {
+      const conflictNote = document.createElement('div');
+      conflictNote.style.cssText = 'margin-top:16px;padding:12px 16px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;font-size:13px;color:#991B1B;font-family:Inter,sans-serif;line-height:1.55';
+      conflictNote.innerHTML = '<strong>\u26A0\uFE0F Heads up:</strong> ' +
+        r.integrationConflicts.map(ic => ic.tools.join(' + ') + ' conflict — ' + (ic.issue||'pick one').slice(0,80)).join('<br>');
+      recCard.appendChild(conflictNote);
+    }
+
+    body.appendChild(recCard);
   }
 
   // ── GREEN LEAD MAGNET ─────────────────────────────────────────────────
@@ -3620,6 +3796,7 @@ function renderMain() {
   const h2 = div("card-hd"); h2.appendChild(sdot(2));
   const i2 = div(null); i2.innerHTML='<div class="ct">Context <span style="color:#5a5650;font-weight:400">(Optional)</span></div><div class="cs">Sharper context = sharper analysis</div>';
   h2.appendChild(i2); c2.appendChild(h2);
+  // Row 1: Industry + Team Size
   const g2 = div("g2");
   // Industry
   const indW = div("field-wrap"); indW.innerHTML='<label class="lbl">Industry</label>';
@@ -3628,76 +3805,7 @@ function renderMain() {
   indW.appendChild(indSel);
   indW.appendChild(div("field-hint","helps AI apply industry-specific knowledge to your stack"));
   g2.appendChild(indW);
-  // Budget — with auto-estimate
-  const budW = div("field-wrap"); budW.innerHTML='<label class="lbl">Monthly SaaS Spend ($)</label>';
-  const budIn = el("input","field"); budIn.type="text"; budIn.inputMode="numeric"; budIn.pattern="[0-9]*"; budIn.placeholder="e.g. 2500"; budIn.id="bud";
-  const budHint = div("field-hint","used to calculate your actual savings potential");
-  const budEstBtn = document.createElement("button");
-  budEstBtn.type="button";
-  budEstBtn.style.cssText="display:block;width:100%;background:none;border:none;color:#4ecdc4;font-size:12px;font-family:DM Mono,monospace;cursor:pointer;padding:10px 0;letter-spacing:.03em;text-align:left;-webkit-tap-highlight-color:rgba(78,205,196,0.15);touch-action:manipulation;min-height:44px;line-height:1";
-  budEstBtn.textContent="→ Estimate from my tools";
-  let _lastEstimate = 0; // track what we calculated so we can compare to override
-  let _estimateBreakdown = {}; // per-tool estimates at time of click
-
-  budEstBtn.addEventListener("click", () => {
-    if (selectedTools.length === 0) {
-      budHint.textContent = "Add your tools first, then click to estimate.";
-      budHint.style.color = "#9a9690";
-      return;
-    }
-    // Use calcToolCost directly — resolves via TOOL_CATALOG with proper team size
-    const teamSizeMap = {'1-5':3,'6-15':8,'16-50':25,'51-200':80,'200+':150};
-    const tSize = teamSizeMap[leadData.teamSize] || 8;
-    let est = 0;
-    const unpriced = [];
-    _estimateBreakdown = {};
-    selectedTools.forEach(t => {
-      const cost = calcToolCost(t, tSize);
-      if (cost > 0 && cost !== 45) { // 45 = unknown default fallback
-        est += cost;
-        _estimateBreakdown[t] = cost;
-      } else if (cost === 45) {
-        // still count it but flag as unpriced
-        est += cost;
-        _estimateBreakdown[t] = cost;
-        unpriced.push(t);
-      }
-    });
-    if (est > 0) {
-      _lastEstimate = est;
-      budIn.value = est;
-      const note = unpriced.length > 0
-        ? "✓ Estimated $" + est.toLocaleString() + "/mo — " + unpriced.length + " tool(s) used default pricing. Adjust to your actual spend."
-        : "✓ Estimated $" + est.toLocaleString() + "/mo from your tool list — adjust if you have negotiated rates";
-      budHint.textContent = note;
-      budHint.style.color = "#4ecdc4";
-    } else {
-      budHint.textContent = "Couldn't estimate — try adding more tools first";
-    }
-  });
-
-  // Detect manual override — if user changes the value after an estimate was made
-  budIn.addEventListener("change", () => {
-    const actual = parseInt(budIn.value);
-    if (_lastEstimate > 0 && actual > 0 && Math.abs(actual - _lastEstimate) > 50) {
-      // User meaningfully overrode our estimate — record as a pricing signal
-      _pendingPricingSignal = {
-        tools: [...selectedTools],
-        estimated: _lastEstimate,
-        actual: actual,
-        breakdown: { ..._estimateBreakdown },
-        delta: actual - _lastEstimate
-      };
-    }
-  });
-  budW.appendChild(budIn);
-  budW.appendChild(budEstBtn);
-  budW.appendChild(budHint);
-  g2.appendChild(budW);
-  c2.appendChild(g2);
-
-  // Team size — moved up from gate into context
-  const tsRow = div("g2");
+  // Team size (row 1, col 2)
   const tsW = div("field-wrap"); tsW.innerHTML='<label class="lbl">Team Size</label>';
   const tsSel = el("select","field"); tsSel.id="ctx-teamsize";
   ["","1-5","6-15","16-50","51-200","200+"]
@@ -3705,7 +3813,11 @@ function renderMain() {
   tsSel.addEventListener("change",()=>markDot(2,!!(indSel.value||tsSel.value)));
   tsW.appendChild(tsSel);
   tsW.appendChild(div("field-hint","benchmarks your stack against similar-sized teams"));
-  tsRow.appendChild(tsW);
+  g2.appendChild(tsW);
+  c2.appendChild(g2);
+
+  // Row 2: Contract Flexibility + Monthly Spend
+  const tsRow = div("g2");
   // Contract flexibility
   const ctW = div("field-wrap"); ctW.innerHTML='<label class="lbl">Contract Flexibility</label>';
   const ctSel = el("select","field"); ctSel.id="ctx-contract";
@@ -3719,6 +3831,75 @@ function renderMain() {
   ctW.appendChild(ctSel);
   ctW.appendChild(div("field-hint","helps AI estimate how easily you can switch tools"));
   tsRow.appendChild(ctW);
+  // Budget — with smart auto-estimate (last field, logically)
+  const budW = div("field-wrap"); budW.innerHTML='<label class="lbl">Monthly SaaS Spend ($)</label>';
+  const budIn = el("input","field"); budIn.type="text"; budIn.inputMode="numeric"; budIn.pattern="[0-9]*"; budIn.placeholder="e.g. 2500"; budIn.id="bud";
+  const budHint = div("field-hint","used to calculate your actual savings potential");
+  const budEstBtn = document.createElement("button");
+  budEstBtn.type="button";
+  budEstBtn.style.cssText="display:block;width:100%;background:none;border:none;color:#4ecdc4;font-size:12px;font-family:DM Mono,monospace;cursor:pointer;padding:10px 0;letter-spacing:.03em;text-align:left;-webkit-tap-highlight-color:rgba(78,205,196,0.15);touch-action:manipulation;min-height:44px;line-height:1";
+  budEstBtn.textContent="→ Estimate from my tools";
+  let _lastEstimate = 0;
+  let _estimateBreakdown = {};
+
+  budEstBtn.addEventListener("click", () => {
+    if (selectedTools.length === 0) {
+      budHint.textContent = "Add your tools first, then click to estimate.";
+      budHint.style.color = "#9a9690";
+      return;
+    }
+    // Smart estimate: team size + contract multiplier
+    const teamSizeMap = {'1-5':3,'6-15':8,'16-50':25,'51-200':80,'200+':150};
+    const tSize = teamSizeMap[document.getElementById("ctx-teamsize")?.value || ""] || teamSizeMap[leadData.teamSize] || 8;
+    const contract = document.getElementById("ctx-contract")?.value || "";
+    // Annual contracts typically come with 10-20% discount
+    const contractMultiplier = contract === "annual" ? 0.88 : contract === "multi-year" ? 0.80 : 1.0;
+    let est = 0;
+    const unpriced = [];
+    _estimateBreakdown = {};
+    selectedTools.forEach(t => {
+      const cost = calcToolCost(t, tSize);
+      if (cost > 0 && cost !== 45) {
+        est += cost;
+        _estimateBreakdown[t] = cost;
+      } else if (cost === 45) {
+        est += cost;
+        _estimateBreakdown[t] = cost;
+        unpriced.push(t);
+      }
+    });
+    if (est > 0) {
+      const adjustedEst = Math.round(est * contractMultiplier);
+      _lastEstimate = adjustedEst;
+      budIn.value = adjustedEst;
+      const contractNote = contractMultiplier < 1 ? " (includes " + Math.round((1-contractMultiplier)*100) + "% contract discount)" : "";
+      const note = unpriced.length > 0
+        ? "✓ ~$" + adjustedEst.toLocaleString() + "/mo" + contractNote + " — " + unpriced.length + " tool(s) used default pricing"
+        : "✓ ~$" + adjustedEst.toLocaleString() + "/mo" + contractNote + " — adjust if you have negotiated rates";
+      budHint.textContent = note;
+      budHint.style.color = "#4ecdc4";
+    } else {
+      budHint.textContent = "Couldn't estimate — try adding more tools first";
+    }
+  });
+
+  // Detect manual override
+  budIn.addEventListener("change", () => {
+    const actual = parseInt(budIn.value);
+    if (_lastEstimate > 0 && actual > 0 && Math.abs(actual - _lastEstimate) > 50) {
+      _pendingPricingSignal = {
+        tools: [...selectedTools],
+        estimated: _lastEstimate,
+        actual: actual,
+        breakdown: { ..._estimateBreakdown },
+        delta: actual - _lastEstimate
+      };
+    }
+  });
+  budW.appendChild(budIn);
+  budW.appendChild(budEstBtn);
+  budW.appendChild(budHint);
+  tsRow.appendChild(budW);
   c2.appendChild(tsRow);
 
   indSel.addEventListener("change",()=>markDot(2,!!(indSel.value||tsSel.value)));
@@ -4180,7 +4361,7 @@ function renderMetrics(filterIndustry) {
     secTitle2.innerHTML=`<div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#f0ece4;margin-bottom:4px">The Exit List</div><div style="font-size:13px;color:#7a7670;margin-bottom:16px">Tools people are being told to cut most often — ranked by AI recommendation frequency</div>`;
     wrap.appendChild(secTitle2);
     const g2=div("mgrid");
-    const cutFreq=freq(dsCuts,8);
+    const cutFreq=freq(dsCuts,10);
     if(cutFreq.length){
       g2.appendChild(makeBarCard("🔴 Tools Being Cut","ranked by how often AI flags them for removal",cutFreq,"#d96060",true));
       // Replacement map: for each cut tool, what replaces it most?
@@ -4208,37 +4389,51 @@ function renderMetrics(filterIndustry) {
     }
     wrap.appendChild(g2);
 
-    // ── Section: Industry Breakdown (only on All view) ──
-    if(active==="All"&&Object.keys(sessionMetrics.byIndustry).length>0){
-      const secTitle3=div(null);
-      secTitle3.style.marginTop="32px";
-      secTitle3.innerHTML=`<div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;color:#f0ece4;margin-bottom:4px">By Industry</div><div style="font-size:13px;color:#7a7670;margin-bottom:16px">Click any industry tab above to drill in</div>`;
-      wrap.appendChild(secTitle3);
-      const indGrid=div(null);
-      indGrid.style.cssText="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px";
-      Object.entries(sessionMetrics.byIndustry).sort((a,b)=>b[1].count-a[1].count).forEach(([ind,data])=>{
-        const card=div("card");
-        card.style.cssText="cursor:pointer;transition:border-color .2s";
-        card.innerHTML=`
-          <div style="font-size:12px;color:#ffc857;font-weight:600;margin-bottom:10px">${ind}</div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-            <span style="font-size:11px;color:#5a5650">Analyses</span>
-            <span style="font-size:12px;color:#f0ece4;font-weight:600">${data.count}</span>
+    // ── Section: Waitlist CTA (replaces By Industry) ──
+    {
+      const ctaWrap=div(null);
+      ctaWrap.style.cssText="margin-top:48px";
+      const ctaBlock=document.createElement("div");
+      ctaBlock.style.cssText=`
+        position:relative;overflow:hidden;border-radius:20px;padding:52px 40px;text-align:center;
+        background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.02) 100%);
+        border:1px solid rgba(255,255,255,0.1);
+        backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+        box-shadow:0 4px 40px rgba(0,0,0,0.35),0 1px 0 rgba(255,255,255,0.08) inset;
+      `;
+      // glow accent
+      ctaBlock.innerHTML=`
+        <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:320px;height:200px;background:radial-gradient(ellipse,rgba(255,200,87,0.14) 0%,transparent 70%);pointer-events:none"></div>
+        <div style="position:absolute;bottom:-40px;right:10%;width:200px;height:160px;background:radial-gradient(ellipse,rgba(78,205,196,0.1) 0%,transparent 70%);pointer-events:none"></div>
+        <div style="position:relative;z-index:1">
+          <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,200,87,0.1);border:1px solid rgba(255,200,87,0.25);border-radius:20px;padding:5px 14px;margin-bottom:22px">
+            <span style="width:6px;height:6px;border-radius:50%;background:#ffc857;display:inline-block;box-shadow:0 0 6px rgba(255,200,87,0.7)"></span>
+            <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ffc857;font-family:DM Mono,monospace">Early Access</span>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-            <span style="font-size:11px;color:#5a5650">Avg savings</span>
-            <span style="font-size:12px;color:#4ecdc4;font-weight:600">$${data.count?Math.round(data.savings/data.count).toLocaleString():0}/mo</span>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:#f0ece4;line-height:1.2;margin-bottom:10px;letter-spacing:-.02em">
+            Full StackAudit is coming.
           </div>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:11px;color:#5a5650">Top cut</span>
-            <span style="font-size:12px;color:#d96060;font-weight:600">${freq(data.cuts,1)[0]?.[0]||"—"}</span>
-          </div>`;
-        card.addEventListener("mouseenter",()=>card.style.borderColor="rgba(255,200,87,0.3)");
-        card.addEventListener("mouseleave",()=>card.style.borderColor="");
-        card.addEventListener("click",()=>renderMetrics(ind));
-        indGrid.appendChild(card);
-      });
-      wrap.appendChild(indGrid);
+          <div style="font-size:15px;color:#9a9690;line-height:1.65;max-width:460px;margin:0 auto 32px;font-family:Inter,sans-serif">
+            Get industry-wide benchmarks, per-tool ROI scores, real switching cost estimates, and a full AI-written optimization roadmap — built for your exact stack.
+          </div>
+          <div style="display:flex;gap:8px;max-width:440px;margin:0 auto 12px;flex-wrap:wrap;justify-content:center" id="ss-wl-form">
+            <input id="ss-wl-email" type="email" placeholder="your@email.com" style="flex:1;min-width:200px;padding:13px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:14px;color:#f0ece4;font-family:Inter,sans-serif;outline:none;transition:border .2s" onfocus="this.style.borderColor='rgba(255,200,87,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+            <button onclick="(function(){
+              const e=document.getElementById('ss-wl-email').value.trim();
+              if(!e.includes('@')){document.getElementById('ss-wl-email').style.borderColor='rgba(217,96,96,0.7)';return;}
+              fetch('/api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,source:'stacksignal'})}).catch(()=>{});
+              document.getElementById('ss-wl-form').style.display='none';
+              document.getElementById('ss-wl-success').style.display='block';
+            })()" style="padding:13px 28px;background:linear-gradient(135deg,#ffc857,#e6a800);border:none;border-radius:10px;font-size:14px;font-weight:700;color:#0f0e13;font-family:Sora,sans-serif;cursor:pointer;white-space:nowrap;box-shadow:0 4px 18px rgba(255,200,87,0.3);transition:opacity .2s" onmouseenter="this.style.opacity='.9'" onmouseleave="this.style.opacity='1'">
+              Join the Waitlist
+            </button>
+          </div>
+          <div id="ss-wl-success" style="display:none;font-size:14px;color:#4ecdc4;font-weight:600;font-family:Inter,sans-serif;margin-top:8px">✓ You're on the list — we'll reach out when StackAudit launches.</div>
+          <div style="font-size:11px;color:#3a3830;margin-top:12px;font-family:Inter,sans-serif">No spam. Unsubscribe anytime.</div>
+        </div>
+      `;
+      ctaWrap.appendChild(ctaBlock);
+      wrap.appendChild(ctaWrap);
     }
   }
 
