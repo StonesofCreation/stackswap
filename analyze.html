@@ -1974,7 +1974,33 @@ const TOOL_CATALOG = {
  * @param {number} teamSize  actual team size for per_user tools
  * @returns {number} monthly USD
  */
-function calcToolCost(toolName, teamSize) {
+// ── TEAM SIZE HELPER ─────────────────────────────────────────────────────────
+const TEAM_SIZE_MAP = {'1-5':3,'6-15':8,'16-50':25,'51-200':80,'200+':150};
+function getTeamSizeNum(teamSize) {
+  if (typeof teamSize === 'number' && teamSize > 0) return teamSize;
+  if (typeof teamSize === 'string') {
+    if (TEAM_SIZE_MAP[teamSize]) return TEAM_SIZE_MAP[teamSize];
+    const n = parseInt(teamSize);
+    if (n > 0) return n;
+  }
+  return 8; // sensible default
+}
+
+// ── CONTRACT MULTIPLIER ─────────────────────────────────────────────────────
+function getContractMultiplier(contract) {
+  if (contract === 'annual') return 0.88;     // ~12% discount
+  if (contract === 'multi-year') return 0.80;  // ~20% discount
+  return 1.0; // month-to-month or unknown
+}
+
+/**
+ * Compute deterministic monthly cost for a tool
+ * @param {string} toolName
+ * @param {number|string} teamSize  actual team size (number or range string like '6-15')
+ * @param {string} [contract]  'month-to-month'|'annual'|'multi-year'|''
+ * @returns {number} monthly USD
+ */
+function calcToolCost(toolName, teamSize, contract) {
   const key = Object.keys(TOOL_CATALOG).find(k => {
     const tl = toolName.toLowerCase();
     return tl === k || tl.includes(k) || k.includes(tl);
@@ -1983,33 +2009,61 @@ function calcToolCost(toolName, teamSize) {
   if (!key) return 45; // default unknown tool cost
 
   const t = TOOL_CATALOG[key];
-  const jitter = () => 1 + (Math.random() * 2 - 1) * t.variance;
-  const seats = Math.max(1, Math.round(teamSize * 0.6)); // not all seats licensed
+  const size = getTeamSizeNum(teamSize);
+  const seats = Math.max(1, Math.round(size * 0.6)); // not all seats licensed
+  const cm = getContractMultiplier(contract);
 
+  let cost = 0;
   switch (t.model) {
     case 'per_user':
-      return Math.round(t.seat * seats * jitter());
+      cost = t.seat * seats;
+      break;
     case 'per_workspace':
-      return Math.round(t.base * jitter());
+      cost = t.base;
+      break;
     case 'usage_based':
-      return Math.round(t.base * jitter() * (1 + Math.random() * 0.5));
+      cost = Math.round(t.base * 1.25); // typical usage tier
+      break;
     case 'enterprise_license':
-      return Math.round(t.base * (1 + Math.random() * 0.5));
+      cost = Math.round(t.base * 1.15); // typical enterprise negotiated
+      break;
     case 'hybrid':
-      return Math.round((t.base + t.seat * Math.min(seats, t.typical)) * jitter());
+      cost = t.base + t.seat * Math.min(seats, t.typical);
+      break;
     default:
-      return t.base || t.seat * 5 || 45;
+      cost = t.base || t.seat * 5 || 45;
   }
+
+  return Math.round(cost * cm);
 }
 
-function estimateStackSpend(tools, teamSize) {
-  return tools.reduce((sum, tool) => sum + calcToolCost(tool, teamSize), 0);
+/**
+ * Per-seat cost (for display in reports — what one user costs)
+ */
+function calcPerSeatCost(toolName) {
+  const key = Object.keys(TOOL_CATALOG).find(k => {
+    const tl = toolName.toLowerCase();
+    return tl === k || tl.includes(k) || k.includes(tl);
+  });
+  if (!key) return 45;
+  const t = TOOL_CATALOG[key];
+  if (t.model === 'per_user' || t.model === 'hybrid') return t.seat || t.base || 0;
+  if (t.model === 'per_workspace') return t.base;
+  if (t.model === 'usage_based') return Math.round(t.base * 1.25);
+  if (t.model === 'enterprise_license') return Math.round(t.base * 1.15);
+  return t.base || t.seat || 45;
+}
+
+function estimateStackSpend(tools, teamSize, contract) {
+  return tools.reduce((sum, tool) => sum + calcToolCost(tool, teamSize, contract), 0);
 }
 
 // Backwards-compatible PRICING lookup (used by overlap cost calculations)
-// Returns typical monthly cost for a team of 5 (median SMB)
+// Uses a global _activeTeamSize / _activeContract set during analysis
+let _activeTeamSize = 8;
+let _activeContract = '';
 function getPricing(toolName) {
-  return calcToolCost(toolName, 5);
+  return calcToolCost(toolName, _activeTeamSize, _activeContract);
 }
 const PRICING = new Proxy({}, {
   get(_, prop) { return getPricing(prop); }
@@ -2526,9 +2580,13 @@ const BLUEPRINTS = {
 };
 
 // ── ANALYSIS ENGINE ───────────────────────────────────────────────────────────
-function runAnalysis(tools, teamSize, industry, budget, goals) {
+function runAnalysis(tools, teamSize, industry, budget, goals, contract) {
   const match = t => tools.some(u => u.toLowerCase().includes(t.toLowerCase()));
   const find  = t => tools.find(u => u.toLowerCase().includes(t.toLowerCase()));
+
+  // Set active pricing context so PRICING proxy uses real team size + contract
+  _activeTeamSize = getTeamSizeNum(teamSize);
+  _activeContract = contract || '';
 
   // 1. Find direct overlaps (existing logic)
   const overlaps = OVERLAPS.filter(o => match(o.a) && match(o.b));
@@ -2595,12 +2653,14 @@ function runAnalysis(tools, teamSize, industry, budget, goals) {
     });
   }
 
-  // 4. Estimated spend
+  // 4. Estimated spend — use real team size + contract pricing
   let spend = budget ? parseInt(budget) : 0;
-  if (!spend) tools.forEach(t => {
-    const k = Object.keys(PRICING).find(k=>t.toLowerCase().includes(k.toLowerCase()));
-    if (k) spend += PRICING[k];
-  });
+  if (!spend) {
+    spend = estimateStackSpend(tools, teamSize, contract);
+  }
+  // Store per-tool cost breakdown for reports
+  const costBreakdown = {};
+  tools.forEach(t => { costBreakdown[t] = calcToolCost(t, teamSize, contract); });
 
   // 5a. Category cluster overlap detection
   const CATEGORY_CLUSTERS = [
@@ -2945,7 +3005,7 @@ function runAnalysis(tools, teamSize, industry, budget, goals) {
   // Gold stack match
   const goldMatch = getGoldStackMatch(tools, industry);
 
-  return {score, overlaps, categoryOverlaps, legacyPenalties, upgrades, consultantFindings, integrationConflicts, orphanedTools, allInOneOpps, glueNote, overspendNote, goldMatch, totalSave, spend, optimized: [...optimized, ...addToOptimized], toRemove, actions, blueprint: bp};
+  return {score, overlaps, categoryOverlaps, legacyPenalties, upgrades, consultantFindings, integrationConflicts, orphanedTools, allInOneOpps, glueNote, overspendNote, goldMatch, totalSave, spend, costBreakdown, optimized: [...optimized, ...addToOptimized], toRemove, actions, blueprint: bp};
 }
 
 // ── DOM HELPERS ───────────────────────────────────────────────────────────────
@@ -3740,10 +3800,8 @@ function renderResult(r) {
   const _lockIn = selectedTools.length > 1 ? calcLockInRisk(selectedTools) : null;
   const _metricItems = [
     { label:'Stack Health Score', val: r.score + '/100', sub: gradeLabel, color: scoreColor },
+    { label:'Est. Monthly SaaS Spend', val: r.spend > 0 ? '~$'+r.spend.toLocaleString() : '\u2014', sub: r.spend > 0 ? selectedTools.length + ' tools \u00b7 ' + (r.costBreakdown ? Object.values(r.costBreakdown).filter(c=>c>0).length + ' priced' : '') : 'Enter budget for accuracy', color: '#0B1F5E' },
     { label:'Potential Monthly Savings', val: r.totalSave > 0 ? '~$'+r.totalSave.toLocaleString() : '\u2014', sub: r.totalSave > 0 ? '~$'+(r.totalSave*12).toLocaleString()+'/yr annualized' : 'Stack looks lean', color: r.totalSave > 0 ? '#16A34A' : '#6B7899' },
-    selectedTools.length > 1
-      ? { label:'Stack Lock-In Risk', val: _lockIn.score + '/100', sub: _lockIn.label, color: _lockIn.color }
-      : { label:'Issues Detected', val: issueCount || '\u2713', sub: (r.overlaps.length+(r.categoryOverlaps||[]).length) + ' overlaps \u00b7 ' + (r.upgrades||[]).length + ' upgrades', color: issueCount > 0 ? '#D97706' : '#16A34A' },
   ];
   _metricItems.forEach(item => {
     const c = document.createElement('div');
@@ -4712,13 +4770,6 @@ function generateProReport() {
 
     const lockIn     = calcLockInRisk(selectedTools);
 
-    const contractLabel = {
-      'month-to-month': 'Month-to-month (can switch immediately)',
-      'annual': 'Annual contracts (align switches with renewals)',
-      'multi-year': 'Multi-year contracts (plan ahead)',
-      'not-sure': 'Contract terms unknown'
-    }[_contract] || 'Not specified';
-
     // ── Helpers ─────────────────────────────────────────────────────────────
     const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const $   = (v,fb='—') => v || fb;
@@ -4765,28 +4816,24 @@ function generateProReport() {
       if (toolVerdicts[t] !== undefined) toolVerdicts[t] = 'replace';
     });
 
-    // Tool cost estimates (list pricing approximations)
-    const TOOL_COSTS = {
-      'salesforce':300,'hubspot':500,'marketo':900,'pardot':400,'outreach':150,'salesloft':125,
-      'gong':150,'chorus':120,'zoominfo':250,'clearbit':200,'6sense':300,'demandbase':400,
-      'slack':12,'teams':6,'notion':16,'confluence':10,'asana':13,'monday':12,'jira':8,'linear':8,
-      'intercom':120,'drift':200,'zendesk':90,'freshdesk':30,'helpscout':25,
-      'hootsuite':100,'buffer':20,'sproutsocial':200,'semrush':150,'ahrefs':100,
-      'google analytics':0,'mixpanel':60,'amplitude':60,'heap':80,'hotjar':20,'clarity':0,
-      'zapier':50,'make':20,'workato':300,'n8n':0,
-      'stripe':0,'quickbooks':50,'xero':40,
-      'loom':12,'zoom':20,'calendly':12,'typeform':50,'docusign':25,
-      'figma':45,'canva':15,'adobe':80,
-      'github':4,'gitlab':19,'jira':8,
-      'apollo':100,'clay':250,'smartlead':40,'lemlist':50,
-      'netsuite':999,'sap':0,'oracle':0,'workday':0
-    };
+    // ── Real pricing engine (uses TOOL_CATALOG × team size × contract) ──
+    // ── Use the real pricing engine with actual team size + contract ──
+    const teamSizeNum = getTeamSizeNum(_ts);
+    const contractMult = getContractMultiplier(_contract);
+    const contractLabel = {
+      'month-to-month': 'Month-to-month (can switch immediately)',
+      'annual': 'Annual contracts (' + Math.round((1-contractMult)*100) + '% discount applied)',
+      'multi-year': 'Multi-year contracts (' + Math.round((1-contractMult)*100) + '% discount applied)',
+      'not-sure': 'Contract terms unknown'
+    }[_contract] || 'Not specified';
+
     function toolCost(name) {
-      const key = name.toLowerCase();
-      for (const [k,v] of Object.entries(TOOL_COSTS)) {
-        if (key.includes(k)) return v;
-      }
-      return 50; // default estimate
+      return r.costBreakdown && r.costBreakdown[name] != null
+        ? r.costBreakdown[name]
+        : calcToolCost(name, _ts, _contract);
+    }
+    function toolSeatCost(name) {
+      return calcPerSeatCost(name);
     }
 
     // ── SECTION 1: Executive Diagnosis ──────────────────────────────────
@@ -4809,24 +4856,32 @@ function generateProReport() {
     let currentTotal = 0;
     let optimizedTotal = 0;
     const costRows = selectedTools.map(tool => {
-      const cost = toolCost(tool);
+      const totalCost = toolCost(tool);          // monthly total for this team size + contract
+      const seatCost  = toolSeatCost(tool);      // per-seat list price
       const verdict = toolVerdicts[tool] || 'keep';
-      currentTotal += cost;
-      if (verdict !== 'cut' && verdict !== 'replace') optimizedTotal += cost;
+      currentTotal += totalCost;
+      if (verdict !== 'cut' && verdict !== 'replace') optimizedTotal += totalCost;
       const overlap = overlaps.find(o=>o.b===tool||o.a===tool);
       const upg = upgrades.find(u=>u.tool===tool);
       const fn = overlap ? `Overlaps with ${esc(overlap.b===tool?overlap.a:overlap.b)}` :
                  upg ? `AI-native alt: ${esc(upg.r)}` :
                  verdict === 'keep' ? 'No conflicts detected' : 'Review recommended';
-      return [`<strong>${esc(tool)}</strong>`, fn, cost > 0 ? `~$${cost}/mo/seat` : 'Free / variable', verdictChip(verdict)];
+      const costDisplay = totalCost > 0
+        ? `<strong>~$${totalCost.toLocaleString()}/mo</strong><br><span style="font-size:10px;color:#6B7899">$${seatCost}/seat</span>`
+        : 'Free / variable';
+      return [`<strong>${esc(tool)}</strong>`, fn, costDisplay, verdictChip(verdict)];
     });
     const savingsDelta = currentTotal - optimizedTotal;
+    const contractNote = contractMult < 1
+      ? `<div class="tbl-note" style="color:#16A34A;font-weight:600">💡 ${Math.round((1-contractMult)*100)}% contract discount applied (${contractLabel}). Team size: ${teamSizeNum} people.</div>`
+      : `<div class="tbl-note">Pricing for a ${teamSizeNum}-person team at month-to-month rates. Annual contracts typically save 12–20%.</div>`;
     const s2 = section(2, 'Current Stack Cost Breakdown', '#1847ED', `
       ${table(
-        ['Tool','Primary Function / Note','Est. Seat Cost','Recommendation'],
+        ['Tool','Primary Function / Note','Est. Monthly Cost','Recommendation'],
         costRows,
-        'Pricing based on published list rates per seat. Actual contract rates may differ. "Variable" tools priced at usage-based tiers.'
+        'Pricing derived from per-seat rates × estimated licensed seats for your team size. Actual contract rates may differ.'
       )}
+      ${contractNote}
       <div class="cost-summary">
         <div class="cost-cell"><div class="cost-lbl">Current Stack</div><div class="cost-val">${money(currentTotal)}/mo</div></div>
         <div class="cost-arrow">→</div>
@@ -4960,7 +5015,7 @@ function generateProReport() {
     `);
 
     // ── SECTION 8: 30/60/90 Day Plan ─────────────────────────────────────
-    const contractNote = _contract === 'annual' ? 'Annual contract holders: sequence tool cancellations around renewal dates to avoid early termination fees.'
+    const contractTimingNote = _contract === 'annual' ? 'Annual contract holders: sequence tool cancellations around renewal dates to avoid early termination fees.'
       : _contract === 'multi-year' ? 'Multi-year contracts: migrations should be planned now and executed at the next renewal window.'
       : _contract === 'month-to-month' ? 'Month-to-month contracts: all changes can begin immediately with 30 days notice.'
       : '';
@@ -4998,7 +5053,7 @@ function generateProReport() {
           </ul>
         </div>
       </div>
-      ${contractNote ? callout(contractNote, 'warn') : ''}
+      ${contractTimingNote ? callout(contractTimingNote, 'warn') : ''}
     `);
 
     // ── SECTION 8: Migration Risk Callouts ───────────────────────────────
@@ -5581,34 +5636,27 @@ function renderMain() {
       budHint.style.color = "#9a9690";
       return;
     }
-    // Smart estimate: team size + contract multiplier
-    const teamSizeMap = {'1-5':3,'6-15':8,'16-50':25,'51-200':80,'200+':150};
-    const tSize = teamSizeMap[document.getElementById("ctx-teamsize")?.value || ""] || teamSizeMap[leadData.teamSize] || 8;
+    // Use unified pricing engine with real team size + contract
+    const tSize = document.getElementById("ctx-teamsize")?.value || leadData.teamSize || "";
     const contract = document.getElementById("ctx-contract")?.value || "";
-    // Annual contracts typically come with 10-20% discount
-    const contractMultiplier = contract === "annual" ? 0.88 : contract === "multi-year" ? 0.80 : 1.0;
+    const contractMult = getContractMultiplier(contract);
     let est = 0;
     const unpriced = [];
     _estimateBreakdown = {};
     selectedTools.forEach(t => {
-      const cost = calcToolCost(t, tSize);
-      if (cost > 0 && cost !== 45) {
-        est += cost;
-        _estimateBreakdown[t] = cost;
-      } else if (cost === 45) {
-        est += cost;
-        _estimateBreakdown[t] = cost;
-        unpriced.push(t);
-      }
+      const cost = calcToolCost(t, tSize, contract);
+      est += cost;
+      _estimateBreakdown[t] = cost;
+      if (cost === 45) unpriced.push(t); // default = unpriced
     });
     if (est > 0) {
-      const adjustedEst = Math.round(est * contractMultiplier);
-      _lastEstimate = adjustedEst;
-      budIn.value = adjustedEst;
-      const contractNote = contractMultiplier < 1 ? " (includes " + Math.round((1-contractMultiplier)*100) + "% contract discount)" : "";
+      _lastEstimate = est;
+      budIn.value = est;
+      const contractNote = contractMult < 1 ? " (includes " + Math.round((1-contractMult)*100) + "% contract discount)" : "";
+      const teamLabel = tSize ? " for " + (TEAM_SIZE_MAP[tSize] || tSize) + "-person team" : "";
       const note = unpriced.length > 0
-        ? "✓ ~$" + adjustedEst.toLocaleString() + "/mo" + contractNote + " — " + unpriced.length + " tool(s) used default pricing"
-        : "✓ ~$" + adjustedEst.toLocaleString() + "/mo" + contractNote + " — adjust if you have negotiated rates";
+        ? "✓ ~$" + est.toLocaleString() + "/mo" + teamLabel + contractNote + " — " + unpriced.length + " tool(s) used default pricing"
+        : "✓ ~$" + est.toLocaleString() + "/mo" + teamLabel + contractNote + " — adjust if you have negotiated rates";
       budHint.textContent = note;
       budHint.style.color = "#4ecdc4";
     } else {
@@ -5854,7 +5902,7 @@ function renderMain() {
     setTimeout(() => { const e = document.getElementById('lc3'); if(e){e.classList.remove('active');e.classList.add('done');e.textContent='✓'} const e2 = document.getElementById('lc4'); if(e2){e2.classList.add('active');e2.textContent='↻'} }, 2400);
 
     // Run deterministic engine + AI narrative in parallel
-    const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals);
+    const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals, _contract);
     window._lastAnalysisResult = result; // cache for pro report generator
     const aiData  = await getAINarrative(result, selectedTools, _industry, _budget, selectedGoals, _teamSize, _contract);
 
