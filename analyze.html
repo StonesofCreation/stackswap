@@ -546,96 +546,127 @@ nav,
 
 /* ── PRINT ONE-PAGER ── */
 @media print {
-  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  @page{margin:0;size:letter portrait}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;
+     backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  @page{margin:0.3in 0.4in;size:letter portrait}
 
+  /* ── HIDE everything except result box ── */
   body{margin:0!important;padding:0!important;background:#fff!important}
-  .page-nav,.nav-hamburger,.nav-drawer,
-  .wrap > *:not(#result-box),
-  .ss-pdf-bar,.ss-lead-magnet,
-  .ss-scroll-hint,.ss-scroll-fade,.ss-swap-more,.ss-swap-details,
-  .ss-net-wrap,.ss-match-bar,.ss-loading-wrap{display:none!important}
-
-  /* Show only first 4 report cards + score */
+  .page-nav,.nav-hamburger,.nav-drawer{display:none!important}
+  /* Hide all wrap children except result box */
+  .wrap{padding:0!important;max-width:none!important}
+  .wrap > *{display:none!important}
+  .wrap > #result-box{display:block!important}
+  /* Hide within result box */
+  .ss-pdf-bar,.ss-lead-magnet,.ss-loading-wrap,
+  .ss-scroll-hint,.ss-scroll-fade,.ss-swap-more,
+  .ss-net-wrap,.ss-match-bar{display:none!important}
+  /* Only show first 5 cards (score + 4 content) */
+  .ss-report-body > .ss-card{display:block!important}
   .ss-report-body > .ss-card:nth-child(n+6){display:none!important}
 
-  #result-box,.result{
+  /* ── RESULT BOX ── */
+  #result-box{
     display:block!important;border:none!important;
-    box-shadow:none!important;margin:0!important;padding:0!important;width:100%!important;
+    box-shadow:none!important;margin:0!important;padding:0!important;
+    width:100%!important;background:#fff!important;
   }
 
-  /* ── PREMIUM HEADER — glass on white ── */
+  /* ── HEADER — solid, no glass (backdrop-filter doesn't print) ── */
   .ss-report-header{
-    padding:28px 36px 24px!important;
-    background:linear-gradient(145deg,#f0f4ff 0%,#e8eeff 50%,#ecf1ff 100%)!important;
-    border-bottom:2px solid #c3d2ff!important;
+    display:block!important;
+    padding:24px 28px 20px!important;
+    background:#e8eeff!important;
+    border-bottom:3px solid #1847ED!important;
     box-shadow:none!important;
   }
-  .ss-report-header::before{background:none!important}
-  .ss-report-header::after{background:none!important}
-  .ss-report-meta{font-size:9px!important;letter-spacing:.12em!important;color:#6B7899!important}
-  .ss-report-meta::before{background:#16A34A!important}
-  .ss-report-title{font-size:26px!important;letter-spacing:-.02em!important;color:#0B1F5E!important}
-  .ss-report-sub{font-size:11px!important;color:#6B7899!important}
-  .ss-report-grade{
-    font-size:38px!important;width:64px!important;height:64px!important;
-    border-radius:16px!important;
-    background:#fff!important;
-    box-shadow:0 2px 8px rgba(11,31,94,0.12),0 0 0 1.5px #c3d2ff!important;
+  .ss-report-header::before,.ss-report-header::after{display:none!important}
+  .ss-report-meta{
+    font-size:9px!important;letter-spacing:.12em!important;
+    color:#6B7899!important;display:flex!important;align-items:center!important;
+    gap:5px!important;margin-bottom:6px!important;
   }
+  .ss-report-meta::before{
+    content:''!important;display:inline-block!important;
+    width:6px!important;height:6px!important;border-radius:50%!important;
+    background:#16A34A!important;flex-shrink:0!important;
+  }
+  .ss-report-title{
+    font-size:24px!important;color:#0B1F5E!important;
+    letter-spacing:-.02em!important;margin-bottom:4px!important;
+  }
+  .ss-report-sub{font-size:11px!important;color:#6B7899!important}
+  /* Grade pill — solid white box */
+  .ss-report-grade{
+    font-size:36px!important;
+    width:60px!important;height:60px!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    border:2px solid #c3d2ff!important;
+    box-shadow:none!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+  }
+  .ss-report-grade-label{font-size:10px!important;color:#6B7899!important;margin-top:4px!important;text-align:center!important}
+  /* Summary banner */
   .ss-report-summary{
+    display:block!important;
     font-size:12px!important;line-height:1.55!important;color:#1A2340!important;
-    background:rgba(255,255,255,0.7)!important;
-    border:1px solid #c3d2ff!important;
-    border-radius:8px!important;padding:10px 14px!important;
-    margin-top:12px!important;
+    background:#fff!important;border:1.5px solid #c3d2ff!important;
+    border-radius:8px!important;padding:10px 14px!important;margin-top:12px!important;
   }
 
   /* ── METRICS ROW ── */
   .ss-metrics-row{
     display:grid!important;grid-template-columns:1fr 1fr 1fr!important;
-    border:none!important;border-bottom:2px solid #EEF2FF!important;
-    background:#F8FAFF!important;
+    background:#f8faff!important;
+    border:none!important;border-bottom:2px solid #DDE3F5!important;
   }
-  .ss-metric-card{padding:18px 20px!important}
-  .ss-metric-label{font-size:9px!important;letter-spacing:.1em!important}
-  .ss-metric-val{font-size:30px!important;line-height:1!important}
+  .ss-metric-card{padding:16px 18px!important;border-right:1px solid #DDE3F5!important;text-align:center!important}
+  .ss-metric-card:last-child{border-right:none!important}
+  .ss-metric-label{font-size:9px!important;letter-spacing:.08em!important}
+  .ss-metric-val{font-size:26px!important;line-height:1!important}
   .ss-metric-sub{font-size:11px!important}
 
-  /* ── BODY ── */
+  /* ── REPORT BODY ── */
   .ss-report-body{
-    padding:18px 28px!important;gap:12px!important;
-    background:#fff!important;display:flex!important;flex-direction:column!important;
-  }
-  .ss-card{
-    break-inside:avoid!important;page-break-inside:avoid!important;
-    box-shadow:none!important;
-    border:1.5px solid #DDE3F5!important;
-    padding:14px 18px!important;border-radius:10px!important;
+    display:flex!important;flex-direction:column!important;
+    padding:16px 20px!important;gap:10px!important;
     background:#fff!important;
   }
-  .ss-card-title{font-size:14px!important;margin-bottom:3px!important}
+  /* Cards */
+  .ss-card{
+    display:block!important;
+    break-inside:avoid!important;page-break-inside:avoid!important;
+    box-shadow:none!important;backdrop-filter:none!important;
+    border:1.5px solid #DDE3F5!important;background:#fff!important;
+    padding:12px 16px!important;border-radius:10px!important;
+  }
+  .ss-card-title{font-size:13px!important;margin-bottom:2px!important}
   .ss-card-sub{font-size:11px!important;margin-bottom:8px!important}
-  .ss-score-num{font-size:44px!important}
-  .ss-score-label{font-size:14px!important}
-  .ss-score-desc{font-size:12px!important}
-  .ss-swap-row{padding:5px 0!important;border-bottom:1px solid #F4F6FC!important}
-  .ss-swap-num,.ss-swap-from,.ss-swap-to{font-size:12px!important}
-  .ss-swap-why{display:block!important;font-size:10px!important;color:#6B7899!important;padding-left:22px!important;margin-top:1px!important}
-  .ss-swap-save{font-size:10px!important;padding:2px 8px!important}
-  .ss-action-item{padding:7px 0!important}
-  .ss-action-num{width:26px!important;height:26px!important;font-size:12px!important}
-  .ss-action-title{font-size:12px!important;margin-bottom:2px!important}
+  /* Score card */
+  .ss-score-row{display:flex!important}
+  .ss-score-num{font-size:40px!important}
+  .ss-score-label{font-size:13px!important}
+  .ss-score-desc{font-size:11px!important}
+  /* Swap rows */
+  .ss-swap-row{display:flex!important;padding:4px 0!important;border-bottom:1px solid #F4F6FC!important}
+  .ss-swap-num,.ss-swap-from,.ss-swap-to{font-size:11px!important}
+  .ss-swap-save{font-size:10px!important;padding:2px 7px!important}
+  /* Actions */
+  .ss-action-item{display:flex!important;padding:6px 0!important}
+  .ss-action-num{width:24px!important;height:24px!important;font-size:11px!important}
+  .ss-action-title{font-size:12px!important;margin-bottom:1px!important}
   .ss-action-text{font-size:11px!important}
-  .ss-finding{padding:10px!important;margin-bottom:6px!important}
-  .ss-finding-title{font-size:12px!important}
-  .ss-finding-body{font-size:11px!important}
+  /* Findings */
+  .ss-finding{padding:8px!important;margin-bottom:5px!important}
+  .ss-finding-title{font-size:11px!important}
+  .ss-finding-body{font-size:10px!important}
 
-  /* ── BRANDED FOOTER ── */
+  /* ── FOOTER ── */
   .ss-report-body::after{
     content:"Powered by StackSwap.io  ·  AI-driven tech stack analysis  ·  stackswap.io";
-    display:block!important;font-size:9px!important;color:#9CA3AF!important;
-    text-align:center!important;padding-top:12px!important;margin-top:4px!important;
+    display:block!important;font-size:8px!important;color:#9CA3AF!important;
+    text-align:center!important;padding-top:10px!important;margin-top:4px!important;
     border-top:1px solid #EEF2FF!important;font-family:Inter,sans-serif!important;
     letter-spacing:.06em!important;text-transform:uppercase!important;
   }
@@ -705,7 +736,7 @@ nav,
   <div class="page-nav-links">
     <a href="index.html" class="page-nav-link">Home</a>
     <a href="analyze.html" class="page-nav-link active">StackScan</a>
-    <a href="pro.html" class="page-nav-link">StackAudit</a>
+    <a href="pro.html" class="page-nav-link">StackScan Pro</a>
     <a href="stacksignal.html" class="page-nav-link">StackSignal</a>
     <a href="pricing.html" class="page-nav-link">Pricing</a>
     <a href="analyze.html" class="page-nav-cta">Run Free StackScan</a>
@@ -717,7 +748,7 @@ nav,
 <div class="nav-drawer" id="ss-nav-drawer">
   <a href="index.html" class="nav-drawer-link">Home</a>
   <a href="analyze.html" class="nav-drawer-link active">StackScan</a>
-  <a href="pro.html" class="nav-drawer-link">StackAudit</a>
+  <a href="pro.html" class="nav-drawer-link">StackScan Pro</a>
   <a href="stacksignal.html" class="nav-drawer-link">StackSignal</a>
   <a href="pricing.html" class="nav-drawer-link">Pricing</a>
   <div class="nav-drawer-divider"></div>
@@ -3018,6 +3049,60 @@ function renderResult(r) {
   body.appendChild(scoreCard);
   setTimeout(() => { const f = document.getElementById('ss-score-fill'); if(f) f.style.width = r.score+'%'; }, 150);
 
+  // ── OPERATOR NOTES ────────────────────────────────────────────────────
+  {
+    const opCard = ssCard(null, null);
+    opCard.style.cssText += 'background:linear-gradient(135deg,rgba(248,250,255,0.95) 0%,rgba(240,244,255,0.95) 100%);border-color:rgba(180,200,255,0.5)';
+    const opHeader = document.createElement('div');
+    opHeader.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:14px';
+    opHeader.innerHTML = '<span style="font-size:16px">🔍</span><span style="font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:#0B1F5E;letter-spacing:-.01em">Operator Notes</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif;margin-left:4px">— AI analysis</span>';
+    opCard.appendChild(opHeader);
+
+    const notes = [];
+    const _ts = teamSize ? parseInt(teamSize.split('-')[0]) || 8 : null;
+    const toolCount = selectedTools.length;
+    const _industry = industry || '';
+
+    // Tool density note
+    if (_ts && toolCount > 0) {
+      const ratio = toolCount / _ts;
+      if (ratio > 2.5) notes.push('Stack appears slightly overbuilt for a team of ' + (_ts < 6 ? 'this size' : _ts + '') + ' \u2014 ' + toolCount + ' tools is on the high end. Expect adoption gaps.');
+      else if (ratio < 0.5) notes.push('Lean stack for the team size. May indicate gaps in coverage, or a well-disciplined tooling philosophy.');
+      else notes.push(toolCount + ' tools for ' + (teamSize||'your') + '-person team. Density is within normal range.');
+    } else {
+      notes.push(toolCount + ' tools analyzed. Add team size for a density assessment.');
+    }
+
+    // Overlap note
+    const overlapCount = r.overlaps.length + (r.categoryOverlaps||[]).length;
+    if (overlapCount > 2) notes.push(overlapCount + ' functional overlaps detected. This typically signals tool sprawl from separate buying decisions \u2014 not a single planned stack.');
+    else if (overlapCount > 0) notes.push(overlapCount + ' overlap' + (overlapCount>1?'s':'') + ' found. Minor, but worth addressing at next renewal.');
+    else notes.push('No direct tool overlaps detected. Stack coverage is reasonably distinct.');
+
+    // Savings note
+    if (r.totalSave > 0) {
+      const annNote = r.totalSave * 12;
+      notes.push('Estimated ~$' + annNote.toLocaleString() + '/yr in recoverable spend. Actual savings depend on negotiated rates and contract timing.');
+    }
+
+    // Legacy / AI note
+    if ((r.legacyPenalties||[]).length > 0) notes.push((r.legacyPenalties.length) + ' legacy tool' + (r.legacyPenalties.length>1?'s':'') + ' detected with modern AI-native replacements available at lower cost.');
+
+    // Industry-specific note
+    if (_industry) notes.push('Industry context (' + _industry + ') applied. Some recommendations are weighted for typical ' + _industry.toLowerCase() + ' workflows.');
+
+    const ul = document.createElement('ul');
+    ul.style.cssText = 'margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px';
+    notes.slice(0,5).forEach(note => {
+      const li = document.createElement('li');
+      li.style.cssText = 'display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#374151;line-height:1.6;font-family:Inter,sans-serif';
+      li.innerHTML = '<span style="color:#1847ED;font-weight:700;flex-shrink:0;margin-top:1px">\u2014</span><span>' + note + '</span>';
+      ul.appendChild(li);
+    });
+    opCard.appendChild(ul);
+    body.appendChild(opCard);
+  }
+
   // ── STACK MATCH card ──────────────────────────────────────────────────
   if (r.goldMatch) {
     const gs = r.goldMatch;
@@ -3396,7 +3481,16 @@ function renderResult(r) {
     const grid = document.createElement('div');
     grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:4px';
 
-    Object.entries(grouped).forEach(([cat, tools]) => {
+    const CAT_ORDER = [
+      'AI Tools','CRM','Prospecting','Outreach','Marketing',
+      'Meetings','Analytics','Support','Finance','Operations',
+      'Transaction','Lead Gen','Other'
+    ];
+    const sortedEntries = Object.entries(grouped).sort(([a],[b]) => {
+      const ai = CAT_ORDER.indexOf(a), bi = CAT_ORDER.indexOf(b);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+    sortedEntries.forEach(([cat, tools]) => {
       const color = catColors[cat] || '#6B7899';
       const emoji = catEmoji[cat] || '🔧';
       const tile = document.createElement('div');
@@ -3439,6 +3533,50 @@ function renderResult(r) {
     body.appendChild(recCard);
   }
 
+  // ── LOCKED INSIGHTS PREVIEW ──────────────────────────────────────────
+  {
+    const lockedCard = document.createElement('div');
+    lockedCard.className = 'ss-card';
+    lockedCard.style.cssText += 'position:relative;overflow:hidden;padding:0;border-color:rgba(24,71,237,0.15)';
+
+    const lockedHeader = document.createElement('div');
+    lockedHeader.style.cssText = 'padding:20px 22px 14px;border-bottom:1px solid rgba(24,71,237,0.08)';
+    lockedHeader.innerHTML = '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:16px;color:#0B1F5E;margin-bottom:3px">More insights inside StackScan Pro</div>' +
+      '<div style="font-size:13px;color:#6B7899;font-family:Inter,sans-serif">A preview of what\u2019s waiting for you.</div>';
+    lockedCard.appendChild(lockedHeader);
+
+    const previews = [
+      { icon: '📈', title: 'Savings Roadmap', sub: 'Month-by-month plan to recover ~$' + (r.totalSave*12||0).toLocaleString() + '/yr with specific actions, timelines, and owner assignments.' },
+      { icon: '🔄', title: 'Replacement Map', sub: 'Tool-by-tool migration guide — exact alternatives, switching cost estimates, and integration risk scores.' },
+      { icon: '📅', title: '30/60/90 Implementation Plan', sub: 'Phased rollout plan for your team. Week-by-week actions to transition without disrupting operations.' },
+    ];
+
+    previews.forEach(p => {
+      const row = document.createElement('div');
+      row.style.cssText = 'position:relative;padding:16px 22px;border-bottom:1px solid rgba(24,71,237,0.06);overflow:hidden';
+
+      const content = document.createElement('div');
+      content.style.cssText = 'display:flex;gap:12px;align-items:flex-start;filter:blur(3.5px);user-select:none;pointer-events:none';
+      content.innerHTML = '<span style="font-size:20px;flex-shrink:0;margin-top:1px">' + p.icon + '</span>' +
+        '<div><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#0B1F5E;margin-bottom:3px">' + p.title + '</div>' +
+        '<div style="font-size:13px;color:#374151;line-height:1.55;font-family:Inter,sans-serif">' + p.sub + '</div></div>';
+      row.appendChild(content);
+
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(248,250,255,0.55)';
+      overlay.innerHTML = '<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(24,71,237,0.08);border:1px solid rgba(24,71,237,0.18);border-radius:20px;padding:5px 13px;font-size:12px;font-weight:700;color:#1847ED;font-family:Inter,sans-serif;letter-spacing:.02em">' +
+        '<span>\uD83D\uDD12</span><span>Unlock with StackScan Pro</span></div>';
+      row.appendChild(overlay);
+      lockedCard.appendChild(row);
+    });
+
+    // Bottom row — no border
+    const lastRow = lockedCard.querySelector('div:last-child');
+    if (lastRow) lastRow.style.borderBottom = 'none';
+
+    body.appendChild(lockedCard);
+  }
+
   // ── GREEN LEAD MAGNET ─────────────────────────────────────────────────
   const annualWaste = r.totalSave > 0 ? r.totalSave * 12 : 0;
   const overlapCountFinal = r.overlaps.length + (r.categoryOverlaps||[]).length;
@@ -3458,21 +3596,30 @@ function renderResult(r) {
 
   const leadMagnet = document.createElement('div');
   leadMagnet.className = 'ss-lead-magnet';
+
+  // ROI recovery line — monthly savings estimate
+  const monthlyRecovery = annualWaste > 0 ? Math.round(annualWaste / 12) : 0;
+  const roiLine = monthlyRecovery > 0
+    ? 'Most teams recover this in the first month of savings (~$' + monthlyRecovery.toLocaleString() + '/mo).'
+    : 'One report. Instant clarity on exactly where your money is going.';
+
   leadMagnet.innerHTML =
-    '<div class="ss-lead-eyebrow">StackAudit \u2014 Early Access</div>' +
-    '<div class="ss-lead-title">' + urgencyLine + '</div>' +
-    '<div class="ss-lead-sub">Get a complete StackAudit: exact pricing comparisons, migration risk flags, and a step-by-step implementation plan built for your stack.</div>' +
+    '<div class="ss-lead-eyebrow">StackScan Pro</div>' +
+    '<div class="ss-lead-title">This stack is leaking money every month.</div>' +
     '<div class="ss-lead-hooks">' +
       hooks.slice(0,3).map(([val,lbl]) =>
         '<div class="ss-lead-hook"><div class="ss-lead-hook-icon">\u2713</div><div><strong style="color:#0B1F5E;font-family:Sora,sans-serif">'+val+'</strong><br/><span style="font-size:12px">'+lbl+'</span></div></div>'
       ).join('') +
     '</div>' +
-    '<div class="ss-lead-form">' +
-      '<input type="email" class="ss-lead-input" id="ssLeadEmail" placeholder="your@email.com"/>' +
-      '<button class="ss-lead-btn" onclick="submitStackAudit()">Get Early Access \u2192</button>' +
+    '<div style="margin:22px auto 0;text-align:center">' +
+      '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:26px;color:#0B1F5E;letter-spacing:-.02em;line-height:1.1">StackScan Pro \u2014 $99</div>' +
+      '<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;margin-top:6px;line-height:1.5">' + roiLine + '</div>' +
     '</div>' +
-    '<div class="ss-lead-success" id="ssLeadSuccess">\u2713 You\u2019re on the list. We\u2019ll be in touch when StackAudit launches.</div>' +
-    '<div class="ss-lead-note">No spam. One email at launch. Early access pricing locked in at signup.</div>';
+    '<div style="margin:18px auto 0;text-align:center;max-width:320px">' +
+      '<button class="ss-lead-btn" style="width:100%;font-size:15px;padding:15px 24px" onclick="submitStackAudit()">Get My StackScan Pro Plan \u2192</button>' +
+      '<div style="font-size:12px;color:#6B7899;font-family:Inter,sans-serif;margin-top:9px">One-time purchase. Instant access.</div>' +
+    '</div>' +
+    '<div class="ss-lead-success" id="ssLeadSuccess">\u2713 You\u2019re on the list \u2014 we\u2019ll reach out when StackScan Pro launches.</div>';
   body.appendChild(leadMagnet);
 
   // ── AI narrative placeholder (injected after by getAINarrative) ───────
@@ -3482,11 +3629,11 @@ function renderResult(r) {
 
 
 async function submitStackAudit() {
-  const input = document.getElementById('ssLeadEmail');
-  const email = input?.value?.trim();
+  const email = leadData.email || '';
   if (!email || !email.includes('@')) {
-    input.style.borderColor = 'rgba(220,38,38,0.5)';
-    setTimeout(() => input.style.borderColor = '', 1500);
+    // Shouldn't happen since gate requires email, but fallback gracefully
+    const success = document.getElementById('ssLeadSuccess');
+    if (success) { success.style.display = 'block'; success.textContent = '\u2713 Noted \u2014 we\u2019ll be in touch about StackScan Pro.'; }
     return;
   }
   const btn = document.querySelector('.ss-lead-btn');
@@ -3497,18 +3644,15 @@ async function submitStackAudit() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email,
-        waitlist_type: 'stackaudit',
+        waitlist_type: 'stackscan_pro',
         source_page: 'stackscan_report',
         context: { company: leadData.company||'', role: leadData.role||'', lead_id: leadData.lead_id||'' }
       })
     });
   } catch(e) {}
-  const form = input?.closest('.ss-lead-form');
-  if (form) form.style.display = 'none';
+  if (btn) { btn.style.display = 'none'; }
   const success = document.getElementById('ssLeadSuccess');
   if (success) success.style.display = 'block';
-  const note = document.querySelector('.ss-lead-note');
-  if (note) note.style.display = 'none';
 }
 
 
@@ -3528,7 +3672,7 @@ async function submitAuditWaitlist() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email,
-        waitlist_type: 'stackaudit',
+        waitlist_type: 'stackscan_pro',
         source_page: 'stackscan_report',
         context: {
           company: leadData.company || '',
@@ -4411,7 +4555,7 @@ function renderMetrics(filterIndustry) {
             <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ffc857;font-family:DM Mono,monospace">Early Access</span>
           </div>
           <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;color:#f0ece4;line-height:1.2;margin-bottom:10px;letter-spacing:-.02em">
-            Full StackAudit is coming.
+            StackScan Pro is launching soon.
           </div>
           <div style="font-size:15px;color:#9a9690;line-height:1.65;max-width:460px;margin:0 auto 32px;font-family:Inter,sans-serif">
             Get industry-wide benchmarks, per-tool ROI scores, real switching cost estimates, and a full AI-written optimization roadmap — built for your exact stack.
@@ -4428,7 +4572,7 @@ function renderMetrics(filterIndustry) {
               Join the Waitlist
             </button>
           </div>
-          <div id="ss-wl-success" style="display:none;font-size:14px;color:#4ecdc4;font-weight:600;font-family:Inter,sans-serif;margin-top:8px">✓ You're on the list — we'll reach out when StackAudit launches.</div>
+          <div id="ss-wl-success" style="display:none;font-size:14px;color:#4ecdc4;font-weight:600;font-family:Inter,sans-serif;margin-top:8px">✓ You're on the list — we’ll reach out when StackScan Pro launches.</div>
           <div style="font-size:11px;color:#3a3830;margin-top:12px;font-family:Inter,sans-serif">No spam. Unsubscribe anytime.</div>
         </div>
       `;
