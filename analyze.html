@@ -4894,19 +4894,21 @@ function generateProReport() {
     `);
 
     // ── SECTION 3: Overlap Analysis ──────────────────────────────────────
-    const allOverlaps = [...overlaps.map(o=>({a:o.a,b:o.b,save:o.save,area:o.area||'Feature overlap',why:o.why||'These tools share significant functional overlap.'})),
-                         ...catOvlps.map(o=>({a:o.a||'',b:o.b||'',save:o.save||0,area:o.area||'Category overlap',why:o.why||'Duplicate tools in the same category.'}))];
+    const allOverlaps = [
+      ...overlaps.map(o=>({toolsLabel: o.a + ' + ' + o.b, keep: o.a, save: o.save, area: 'Direct overlap', why: o.msg || 'These tools share significant functional overlap.'})),
+      ...catOvlps.map(o=>({toolsLabel: (o.tools||[]).join(' + '), keep: (o.tools||[])[0]||'', save: o.save||0, area: o.category || 'Category overlap', why: o.msg || 'Duplicate tools in the same category.'}))
+    ];
     const s3 = section(3, 'Overlap Analysis', '#DC2626', allOverlaps.length > 0 ? `
       ${table(
         ['Overlap Area','Tools in Conflict','Impact','Recommendation'],
         allOverlaps.map(o=>[
           esc(o.area),
-          `<strong>${esc(o.a)}</strong> + <strong>${esc(o.b)}</strong>`,
+          `<strong>${esc(o.toolsLabel)}</strong>`,
           o.save > 0 ? `<span class="green">~$${o.save}/mo recoverable</span>` : 'Operational overhead',
-          `Consolidate to ${esc(o.a)} — it covers the primary use case for ${esc(_co)}'s team size.`
+          o.keep ? `Consolidate to <strong>${esc(o.keep)}</strong> — it covers the primary use case for ${esc(_co)}'s team size.` : esc(o.why)
         ])
       )}
-      ${callout(`<strong>${allOverlaps.length} overlap${allOverlaps.length!==1?'s':''} detected</strong> across ${esc(_co)}'s stack. Total recoverable: <strong class="green">${money(overlaps.reduce((s,o)=>s+o.save,0))}/mo</strong>.`,'info')}
+      ${callout(`<strong>${allOverlaps.length} overlap${allOverlaps.length!==1?'s':''} detected</strong> across ${esc(_co)}'s stack. Total recoverable: <strong class="green">${money(allOverlaps.reduce((s,o)=>s+(o.save||0),0))}/mo</strong>.`,'info')}
     ` : `<p class="muted">No significant overlaps detected. The stack is reasonably consolidated for a ${$(_ts,'—')}-person team.</p>`);
 
     // ── SECTION 4: AI-Native Upgrades ────────────────────────────────────
