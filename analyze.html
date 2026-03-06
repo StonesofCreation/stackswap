@@ -2955,11 +2955,16 @@ function renderResult(r) {
   // ── METRICS ROW (3 stats) ─────────────────────────────────────────────
   const metricsRow = document.createElement('div');
   metricsRow.className = 'ss-metrics-row';
-  [
+  // Build metrics — swap Contract Flexibility for Stack Lock-In Risk when multi-tool
+  const _lockIn = selectedTools.length > 1 ? calcLockInRisk(selectedTools) : null;
+  const _metricItems = [
     { label:'Stack Health Score', val: r.score + '/100', sub: gradeLabel, color: scoreColor },
     { label:'Potential Monthly Savings', val: r.totalSave > 0 ? '~$'+r.totalSave.toLocaleString() : '\u2014', sub: r.totalSave > 0 ? '~$'+(r.totalSave*12).toLocaleString()+'/yr annualized' : 'Stack looks lean', color: r.totalSave > 0 ? '#16A34A' : '#6B7899' },
-    { label:'Issues Detected', val: issueCount || '\u2713', sub: (r.overlaps.length+(r.categoryOverlaps||[]).length) + ' overlaps \u00b7 ' + (r.upgrades||[]).length + ' upgrades', color: issueCount > 0 ? '#D97706' : '#16A34A' },
-  ].forEach(item => {
+    selectedTools.length > 1
+      ? { label:'Stack Lock-In Risk', val: _lockIn.score + '/100', sub: _lockIn.label, color: _lockIn.color }
+      : { label:'Issues Detected', val: issueCount || '\u2713', sub: (r.overlaps.length+(r.categoryOverlaps||[]).length) + ' overlaps \u00b7 ' + (r.upgrades||[]).length + ' upgrades', color: issueCount > 0 ? '#D97706' : '#16A34A' },
+  ];
+  _metricItems.forEach(item => {
     const c = document.createElement('div');
     c.className = 'ss-metric-card';
     c.innerHTML = '<div class="ss-metric-label">' + item.label + '</div>' +
@@ -3799,6 +3804,30 @@ async function generateProReport() {
     '': ''
   }[_contract] || '';
 
+  // ── STACK LOCK-IN RISK (multi-tool only) ────────────────────────────────
+  // High score = easy to swap (low risk). Low score = deeply embedded (high risk).
+  function calcLockInRisk(tools) {
+    const HIGH_LOCK = ['Salesforce','HubSpot','SAP','Oracle','Workday','ServiceNow','Dynamics 365','Netsuite','Zendesk','Marketo','Pardot'];
+    const MED_LOCK  = ['Slack','Notion','Asana','Monday.com','Jira','Confluence','Intercom','Gong','Outreach','Salesloft','Zoho'];
+    const LOW_LOCK  = ['Buffer','Hootsuite','Loom','Calendly','Typeform','Hotjar','Zapier','Stripe','DocuSign','Canva','Figma'];
+    let risk = 0;
+    tools.forEach(t => {
+      const tl = t.toLowerCase();
+      if (HIGH_LOCK.some(h => tl.includes(h.toLowerCase()))) risk += 3;
+      else if (MED_LOCK.some(m => tl.includes(m.toLowerCase()))) risk += 2;
+      else if (LOW_LOCK.some(l => tl.includes(l.toLowerCase()))) risk += 1;
+      else risk += 1.5; // unknown = medium assumption
+    });
+    const avg = risk / tools.length;
+    // Scale to 0-100 where 100 = easily swappable, 0 = deeply locked
+    const score = Math.max(0, Math.min(100, Math.round(100 - ((avg - 1) / 2) * 100)));
+    const label = score >= 70 ? 'Low Risk — Stack is portable' :
+                  score >= 40 ? 'Medium Risk — Some dependencies' :
+                                'High Risk — Deeply embedded';
+    const color = score >= 70 ? '#16A34A' : score >= 40 ? '#D97706' : '#DC2626';
+    return { score, label, color };
+  }
+
   // ── ROLE CLASSIFIER ──────────────────────────────────────────────────
   const _roleLower = _role.toLowerCase();
   const _persona = (() => {
@@ -3878,19 +3907,21 @@ async function generateProReport() {
 
   const _pCtx = _personaProfiles[_persona];
 
-  const prompt = `You are a senior SaaS cost optimization consultant generating a premium StackScan Pro Decision Document.
-This is a formal, consultant-grade PDF deliverable. Write with confidence, clarity, and a slightly candid tone.
-Do NOT use generic AI filler language. Be specific, reference actual tool names, and always use ~ before cost/savings estimates.
-Return ONLY valid JSON in this exact shape — no markdown, no backticks, no preamble:
-{"html": "<full self-contained HTML string with inline CSS>"}
+  // ── Lock-in risk score ────────────────────────────────────────────────
+  const _lockIn = calcLockInRisk(selectedTools);
 
-The HTML must be a complete document (<!DOCTYPE html>...) with:
-- Embedded Google Fonts (Sora + Inter) from fonts.googleapis.com
-- Print-optimized CSS (@media print + @page margin:0.5in)
-- A premium design: clean white background, navy + blue accent colors, generous spacing, subtle borders
-- Fully self-contained — no external images, no JS
+  const prompt = `You are a senior SaaS cost optimization consultant.
+Generate a premium, consultant-grade StackScan Pro Decision Document as a complete standalone HTML page.
 
-CLIENT DATA:
+OUTPUT RULES — CRITICAL:
+- Return ONLY the raw HTML document. Start with <!DOCTYPE html>. No markdown. No backticks. No preamble.
+- All CSS must be inline in a <style> tag in <head>.
+- No external images. No JavaScript. Fully self-contained.
+- Use Google Fonts (Sora + Inter) via @import in the style block.
+- Print-optimized: @page { margin: 0.6in; } and @media print rules.
+- This document will be printed to PDF — make every section count.
+
+━━━ CLIENT DATA ━━━
 Company: ${_co}
 Contact: ${_email}${_role ? ' — ' + _role : ''}
 Reader Persona: ${_pCtx.label}
@@ -3899,150 +3930,174 @@ Industry: ${_ind}
 Tools (${selectedTools.length} total): ${_tools}
 Monthly Budget: ${_budget ? '~$' + Number(_budget).toLocaleString() + '/mo' : 'not provided'}
 Goals: ${_goals}
-Contract: ${contractCtx || 'not specified'}
+Contract terms: ${contractCtx || 'not specified'}
 
-ANALYSIS RESULTS:
+━━━ ANALYSIS RESULTS ━━━
 Stack Health Score: ${_score}/100
-Tool Overlaps: ${_overlaps + _catOverlaps} detected
+Tool Overlaps Detected: ${_overlaps + _catOverlaps}
 AI Upgrade Opportunities: ${_upgrades}
 Estimated Monthly Savings: ~$${_monthlySavings.toLocaleString()}
 Estimated Annual Savings: ~$${_annualSavings.toLocaleString()}
-Top Overlap Swaps: ${_topSwaps || 'none detected'}
-Top AI Upgrades: ${_topUpgrades || 'none detected'}
-Legacy Tools Flagged: ${_legacy || 'none'}
+Top Overlap Swaps: ${_topSwaps || 'analyze tools listed above'}
+Top AI Upgrades: ${_topUpgrades || 'identify from tools listed above'}
+Legacy Tools Flagged: ${_legacy || 'none detected'}
 Recommended Stack: ${_optimizedStack || selectedTools.join(', ')}
-Priority Actions: ${_actions || 'see recommendations'}
+Priority Actions: ${_actions || 'see analysis'}
+Stack Lock-In Risk: ${_lockIn.label} (${_lockIn.score}/100)
 
-━━━ PERSONA-AWARE WRITING INSTRUCTIONS ━━━
-
-Reader role: ${_pCtx.label}
-Tone direction: ${_pCtx.tone}
+━━━ PERSONA INSTRUCTIONS ━━━
+Tone: ${_pCtx.tone}
 Executive summary focus: ${_pCtx.execSummaryFocus}
 Section emphasis: ${_pCtx.sectionEmphasis}
 Closing tone: ${_pCtx.closingTone}
-
-INTERNAL ADVOCACY — include this naturally in the document (do not quote it verbatim, adapt it to context):
-"${_pCtx.advocacyLine}"
-
-COMMITTEE REALITY — weave this framing in naturally somewhere in Section 8 or 9:
-"In many organizations, tool decisions involve multiple stakeholders. A clear savings roadmap and structured migration plan helps teams align more quickly on high-impact changes. This document is designed to support those conversations."
+Internal advocacy (weave in naturally, not verbatim): "${_pCtx.advocacyLine}"
 
 TONE GUARDRAILS:
-- Never use dismissive, sarcastic, or cynical language
-- Do not criticize internal stakeholders or decision-making processes
-- Position the report as a clarity tool, not an indictment
-- The reader may not be the final decision maker — write to empower them, not embarrass them
-- Confident and practical, never condescending
+- Confident and candid, never sarcastic or condescending
+- Always reference ${_co} by name throughout
+- Use ~ before all cost/savings estimates
+- Never use generic AI filler. Be specific about actual tools.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━ DOCUMENT STRUCTURE ━━━
 
-DOCUMENT STRUCTURE — generate all 9 sections:
-
-HEADER:
-- StackScan Pro logo area (navy text, bold)
-- Title: "Stack Decision Document for ${_co}"
-- Subtitle: "A full diagnosis of your current SaaS stack with a prioritized optimization roadmap."
-- Pricing badge: strikethrough $99 in gray, then green "Free Until Launch"
-- Meta: Generated for ${_co} | ${_ts} people | ${_ind} | ${selectedTools.length} tools
-- Small label: "Prepared for ${_role || 'internal review'}" in muted gray
+HEADER BLOCK:
+- Logo: "StackScan Pro" in navy, bold, large. Tagline: "AI-Powered SaaS Stack Intelligence"
+- Title: "Stack Decision Document — ${_co}"
+- Subtitle: "A complete diagnosis of your current SaaS stack with a prioritized optimization roadmap."
+- Meta strip: ${_ts} people | ${_ind} | ${selectedTools.length} tools analyzed | Generated ${new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}
+- Pricing badge: Strikethrough $99 in gray next to bold green "Free Until Launch"
+- Prepared for: "${_role || 'internal review'}" in muted small text
 
 SECTION 1 — Executive Diagnosis
-2-3 tight paragraphs. Reference ${_co} by name. Mention team size, tool count, overlap count, estimated savings.
+Bold header with blue left border accent.
+2–3 tight paragraphs. Reference ${_co} directly. Cite team size, tool count, overlap count, and savings.
+Be candid: if the stack is overbuilt for the team size, say so clearly. If reasonably lean, acknowledge it.
+Tie findings to their stated goals: ${_goals}.
 Focus: ${_pCtx.execSummaryFocus}
-Be candid: if overbuilt, say so. If lean, acknowledge it. Tie to their goals: ${_goals}.
 
 SECTION 2 — Current Stack Cost Breakdown
-HTML table: Tool | Primary Function | Est. Monthly Cost | Recommendation (Keep/Replace/Evaluate/Cut)
-Use actual tool names from: ${_tools}
-Show total at bottom (~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4)).toLocaleString() : '?'}/mo current, ~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4) - _monthlySavings).toLocaleString() : '?'}/mo optimized).
+HTML table with 4 columns: Tool | Primary Function | Est. Monthly Cost | Recommendation
+Use ALL tools from: ${_tools}
+Recommendations: Keep / Replace / Evaluate / Cut
+Show a total row at the bottom. Current total ~$${_monthlySavings > 0 ? (Math.round(_monthlySavings * 1.4)).toLocaleString() : 'est.'}/mo. Optimized total.
+Style: alternating row shading, navy header row, bold total row.
 
 SECTION 3 — Overlap Analysis
-For each overlap: Overlap Area | Tools Involved | Explanation | Recommendation
-Emphasis for this reader: ${_persona === 'technical' ? 'integration complexity and API surface area' : _persona === 'marketing' ? 'campaign workflow redundancy and data fragmentation' : 'operational cost and workflow duplication'}
-Reference: ${_topSwaps || 'analyze tools for overlaps: ' + _tools}
+For each overlap detected, a row or callout card:
+Overlap Area | Tools in Conflict | Why It's a Problem | What to Do
+Emphasis: ${_persona === 'technical' ? 'integration complexity and API duplication' : _persona === 'marketing' ? 'data fragmentation and campaign workflow redundancy' : 'operational cost and duplicated workflows'}
+Reference: ${_topSwaps || 'analyze from: ' + _tools}
+If no overlaps detected, write a brief note confirming the stack is clean in this area.
 
 SECTION 4 — AI-Native Upgrade Opportunities
-For each upgrade: Current Tool → Recommended Tool | 2-sentence reasoning mentioning ${_co}
-Emphasis: ${_persona === 'marketing' ? 'automation quality and segmentation capability' : _persona === 'technical' ? 'maintainability and integration simplicity' : 'cost reduction and workflow efficiency'}
-Reference: ${_topUpgrades || 'identify AI-native alternatives for: ' + _tools}
+For each upgrade, a styled card or table row:
+Current Tool → AI-Native Alternative | Monthly Savings | Why the Switch Makes Sense for ${_co}
+2 focused sentences per upgrade — no filler.
+Emphasis: ${_persona === 'marketing' ? 'automation quality and attribution accuracy' : _persona === 'technical' ? 'API simplicity and maintenance overhead' : 'cost reduction and workflow speed'}
+Reference: ${_topUpgrades || 'identify opportunities from: ' + _tools}
 
 SECTION 5 — Ideal Stack Blueprint
-Group recommended tools by category. Base on: ${_optimizedStack || selectedTools.join(', ')}
-2-sentence explanation framed for ${_pCtx.label} — why this configuration serves ${_co} specifically.
+Group the recommended tools by category (CRM, Outreach, Analytics, Ops, Content, etc.).
+Present as a clean visual grid or categorized list.
+2 sentences at the top explaining why this configuration is the right fit for ${_co} at ${_ts} people.
+Highlight any tools being removed and their replacements.
 
 SECTION 6 — Savings Roadmap
-Current Stack Cost | Optimized Stack Cost | Annual Savings | Monthly Savings
-Use ~$${_annualSavings.toLocaleString()}/year. Short paragraph referencing ${_co}.
-${_persona === 'founder' ? 'Lead with ROI. Frame savings in terms of what the money could fund instead.' : _persona === 'analyst' ? 'Show the math clearly. Include a note on confidence level of estimates.' : 'Keep it clear and direct.'}
+A prominent financial summary block:
+- Current monthly cost | Optimized monthly cost | Monthly savings | Annual savings
+- Use large, bold green ($16A34A) for savings figures
+- Short paragraph tying savings to ${_co}'s goals and reinvestment potential
+${_persona === 'founder' ? 'Frame the savings as what the business could do with that capital instead.' : _persona === 'analyst' ? 'Show the math clearly. Note the confidence level of the estimates (list pricing basis).' : 'Keep it direct and outcome-focused.'}
 
-SECTION 7 — 30/60/90 Day Implementation Plan
-Realistic. Reference actual tools. Tailor to: ${contractCtx || 'their situation'}.
-${_persona === 'ops' || _persona === 'technical' ? 'Include dependency mapping and data validation steps.' : _persona === 'ic' ? 'Focus on day-to-day workflow transitions, not just IT tasks.' : 'Keep steps practical and outcome-focused.'}
-30 days: cancel/plan. 60 days: migrate. 90 days: decommission + validate.
+SECTION 7 — Stack Lock-In Risk Assessment
+Lock-In Score: ${_lockIn.score}/100 — ${_lockIn.label}
+Explain what this score means for ${_co}.
+3–4 specific callouts about which tools carry the highest switching complexity and why.
+${_persona === 'technical' ? 'Include API dependency notes and data migration requirements per tool.' : _persona === 'ops' ? 'Focus on workflow continuity risk and rollback planning.' : 'Focus on business continuity and realistic switching timelines.'}
 
-SECTION 8 — Migration Considerations
-3-5 risk callouts specific to their stack. Reference ${_co}.
-${_persona === 'technical' ? 'Emphasize API dependencies, data sync risks, and integration testing requirements.' : _persona === 'ops' ? 'Emphasize workflow continuity, training requirements, and rollback planning.' : 'Focus on business continuity and practical switching risks.'}
-Include the committee/stakeholder framing naturally here.
+SECTION 8 — 30/60/90 Day Implementation Plan
+A three-phase plan in a styled timeline or table:
+30 Days: Immediate actions — cancel, plan, notify vendors
+60 Days: Migration — move workflows, set up replacements
+90 Days: Decommission — validate, confirm savings, close accounts
+Tailor to: ${contractCtx || 'their situation'}
+Reference actual tool names. Make it specific and actionable, not generic.
+${_persona === 'ops' || _persona === 'technical' ? 'Include data export, validation, and integration testing steps.' : ''}
+Weave in naturally: "In many organizations, tool decisions involve multiple stakeholders. A clear savings roadmap and structured migration plan helps teams align more quickly on high-impact changes."
 
-SECTION 9 — Final Recommendation
-One strong closing paragraph. Reference ${_co}. Tie to goals: ${_goals}.
+SECTION 9 — Migration Risk Callouts
+3–5 specific risks for this exact stack. Reference actual tool names and ${_co}.
+For each risk: Risk | Likelihood | Mitigation
+${_persona === 'technical' ? 'Emphasize API dependencies, data sync risks, and integration testing.' : _persona === 'ops' ? 'Emphasize training, rollback plans, and workflow continuity.' : 'Focus on business continuity and practical switching friction.'}
+
+SECTION 10 — Final Recommendation
+One strong closing page. Reference ${_co} by name.
+Tie back to their goals: ${_goals}.
 ${_pCtx.closingTone}
-End with the internal advocacy line naturally woven in — not as a quote, but as a closing thought.
+End with the internal advocacy line naturally woven in as a closing thought — not as a quote.
 
-FOOTER:
-- "StackScan Pro — AI-Powered SaaS Stack Intelligence"
-- "Generated for ${_co}"
-- Strikethrough $99, "Free Until Launch"
-- stackswap.io
+FOOTER (on every page via CSS):
+"StackScan Pro — AI-Powered SaaS Stack Intelligence  |  stackswap.io  |  Generated for ${_co}"
+Strikethrough $99 | Free Until Launch (in green)
 
-DESIGN REQUIREMENTS:
-- Navy (#0B1F5E) headings, #1847ED accents, #16A34A for savings/positive
-- Section headers: large navy bold with thin blue left border accent
-- Tables: alternating #F8FAFF rows, navy header with white text
-- Recommendation callout boxes: #EEF2FF background with left #1847ED border
-- Savings figures: large, #16A34A, bold
-- Fonts: Sora headings, Inter body
-- Page breaks before major sections
-- Repeating professional footer`;
+━━━ DESIGN SPECIFICATION ━━━
+Color palette:
+- Navy headings: #0B1F5E
+- Blue accent: #1847ED
+- Savings/positive: #16A34A
+- Warning/cut: #DC2626
+- Evaluate: #D97706
+- Background: #FFFFFF
+- Section bg tint: #F8FAFF
+- Muted text: #64748B
+- Borders: #E2E8F0
+
+Typography:
+- Headings: Sora, 700–800 weight
+- Body: Inter, 400–500 weight
+- Monospace figures: use tabular-nums
+
+Layout:
+- Section headers: large navy bold, thin #1847ED left-border accent (4px), padding-left 16px
+- Tables: alternating #F8FAFF/#FFFFFF rows, navy #0B1F5E header with white text, 1px #E2E8F0 borders
+- Callout boxes: #EEF2FF background, 4px left border #1847ED, rounded corners 6px
+- Warning boxes: #FEF2F2 background, 4px left border #DC2626
+- Savings figures: font-size 28px+, #16A34A, bold
+- Page breaks: before Sections 1, 5, 8, 10
+- Generous whitespace — this is a premium document
+- Print: hide any screen-only UI, ensure tables don't break mid-row`;
 
   try {
     const resp = await fetch('/api/analyze-narrative', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, max_tokens: 4000 })
+      body: JSON.stringify({ prompt, mode: 'html' })
     });
     if (!resp.ok) throw new Error('API error ' + resp.status);
-    const raw = await resp.text();
-    let html = '';
-    try {
-      const parsed = JSON.parse(raw);
-      html = parsed.html || parsed.content?.[0]?.text || raw;
-    } catch(e) {
-      // Try to extract html from the raw text
-      const m = raw.match(/"html"\s*:\s*"([\s\S]+)"(?:\s*\}?\s*$)/);
-      html = m ? m[1].replace(/\\n/g,'\n').replace(/\\"/g,'"').replace(/\\\\/g,'\\') : raw;
-    }
-    // Clean any JSON wrapper if present
-    if (html.startsWith('{')) {
-      try {
-        const j = JSON.parse(html);
-        html = j.html || html;
-      } catch(e) {}
-    }
+    const data = await resp.json();
+    let html = data.html || '';
+    if (!html) throw new Error('Empty response');
+
+    // Strip any accidental markdown fences
+    html = html.replace(/^```html\s*/i,'').replace(/```\s*$/,'').trim();
+
     if (!html.includes('<!DOCTYPE') && !html.includes('<html')) {
       throw new Error('Invalid HTML returned');
     }
+
     const win = window.open('', '_blank');
+    if (!win) { alert('Please allow popups for this site to open your report.'); return; }
     win.document.open();
     win.document.write(html);
     win.document.close();
-    setTimeout(() => { try { win.print(); } catch(e) {} }, 1200);
+    setTimeout(() => { try { win.print(); } catch(e) {} }, 1500);
+
     btn.disabled = false;
     btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
+
   } catch(err) {
     console.error('Pro report error:', err);
-    // Fallback: use print dialog on the current report page
+    // Fallback: print the current page
     try { window.print(); } catch(e) {}
     btn.disabled = false;
     btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
@@ -4290,7 +4345,7 @@ function renderMain() {
     selectedTools.forEach((t,i)=>{
       const tag=div("tag",t);
       const x=el("button","tag-x","×");
-      x.addEventListener("click",()=>{selectedTools.splice(i,1);renderTags();updateCTA();markDot(1,selectedTools.length>0);});
+      x.addEventListener("click",()=>{selectedTools.splice(i,1);renderTags();updateCTA();markDot(1,selectedTools.length>0);if(typeof updateContractVsLockIn==="function")updateContractVsLockIn();});
       tag.appendChild(x); tagsDiv.appendChild(tag);
     });
   }
@@ -4313,7 +4368,7 @@ function renderMain() {
     });
     toolInput.value = "";
     suggBox.classList.remove("show");
-    if (added > 0) { renderTags(); updateCTA(); markDot(1, selectedTools.length > 0); }
+    if (added > 0) { renderTags(); updateCTA(); markDot(1, selectedTools.length > 0); if(typeof updateContractVsLockIn==='function') updateContractVsLockIn(); }
   }
   toolInput.addEventListener("input", () => {
     // Only show suggestions if no comma in input (single tool mode)
@@ -4367,7 +4422,47 @@ function renderMain() {
   ].forEach(({v,l})=>{const o=el("option",null,l);o.value=v;ctSel.appendChild(o);});
   ctW.appendChild(ctSel);
   ctW.appendChild(div("field-hint","helps AI estimate how easily you can switch tools"));
+  // Hide/show based on tool count: only relevant for single-tool evaluation
+  ctW.id = 'ctx-contract-wrap';
+  ctW.style.display = selectedTools.length <= 1 ? '' : 'none';
   tsRow.appendChild(ctW);
+
+  // Lock-In Risk info card (shown for multi-tool, hidden for single)
+  const lockInWrap = div("field-wrap"); lockInWrap.id = 'ctx-lockin-wrap';
+  lockInWrap.innerHTML = '<label class="lbl">Stack Lock-In Risk</label>';
+  const lockInDisplay = document.createElement('div');
+  lockInDisplay.id = 'ctx-lockin-display';
+  lockInDisplay.style.cssText = 'font-size:13px;color:var(--muted);line-height:1.6;padding:10px 0 4px';
+  lockInDisplay.textContent = 'Add multiple tools to calculate.';
+  lockInWrap.appendChild(lockInDisplay);
+  lockInWrap.appendChild(div("field-hint","how hard it would be to migrate away from this stack"));
+  lockInWrap.style.display = selectedTools.length > 1 ? '' : 'none';
+  tsRow.appendChild(lockInWrap);
+
+  function updateContractVsLockIn() {
+    const multi = selectedTools.length > 1;
+    const cw = document.getElementById('ctx-contract-wrap');
+    const lw = document.getElementById('ctx-lockin-wrap');
+    const ld = document.getElementById('ctx-lockin-display');
+    if (cw) cw.style.display = multi ? 'none' : '';
+    if (lw) lw.style.display = multi ? '' : 'none';
+    if (ld && multi) {
+      const HIGH_LOCK = ['Salesforce','HubSpot','SAP','Oracle','Workday','ServiceNow','Dynamics 365','Netsuite','Zendesk','Marketo','Pardot'];
+      const MED_LOCK  = ['Slack','Notion','Asana','Monday.com','Jira','Confluence','Intercom','Gong','Outreach','Salesloft','Zoho'];
+      let risk = 0;
+      selectedTools.forEach(t => {
+        const tl = t.toLowerCase();
+        if (HIGH_LOCK.some(h => tl.includes(h.toLowerCase()))) risk += 3;
+        else if (MED_LOCK.some(m => tl.includes(m.toLowerCase()))) risk += 2;
+        else risk += 1.5;
+      });
+      const avg = risk / selectedTools.length;
+      const score = Math.max(0, Math.min(100, Math.round(100 - ((avg - 1) / 2) * 100)));
+      const label = score >= 70 ? 'Low Risk' : score >= 40 ? 'Medium Risk' : 'High Risk';
+      const color = score >= 70 ? '#39ff85' : score >= 40 ? '#ffc857' : '#ff6b6b';
+      ld.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:22px;font-weight:500;color:' + color + '">' + score + '/100</span> <span style="color:' + color + ';font-size:13px">' + label + '</span><div style="font-size:12px;color:#9a9690;margin-top:4px">Measures portability of your current stack based on integrations and dependencies. High = easy to swap tools.</div>';
+    }
+  }
   // Budget — with smart auto-estimate (last field, logically)
   const budW = div("field-wrap"); budW.innerHTML='<label class="lbl">Monthly SaaS Spend ($)</label>';
   const budIn = el("input","field"); budIn.type="text"; budIn.inputMode="numeric"; budIn.pattern="[0-9]*"; budIn.placeholder="e.g. 2500"; budIn.id="bud";
