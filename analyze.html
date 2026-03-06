@@ -2983,9 +2983,9 @@ function renderResult(r) {
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
       </svg>
-      Download One Pager (PDF)
+      Download Free Report (PDF)
     </button>`;
-  box.appendChild(pdfBar);
+  // pdfBar appended before upsell — see below
   const body = document.createElement('div');
   body.className = 'ss-report-body';
   box.appendChild(body);
@@ -3578,6 +3578,7 @@ function renderResult(r) {
   }
 
   // ── GREEN LEAD MAGNET ─────────────────────────────────────────────────
+  body.appendChild(pdfBar);
   const annualWaste = r.totalSave > 0 ? r.totalSave * 12 : 0;
   const overlapCountFinal = r.overlaps.length + (r.categoryOverlaps||[]).length;
   const legacyCountFinal  = (r.legacyPenalties||[]).length;
