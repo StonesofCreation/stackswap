@@ -2997,18 +2997,19 @@ function renderResult(r) {
   });
   box.appendChild(metricsRow);
 
-  // ── PDF DOWNLOAD BAR ──────────────────────────────────────────────────
+  // ── PDF DOWNLOAD BAR (top of report) ─────────────────────────────────
   const pdfBar = document.createElement('div');
   pdfBar.className = 'ss-pdf-bar';
   pdfBar.innerHTML = `
-    <button class="ss-pdf-btn" onclick="window.print()">
+    <button class="ss-pdf-btn" onclick="printFreeReport()">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
       </svg>
-      Download One Pager (PDF)
+      Download Free Report (PDF)
     </button>
-    <div style="font-size:11px;color:#6B7899;font-family:Inter,sans-serif;margin-top:6px;text-align:center">Export the full StackScan report as a clean PDF.</div>`;
-  // pdfBar appended before upsell — see below
+    <div style="font-size:11px;color:#6B7899;font-family:Inter,sans-serif;margin-top:6px;text-align:center">Your full StackScan analysis — overlaps, upgrades, savings breakdown, and action plan.</div>`;
+  box.appendChild(pdfBar);
+
   const body = document.createElement('div');
   body.className = 'ss-report-body';
   box.appendChild(body);
@@ -3656,8 +3657,7 @@ function renderResult(r) {
     body.appendChild(lockedCard);
   }
 
-  // ── PDF + PRO REPORT UPSELL ──────────────────────────────────────────
-  body.appendChild(pdfBar);
+  // ── PRO REPORT UPSELL ──────────────────────────────────────────
 
   const annualWaste    = r.totalSave > 0 ? r.totalSave * 12 : 0;
   const overlapCountFinal = r.overlaps.length + (r.categoryOverlaps||[]).length;
@@ -3780,6 +3780,76 @@ async function submitStackAudit() {
   if (success) success.style.display = 'block';
 }
 
+
+// ── PRINT FREE REPORT ─────────────────────────────────────────────────────────
+function printFreeReport() {
+  const box = document.getElementById('result-box');
+  if (!box) return;
+
+  // Grab all ss-* CSS from the page's style blocks
+  const styleSheets = Array.from(document.styleSheets);
+  let css = '';
+  try {
+    styleSheets.forEach(sheet => {
+      try {
+        Array.from(sheet.cssRules || []).forEach(rule => {
+          const txt = rule.cssText || '';
+          // Include ss-*, ai-*, score, metric, swap, action, finding, pdf, lead rules
+          if (/ss-|ai-narrative|score-ring|\.wrap|@page|@font-face|Inter|Sora|DM Mono|Plus Jakarta/.test(txt)) {
+            css += txt + '\n';
+          }
+        });
+      } catch(e) {}
+    });
+  } catch(e) {}
+
+  // Clone result-box, strip elements that shouldn't print
+  const clone = box.cloneNode(true);
+  ['ss-pdf-bar','ss-lead-magnet','ss-loading-wrap'].forEach(cls => {
+    clone.querySelectorAll('.' + cls).forEach(el => el.remove());
+  });
+  // Remove the nth-child card limit — show ALL cards
+  clone.querySelectorAll('.ss-report-body > .ss-card').forEach(card => {
+    card.style.display = 'block';
+  });
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>StackScan Free Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:Inter,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{margin:0.45in;size:letter}
+${css}
+/* Print overrides — show full report */
+#result-box{border:none!important;box-shadow:none!important;margin:0!important;padding:0!important;background:#fff!important;display:block!important}
+.ss-report-body > .ss-card{display:block!important}
+.ss-report-body > .ss-card:nth-child(n+6){display:block!important}
+.ss-card{break-inside:avoid;page-break-inside:avoid}
+.ss-report-header{background:#e8eeff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ss-report-header::before,.ss-report-header::after{display:none!important}
+.ss-metrics-row{background:#f8faff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ss-pdf-bar,.ss-lead-magnet,.ss-loading-wrap{display:none!important}
+.ss-score-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ss-net-wrap,.ss-match-bar,.ss-scroll-hint,.ss-scroll-fade{display:none!important}
+</style>
+</head>
+<body>
+${clone.outerHTML}
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) { alert('Please allow popups to download your report.'); return; }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  setTimeout(() => { try { win.print(); } catch(e) {} }, 1200);
+}
 
 async function generateProReport() {
   const btn = document.getElementById('ss-pro-report-btn');
@@ -4068,40 +4138,57 @@ Layout:
 - Generous whitespace — this is a premium document
 - Print: hide any screen-only UI, ensure tables don't break mid-row`;
 
+  const RESET_BTN = () => {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
+  };
+
   try {
-    const resp = await fetch('/api/analyze-narrative', {
+    // Call Anthropic API directly from browser
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, mode: 'html' })
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8000,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
-    if (!resp.ok) throw new Error('API error ' + resp.status);
+
+    if (!resp.ok) {
+      const errText = await resp.text();
+      throw new Error('API error ' + resp.status + ': ' + errText.slice(0, 200));
+    }
+
     const data = await resp.json();
-    let html = data.html || '';
-    if (!html) throw new Error('Empty response');
+    let html = (data.content?.[0]?.text || '')
+      .replace(/^```html\s*/i, '')
+      .replace(/```\s*$/, '')
+      .trim();
 
-    // Strip any accidental markdown fences
-    html = html.replace(/^```html\s*/i,'').replace(/```\s*$/,'').trim();
-
+    if (!html) throw new Error('Empty response from API');
     if (!html.includes('<!DOCTYPE') && !html.includes('<html')) {
-      throw new Error('Invalid HTML returned');
+      throw new Error('API returned non-HTML content');
     }
 
     const win = window.open('', '_blank');
-    if (!win) { alert('Please allow popups for this site to open your report.'); return; }
+    if (!win) { alert('Please allow popups for this site to open your report.'); RESET_BTN(); return; }
     win.document.open();
     win.document.write(html);
     win.document.close();
     setTimeout(() => { try { win.print(); } catch(e) {} }, 1500);
-
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
+    RESET_BTN();
 
   } catch(err) {
     console.error('Pro report error:', err);
-    // Fallback: print the current page
-    try { window.print(); } catch(e) {}
+    // Show error in button — don't silently print the wrong thing
     btn.disabled = false;
-    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>&nbsp; Generate StackScan Pro Report';
+    btn.textContent = '⚠ Report generation failed — check console';
+    setTimeout(RESET_BTN, 4000);
   }
 }
 
