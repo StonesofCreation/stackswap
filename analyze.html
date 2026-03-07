@@ -704,6 +704,55 @@ nav,
 .pdf-gen-step .pdf-step-icon{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:background .3s,color .3s}
 .pdf-gen-step.done .pdf-step-icon{background:#4ecdc4;color:#fff}
 
+/* ── PROGRESSIVE REVEAL ── */
+.ss-reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.ss-reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── COUNT-UP ANIMATION ── */
+@keyframes countPulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+.ss-metric-val.counted{animation:countPulse .3s ease}
+
+/* ── STACK BENCHMARK ── */
+.ss-benchmark{display:flex;align-items:center;gap:14px;padding:18px 22px;background:rgba(248,250,255,0.95);border-bottom:1px solid rgba(203,213,225,0.6)}
+.ss-bench-bar{flex:1;position:relative;height:32px;background:#EEF2FF;border-radius:8px;overflow:visible}
+.ss-bench-fill{height:100%;border-radius:8px;transition:width 1.2s ease;position:relative}
+.ss-bench-marker{position:absolute;top:-6px;bottom:-6px;width:3px;border-radius:2px;background:#0B1F5E;transition:left 1.2s ease}
+.ss-bench-label{font-size:11px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap}
+
+/* ── CONFLICT CARDS ── */
+.ss-conflict-card{background:#fff;border:1.5px solid #DDE3F5;border-radius:14px;padding:20px;margin-bottom:10px;display:flex;gap:16px;align-items:flex-start;transition:border-color .2s,box-shadow .2s}
+.ss-conflict-card:hover{border-color:#CBD5E1;box-shadow:0 4px 16px rgba(11,31,94,0.06)}
+.ss-conflict-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ss-conflict-body{flex:1;min-width:0}
+.ss-conflict-tools{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.ss-conflict-from{font-family:Inter,sans-serif;font-weight:700;font-size:15px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.35)}
+.ss-conflict-arrow{color:#CBD5E1;font-size:16px;flex-shrink:0}
+.ss-conflict-to{font-family:Inter,sans-serif;font-weight:700;font-size:15px;color:#16A34A}
+.ss-conflict-reason{font-size:13px;color:#6B7899;line-height:1.6;font-family:Inter,sans-serif}
+.ss-conflict-save{font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:4px 12px;white-space:nowrap;flex-shrink:0;align-self:flex-start;font-family:Inter,sans-serif}
+
+/* ── UPGRADE CARDS ── */
+.ss-upgrade-card{background:linear-gradient(135deg,rgba(124,58,237,0.03),rgba(124,58,237,0.01));border:1.5px solid rgba(124,58,237,0.2);border-radius:14px;padding:20px;margin-bottom:10px;transition:border-color .2s,box-shadow .2s}
+.ss-upgrade-card:hover{border-color:rgba(124,58,237,0.4);box-shadow:0 4px 16px rgba(124,58,237,0.08)}
+
+/* ── ROADMAP TIMELINE ── */
+.ss-roadmap{display:flex;flex-direction:column;gap:0;position:relative}
+.ss-roadmap::before{content:'';position:absolute;left:19px;top:24px;bottom:24px;width:2px;background:linear-gradient(180deg,#16A34A,#D97706,#6B7899);border-radius:1px}
+.ss-road-phase{display:flex;gap:16px;padding:16px 0;position:relative}
+.ss-road-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:Sora,sans-serif;color:#fff;flex-shrink:0;z-index:1;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.ss-road-content{flex:1}
+.ss-road-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-family:Inter,sans-serif;margin-bottom:4px}
+.ss-road-title{font-family:Sora,sans-serif;font-weight:700;font-size:15px;color:#0B1F5E;margin-bottom:4px}
+.ss-road-desc{font-size:13px;color:#6B7899;line-height:1.6;font-family:Inter,sans-serif}
+
+/* ── SAVINGS BAR ── */
+.ss-savings-compare{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.ss-sav-row{display:flex;align-items:center;gap:14px}
+.ss-sav-label{min-width:100px;font-size:12px;font-weight:700;color:#6B7899;font-family:Inter,sans-serif;text-align:right}
+.ss-sav-bar-wrap{flex:1;height:36px;background:#EEF2FF;border-radius:8px;overflow:hidden;position:relative}
+.ss-sav-bar-fill{height:100%;border-radius:8px;transition:width 1.4s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:12px}
+.ss-sav-bar-val{font-size:13px;font-weight:800;font-family:Sora,sans-serif;color:#fff;white-space:nowrap}
+
 @media(max-width:640px){
   .ss-metrics-row{grid-template-columns:1fr}
   .ss-metric-card{border-right:none;border-bottom:1px solid #DDE3F5}
@@ -892,7 +941,7 @@ const TOOLS = [
   "Amperity","Cal.com","Doodle","When2meet","Tally","Fillout","Paperform","Google Forms",
   "Notion Forms","Airtable Forms","Coda Forms","Hotjar Surveys","Delighted","Medallia","Qualtrics","AskNicely",
   "Productboard","Aha!","Roadmunk","Craft.io","Airfocus","Zeda.io","UserVoice","Canny",
-  "Frill","Hellonext","Sleekplan","Cachet"
+  "Frill","Hellonext","Sleekplan","Cachet","Doximity"
 ];
 
 const OVERLAPS = [
@@ -1966,6 +2015,9 @@ const TOOL_CATALOG = {
 
   // ── Newsletters ──────────────────────────────────────────────────
   'revue':                {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0,   cat:'marketing'},
+
+  // ── HEALTHCARE ────────────────────────────────────────────────────
+  'doximity':             {model:'per_workspace', seat:0,   base:0,    typical:1,  variance:0.3, cat:'healthcare'},
 };
 
 /**
@@ -4211,22 +4263,84 @@ function renderResult(r) {
   // ── METRICS ROW (3 stats) ─────────────────────────────────────────────
   const metricsRow = document.createElement('div');
   metricsRow.className = 'ss-metrics-row';
-  // Build metrics — swap Contract Flexibility for Stack Lock-In Risk when multi-tool
   const _lockIn = selectedTools.length > 1 ? calcLockInRisk(selectedTools) : null;
+  const _goldMatch = r.goldMatch ? Math.round(r.goldMatch.matchPct * 100) : null;
   const _metricItems = [
-    { label:'Stack Health Score', val: r.score + '/100', sub: gradeLabel, color: scoreColor },
-    { label:'Est. Monthly SaaS Spend', val: r.spend > 0 ? '~$'+r.spend.toLocaleString() : '\u2014', sub: r.spend > 0 ? selectedTools.length + ' tools \u00b7 ' + (r.costBreakdown ? Object.values(r.costBreakdown).filter(c=>c>0).length + ' priced' : '') : 'Enter budget for accuracy', color: '#0B1F5E' },
-    { label:'Potential Monthly Savings', val: r.totalSave > 0 ? '~$'+r.totalSave.toLocaleString() : '\u2014', sub: r.totalSave > 0 ? '~$'+(r.totalSave*12).toLocaleString()+'/yr annualized' : 'Stack looks lean', color: r.totalSave > 0 ? '#16A34A' : '#6B7899' },
-  ];
+    { label:'Stack Health Score', val: r.score + '/100', numVal: r.score, sub: gradeLabel, color: scoreColor },
+    { label:'Est. Monthly SaaS Spend', val: r.spend > 0 ? '~$'+r.spend.toLocaleString() : '\u2014', numVal: r.spend, sub: r.spend > 0 ? selectedTools.length + ' tools \u00b7 ' + (r.costBreakdown ? Object.values(r.costBreakdown).filter(c=>c>0).length + ' priced' : '') : 'Enter budget for accuracy', color: '#0B1F5E', prefix:'$' },
+    { label:'Potential Monthly Savings', val: r.totalSave > 0 ? '~$'+r.totalSave.toLocaleString() : '\u2014', numVal: r.totalSave, sub: r.totalSave > 0 ? '~$'+(r.totalSave*12).toLocaleString()+'/yr annualized' : 'Stack looks lean', color: r.totalSave > 0 ? '#16A34A' : '#6B7899', prefix:'$' },
+    _goldMatch !== null ? { label:'Stack Match', val: _goldMatch + '%', numVal: _goldMatch, sub: r.goldMatch.name, color: _goldMatch >= 70 ? '#16A34A' : _goldMatch >= 50 ? '#D97706' : '#DC2626', suffix:'%' } : null,
+  ].filter(Boolean);
   _metricItems.forEach(item => {
     const c = document.createElement('div');
     c.className = 'ss-metric-card';
-    c.innerHTML = '<div class="ss-metric-label">' + item.label + '</div>' +
-      '<div class="ss-metric-val" style="color:' + item.color + '">' + item.val + '</div>' +
-      '<div class="ss-metric-sub">' + item.sub + '</div>';
+    const valEl = document.createElement('div');
+    valEl.className = 'ss-metric-val';
+    valEl.style.color = item.color;
+    valEl.textContent = '0';
+    valEl.dataset.target = item.numVal || 0;
+    valEl.dataset.display = item.val;
+    valEl.dataset.prefix = item.prefix || '';
+    valEl.dataset.suffix = item.suffix || '';
+    c.innerHTML = '<div class="ss-metric-label">' + item.label + '</div>';
+    c.appendChild(valEl);
+    c.innerHTML += '<div class="ss-metric-sub">' + item.sub + '</div>';
     metricsRow.appendChild(c);
   });
+  if (_metricItems.length === 4) metricsRow.style.gridTemplateColumns = 'repeat(4,1fr)';
   box.appendChild(metricsRow);
+
+  // Animate count-up after a short delay
+  setTimeout(() => {
+    metricsRow.querySelectorAll('.ss-metric-val').forEach(el => {
+      const target = parseInt(el.dataset.target) || 0;
+      const display = el.dataset.display;
+      if (!target) { el.textContent = display; return; }
+      const dur = 800, steps = 30;
+      let step = 0;
+      const interval = setInterval(() => {
+        step++;
+        const progress = step / steps;
+        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        const current = Math.round(target * eased);
+        el.textContent = (el.dataset.prefix || '') + current.toLocaleString() + (el.dataset.suffix || '');
+        if (step >= steps) {
+          clearInterval(interval);
+          el.textContent = display;
+          el.classList.add('counted');
+        }
+      }, dur / steps);
+    });
+  }, 400);
+
+  // ── STACK COMPLEXITY BENCHMARK ────────────────────────────────────────
+  const _tsNum = getTeamSizeNum(teamSize);
+  const benchRanges = {1:['3\u20136',4.5], 3:['4\u20138',6], 8:['6\u201312',9], 25:['8\u201315',11.5], 80:['10\u201320',15], 150:['12\u201325',18.5]};
+  const benchKey = Object.keys(benchRanges).map(Number).sort((a,b)=>a-b).reduce((best,k) => Math.abs(k-_tsNum) < Math.abs(best-_tsNum) ? k : best, 3);
+  const [benchLabel, benchMid] = benchRanges[benchKey];
+  const benchMax = Math.max(selectedTools.length, benchMid * 1.6, 20);
+  const benchBar = document.createElement('div');
+  benchBar.className = 'ss-benchmark';
+  const overUnder = selectedTools.length > benchMid * 1.15 ? 'over' : selectedTools.length < benchMid * 0.85 ? 'under' : 'within';
+  const benchColor = overUnder === 'over' ? '#DC2626' : overUnder === 'under' ? '#D97706' : '#16A34A';
+  benchBar.innerHTML =
+    '<div style="flex-shrink:0;min-width:120px">' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif;margin-bottom:2px">Stack Complexity</div>' +
+      '<div style="font-size:13px;font-weight:700;color:' + benchColor + ';font-family:Sora,sans-serif">' + selectedTools.length + ' tools <span style="font-weight:500;color:#6B7899;font-size:12px">vs ' + benchLabel + ' typical</span></div>' +
+    '</div>' +
+    '<div class="ss-bench-bar">' +
+      '<div class="ss-bench-fill" id="ss-bench-fill" style="width:0;background:linear-gradient(90deg,#EEF2FF,' + benchColor + '22)"></div>' +
+      '<div class="ss-bench-marker" id="ss-bench-marker" style="left:0;background:' + benchColor + '"></div>' +
+      '<div style="position:absolute;left:' + ((benchMid/benchMax)*100) + '%;top:-8px;bottom:-8px;width:1px;background:#CBD5E1;opacity:0.6"></div>' +
+      '<div style="position:absolute;left:' + ((benchMid/benchMax)*100) + '%;top:calc(100% + 4px);transform:translateX(-50%);font-size:9px;color:#9CA3AF;font-family:Inter,sans-serif;white-space:nowrap">typical: ' + benchLabel + '</div>' +
+    '</div>';
+  box.appendChild(benchBar);
+  setTimeout(() => {
+    const fill = document.getElementById('ss-bench-fill');
+    const marker = document.getElementById('ss-bench-marker');
+    if (fill) fill.style.width = ((selectedTools.length/benchMax)*100) + '%';
+    if (marker) marker.style.left = 'calc(' + ((selectedTools.length/benchMax)*100) + '% - 1.5px)';
+  }, 600);
 
   // ── PDF DOWNLOAD BAR (top of report) ─────────────────────────────────
   const pdfBar = document.createElement('div');
@@ -4291,6 +4405,7 @@ function renderResult(r) {
 
   // ── HEALTH SCORE card ─────────────────────────────────────────────────
   const scoreCard = ssCard(null, null);
+  scoreCard.classList.add('ss-reveal');
   const scoreRow = document.createElement('div');
   scoreRow.className = 'ss-score-row';
   scoreRow.innerHTML =
@@ -4307,6 +4422,7 @@ function renderResult(r) {
   // ── OPERATOR NOTES ────────────────────────────────────────────────────
   {
     const opCard = ssCard(null, null);
+    opCard.classList.add('ss-reveal');
     opCard.style.cssText += 'background:linear-gradient(135deg,rgba(248,250,255,0.95) 0%,rgba(240,244,255,0.95) 100%);border-color:rgba(180,200,255,0.5)';
     const opHeader = document.createElement('div');
     opHeader.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:14px';
@@ -4405,33 +4521,18 @@ function renderResult(r) {
     body.appendChild(matchCard);
   }
 
-  // ── OVERLAPS card — compact swap-list ────────────────────────────────
+  // ── OVERLAPS — conflict cards ──────────────────────────────────────────
   const wrongFindings = (r.consultantFindings||[]).filter(f=>f.type==="wrong"||f.type==="wrong_tool");
   const redundantFindings = (r.consultantFindings||[]).filter(f=>f.type==="redundant");
   const hasOverlaps = r.overlaps.length || redundantFindings.length || (r.categoryOverlaps&&r.categoryOverlaps.length) || wrongFindings.length;
 
   if (hasOverlaps) {
-    const overlapCard = ssCard('\u26a0\ufe0f Overlaps & Redundancies', 'You\u2019re paying for tools that do the same thing. Each row is money you\u2019re wasting right now.');
+    const overlapCard = ssCard('\u26a0\ufe0f Overlaps & Redundancies', 'Your stack has tools doing the same job. Each conflict below is costing you money.');
+    overlapCard.classList.add('ss-reveal');
 
-    // Column header
-    const hdr = document.createElement('div');
-    hdr.style.cssText = 'display:flex;align-items:center;padding:0 8px 10px;border-bottom:2px solid #EEF2FF;margin-bottom:2px';
-    hdr.innerHTML = '<div style="min-width:26px"></div>' +
-      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">SWAP OUT</div>' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#CBD5E1;font-family:Inter,sans-serif;margin:0 12px">\u2192</div>' +
-      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">KEEP / USE INSTEAD</div>' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif;min-width:64px;text-align:right">SAVES</div>';
-    overlapCard.appendChild(hdr);
-
-    // Build unified rows
     const swapItems = [];
     const _seenFrom = new Set();
-    const _addSwap = (item) => {
-      const key = item.from.toLowerCase().trim();
-      if (_seenFrom.has(key)) return; // skip duplicate
-      _seenFrom.add(key);
-      swapItems.push(item);
-    };
+    const _addSwap = (item) => { const key = item.from.toLowerCase().trim(); if (_seenFrom.has(key)) return; _seenFrom.add(key); swapItems.push(item); };
     wrongFindings.forEach(f => _addSwap({ from: f.title, to: 'Remove it', why: f.msg, save: f.save||0 }));
     (r.categoryOverlaps||[]).forEach(o => _addSwap({ from: o.tools.slice(1).join(' + '), to: o.tools[0], why: o.msg, save: o.save||0 }));
     redundantFindings.forEach(f => _addSwap({ from: f.title, to: 'Consolidate', why: f.msg, save: f.save||0 }));
@@ -4441,56 +4542,40 @@ function renderResult(r) {
       _addSwap({ from: tb, to: ta, why: o.msg, save: o.save||0 });
     });
 
-    swapItems.forEach((row, idx) => {
-      const wrap = document.createElement('div');
+    swapItems.forEach((row) => {
+      const card = document.createElement('div');
+      card.className = 'ss-conflict-card';
 
-      const mainRow = document.createElement('div');
-      mainRow.style.cssText = 'display:flex;align-items:center;padding:11px 8px;border-bottom:1px solid #F8FAFC;cursor:default;border-radius:8px;transition:background .12s';
-      mainRow.onmouseenter = () => mainRow.style.background = '#F8FAFC';
-      mainRow.onmouseleave = () => mainRow.style.background = '';
+      const icon = document.createElement('div');
+      icon.className = 'ss-conflict-icon';
+      icon.style.background = 'rgba(220,38,38,0.08)';
+      icon.textContent = '\u{1F6AB}';
+      card.appendChild(icon);
 
-      const num = document.createElement('div');
-      num.style.cssText = 'min-width:26px;font-family:Sora,sans-serif;font-weight:800;font-size:14px;color:#CBD5E1;flex-shrink:0';
-      num.textContent = idx + 1;
+      const body2 = document.createElement('div');
+      body2.className = 'ss-conflict-body';
+      body2.innerHTML =
+        '<div class="ss-conflict-tools">' +
+          '<span class="ss-conflict-from">' + row.from + '</span>' +
+          '<span class="ss-conflict-arrow">\u2192</span>' +
+          '<span class="ss-conflict-to">' + row.to + '</span>' +
+        '</div>' +
+        '<div class="ss-conflict-reason">' + row.why + '</div>';
+      card.appendChild(body2);
 
-      const from = document.createElement('div');
-      from.style.cssText = 'flex:1;font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.4)';
-      from.textContent = row.from;
-
-      const arrow = document.createElement('div');
-      arrow.style.cssText = 'font-size:15px;color:#CBD5E1;margin:0 12px;flex-shrink:0';
-      arrow.textContent = '\u2192';
-
-      const to = document.createElement('div');
-      to.style.cssText = 'flex:1;font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#16A34A';
-      to.textContent = row.to;
-
-      const saveDiv = document.createElement('div');
-      saveDiv.style.cssText = 'min-width:64px;text-align:right';
       if (row.save > 0) {
-        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">~$' + row.save + '/mo</span>';
+        const save = document.createElement('div');
+        save.className = 'ss-conflict-save';
+        save.textContent = '~$' + row.save + '/mo';
+        card.appendChild(save);
       }
-
-      mainRow.appendChild(num);
-      mainRow.appendChild(from);
-      mainRow.appendChild(arrow);
-      mainRow.appendChild(to);
-      mainRow.appendChild(saveDiv);
-      wrap.appendChild(mainRow);
-
-      // Why line — always fully visible, no dropdown
-      if (row.why) {
-        const whyEl = document.createElement('div');
-        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.55;padding:0 8px 10px 34px';
-        whyEl.textContent = row.why;
-        wrap.appendChild(whyEl);
-      }
-      overlapCard.appendChild(wrap);
+      overlapCard.appendChild(card);
     });
 
     body.appendChild(overlapCard);
   } else {
     const cleanCard = ssCard('\u2705 No Overlaps Detected', null);
+    cleanCard.classList.add('ss-reveal');
     const msg = document.createElement('div');
     msg.style.cssText = 'font-size:14px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.6';
     msg.textContent = 'Your tools serve distinct functions. No redundant spend detected.';
@@ -4498,73 +4583,31 @@ function renderResult(r) {
     body.appendChild(cleanCard);
   }
 
-  // ── AI-NATIVE UPGRADES card — same swap-list style ──────────────────
+  // ── AI-NATIVE UPGRADES — styled upgrade cards ──────────────────────────
   if (r.upgrades && r.upgrades.length) {
-    const upgCard = ssCard('\ud83d\udd04 AI-Native Upgrades', 'These tools have cheaper, smarter AI-native replacements. Swapping saves money and improves results.');
+    const upgCard = ssCard('\ud83e\udd16 AI-Native Upgrades', 'Legacy tools with smarter, cheaper AI-native replacements available now.');
+    upgCard.classList.add('ss-reveal');
 
-    const upgHdr = document.createElement('div');
-    upgHdr.style.cssText = 'display:flex;align-items:center;padding:0 8px 10px;border-bottom:2px solid #EEF2FF;margin-bottom:2px';
-    upgHdr.innerHTML = '<div style="min-width:26px"></div>' +
-      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">BEING SWAPPED</div>' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8B5CF6;font-family:Inter,sans-serif;margin:0 12px">\u2192</div>' +
-      '<div style="flex:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif">REPLACED BY</div>' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7899;font-family:Inter,sans-serif;min-width:64px;text-align:right">SAVES</div>';
-    upgCard.appendChild(upgHdr);
-
-    r.upgrades.slice(0, 5).forEach((u, idx) => {
+    r.upgrades.slice(0, 5).forEach((u) => {
       const trend = getTrendSignal(u.tool);
-      const wrap = document.createElement('div');
+      const card = document.createElement('div');
+      card.className = 'ss-upgrade-card';
 
-      const mainRow = document.createElement('div');
-      mainRow.style.cssText = 'display:flex;align-items:center;padding:11px 8px;border-bottom:1px solid #F8FAFC;cursor:default;border-radius:8px;transition:background .12s';
-      mainRow.onmouseenter = () => mainRow.style.background = '#F8FAFC';
-      mainRow.onmouseleave = () => mainRow.style.background = '';
-
-      const num = document.createElement('div');
-      num.style.cssText = 'min-width:26px;font-family:Sora,sans-serif;font-weight:800;font-size:14px;color:#CBD5E1;flex-shrink:0';
-      num.textContent = idx + 1;
-
-      const from = document.createElement('div');
-      from.style.cssText = 'flex:1;font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.4)';
-      from.textContent = u.tool;
-
-      const arrow = document.createElement('div');
-      arrow.style.cssText = 'font-size:15px;color:#8B5CF6;margin:0 12px;flex-shrink:0';
-      arrow.textContent = '\u2192';
-
-      const toWrap = document.createElement('div');
-      toWrap.style.cssText = 'flex:1;display:flex;align-items:center;gap:6px';
-      const toName = document.createElement('span');
-      toName.style.cssText = 'font-family:Inter,sans-serif;font-weight:700;font-size:14px;color:#8B5CF6';
-      toName.textContent = u.r;
-      toWrap.appendChild(toName);
-      if (trend && trend.signal === 'high') {
-        const badge = document.createElement('span');
-        badge.style.cssText = 'font-size:10px;color:#DC2626;font-family:Inter,sans-serif;font-weight:700';
-        badge.textContent = '\u25b2 trending';
-        toWrap.appendChild(badge);
-      }
-
-      const saveDiv = document.createElement('div');
-      saveDiv.style.cssText = 'min-width:64px;text-align:right';
-      if (u.save > 0) {
-        saveDiv.innerHTML = '<span style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:3px 10px;font-family:Inter,sans-serif">~$' + u.save + '/mo</span>';
-      }
-
-      mainRow.appendChild(num);
-      mainRow.appendChild(from);
-      mainRow.appendChild(arrow);
-      mainRow.appendChild(toWrap);
-      mainRow.appendChild(saveDiv);
-      wrap.appendChild(mainRow);
-
-      if (u.why) {
-        const whyEl = document.createElement('div');
-        whyEl.style.cssText = 'font-size:12px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.55;padding:0 8px 10px 34px';
-        whyEl.textContent = u.why;
-        wrap.appendChild(whyEl);
-      }
-      upgCard.appendChild(wrap);
+      card.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:14px">' +
+          '<div style="width:40px;height:40px;border-radius:10px;background:rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">\u{1F504}</div>' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">' +
+              '<span style="font-family:Inter,sans-serif;font-weight:700;font-size:15px;color:#DC2626;text-decoration:line-through;text-decoration-color:rgba(220,38,38,0.35)">' + u.tool + '</span>' +
+              '<span style="color:#CBD5E1;font-size:16px">\u2192</span>' +
+              '<span style="font-family:Inter,sans-serif;font-weight:700;font-size:15px;color:#7C3AED">' + u.r + '</span>' +
+              (trend && trend.signal === 'high' ? '<span style="font-size:10px;color:#DC2626;font-family:Inter,sans-serif;font-weight:700;background:rgba(220,38,38,0.08);border-radius:10px;padding:2px 8px">\u25b2 trending exit</span>' : '') +
+            '</div>' +
+            '<div style="font-size:13px;color:#6B7899;line-height:1.6;font-family:Inter,sans-serif">' + (u.why || '') + '</div>' +
+          '</div>' +
+          (u.save > 0 ? '<div style="font-size:12px;font-weight:700;color:#16A34A;background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:20px;padding:4px 12px;white-space:nowrap;flex-shrink:0;align-self:flex-start;font-family:Inter,sans-serif">~$' + u.save + '/mo</div>' : '') +
+        '</div>';
+      upgCard.appendChild(card);
     });
     body.appendChild(upgCard);
   }
@@ -4590,29 +4633,56 @@ function renderResult(r) {
     body.appendChild(gapCard);
   }
 
-  // ── ESTIMATED SAVINGS card ────────────────────────────────────────────
+  // ── SAVINGS VISUALIZATION — bar comparison ──────────────────────────────
   if (r.totalSave > 0) {
-    const savCard = ssCard('\ud83d\udcb0 Estimated Savings', null);
-    const savGrid = document.createElement('div');
-    savGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px';
-    [
-      { label:'Per Month', val:'~$'+r.totalSave.toLocaleString(), color:'#16A34A' },
-      { label:'Per Year',  val:'~$'+(r.totalSave*12).toLocaleString(), color:'#1847ED' },
-    ].forEach(item => {
-      const c = document.createElement('div');
-      c.style.cssText = 'background:#F4F6FC;border-radius:10px;padding:20px;text-align:center';
-      c.innerHTML = '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:32px;color:'+item.color+';letter-spacing:-.02em;line-height:1">'+item.val+'</div>' +
-        '<div style="font-size:11px;color:#6B7899;margin-top:6px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:Inter,sans-serif">'+item.label+'</div>';
-      savGrid.appendChild(c);
-    });
-    savCard.appendChild(savGrid);
-    const topDriver = r.overlaps.length > 0 ? 'tool overlaps' : r.upgrades&&r.upgrades.length > 0 ? 'legacy tool replacements' : 'stack optimizations';
-    const teamCtx = leadData.teamSize ? ' for a ' + leadData.teamSize + '-person team' : '';
-    const insight = document.createElement('div');
-    insight.style.cssText = 'font-size:13px;color:#6B7899;line-height:1.6;font-family:Inter,sans-serif';
-    insight.textContent = (leadData.company ? leadData.company + '\u2019s savings are' : 'Savings are') + ' driven primarily by ' + topDriver + teamCtx + '. Assumes you act on the top 2\u2013 3 recommendations.';
-    savCard.appendChild(insight);
+    const savCard = ssCard('\ud83d\udcb0 Savings Impact', 'How your stack spend changes after implementing recommendations.');
+    savCard.classList.add('ss-reveal');
+
+    const currentSpend = r.spend > 0 ? r.spend : r.totalSave * 2.5;
+    const optimizedSpend = Math.max(0, currentSpend - r.totalSave);
+    const savPct = currentSpend > 0 ? Math.round((r.totalSave / currentSpend) * 100) : 0;
+    const barMax = currentSpend;
+
+    const compare = document.createElement('div');
+    compare.className = 'ss-savings-compare';
+
+    // Current bar
+    compare.innerHTML =
+      '<div class="ss-sav-row">' +
+        '<div class="ss-sav-label">Current</div>' +
+        '<div class="ss-sav-bar-wrap"><div class="ss-sav-bar-fill" id="ss-sav-current" style="width:0;background:linear-gradient(90deg,#DC2626,#EF4444)"><span class="ss-sav-bar-val">~$' + Math.round(currentSpend).toLocaleString() + '/mo</span></div></div>' +
+      '</div>' +
+      '<div class="ss-sav-row">' +
+        '<div class="ss-sav-label">Optimized</div>' +
+        '<div class="ss-sav-bar-wrap"><div class="ss-sav-bar-fill" id="ss-sav-optimized" style="width:0;background:linear-gradient(90deg,#16A34A,#4ade80)"><span class="ss-sav-bar-val">~$' + Math.round(optimizedSpend).toLocaleString() + '/mo</span></div></div>' +
+      '</div>';
+    savCard.appendChild(compare);
+
+    // Savings callout
+    const savSummary = document.createElement('div');
+    savSummary.style.cssText = 'display:flex;align-items:center;gap:16px;padding:20px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-radius:12px;border:1px solid rgba(22,163,74,0.2);margin-top:4px';
+    savSummary.innerHTML =
+      '<div style="text-align:center;flex-shrink:0">' +
+        '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:36px;color:#16A34A;line-height:1;letter-spacing:-.03em">~$' + r.totalSave.toLocaleString() + '</div>' +
+        '<div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#15803d;font-family:Inter,sans-serif;margin-top:4px">per month</div>' +
+      '</div>' +
+      '<div style="flex:1">' +
+        '<div style="font-size:14px;font-weight:700;color:#0B1F5E;font-family:Sora,sans-serif;margin-bottom:3px">~$' + (r.totalSave*12).toLocaleString() + '/yr annualized' + (savPct > 0 ? ' (' + savPct + '% reduction)' : '') + '</div>' +
+        '<div style="font-size:13px;color:#374151;line-height:1.55;font-family:Inter,sans-serif">' +
+          (leadData.company ? leadData.company + '\u2019s savings are' : 'Savings are') + ' driven by ' + (r.overlaps.length > 0 ? 'tool overlaps' : r.upgrades&&r.upgrades.length > 0 ? 'legacy replacements' : 'stack optimization') + '. Assumes you act on the top 2\u20133 recommendations.' +
+        '</div>' +
+      '</div>';
+    savCard.appendChild(savSummary);
+
     body.appendChild(savCard);
+
+    // Animate bars
+    setTimeout(() => {
+      const c = document.getElementById('ss-sav-current');
+      const o = document.getElementById('ss-sav-optimized');
+      if (c) c.style.width = '100%';
+      if (o) o.style.width = ((optimizedSpend / barMax) * 100) + '%';
+    }, 600);
   }
 
   // ── IDEAL STACK card — revelation moment, vertical blueprint ────────
@@ -4701,23 +4771,33 @@ function renderResult(r) {
     body.appendChild(idealCard);
   }
 
-  // ── PRIORITY ACTIONS card ─────────────────────────────────────────────
-  const actCard = ssCard('\u26a1 Priority Actions', 'Your highest-leverage moves, ranked by impact.');
-  const actionColors = ['#16A34A','#16A34A','#16A34A'];
+  // ── PRIORITY ACTION ROADMAP — timeline style ────────────────────────────
+  const actCard = ssCard('\u26a1 Action Roadmap', 'Your highest-leverage moves, sequenced for maximum impact with minimum disruption.');
+  actCard.classList.add('ss-reveal');
+  const roadPhases = [
+    { label: 'Immediate', color: '#16A34A', icon: '\u{1F7E2}' },
+    { label: 'Next Step', color: '#D97706', icon: '\u{1F7E1}' },
+    { label: 'Optimize', color: '#6B7899', icon: '\u{1F535}' },
+  ];
+  const roadmap = document.createElement('div');
+  roadmap.className = 'ss-roadmap';
   r.actions.slice(0,3).forEach((a, i) => {
-    const item = document.createElement('div');
-    item.className = 'ss-action-item';
-    item.innerHTML =
-      '<div class="ss-action-num" style="background:' + actionColors[i] + '">' + (i+1) + '</div>' +
-      '<div class="ss-action-body">' +
-        '<div class="ss-action-title">' + a.title + '</div>' +
-        '<div class="ss-action-text">' + a.text + '</div>' +
+    const phase = roadPhases[i] || roadPhases[2];
+    const row = document.createElement('div');
+    row.className = 'ss-road-phase';
+    row.innerHTML =
+      '<div class="ss-road-dot" style="background:' + phase.color + '">' + (i+1) + '</div>' +
+      '<div class="ss-road-content">' +
+        '<div class="ss-road-label" style="color:' + phase.color + '">' + phase.label + '</div>' +
+        '<div class="ss-road-title">' + a.title + '</div>' +
+        '<div class="ss-road-desc">' + a.text + '</div>' +
       '</div>';
-    actCard.appendChild(item);
+    roadmap.appendChild(row);
   });
+  actCard.appendChild(roadmap);
   body.appendChild(actCard);
 
-  // ── RECOMMENDED STACK: clean category tiles ─────────────────────────
+  // ── RECOMMENDED STACK: Reveal Moment ──────────────────────────────────
   {
     const CAT_MAP = {
       'Prospecting':   ['ZoomInfo','Apollo.io','Clay','LinkedIn Sales Navigator','Clearbit','Hunter.io','Lusha','Cognism','Seamless.AI','LeadIQ'],
@@ -4739,12 +4819,12 @@ function renderResult(r) {
       'Operations':'#475569','AI Tools':'#9333EA','Transaction':'#B45309','Lead Gen':'#0369A1',
     };
     const catEmoji = {
-      'Prospecting':'🔍','Outreach':'📧','CRM':'💼','Meetings':'🎙️','Marketing':'📣',
-      'Analytics':'📊','Support':'💬','Finance':'💰','Operations':'⚙️','AI Tools':'🤖',
-      'Transaction':'📋','Lead Gen':'🏠',
+      'Prospecting':'\u{1F50D}','Outreach':'\u{1F4E7}','CRM':'\u{1F4BC}','Meetings':'\u{1F399}','Marketing':'\u{1F4E3}',
+      'Analytics':'\u{1F4CA}','Support':'\u{1F4AC}','Finance':'\u{1F4B0}','Operations':'\u2699\uFE0F','AI Tools':'\u{1F916}',
+      'Transaction':'\u{1F4CB}','Lead Gen':'\u{1F3E0}',
     };
 
-    // Assign each tool to a category
+    // Assign tools to categories
     const toolToCat = {};
     r.optimized.forEach(tool => {
       for (const [cat, catTools] of Object.entries(CAT_MAP)) {
@@ -4755,17 +4835,12 @@ function renderResult(r) {
       if (!toolToCat[tool]) toolToCat[tool] = 'Other';
     });
 
-    // Group
     const grouped = {};
     r.optimized.forEach(tool => {
       const cat = toolToCat[tool];
       if (!grouped[cat]) grouped[cat] = [];
       grouped[cat].push(tool);
     });
-
-    const recCard = ssCard('\u2728 Your Recommended Stack', 'The tools ' + (leadData.company ? leadData.company + ' should be using' : 'your team should be using') + ' — organized by function for maximum efficiency.');
-    const grid = document.createElement('div');
-    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:4px';
 
     const CAT_ORDER = [
       'AI Tools','CRM','Prospecting','Outreach','Marketing',
@@ -4776,70 +4851,214 @@ function renderResult(r) {
       const ai = CAT_ORDER.indexOf(a), bi = CAT_ORDER.indexOf(b);
       return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
     });
-    sortedEntries.forEach(([cat, tools]) => {
-      const color = catColors[cat] || '#6B7899';
-      const emoji = catEmoji[cat] || '🔧';
-      const tile = document.createElement('div');
-      tile.style.cssText = `background:linear-gradient(135deg,${color}0d,${color}06);border:1.5px solid ${color}33;border-radius:14px;padding:16px 18px;transition:transform .15s,box-shadow .15s`;
-      tile.onmouseenter = () => { tile.style.transform='translateY(-2px)'; tile.style.boxShadow=`0 6px 20px ${color}22`; };
-      tile.onmouseleave = () => { tile.style.transform=''; tile.style.boxShadow=''; };
 
+    // ── Engine metrics for the header
+    const eng = r.engine || {};
+    const engCurrent = eng.current || {};
+    const engIdeal = eng.ideal || {};
+    const engImprovement = eng.improvement || 0;
+    const overlapReduction = (r.overlaps||[]).length + (r.categoryOverlaps||[]).length;
+    const toolsRemoved = (r.toRemove||new Set()).size || (engIdeal.changes||[]).length;
+
+    // ── BUILD THE CARD ──────────────────────────────────────────────────
+    const recCard = document.createElement('div');
+    recCard.className = 'ss-card';
+    recCard.style.cssText += 'padding:0;overflow:hidden;border-color:rgba(22,163,74,0.2);box-shadow:0 4px 24px rgba(22,163,74,0.08),0 0 0 1px rgba(255,255,255,0.8) inset';
+
+    // ── REVEAL HEADER ───────────────────────────────────────────────────
+    const header = document.createElement('div');
+    header.style.cssText = 'padding:28px 26px 22px;background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 50%,#f0fdf4 100%);border-bottom:1px solid rgba(22,163,74,0.15);position:relative;overflow:hidden';
+    // shimmer line
+    header.innerHTML = '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#16A34A,#4ade80,#16A34A,transparent)"></div>';
+
+    const headerInner = document.createElement('div');
+    headerInner.innerHTML =
+      '<div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#16A34A;font-family:Inter,sans-serif;margin-bottom:8px;display:flex;align-items:center;gap:6px">' +
+        '<span style="font-size:16px">\u2728</span> Your Optimized Stack</div>' +
+      '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:22px;color:#0B1F5E;letter-spacing:-.02em;line-height:1.2;margin-bottom:6px">' +
+        (leadData.company ? leadData.company + '\u2019s ' : '') + 'Recommended Stack</div>' +
+      '<div style="font-size:13px;color:#374151;font-family:Inter,sans-serif;line-height:1.5">Built using the StackScan Recommendation Engine \u2014 scored across 10 categories for your context.</div>';
+    header.appendChild(headerInner);
+
+    // Metric pills row
+    const metricRow = document.createElement('div');
+    metricRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-top:14px';
+    const metricPills = [
+      {label:'Tools', val: r.optimized.length, color:'#0B1F5E'},
+      engImprovement > 0 ? {label:'Engine \u0394', val: '+' + engImprovement + ' pts', color:'#16A34A'} : null,
+      overlapReduction > 0 ? {label:'Overlaps Resolved', val: overlapReduction, color:'#DC2626'} : null,
+      r.totalSave > 0 ? {label:'Monthly Savings', val: '~$' + r.totalSave.toLocaleString(), color:'#16A34A'} : null,
+    ].filter(Boolean);
+    metricPills.forEach(p => {
+      const pill = document.createElement('div');
+      pill.style.cssText = 'display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-family:Inter,sans-serif;background:' + p.color + '0d;border:1px solid ' + p.color + '22';
+      pill.innerHTML = '<span style="font-weight:700;color:' + p.color + '">' + p.val + '</span><span style="color:#6B7899;font-weight:500">' + p.label + '</span>';
+      metricRow.appendChild(pill);
+    });
+    header.appendChild(metricRow);
+    recCard.appendChild(header);
+
+    // ── BUILDING MESSAGE ────────────────────────────────────────────────
+    const buildMsg = document.createElement('div');
+    buildMsg.style.cssText = 'padding:16px 26px;font-size:13px;color:#6B7899;font-family:Inter,sans-serif;display:flex;align-items:center;gap:8px;background:rgba(248,250,255,0.5)';
+    buildMsg.innerHTML = '<div style="width:14px;height:14px;border:2px solid #DDE3F5;border-top-color:#1847ED;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0"></div>' +
+      '<span id="ss-stack-build-msg">Optimizing stack architecture\u2026</span>';
+    recCard.appendChild(buildMsg);
+
+    // ── GRID CONTAINER ──────────────────────────────────────────────────
+    const gridWrap = document.createElement('div');
+    gridWrap.style.cssText = 'padding:8px 22px 22px';
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px';
+
+    // ── BUILD TILES (hidden initially for animation) ────────────────────
+    const tiles = [];
+    sortedEntries.forEach(([cat, tools], idx) => {
+      const color = catColors[cat] || '#6B7899';
+      const emoji = catEmoji[cat] || '\u{1F527}';
+      const tile = document.createElement('div');
+      tile.style.cssText = 'background:linear-gradient(160deg,' + color + '08,' + color + '03);border:1.5px solid ' + color + '25;border-radius:14px;padding:16px 18px;opacity:0;transform:translateY(12px);transition:opacity .35s ease,transform .35s ease,box-shadow .35s ease,border-color .35s ease';
+
+      // Category label
       const catLabel = document.createElement('div');
-      catLabel.style.cssText = `font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${color};font-family:Inter,sans-serif;margin-bottom:10px;display:flex;align-items:center;gap:5px`;
-      catLabel.innerHTML = `<span>${emoji}</span><span>${cat}</span>`;
+      catLabel.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:' + color + ';font-family:Inter,sans-serif;margin-bottom:12px;display:flex;align-items:center;gap:5px';
+      catLabel.innerHTML = '<span>' + emoji + '</span><span>' + cat + '</span>';
       tile.appendChild(catLabel);
 
-      tools.forEach(tool => {
-        const pill = document.createElement('div');
-        pill.style.cssText = `font-size:13px;font-weight:600;color:#1A2340;font-family:Inter,sans-serif;padding:5px 0;border-bottom:1px solid ${color}18;line-height:1.4`;
-        pill.textContent = tool;
-        tile.appendChild(pill);
-        // remove last border
-        const observer = new MutationObserver(() => {});
+      // Tool rows
+      tools.forEach((tool, ti) => {
+        const toolRow = document.createElement('div');
+        toolRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:7px 0;' + (ti < tools.length - 1 ? 'border-bottom:1px solid ' + color + '12' : '');
+
+        // Logo from SimpleIcons CDN with slug mapping
+        const _logoSlugs = {
+          'hubspot':'hubspot','salesforce':'salesforce','slack':'slack','zoom':'zoom',
+          'notion':'notion','figma':'figma','github':'github','gitlab':'gitlab',
+          'stripe':'stripe','google analytics':'googleanalytics','mailchimp':'mailchimp',
+          'asana':'asana','jira':'jira','linear':'linear','discord':'discord',
+          'zapier':'zapier','dropbox':'dropbox','canva':'canva','trello':'trello',
+          'shopify':'shopify','wordpress':'wordpress','webflow':'webflow',
+          'intercom':'intercom','zendesk':'zendesk','airtable':'airtable',
+          'clickup':'clickup','loom':'loom','miro':'miro','grammarly':'grammarly',
+          'docusign':'docusign','cloudflare':'cloudflare','vercel':'vercel',
+          'netlify':'netlify','sentry':'sentry','datadog':'datadog',
+          'mongodb atlas':'mongodb','firebase':'firebase','twilio':'twilio',
+          'postman':'postman','microsoft teams':'microsoftteams',
+          'google meet':'googlemeet','chatgpt':'openai','claude':'anthropic',
+        };
+        const toolLower = tool.toLowerCase();
+        const siSlug = Object.entries(_logoSlugs).find(([k]) => toolLower.includes(k));
+
+        const logoWrap = document.createElement('div');
+        logoWrap.style.cssText = 'width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff;font-family:Sora,sans-serif;background:' + color;
+
+        if (siSlug) {
+          const logoImg = document.createElement('img');
+          logoImg.src = 'https://cdn.simpleicons.org/' + siSlug[1] + '/ffffff';
+          logoImg.width = 14; logoImg.height = 14;
+          logoImg.style.cssText = 'opacity:0.9';
+          logoImg.onerror = function() { this.remove(); logoWrap.textContent = tool.charAt(0).toUpperCase(); };
+          logoWrap.style.background = color + '20';
+          logoWrap.appendChild(logoImg);
+        } else {
+          logoWrap.textContent = tool.charAt(0).toUpperCase();
+        }
+        toolRow.appendChild(logoWrap);
+
+        const toolInfo = document.createElement('div');
+        toolInfo.style.cssText = 'flex:1;min-width:0';
+        const toolName = document.createElement('div');
+        toolName.style.cssText = 'font-size:13px;font-weight:600;color:#1A2340;font-family:Inter,sans-serif;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+        toolName.textContent = tool;
+        toolInfo.appendChild(toolName);
+
+        // Descriptor: show if tool has a verdict from engine
+        const engToolScores = (eng.current && eng.current.toolScores) ? eng.current.toolScores[tool] : null;
+        if (engToolScores) {
+          const ws = engToolScores.weighted;
+          const desc = document.createElement('div');
+          desc.style.cssText = 'font-size:10px;color:#6B7899;font-family:Inter,sans-serif;line-height:1.3;margin-top:1px';
+          desc.textContent = 'Engine score: ' + ws + '/100';
+          toolInfo.appendChild(desc);
+        }
+        toolRow.appendChild(toolInfo);
+        tile.appendChild(toolRow);
       });
-      // remove border from last pill
-      tile.querySelectorAll && setTimeout(() => {
-        const pills = tile.querySelectorAll('div + div');
-        if (pills.length) pills[pills.length-1].style.borderBottom='none';
-      }, 0);
+
+      // Hover effect
+      tile.addEventListener('mouseenter', () => { tile.style.transform='translateY(-3px)'; tile.style.boxShadow='0 8px 24px ' + color + '18'; tile.style.borderColor=color + '55'; });
+      tile.addEventListener('mouseleave', () => { tile.style.transform='translateY(0)'; tile.style.boxShadow='none'; tile.style.borderColor=color + '25'; });
+
       grid.appendChild(tile);
+      tiles.push({el:tile, color, idx});
     });
 
-    recCard.appendChild(grid);
+    gridWrap.appendChild(grid);
+    recCard.appendChild(gridWrap);
 
-    // Conflict callouts — numbered, prioritized by severity
+    // ── SEQUENTIAL REVEAL ANIMATION ─────────────────────────────────────
+    setTimeout(() => {
+      tiles.forEach((t, i) => {
+        setTimeout(() => {
+          t.el.style.opacity = '1';
+          t.el.style.transform = 'translateY(0)';
+          // Glow pulse on entry
+          t.el.style.boxShadow = '0 0 20px ' + t.color + '25';
+          setTimeout(() => { t.el.style.boxShadow = 'none'; }, 400);
+        }, i * 140);
+      });
+      // Update build message after all tiles revealed
+      setTimeout(() => {
+        const msg = document.getElementById('ss-stack-build-msg');
+        if (msg) {
+          msg.parentElement.innerHTML = '<div style="width:18px;height:18px;border-radius:50%;background:#16A34A;display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
+            '<span style="color:#fff;font-size:10px;font-weight:800">\u2713</span></div>' +
+            '<span style="color:#16A34A;font-weight:600">Recommended stack ready.</span>';
+        }
+      }, tiles.length * 140 + 200);
+    }, 300);
+
+    // ── CONFLICT CALLOUTS ───────────────────────────────────────────────
     if (r.integrationConflicts && r.integrationConflicts.length) {
-      const conflictWrap = document.createElement('div');
-      conflictWrap.style.cssText = 'margin-top:18px;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;overflow:hidden';
+      const conflictSection = document.createElement('div');
+      conflictSection.style.cssText = 'margin:0 22px 18px;border-radius:12px;overflow:hidden;border:1.5px solid #FECACA;background:#fff';
 
       const conflictHdr = document.createElement('div');
-      conflictHdr.style.cssText = 'padding:12px 16px 10px;border-bottom:1px solid #FECACA;display:flex;align-items:center;gap:7px';
-      conflictHdr.innerHTML = '<span style="font-size:14px">\u26A0\uFE0F</span>' +
-        '<span style="font-family:Sora,sans-serif;font-weight:700;font-size:13px;color:#7F1D1D">Heads Up \u2014 Conflicts Detected</span>';
-      conflictWrap.appendChild(conflictHdr);
+      conflictHdr.style.cssText = 'padding:14px 18px 12px;background:#FEF2F2;border-bottom:1px solid #FECACA;display:flex;align-items:center;gap:8px';
+      conflictHdr.innerHTML =
+        '<span style="font-size:15px">\u26A0\uFE0F</span>' +
+        '<div>' +
+          '<div style="font-family:Sora,sans-serif;font-weight:700;font-size:14px;color:#7F1D1D;line-height:1.2">Stack Conflict' + (r.integrationConflicts.length > 1 ? 's' : '') + ' Detected</div>' +
+          '<div style="font-size:11px;color:#991B1B;font-family:Inter,sans-serif;margin-top:2px">' + r.integrationConflicts.length + ' integration issue' + (r.integrationConflicts.length > 1 ? 's' : '') + ' that may affect stack performance</div>' +
+        '</div>';
+      conflictSection.appendChild(conflictHdr);
 
-      // Sort by impact — conflicts with cost save first
       const sorted = [...r.integrationConflicts].sort((a,b) => (b.save||0)-(a.save||0));
       sorted.forEach((ic, i) => {
         const row = document.createElement('div');
-        row.style.cssText = 'display:flex;gap:12px;align-items:flex-start;padding:12px 16px;' +
-          (i < sorted.length-1 ? 'border-bottom:1px solid rgba(254,202,202,0.5)' : '');
+        row.style.cssText = 'padding:14px 18px;' + (i < sorted.length-1 ? 'border-bottom:1px solid #FEE2E2' : '');
         row.innerHTML =
-          '<div style="min-width:20px;height:20px;border-radius:50%;background:#DC2626;color:#fff;' +
-          'font-size:11px;font-weight:800;font-family:Sora,sans-serif;display:flex;align-items:center;' +
-          'justify-content:center;flex-shrink:0;margin-top:1px">' + (i+1) + '</div>' +
-          '<div>' +
-            '<div style="font-size:13px;font-weight:700;color:#7F1D1D;font-family:Inter,sans-serif;margin-bottom:3px">' +
-              ic.tools.join(' + ') + ' conflict' +
-            '</div>' +
-            '<div style="font-size:12px;color:#991B1B;font-family:Inter,sans-serif;line-height:1.55">' +
-              (ic.issue || 'These tools overlap in function \u2014 consider consolidating to one.') +
-            '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+            '<div style="min-width:22px;height:22px;border-radius:50%;background:#DC2626;color:#fff;font-size:11px;font-weight:800;font-family:Sora,sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + (i+1) + '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#7F1D1D;font-family:Inter,sans-serif">' + ic.tools.join(' + ') + '</div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:#991B1B;font-family:Inter,sans-serif;line-height:1.6;padding-left:30px;margin-bottom:8px">' +
+            (ic.issue || 'These tools overlap in function and create integration complexity.') +
+          '</div>' +
+          '<div style="padding-left:30px;display:flex;align-items:center;gap:6px">' +
+            '<span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#DC2626;font-family:Inter,sans-serif">Recommendation:</span>' +
+            '<span style="font-size:12px;color:#7F1D1D;font-family:Inter,sans-serif;font-weight:500">Standardize on one platform.</span>' +
           '</div>';
-        conflictWrap.appendChild(row);
+        conflictSection.appendChild(row);
       });
-      recCard.appendChild(conflictWrap);
+      recCard.appendChild(conflictSection);
     }
+
+    // ── ENGINE ATTRIBUTION ──────────────────────────────────────────────
+    const attr = document.createElement('div');
+    attr.style.cssText = 'padding:12px 26px 16px;border-top:1px solid rgba(203,213,225,0.4);display:flex;align-items:center;justify-content:center;gap:6px';
+    attr.innerHTML = '<span style="font-size:12px">\u26A1</span><span style="font-size:11px;color:#9CA3AF;font-family:Inter,sans-serif;letter-spacing:.02em">Generated by the StackScan Recommendation Engine</span>';
+    recCard.appendChild(attr);
 
     body.appendChild(recCard);
   }
@@ -4857,9 +5076,11 @@ function renderResult(r) {
     lockedCard.appendChild(lockedHeader);
 
     const previews = [
-      { icon: '📈', title: 'Savings Roadmap', sub: 'Month-by-month plan to recover ~$' + (r.totalSave*12||0).toLocaleString() + '/yr with specific actions, timelines, and owner assignments.' },
-      { icon: '🔄', title: 'Replacement Map', sub: 'Tool-by-tool migration guide — exact alternatives, switching cost estimates, and integration risk scores.' },
-      { icon: '📅', title: '30/60/90 Implementation Plan', sub: 'Phased rollout plan for your team. Week-by-week actions to transition without disrupting operations.' },
+      { icon: '\u{1F4CA}', title: 'Tool-by-Tool Verdict', sub: 'Keep, cut, replace, or evaluate — every tool in your stack scored with specific reasoning.' },
+      { icon: '\u{1F4C8}', title: 'Savings Roadmap', sub: 'Month-by-month plan to recover ~$' + (r.totalSave*12||0).toLocaleString() + '/yr with specific actions, timelines, and owner assignments.' },
+      { icon: '\u{1F504}', title: 'Replacement Map', sub: 'Tool-by-tool migration guide — exact alternatives, switching cost estimates, and integration risk scores.' },
+      { icon: '\u{1F4C5}', title: '30/60/90 Implementation Plan', sub: 'Phased rollout plan for your team. Week-by-week actions to transition without disrupting operations.' },
+      { icon: '\u{1F4E1}', title: 'StackSignal Intelligence', sub: 'Real-time exit rate data from other companies switching the same tools. See what the market is doing.' },
     ];
 
     previews.forEach(p => {
@@ -4977,6 +5198,33 @@ function renderResult(r) {
   leadMagnet.appendChild(successMsg);
 
   body.appendChild(leadMagnet);
+
+  // ── PROGRESSIVE REVEAL — IntersectionObserver ─────────────────────────
+  // Add ss-reveal to all cards that don't have it yet
+  body.querySelectorAll('.ss-card').forEach(card => {
+    if (!card.classList.contains('ss-reveal')) card.classList.add('ss-reveal');
+  });
+  // Observe and reveal on scroll
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  // Stagger reveal timing for cards in viewport
+  const allRevealCards = body.querySelectorAll('.ss-reveal');
+  allRevealCards.forEach((card, i) => {
+    card.style.transitionDelay = (i * 0.06) + 's';
+    revealObs.observe(card);
+  });
+  // Reveal first 3 cards immediately after short delay
+  setTimeout(() => {
+    allRevealCards.forEach((card, i) => {
+      if (i < 3) card.classList.add('visible');
+    });
+  }, 200);
 
   // ── AI narrative placeholder (injected after by getAINarrative) ───────
   box.scrollIntoView({behavior:"smooth",block:"start"});
@@ -6367,30 +6615,33 @@ function renderMain() {
     const _teamSize = leadData.teamSize || document.getElementById("ctx-teamsize")?.value || "";
     const _contract = document.getElementById("ctx-contract")?.value || "";
 
-    // ── Show clean loading state in result box immediately ──────────
+    // ── Show diagnostic loading state in result box ──────────────────
     const _rb = document.getElementById("result-box");
     _rb.style.display = "block";
     _rb.innerHTML = `
       <div class="ss-loading-wrap">
         <div class="ss-loading-live">
           <div class="ss-loading-dot"></div>
-          <span class="ss-loading-live-label">Analyzing</span>
+          <span class="ss-loading-live-label">Diagnosing</span>
         </div>
         <div class="ss-loading-spinner"></div>
-        <div class="ss-loading-title">AI is analyzing your stack</div>
-        <div class="ss-loading-sub">Reading overlaps, pricing signals, and integration patterns across your ${selectedTools.length} tools...</div>
+        <div class="ss-loading-title">Analyzing stack architecture</div>
+        <div class="ss-loading-sub" id="ss-load-status">Reading your ${selectedTools.length}-tool stack configuration\u2026</div>
         <div class="ss-loading-checks" id="ss-loading-checks">
-          <div class="ss-loading-check"><div class="ss-loading-check-icon done">✓</div><span>Stack submitted (${selectedTools.length} tools)</span></div>
-          <div class="ss-loading-check"><div class="ss-loading-check-icon active">↻</div><span>Detecting overlaps & redundancies</span></div>
-          <div class="ss-loading-check"><div class="ss-loading-check-icon" id="lc3">⋯</div><span>Calculating savings opportunities</span></div>
-          <div class="ss-loading-check"><div class="ss-loading-check-icon" id="lc4">⋯</div><span>Generating AI narrative</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon done">\u2713</div><span>Stack submitted (${selectedTools.length} tools)</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon active">\u21BB</div><span>Detecting functional overlaps\u2026</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon" id="lc3">\u22EF</div><span>Evaluating AI-native upgrade opportunities\u2026</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon" id="lc4">\u22EF</div><span>Calculating savings potential\u2026</span></div>
+          <div class="ss-loading-check"><div class="ss-loading-check-icon" id="lc5">\u22EF</div><span>Generating optimized stack architecture\u2026</span></div>
         </div>
       </div>`;
     _rb.scrollIntoView({behavior:"smooth", block:"start"});
 
-    // Animate loading checks
-    setTimeout(() => { const e = document.getElementById('lc3'); if(e){e.classList.add('active');e.textContent='↻'} }, 1200);
-    setTimeout(() => { const e = document.getElementById('lc3'); if(e){e.classList.remove('active');e.classList.add('done');e.textContent='✓'} const e2 = document.getElementById('lc4'); if(e2){e2.classList.add('active');e2.textContent='↻'} }, 2400);
+    // Animate loading checks with progressive status messages
+    const _statusEl = () => document.getElementById('ss-load-status');
+    setTimeout(() => { const e = document.getElementById('lc3'); if(e){e.classList.add('active');e.textContent='\u21BB'} const s=_statusEl(); if(s) s.textContent='Scanning for AI-native replacement opportunities\u2026'; }, 800);
+    setTimeout(() => { const e = document.getElementById('lc3'); if(e){e.classList.remove('active');e.classList.add('done');e.textContent='\u2713'} const e2 = document.getElementById('lc4'); if(e2){e2.classList.add('active');e2.textContent='\u21BB'} const s=_statusEl(); if(s) s.textContent='Computing cost models across your stack\u2026'; }, 1600);
+    setTimeout(() => { const e = document.getElementById('lc4'); if(e){e.classList.remove('active');e.classList.add('done');e.textContent='\u2713'} const e2 = document.getElementById('lc5'); if(e2){e2.classList.add('active');e2.textContent='\u21BB'} const s=_statusEl(); if(s) s.textContent='Designing your optimized stack\u2026'; }, 2200);
 
     // Run deterministic engine + AI narrative in parallel
     const result = runAnalysis(selectedTools, _teamSize, _industry, _budget, selectedGoals, _contract);
